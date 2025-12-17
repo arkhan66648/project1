@@ -3,140 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamRanking Admin</title>
+    <title>StreamCMS Admin</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- TinyMCE (Content Editor) - Free CDN -->
+    <!-- TinyMCE (Content Editor) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div class="cms-container">
-        <!-- Sidebar Navigation -->
+        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo-area">
                 <h2>⚡ RankMachine</h2>
-                <span class="badge">v1.0</span>
+                <span class="badge">v2.0</span>
             </div>
             <nav>
-                <button class="nav-btn active" onclick="switchTab('settings')">
-                    <span>⚙️</span> General Settings
-                </button>
-                <button class="nav-btn" onclick="switchTab('sitelinks')">
-                    <span>🔗</span> Sitelinks & Pages
-                </button>
-                <button class="nav-btn" onclick="switchTab('article')">
-                    <span>📝</span> Article Editor
-                </button>
+                <button class="nav-btn active" onclick="switchTab('settings')">⚙️ Settings</button>
+                <button class="nav-btn" onclick="switchTab('theme')">🎨 Theme & Design</button>
+                <button class="nav-btn" onclick="switchTab('sitelinks')">🔗 Sitelinks</button>
+                <button class="nav-btn" onclick="switchTab('article')">📝 SEO Content</button>
             </nav>
-            
             <div class="sidebar-footer">
-                <button id="saveBtn" class="save-btn">💾 Save Changes</button>
-                <p id="statusMsg" class="status-ready">Ready to edit</p>
+                <button id="saveBtn" class="save-btn">💾 Save All Changes</button>
+                <p id="statusMsg" class="status-ready">Ready</p>
             </div>
         </aside>
 
-        <!-- Main Content Area -->
+        <!-- Main Content -->
         <main class="content-area">
 
             <!-- TAB 1: GENERAL SETTINGS -->
             <section id="tab-settings" class="tab-content active">
                 <div class="header-box">
-                    <h1>Global Configuration</h1>
-                    <p>Manage site identity, global SEO, and API sources.</p>
+                    <h1>Global Settings</h1>
+                    <p>Basic site configuration and API sources.</p>
                 </div>
 
                 <div class="grid-2">
-                    <!-- Identity -->
                     <div class="card">
-                        <h3>Site Identity</h3>
+                        <h3>Identity</h3>
                         <label>Site Name</label>
-                        <input type="text" id="siteName" placeholder="StreamEast US">
-                        
+                        <input type="text" id="siteName">
                         <label>Domain</label>
-                        <input type="text" id="siteDomain" placeholder="streameast.app">
-                        
+                        <input type="text" id="siteDomain">
+                        <label>Favicon (PNG Recommended)</label>
+                        <input type="text" id="faviconUrl">
                         <label>Logo URL</label>
-                        <input type="text" id="logoUrl" placeholder="/assets/logo.png">
-                        
-                        <label>Favicon URL (Recommended: 192x192 PNG)</label>
-<input type="text" id="faviconUrl" placeholder="/assets/icon.png">
+                        <input type="text" id="logoUrl">
                     </div>
-
-                    <!-- SEO -->
                     <div class="card">
                         <h3>Homepage SEO</h3>
-                        <label>H1 Title (Hero Section)</label>
-                        <input type="text" id="homeH1" placeholder="Watch NFL, NBA, UFC Free">
-                        
+                        <label>H1 Title</label>
+                        <input type="text" id="homeH1">
                         <label>Meta Title</label>
                         <input type="text" id="metaTitle">
-                        
                         <label>Meta Description</label>
                         <textarea id="metaDesc" rows="3"></textarea>
-
                         <label>Live Status Text</label>
-                        <input type="text" id="liveStatus" value="Live and Working" style="border-color: #22c55e;">
+                        <input type="text" id="liveStatus">
                     </div>
                 </div>
 
-                <!-- API Config -->
                 <div class="card full-width">
-                    <h3>API Sources (Match Data)</h3>
-                    <div class="input-group">
-                        <label>Streamed.PK API URL (Primary)</label>
-                        <input type="text" id="apiStreamed" value="https://streamed.pk/api/matches/all">
+                    <h3>API Configuration</h3>
+                    <label>Streamed.PK API URL</label>
+                    <input type="text" id="apiStreamed">
+                    <label>TopEmbed.PW API URL</label>
+                    <input type="text" id="apiTopembed">
+                </div>
+            </section>
+
+            <!-- TAB 2: THEME DESIGNER -->
+            <section id="tab-theme" class="tab-content">
+                <div class="header-box">
+                    <h1>Theme Designer</h1>
+                    <p>Customize colors to create unique looking sites.</p>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Background Colors</h3>
+                        
+                        <label>Body Background</label>
+                        <div class="color-group">
+                            <input type="color" id="themeBgBody">
+                            <input type="text" id="txtBgBody" oninput="syncColor(this, 'themeBgBody')">
+                        </div>
+
+                        <label>Card/Table Background</label>
+                        <div class="color-group">
+                            <input type="color" id="themeBgCard">
+                            <input type="text" id="txtBgCard" oninput="syncColor(this, 'themeBgCard')">
+                        </div>
+
+                        <label>Sticky Header Background</label>
+                        <div class="color-group">
+                            <input type="color" id="themeBgHeader">
+                            <input type="text" id="txtBgHeader" oninput="syncColor(this, 'themeBgHeader')">
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label>TopEmbed.PW API URL (Backup)</label>
-                        <input type="text" id="apiTopembed" value="https://topembed.pw/api.php?format=json">
+
+                    <div class="card">
+                        <h3>Text & Accents</h3>
+                        
+                        <label>Main Text Color</label>
+                        <div class="color-group">
+                            <input type="color" id="themeTextMain">
+                            <input type="text" id="txtTextMain" oninput="syncColor(this, 'themeTextMain')">
+                        </div>
+
+                        <label>Accent Color (Buttons/Links)</label>
+                        <div class="color-group">
+                            <input type="color" id="themeAccent">
+                            <input type="text" id="txtAccent" oninput="syncColor(this, 'themeAccent')">
+                        </div>
+
+                        <label>Live Indicator (Red/Green)</label>
+                        <div class="color-group">
+                            <input type="color" id="themeLive">
+                            <input type="text" id="txtLive" oninput="syncColor(this, 'themeLive')">
+                        </div>
+
+                        <label>Border Radius (px)</label>
+                        <input type="text" id="themeRadius" placeholder="6px">
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 2: SITELINKS & PAGES -->
+            <!-- TAB 3: SITELINKS -->
             <section id="tab-sitelinks" class="tab-content">
                 <div class="header-box">
-                    <h1>Sitelinks Manager</h1>
-                    <p>Add sticky header links. These will generate snippets and physical pages.</p>
-                    <button class="btn-primary" onclick="addSitelinkUI()">+ Add New Sitelink</button>
+                    <h1>Sitelinks</h1>
+                    <button class="btn-primary" onclick="addSitelinkUI()">+ Add Page</button>
                 </div>
-
-                <div id="sitelinks-container">
-                    <!-- JavaScript will inject link items here -->
-                </div>
+                <div id="sitelinks-container"></div>
             </section>
 
-            <!-- TAB 3: ARTICLE EDITOR -->
+            <!-- TAB 4: ARTICLE -->
             <section id="tab-article" class="tab-content">
                 <div class="header-box">
-                    <h1>SEO Content Editor</h1>
-                    <p>Edit the text content that appears at the bottom of pages.</p>
-                    
+                    <h1>SEO Article Editor</h1>
                     <div class="editor-selector">
-                        <label>Editing Content For:</label>
                         <select id="pageSelector">
-                            <option value="home">Homepage (Main)</option>
-                            <!-- JS will populate sitelinks here -->
+                            <option value="home">Homepage</option>
                         </select>
                     </div>
                 </div>
-
                 <textarea id="tinymce-editor"></textarea>
             </section>
 
         </main>
     </div>
 
-    <!-- GitHub Token Modal -->
+    <!-- Auth Modal -->
     <div id="authModal" class="modal">
         <div class="modal-content">
             <h3>🔐 Admin Access</h3>
-            <p>Enter your GitHub Personal Access Token to connect.</p>
-            <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-            <button onclick="saveToken()">Login</button>
-            <small><a href="#" target="_blank">How to get a token?</a></small>
+            <p>Enter GitHub Personal Access Token</p>
+            <input type="password" id="ghToken" placeholder="ghp_xxxxxxxx">
+            <button onclick="saveToken()">Connect</button>
         </div>
     </div>
 
