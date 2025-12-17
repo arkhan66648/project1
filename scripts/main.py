@@ -2,46 +2,54 @@ import json
 import time
 import requests
 import os
-import re
-from datetime import datetime, timedelta
+import shutil
+from datetime import datetime
 
 # ==========================================
-# CONFIGURATION & STRATEGY
+# CONFIGURATION
 # ==========================================
 
-# 1. Target USA Sports Only
-# We filter strictly. If the API says "Cricket", we ignore it.
-USA_PRIORITY_SPORTS = [
-    "NFL", "NBA", "NHL", "MLB", "UFC", "MMA", "WWE", 
-    "Boxing", "Formula 1", "NASCAR", "Soccer"
-]
-
-# 2. Sport Name Normalization
-# APIs use different names. We map them to our standard.
-SPORT_MAPPING = {
-    "American Football": "NFL",
-    "Basketball": "NBA",
-    "Ice Hockey": "NHL",
-    "Baseball": "MLB",
-    "Fighting": "MMA"
+# 1. League Detection (The "Classifier")
+# Since Streamed.pk is generic, we check the Title & Category for these keywords.
+# If "American Football" -> We assume NFL unless specific keywords say otherwise.
+LEAGUE_KEYWORDS = {
+    "NFL": ["NFL", "Super Bowl", "American Football"],
+    "NBA": ["NBA", "Basketball", "Playoffs"],
+    "NHL": ["NHL", "Ice Hockey", "Stanley Cup"],
+    "MLB": ["MLB", "Baseball"],
+    "UFC": ["UFC", "MMA", "Fighting", "Fight Night"],
+    "F1": ["Formula 1", "F1", "Grand Prix"],
+    "Boxing": ["Boxing", "Fight"],
+    "Soccer": ["Soccer", "Premier League", "Champions League", "La Liga", "MLS"]
 }
 
-# 3. Time Settings (Milliseconds)
+# 2. Priority Settings
+USA_TARGETS = ["NFL", "NBA", "UFC", "NHL", "MLB"]
 NOW_MS = int(time.time() * 1000)
-HOUR_MS = 3600000
-
-# How long a match stays "Live" before being removed (if no viewers)
-DURATION_MAP = {
-    "NFL": 4 * HOUR_MS,
-    "NBA": 3 * HOUR_MS,
-    "MLB": 3.5 * HOUR_MS,
-    "UFC": 5 * HOUR_MS,
-    "Default": 2.5 * HOUR_MS
-}
 
 def load_config():
     with open('data/config.json', 'r') as f:
         return json.load(f)
+
+# ==========================================
+# HELPER: CLASSIFY SPORT
+# ==========================================
+def detect_league(category, title):
+    # Combine text for search
+    text = (category + " " + title).upper()
+    
+    # Check specific leagues first
+    for league, keywords in LEAGUE_KEYWORDS.items():
+        for k in keywords:
+            if k.upper() in text:
+                # Grey Hat Logic: If it says "American Football", map to "NFL"
+                # This aggregates all football under the high-traffic NFL keyword
+                if category == "American Football": return "NFL" 
+                if category == "Basketball": return "NBA"
+                if category == "Fighting" or category == "MMA": return "UFC"
+                return league
+                
+    return category # Fallback to original if no match
 
 # ==========================================
 # FETCHING DATA
@@ -52,271 +60,219 @@ def fetch_streamed_pk(url):
         data = requests.get(url).json()
         matches = []
         for m in data:
-            # Map Category
-            cat = m.get('category', 'Other')
-            sport = SPORT_MAPPING.get(cat, cat)
+            raw_cat = m.get('category', '')
+            title = m.get('title', '')
             
-            # Filter Non-USA (Optional: Keep everything but rank lower? 
-            # User said: "sports like cricket... we won't keep")
-            if sport not in USA_PRIORITY_SPORTS:
-                continue
-
+            # Detect actual league (e.g., "Basketball" -> "NBA")
+            league = detect_league(raw_cat, title)
+            
+            # Create standardized object
             matches.append({
-                "id": m['id'],
-                "title": m['title'],
-                "sport": sport,
-                "start_time": m['date'], # Already in MS
+                "id": str(m['id']),
+                "title": title,
+                "sport": league, # This will now say "NBA" instead of "Basketball"
+                "start_time": m['date'], # ms
                 "viewers": m.get('viewers', 0),
-                "source": "streamed",
-                "streams": m.get('sources', []),
+                "streams": m.get('sources', []), # Keep original structure
                 "teams": m.get('teams', {}),
-                "is_master": True # This came from the rich API
+                "image": f"https://streamed.pk/api/images/poster/{m['teams']['home']['badge']}/{m['teams']['away']['badge']}.webp",
+                "origin": "streamed"
             })
         return matches
     except Exception as e:
-        print(f"Error fetching Streamed.pk: {e}")
+        print(f"Error Streamed.pk: {e}")
         return []
 
 def fetch_topembed(url):
     try:
         data = requests.get(url).json()
         matches = []
-        # Structure is events -> "date_string" -> list of matches
         for date_key, events in data.get('events', {}).items():
             for ev in events:
-                # TopEmbed uses Seconds, convert to MS
+                # Convert Seconds to MS
                 start_ms = ev['unix_timestamp'] * 1000
                 
-                # Check Keyword Filter
+                # TopEmbed usually provides good league names, but we normalize
                 raw_sport = ev.get('sport', '')
-                tournament = ev.get('tournament', '')
-                
-                # Simple classification
-                sport = "Other"
-                found_sport = False
-                for s in USA_PRIORITY_SPORTS:
-                    if s.lower() in raw_sport.lower() or s.lower() in tournament.lower():
-                        sport = s
-                        found_sport = True
-                        break
-                
-                if not found_sport: continue # Skip if not a target sport
+                league = detect_league(raw_sport, ev['match'])
+
+                # Format Stream Link to match Streamed.pk structure
+                # We label it "TopEmbed" so frontend knows how to handle it
+                stream_obj = {
+                    "source": "topembed", 
+                    "id": ev.get('url', ''), 
+                    "resolution": "HD" 
+                }
 
                 matches.append({
-                    "id": f"te_{ev['unix_timestamp']}_{ev['match'][:5]}", # Fake ID
+                    "id": f"te_{ev['unix_timestamp']}_{ev['match'][:5]}",
                     "title": ev['match'],
-                    "sport": sport,
+                    "sport": league,
                     "start_time": start_ms,
-                    "viewers": 0, # TopEmbed doesn't provide viewers
-                    "source": "topembed",
-                    "streams": [{"source": "topembed", "id": ev.get('url', '')}],
-                    "is_master": False
+                    "viewers": 0,
+                    "streams": [stream_obj],
+                    "teams": {},
+                    "image": "/assets/fallback.jpg", # Placeholder
+                    "origin": "topembed"
                 })
         return matches
     except Exception as e:
-        print(f"Error fetching TopEmbed: {e}")
+        print(f"Error TopEmbed: {e}")
         return []
 
 # ==========================================
-# MERGING LOGIC (THE BRAIN)
+# MERGING LOGIC (COMBINING STREAMS)
 # ==========================================
 
-def merge_datasets(master_list, backup_list):
+def merge_matches(master_list, backup_list):
+    # We use master_list (Streamed) as the base because it has Images/Viewers
     final_list = master_list.copy()
     
     for backup in backup_list:
-        # Check if this match already exists in master list
-        # Logic: Same Sport AND Starts within 60 mins AND Similar Title
-        match_found = False
-        
+        found = False
         for master in final_list:
+            # MATCHING LOGIC:
+            # 1. Same Sport/League
+            # 2. Start time within 45 mins
             time_diff = abs(master['start_time'] - backup['start_time'])
             
-            # If same sport and close time (within 45 mins)
             if master['sport'] == backup['sport'] and time_diff < (45 * 60 * 1000):
-                # Fuzzy Title Check (Simple version)
-                # "Lakers vs Warriors" vs "Los Angeles Lakers - Golden State"
-                # We assume if time + sport matches, it's likely the same event
-                # We can add backup stream to master
-                master['streams'].append({
-                    "source": "topembed_backup",
-                    "id": backup['id'] # or URL if available
-                })
-                match_found = True
-                break
+                # CHECK TITLE SIMILARITY (Simple subset check)
+                # If "Lakers" is in both titles, we assume match
+                m_title = master['title'].lower()
+                b_title = backup['title'].lower()
+                
+                # Very simple fuzzy match: do they share at least one long word (4+ chars)?
+                m_words = set(w for w in m_title.split() if len(w) > 3)
+                b_words = set(w for w in b_title.split() if len(w) > 3)
+                
+                if m_words & b_words: # Intersection exists
+                    # MERGE STREAMS!
+                    # We add the backup streams to the master streams list
+                    # We flag them so frontend can style them differently if needed
+                    print(f"Merging streams for: {master['title']}")
+                    master['streams'].extend(backup['streams'])
+                    found = True
+                    break
         
-        # If not found in master, add it as a new match
-        if not match_found:
+        # If not found in Master, and it's a USA Target sport, add it
+        if not found and backup['sport'] in USA_TARGETS:
             final_list.append(backup)
             
     return final_list
 
 # ==========================================
-# PROCESSING & RANKING
+# PROCESSING (PRIORITY & CLEANUP)
 # ==========================================
 
-def process_matches(matches, config):
-    output_data = {
-        "generated_at": NOW_MS,
-        "important": [],
-        "categories": {}, # Organized by sport
-        "all_matches": [] 
+def process_data(matches, config):
+    output = {
+        "updated": NOW_MS,
+        "important": [], # Hero Table
+        "categories": {}, # "NFL": [...], "NBA": [...]
+        "schema": [] # Global Schema
     }
     
-    all_schema = []
-
     for m in matches:
-        # 1. Determine Status
-        duration = DURATION_MAP.get(m['sport'], DURATION_MAP['Default'])
-        end_time = m['start_time'] + duration
-        
-        is_live = m['start_time'] <= NOW_MS <= end_time
-        is_upcoming = m['start_time'] > NOW_MS
-        
-        # If finished and no viewers, skip (Clean up)
-        if NOW_MS > end_time and m['viewers'] < 50:
+        # 1. Time Filters
+        # Matches kept for 4 hours after start
+        if NOW_MS > (m['start_time'] + (4 * 3600000)) and m['viewers'] < 100:
             continue
-
-        # 2. Priority Score Calculation
-        # Base Score
-        score = 0
-        if is_live: score += 1000
-        score += m['viewers'] * 2 # Viewers are high value
+            
+        # 2. Categorize
+        if m['sport'] not in output['categories']:
+            output['categories'][m['sport']] = []
+        output['categories'][m['sport']].append(m)
         
-        # Tier 1 Sports Boost
-        if m['sport'] in ["NFL", "NBA", "UFC"]: score += 500
-        if m['sport'] in ["Soccer", "MLB"]: score += 200
+        # 3. "Important" Logic (Hero Table)
+        # Conditions: Live OR Starting in < 1hr (For USA Targets)
+        starts_soon = 0 < (m['start_time'] - NOW_MS) < 3600000
+        is_live = m['start_time'] <= NOW_MS
         
-        # Upcoming Boost (if starting soon)
-        time_until = m['start_time'] - NOW_MS
-        if 0 < time_until < (30 * 60 * 1000): # Starts in 30 mins
-            score += 300
-
-        m['is_live'] = is_live
-        m['score'] = score
-        m['status_text'] = "LIVE" if is_live else "UPCOMING"
+        is_hero = False
+        if is_live and m['viewers'] > 50: is_hero = True
+        if starts_soon and m['sport'] in USA_TARGETS: is_hero = True
         
-        # Button Logic (User Request: 30 mins before)
-        m['show_button'] = is_live or (0 < time_until < (30 * 60 * 1000))
-
-        # 3. Add to Categories
-        if m['sport'] not in output_data['categories']:
-            output_data['categories'][m['sport']] = []
-        output_data['categories'][m['sport']].append(m)
-        output_data['all_matches'].append(m)
-
-        # 4. "Important" Section Logic
-        # Must be Live OR Tier 1 starting in < 1 hour
-        is_important = False
-        if is_live and m['viewers'] > 100: is_important = True
-        if m['sport'] in ["NFL", "NBA", "UFC"] and 0 < time_until < (60 * 60 * 1000): is_important = True
-        
-        if is_important:
-            output_data['important'].append(m)
-
-        # 5. Schema Generation
-        schema = {
-            "@context": "https://schema.org",
-            "@type": "BroadcastEvent",
-            "name": m['title'],
-            "startDate": datetime.fromtimestamp(m['start_time']/1000).isoformat(),
-            "endDate": datetime.fromtimestamp(end_time/1000).isoformat(),
-            "eventStatus": "https://schema.org/EventLive" if is_live else "https://schema.org/EventScheduled",
-            "location": {"@type": "Place", "name": "Online"},
-            "offers": {
-                "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "USD",
+        if is_hero:
+            m['status_text'] = "LIVE NOW" if is_live else "STARTING SOON"
+            output['important'].append(m)
+            
+            # Add Schema for Important Matches
+            output['schema'].append({
+                "@context": "https://schema.org",
+                "@type": "BroadcastEvent",
+                "name": m['title'],
+                "startDate": datetime.fromtimestamp(m['start_time']/1000).isoformat(),
+                "eventStatus": "https://schema.org/EventLive" if is_live else "https://schema.org/EventScheduled",
+                "location": {"@type": "Place", "name": "Online"},
                 "url": f"https://{config['site_settings']['domain']}/match?id={m['id']}"
-            }
-        }
-        m['schema'] = schema # Attach to match for frontend use
-        if is_important: all_schema.append(schema)
+            })
 
-    # Sort Lists by Score
-    output_data['important'].sort(key=lambda x: x['score'], reverse=True)
-    for sport in output_data['categories']:
-        output_data['categories'][sport].sort(key=lambda x: x['score'], reverse=True)
+    # Sort Important by Priority (Viewers > Time)
+    output['important'].sort(key=lambda x: x['viewers'], reverse=True)
     
-    # Store global schema for the homepage
-    output_data['home_schema'] = all_schema
-
-    return output_data
+    return output
 
 # ==========================================
-# PAGE GENERATION (HTML)
+# FOLDER & PAGE GENERATION
 # ==========================================
 
-def generate_static_pages(processed_data, config):
-    # Read Template
+def generate_pages(data, config):
+    # Load Template
     try:
-        with open('assets/page_template.html', 'r') as f:
-            template = f.read()
-    except:
-        print("Template not found, skipping page generation.")
-        return
+        with open('assets/page_template.html', 'r') as f: template = f.read()
+    except: return
 
-    # Create 'pages' directory if not exists
-    if not os.path.exists('pages'):
-        os.makedirs('pages')
-
-    # Loop through Site Links from Config
-    for page in config.get('site_links', []):
-        slug = page['slug'].replace('/', '') # Clean slug
-        title = page['title'] # e.g., NFL
+    # Loop Configured Pages (e.g., NFL, NBA)
+    for page_conf in config['site_links']:
+        slug = page_conf['slug'].strip('/') # e.g. "nfl"
         
-        # Get Article Content (if exists)
+        # 1. Create Folder Structure: /nfl/
+        folder_path = slug
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path, exist_ok=True)
+            
+        # 2. Get Matches for this category
+        cat_matches = data['categories'].get(page_conf['title'], [])
+        
+        # 3. Inject Data
+        html = template
+        html = html.replace('{{TITLE}}', page_conf['meta_title'])
+        html = html.replace('{{DESC}}', page_conf['meta_desc'])
+        html = html.replace('{{H1}}', page_conf['title'])
+        html = html.replace('{{CATEGORY}}', page_conf['title']) # For JS Filter
+        
+        # Inject Article (if exists in data/articles/nfl.html)
         article_path = f"data/articles/{slug}.html"
-        article_content = ""
+        content = ""
         if os.path.exists(article_path):
-            with open(article_path, 'r') as f:
-                article_content = f.read()
-        
-        # Get Schema for this category (Upcoming matches)
-        cat_matches = processed_data['categories'].get(title, [])
-        cat_schema_json = json.dumps([m['schema'] for m in cat_matches[:5]]) # Limit to top 5
+            with open(article_path, 'r') as af: content = af.read()
+        html = html.replace('{{ARTICLE}}', content)
 
-        # Replace Placeholders
-        html = template.replace('{{META_TITLE}}', page.get('meta_title', title))
-        html = template.replace('{{META_DESC}}', page.get('meta_desc', ''))
-        html = template.replace('{{SITE_NAME}}', config['site_settings']['site_name'])
-        html = template.replace('{{H1_TITLE}}', title + " Live Streams")
-        html = template.replace('{{CATEGORY_SLUG}}', title) # Used by JS to filter
-        html = template.replace('{{ARTICLE_CONTENT}}', article_content)
-        html = template.replace('{{SCHEMA_JSON}}', cat_schema_json)
-
-        # Write File
-        with open(f"{slug}.html", 'w') as f:
+        # 4. Save as index.html inside the folder
+        with open(f"{folder_path}/index.html", 'w') as f:
             f.write(html)
-        print(f"Generated page: {slug}.html")
+        print(f"Generated: {folder_path}/index.html")
 
 # ==========================================
-# MAIN EXECUTION
+# EXECUTION
 # ==========================================
-
-def main():
-    print("Starting Match Update...")
-    config = load_config()
-    
-    # 1. Fetch
-    streamed_data = fetch_streamed_pk(config['api_keys']['streamed_url'])
-    topembed_data = fetch_topembed(config['api_keys']['topembed_url'])
-    
-    print(f"Fetched: {len(streamed_data)} from Streamed, {len(topembed_data)} from TopEmbed")
-
-    # 2. Merge
-    merged_matches = merge_datasets(streamed_data, topembed_data)
-    
-    # 3. Process & Rank
-    final_json = process_matches(merged_matches, config)
-    
-    # 4. Save JSON
-    with open('data/matches.json', 'w') as f:
-        json.dump(final_json, f, indent=2)
-    print("Saved data/matches.json")
-
-    # 5. Generate Pages
-    generate_static_pages(final_json, config)
-
 if __name__ == "__main__":
-    main()
+    conf = load_config()
+    
+    # Fetch
+    s_data = fetch_streamed_pk(conf['api_keys']['streamed_url'])
+    t_data = fetch_topembed(conf['api_keys']['topembed_url'])
+    
+    # Merge (Streams combined here)
+    merged = merge_matches(s_data, t_data)
+    
+    # Process
+    final_json = process_data(merged, conf)
+    
+    # Save JSON
+    with open('data/matches.json', 'w') as f:
+        json.dump(final_json, f)
+        
+    # Build Site
+    generate_pages(final_json, conf)
