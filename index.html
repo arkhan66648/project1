@@ -1,1 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Meta info will be populated by JS for fallback, but best hardcoded for main page -->
+    <title>StreamEast US - Live Sports</title>
+    <meta name="description" content="Watch NFL, NBA, UFC and MLB live streams free.">
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon" href="assets/icon.png"> <!-- Fallback, config updates this -->
+</head>
+<body>
 
+    <!-- Header -->
+    <header class="sticky-header">
+        <div class="logo"><a href="/">StreamRanking</a></div>
+        <nav id="site-links-nav">
+            <!-- JS Inject -->
+        </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1 id="hero-title">Loading...</h1>
+        <div class="live-status">
+            <span class="live-dot"></span> <span id="status-text">Live</span>
+        </div>
+    </section>
+
+    <!-- Search -->
+    <div class="search-container">
+        <input type="text" id="match-search" placeholder="Search for Team, League or Event...">
+    </div>
+
+    <div class="container">
+        
+        <!-- Important Matches Table -->
+        <section class="match-section" id="section-important">
+            <h2>🔥 Trending & Live Now</h2>
+            <table class="match-table">
+                <thead>
+                    <tr>
+                        <th class="col-time">Time</th>
+                        <th class="col-match">Match Details</th>
+                        <th class="col-action">Stream</th>
+                    </tr>
+                </thead>
+                <tbody id="table-important">
+                    <!-- JS Rows -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Dynamic Category Tables -->
+        <div id="category-wrapper">
+            <!-- JS will build sections here -->
+        </div>
+
+        <!-- SEO Content -->
+        <article class="seo-content" id="home-article">
+            <!-- Content loaded from data/articles/home.html or default -->
+            <h3>Fastest Sports Streams</h3>
+            <p>Welcome to the best place to watch NFL, NBA, UFC, and Soccer. We aggregate streams from Streamed.pk and TopEmbed to bring you the most reliable HD links. Our system updates every 5 minutes.</p>
+        </article>
+    </div>
+
+    <!-- HIDDEN PLAYER OVERLAY (CLOAKING) -->
+    <div id="stream-overlay" class="player-overlay">
+        <div class="overlay-header">
+            <span id="overlay-title">Watching Stream</span>
+            <button class="close-btn" onclick="closePlayer()">✖ Close Stream</button>
+        </div>
+        <div class="iframe-container" id="player-box">
+            <!-- Iframe injected here on click -->
+        </div>
+    </div>
+
+    <script>
+        // Configuration flags
+        window.IS_SUBPAGE = false;
+        window.PAGE_CATEGORY = "ALL";
+    </script>
+    <script src="assets/js/main.js"></script>
+
+</body>
+</html>
