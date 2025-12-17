@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{META_TITLE}}</title>
+    <meta name="description" content="{{META_DESC}}">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Schema for this specific category -->
+    <script type="application/ld+json">
+        {{SCHEMA_JSON}}
+    </script>
+</head>
+<body>
+    <header class="sticky-header">
+        <div class="logo"><a href="index.html">{{SITE_NAME}}</a></div>
+        <nav id="site-links-nav">
+            <!-- Navigation injected via JS on frontend or static here -->
+            <a href="index.html">Home</a>
+        </nav>
+    </header>
+
+    <section class="hero small-hero">
+        <h1>{{H1_TITLE}}</h1>
+        <p class="status-live">🟢 Live & Updated</p>
+    </section>
+
+    <div class="container">
+        <!-- The specific matches for this category -->
+        <section class="match-section">
+            <table class="match-table" id="category-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Match</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="match-body">
+                    <!-- Matches will be loaded here via JS to keep time accurate -->
+                </tbody>
+            </table>
+            <div id="loading-msg">Loading live schedule...</div>
+        </section>
+
+        <!-- SEO Content Article -->
+        <article class="seo-content">
+            {{ARTICLE_CONTENT}}
+        </article>
+    </div>
+
+    <!-- We reuse the main JS to load matches for this specific category -->
+    <script>
+        window.PAGE_CATEGORY = "{{CATEGORY_SLUG}}"; 
+    </script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
