@@ -1,13 +1,25 @@
 {
   "site_settings": {
-    "site_name": "StreamEast",
-    "domain": "crackstreams.help",
-    "logo_url": "/assets/logo.png",
-    "favicon": "/assets/icon.png",
-    "home_h1": "Watch NFL, NBA, UFC Live Streams",
+    "site_name": "StreamEast US",
+    "domain": "streameast.app",
+    "logo_url": "assets/logo.png",
+    "favicon": "assets/icon.png",
+    "home_h1": "Watch NFL, NBA, UFC Live Streams Free",
     "meta_title": "StreamEast - Official Free Sports Streaming",
     "meta_desc": "Watch NFL, NBA, UFC, and Soccer streams live in HD. Free sports streaming with no sign-up required.",
-    "live_status_text": "Live and Working"
+    "live_status_text": "Live and Working",
+    "footer_text": "© 2024 StreamEast US. All rights reserved."
+  },
+  "theme": {
+    "font_family": "Inter, system-ui, sans-serif",
+    "bg_body": "#0f172a",
+    "bg_card": "#1e293b",
+    "bg_header": "#0f172a",
+    "text_main": "#f8fafc",
+    "text_muted": "#94a3b8",
+    "color_accent": "#3b82f6",
+    "color_live": "#ef4444",
+    "border_radius": "6px"
   },
   "api_keys": {
     "streamed_url": "https://streamed.pk/api/matches/all",
@@ -21,14 +33,6 @@
       "priority": 1,
       "meta_title": "Watch NFL Live Streams Free",
       "meta_desc": "Full schedule of NFL games live in HD."
-    },
-    {
-      "id": 1765955336476,
-      "title": "NBA",
-      "slug": "nba",
-      "priority": 1,
-      "meta_title": "Watch NBA Live Streams Free",
-      "meta_desc": "Full schedule of NBA games live in HD."
     }
   ]
 }
