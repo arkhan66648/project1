@@ -3,32 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{META_TITLE}}</title>
-    <meta name="description" content="{{META_DESC}}">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <!-- Schema for this specific category -->
-    <script type="application/ld+json">
-        {{SCHEMA_JSON}}
-    </script>
+    <title>{{TITLE}}</title>
+    <meta name="description" content="{{DESC}}">
+    <!-- Path fix: We are inside a folder (e.g. /nfl/), so we need ../ for assets -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="icon" href="../assets/icon.png">
 </head>
 <body>
+
+    <!-- Sticky Header -->
     <header class="sticky-header">
-        <div class="logo"><a href="index.html">{{SITE_NAME}}</a></div>
+        <div class="logo"><a href="../index.html">StreamEast US</a></div>
         <nav id="site-links-nav">
-            <!-- Navigation injected via JS on frontend or static here -->
-            <a href="index.html">Home</a>
+            <!-- JS will populate menu -->
+            <a href="../index.html">Home</a>
         </nav>
     </header>
 
-    <section class="hero small-hero">
-        <h1>{{H1_TITLE}}</h1>
-        <p class="status-live">🟢 Live & Updated</p>
-    </section>
-
     <div class="container">
-        <!-- The specific matches for this category -->
+        <!-- Hero for Sub-page -->
+        <section class="sub-hero">
+            <h1>{{H1}} Live Streams</h1>
+            <p>Watch {{H1}} free in HD. Live and updated schedule.</p>
+        </section>
+
+        <!-- Matches Table -->
         <section class="match-section">
-            <table class="match-table" id="category-table">
+            <table class="match-table">
                 <thead>
                     <tr>
                         <th>Time</th>
@@ -36,23 +37,23 @@
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody id="match-body">
-                    <!-- Matches will be loaded here via JS to keep time accurate -->
+                <tbody id="category-matches-body">
+                    <tr><td colspan="3">Loading...</td></tr>
                 </tbody>
             </table>
-            <div id="loading-msg">Loading live schedule...</div>
         </section>
 
-        <!-- SEO Content Article -->
-        <article class="seo-content">
-            {{ARTICLE_CONTENT}}
+        <!-- SEO Article -->
+        <article class="page-article">
+            {{ARTICLE}}
         </article>
     </div>
 
-    <!-- We reuse the main JS to load matches for this specific category -->
+    <!-- Configuration for JS -->
     <script>
-        window.PAGE_CATEGORY = "{{CATEGORY_SLUG}}"; 
+        window.PAGE_CATEGORY = "{{CATEGORY}}"; // e.g., "NFL"
+        window.IS_SUBPAGE = true;
     </script>
-    <script src="assets/js/main.js"></script>
+    <script src="../assets/js/main.js"></script>
 </body>
 </html>
