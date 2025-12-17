@@ -2,8 +2,8 @@
 // CONFIGURATION
 // ==========================================
 // REPLACE THIS with your specific repository details
-const REPO_OWNER = 'YOUR_GITHUB_USERNAME'; 
-const REPO_NAME = 'YOUR_REPO_NAME'; 
+const REPO_OWNER = 'arkhan66648'; 
+const REPO_NAME = 'project1'; 
 const FILE_PATH = 'data/config.json';
 const BRANCH = 'main'; // or 'master'
 
