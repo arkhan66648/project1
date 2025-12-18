@@ -3,20 +3,14 @@
     "site_name": "StreamEast US",
     "domain": "streameast.app",
     "logo_url": "assets/logo.png",
-    "favicon": "assets/icon.png",
-    "home_h1": "Watch NFL, NBA, UFC Live Streams Free",
     "meta_title": "StreamEast - Official Free Sports Streaming",
-    "meta_desc": "Watch NFL, NBA, UFC, and Soccer streams live in HD. Free sports streaming with no sign-up required.",
-    "live_status_text": "Live and Working"
+    "meta_desc": "Watch NFL, NBA, UFC, and Soccer streams live in HD. Free sports streaming with no sign-up required."
   },
   "theme": {
-    "bg_body": "#0f172a",
-    "bg_card": "#1e293b",
-    "bg_header": "#0f172a",
-    "text_main": "#f8fafc",
     "color_accent": "#3b82f6",
+    "brand_dark": "#8a0000",
     "color_live": "#ef4444",
-    "border_radius": "6px"
+    "color_gold": "#ffd700"
   },
   "api_keys": {
     "streamed_url": "https://streamed.pk/api/matches/all",
