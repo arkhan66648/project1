@@ -1,149 +1,130 @@
 // ==========================================
-// CONFIGURATION: UPDATE THESE!
+// CONFIGURATION
 // ==========================================
-const REPO_OWNER = 'arkhan66648'; 
-const REPO_NAME = 'project1'; 
+const REPO_OWNER = 'arkhan66648'; // UPDATE THIS
+const REPO_NAME = 'project1';       // UPDATE THIS
 const FILE_PATH = 'data/config.json';
 const BRANCH = 'main'; 
 
-// State
+// DEFAULT THEME (For Reset Button)
+const DEFAULT_THEME = {
+    brand_primary: "#D00000",
+    brand_dark: "#8a0000",
+    accent_gold: "#FFD700",
+    bg_body: "#050505",
+    font_family: "system-ui"
+};
+
 let currentSha = null;
 let configData = {};
 
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Init TinyMCE
     tinymce.init({
         selector: '#tinymce-editor',
         height: 500,
-        plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
         skin: "oxide-dark",
-        content_css: "dark"
+        content_css: "dark",
+        plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline | link image media table | align'
     });
 
-    // 2. Check Auth
     const token = localStorage.getItem('gh_token');
     if (!token) document.getElementById('authModal').style.display = 'flex';
     else loadConfig();
+
+    // Font Preview Listener
+    document.getElementById('fontFamily').addEventListener('change', (e) => {
+        document.getElementById('fontPreview').style.fontFamily = e.target.value;
+    });
 });
 
 // ==========================================
-// GITHUB API
+// DATA LOADING
 // ==========================================
 async function loadConfig() {
     const token = localStorage.getItem('gh_token');
-    const msg = document.getElementById('statusMsg');
-    msg.textContent = "⏳ Loading...";
-
     try {
         const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?ref=${BRANCH}`, {
-            headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+            headers: { 'Authorization': `token ${token}` }
         });
-
-        if (!res.ok) throw new Error("Load failed");
-        
         const data = await res.json();
         currentSha = data.sha;
         configData = JSON.parse(atob(data.content));
-
         populateUI(configData);
-        msg.textContent = "✅ Ready";
-
-    } catch (err) {
-        console.error(err);
-        msg.textContent = "❌ Error";
-        if(err.message.includes('404')) alert("Config file not found in repo.");
-    }
+    } catch (err) { console.error(err); alert("Failed to load config."); }
 }
 
-async function saveConfig() {
-    const token = localStorage.getItem('gh_token');
-    const btn = document.getElementById('saveBtn');
-    const msg = document.getElementById('statusMsg');
-    
-    btn.disabled = true;
-    msg.textContent = "⏳ Saving...";
-
-    updateDataFromUI();
-
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(configData, null, 2))));
-
-    try {
-        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `token ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                message: "Admin: Config Update",
-                content: content,
-                sha: currentSha,
-                branch: BRANCH
-            })
-        });
-
-        if (!res.ok) throw new Error("Save failed");
-        
-        const data = await res.json();
-        currentSha = data.content.sha;
-        msg.textContent = "✅ Saved!";
-        alert("Settings saved successfully.");
-
-    } catch (err) {
-        console.error(err);
-        msg.textContent = "❌ Save Failed";
-        alert("Error saving to GitHub. Check console.");
-    } finally {
-        btn.disabled = false;
-    }
-}
-
-// ==========================================
-// UI HANDLING
-// ==========================================
 function populateUI(data) {
     const s = data.site_settings || {};
     const t = data.theme || {};
+    const soc = data.social_stats || {};
     const api = data.api_keys || {};
 
-    // Settings
-    setVal('siteName', s.site_name);
+    // General
+    setVal('titleP1', s.title_part_1);
+    setVal('titleP2', s.title_part_2);
     setVal('siteDomain', s.domain);
     setVal('logoUrl', s.logo_url);
     setVal('metaTitle', s.meta_title);
     setVal('metaDesc', s.meta_desc);
     setVal('apiStreamed', api.streamed_url);
     setVal('apiTopembed', api.topembed_url);
+    setVal('footerKeywords', (s.footer_keywords || []).join(', '));
 
-    // Theme Mappings
-    setColor('themeAccent', 'txtAccent', t.color_accent || '#D00000');
-    setColor('themeDark', 'txtDark', t.brand_dark || '#8a0000');
-    setColor('themeLive', 'txtLive', t.color_live || '#00e676');
-    setColor('themeGold', 'txtGold', t.color_gold || '#FFD700');
+    // Appearance
+    setColor('colPrimary', 'txtPrimary', t.brand_primary || DEFAULT_THEME.brand_primary);
+    setColor('colDark', 'txtDark', t.brand_dark || DEFAULT_THEME.brand_dark);
+    setColor('colGold', 'txtGold', t.accent_gold || DEFAULT_THEME.accent_gold);
+    setColor('colBg', 'txtBg', t.bg_body || DEFAULT_THEME.bg_body);
+    setVal('fontFamily', t.font_family || DEFAULT_THEME.font_family);
 
-    // Sitelinks
-    const container = document.getElementById('sitelinks-container');
-    container.innerHTML = '';
-    (data.site_links || []).forEach(link => addSitelinkUI(link));
-    
-    updatePageSelector();
+    // Socials
+    setVal('socTelegram', soc.telegram);
+    setVal('socTwitter', soc.twitter);
+    setVal('socDiscord', soc.discord);
+    setVal('socReddit', soc.reddit);
+
+    // Lists (Hero & Header)
+    const hContainer = document.getElementById('hero-container');
+    hContainer.innerHTML = '';
+    (data.hero_categories || []).forEach(item => addHeroUI(item));
+
+    const mContainer = document.getElementById('header-container');
+    mContainer.innerHTML = '';
+    (data.header_menu || []).forEach(item => addHeaderUI(item));
 }
 
-function updateDataFromUI() {
+// ==========================================
+// SAVING
+// ==========================================
+async function saveConfig() {
+    const btn = document.getElementById('saveBtn');
+    btn.textContent = "Saving..."; btn.disabled = true;
+
+    // Construct Data Object
     configData.site_settings = {
-        site_name: getVal('siteName'),
+        title_part_1: getVal('titleP1'),
+        title_part_2: getVal('titleP2'),
         domain: getVal('siteDomain'),
         logo_url: getVal('logoUrl'),
         meta_title: getVal('metaTitle'),
-        meta_desc: getVal('metaDesc')
+        meta_desc: getVal('metaDesc'),
+        footer_keywords: getVal('footerKeywords').split(',').map(s => s.trim())
     };
 
     configData.theme = {
-        color_accent: getVal('themeAccent'),
-        brand_dark: getVal('themeDark'),
-        color_live: getVal('themeLive'),
-        color_gold: getVal('themeGold')
+        brand_primary: getVal('colPrimary'),
+        brand_dark: getVal('colDark'),
+        accent_gold: getVal('colGold'),
+        bg_body: getVal('colBg'),
+        font_family: getVal('fontFamily')
+    };
+
+    configData.social_stats = {
+        telegram: getVal('socTelegram'),
+        twitter: getVal('socTwitter'),
+        discord: getVal('socDiscord'),
+        reddit: getVal('socReddit')
     };
 
     configData.api_keys = {
@@ -151,95 +132,90 @@ function updateDataFromUI() {
         topembed_url: getVal('apiTopembed')
     };
 
-    // Sitelinks
-    const links = [];
-    document.querySelectorAll('.sitelink-item').forEach(item => {
-        links.push({
-            id: parseInt(item.dataset.id),
-            title: item.querySelector('.lnk-title').value,
-            slug: item.querySelector('.lnk-slug').value,
-            priority: parseInt(item.querySelector('.lnk-priority').value),
-            meta_title: item.querySelector('.lnk-meta-title').value,
-            meta_desc: item.querySelector('.lnk-meta-desc').value
+    // Arrays
+    configData.hero_categories = [];
+    document.querySelectorAll('.hero-item').forEach(el => {
+        configData.hero_categories.push({
+            title: el.querySelector('.h-title').value,
+            folder: el.querySelector('.h-folder').value
         });
     });
-    configData.site_links = links;
-}
 
-// ==========================================
-// SITELINKS MANAGER
-// ==========================================
-function addSitelinkUI(data = null) {
-    const id = data ? data.id : Date.now();
-    const link = data || { title: "", slug: "", priority: 1, meta_title: "", meta_desc: "" };
+    configData.header_menu = [];
+    document.querySelectorAll('.menu-item').forEach(el => {
+        configData.header_menu.push({
+            title: el.querySelector('.m-title').value,
+            url: el.querySelector('.m-url').value
+        });
+    });
+
+    // Github Put Request
+    const token = localStorage.getItem('gh_token');
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(configData, null, 2))));
     
-    const html = `
-    <div class="sitelink-item" data-id="${id}" id="lnk-${id}">
-        <button class="btn-delete" onclick="removeLink('${id}')">🗑</button>
-        <div class="sitelink-header">
-            <div style="flex:2"><label>Title</label><input type="text" class="lnk-title" value="${link.title}"></div>
-            <div style="flex:2"><label>Slug (e.g. nfl)</label><input type="text" class="lnk-slug" value="${link.slug}"></div>
-            <div style="flex:1"><label>Priority</label><input type="number" class="lnk-priority" value="${link.priority}"></div>
-        </div>
-        <div class="sitelink-header">
-            <div style="flex:1"><label>Meta Title</label><input type="text" class="lnk-meta-title" value="${link.meta_title}"></div>
-            <div style="flex:1"><label>Meta Desc</label><input type="text" class="lnk-meta-desc" value="${link.meta_desc}"></div>
-        </div>
-    </div>`;
-    document.getElementById('sitelinks-container').insertAdjacentHTML('beforeend', html);
-    updatePageSelector();
+    try {
+        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+            method: 'PUT',
+            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: "Admin Update", content: content, sha: currentSha, branch: BRANCH })
+        });
+        const data = await res.json();
+        currentSha = data.content.sha;
+        alert("Saved! Site will update in ~2 mins.");
+    } catch (e) { alert("Error saving."); }
+    btn.textContent = "💾 Save Changes"; btn.disabled = false;
 }
 
-function removeLink(id) {
-    if(confirm("Delete page?")) {
-        document.getElementById(`lnk-${id}`).remove();
-        updatePageSelector();
+// ==========================================
+// UI MANAGERS
+// ==========================================
+function addHeroUI(data = {title:'', folder:''}) {
+    const div = document.createElement('div');
+    div.className = 'hero-item sitelink-item';
+    div.innerHTML = `
+        <div style="display:flex; gap:10px;">
+            <input type="text" class="h-title" placeholder="Name (e.g. 🏀 NBA)" value="${data.title}">
+            <input type="text" class="h-folder" placeholder="Folder (e.g. nba)" value="${data.folder}">
+            <button class="btn-delete" onclick="this.parentElement.parentElement.remove()">✕</button>
+        </div>`;
+    document.getElementById('hero-container').appendChild(div);
+}
+
+function addHeaderUI(data = {title:'', url:''}) {
+    const div = document.createElement('div');
+    div.className = 'menu-item sitelink-item';
+    div.innerHTML = `
+        <div style="display:flex; gap:10px;">
+            <input type="text" class="m-title" placeholder="Link Name" value="${data.title}">
+            <input type="text" class="m-url" placeholder="URL (#id or https://)" value="${data.url}">
+            <button class="btn-delete" onclick="this.parentElement.parentElement.remove()">✕</button>
+        </div>`;
+    document.getElementById('header-container').appendChild(div);
+}
+
+function resetTheme() {
+    if(confirm("Reset all colors to default?")) {
+        setColor('colPrimary', 'txtPrimary', DEFAULT_THEME.brand_primary);
+        setColor('colDark', 'txtDark', DEFAULT_THEME.brand_dark);
+        setColor('colGold', 'txtGold', DEFAULT_THEME.accent_gold);
+        setColor('colBg', 'txtBg', DEFAULT_THEME.bg_body);
+        setVal('fontFamily', DEFAULT_THEME.font_family);
     }
 }
 
-// ==========================================
-// HELPERS
-// ==========================================
-function setVal(id, val) { if(document.getElementById(id)) document.getElementById(id).value = val || ""; }
-function getVal(id) { return document.getElementById(id).value; }
-
-function setColor(colorId, textId, val) {
-    setVal(colorId, val);
-    setVal(textId, val);
-    // Sync listener attached in HTML inline for brevity, but better here:
-    document.getElementById(colorId).addEventListener('input', e => document.getElementById(textId).value = e.target.value);
-    document.getElementById(textId).addEventListener('input', e => document.getElementById(colorId).value = e.target.value);
-}
-
-function syncColor(input, targetId) { document.getElementById(targetId).value = input.value; }
-
+// Helpers
 function switchTab(id) {
     document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
     document.getElementById(`tab-${id}`).classList.add('active');
     event.target.classList.add('active');
 }
-
-function updatePageSelector() {
-    const sel = document.getElementById('pageSelector');
-    sel.innerHTML = '<option value="home">Homepage</option>';
-    document.querySelectorAll('.sitelink-item').forEach(i => {
-        const title = i.querySelector('.lnk-title').value;
-        if(title) {
-            const opt = document.createElement('option');
-            opt.innerText = title;
-            sel.appendChild(opt);
-        }
-    });
+function setVal(id, v) { if(document.getElementById(id)) document.getElementById(id).value = v || ""; }
+function getVal(id) { return document.getElementById(id).value; }
+function setColor(pid, tid, v) {
+    setVal(pid, v); setVal(tid, v);
+    document.getElementById(pid).oninput = e => document.getElementById(tid).value = e.target.value;
+    document.getElementById(tid).oninput = e => document.getElementById(pid).value = e.target.value;
 }
-
-function saveToken() {
-    const t = document.getElementById('ghToken').value;
-    if(t) {
-        localStorage.setItem('gh_token', t);
-        document.getElementById('authModal').style.display = 'none';
-        loadConfig();
-    }
-}
-
-document.getElementById('saveBtn').addEventListener('click', saveConfig);
+function saveToken() { localStorage.setItem('gh_token', document.getElementById('ghToken').value); loadConfig(); document.getElementById('authModal').style.display='none'; }
+document.getElementById('saveBtn').onclick = saveConfig;
