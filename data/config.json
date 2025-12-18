@@ -2,10 +2,11 @@
   "site_settings": {
     "title_part_1": "Stream",
     "title_part_2": "East",
-    "domain": "streameast.app",
+    "domain": "crackstreams.help",
     "logo_url": "assets/logo.png",
-    "meta_title": "StreamEast - #1 Free Live NBA, NFL, UFC & MLB Streams (2025)",
-    "meta_desc": "Official StreamEast. Watch NBA, NFL, UFC, and MLB live streams free in HD. The #1 alternative to MethStreams with System Status: Online. No Sign-up.",
+    "favicon": "",
+    "ga_id": "",
+    "custom_meta": "",
     "footer_keywords": [
       "crackstreams",
       "methstreams",
@@ -16,8 +17,12 @@
     "brand_primary": "#d00000",
     "brand_dark": "#8a0000",
     "accent_gold": "#ffd700",
+    "status_green": "#00e676",
     "bg_body": "#050505",
-    "font_family": "system-ui"
+    "font_family": "system-ui",
+    "title_color_1": "#ffffff",
+    "title_color_2": "#d00000",
+    "title_italic": false
   },
   "api_keys": {
     "streamed_url": "https://streamed.pk/api/matches/all",
@@ -41,11 +46,11 @@
   },
   "hero_categories": [
     {
-      "title": "ð NBA",
+      "title": "Ã°ÂÂÂ NBA",
       "folder": "nba"
     },
     {
-      "title": "ð NFL",
+      "title": "Ã°ÂÂÂ NFL",
       "folder": "nfl"
     }
   ],
@@ -53,6 +58,14 @@
     {
       "title": "FAQs",
       "url": "https://crackstreams.help/#faqs"
+    }
+  ],
+  "pages": [
+    {
+      "slug": "home",
+      "type": "schedule",
+      "title": "Home",
+      "content": ""
     }
   ]
 }
