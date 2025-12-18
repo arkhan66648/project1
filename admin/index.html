@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StreamCMS Admin</title>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- TinyMCE (Content Editor) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -16,8 +14,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo-area">
-                <h2>⚡ RankMachine</h2>
-                <span class="badge">v2.0</span>
+                <h2>⚡ StreamCMS</h2>
             </div>
             <nav>
                 <button class="nav-btn active" onclick="switchTab('settings')">⚙️ Settings</button>
@@ -26,108 +23,53 @@
                 <button class="nav-btn" onclick="switchTab('article')">📝 SEO Content</button>
             </nav>
             <div class="sidebar-footer">
-                <button id="saveBtn" class="save-btn">💾 Save All Changes</button>
+                <button id="saveBtn" class="save-btn">💾 Save All</button>
                 <p id="statusMsg" class="status-ready">Ready</p>
             </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="content-area">
 
-            <!-- TAB 1: GENERAL SETTINGS -->
+            <!-- TAB 1: SETTINGS -->
             <section id="tab-settings" class="tab-content active">
-                <div class="header-box">
-                    <h1>Global Settings</h1>
-                    <p>Basic site configuration and API sources.</p>
-                </div>
-
+                <div class="header-box"><h1>Global Settings</h1></div>
                 <div class="grid-2">
                     <div class="card">
                         <h3>Identity</h3>
-                        <label>Site Name</label>
-                        <input type="text" id="siteName">
-                        <label>Domain</label>
-                        <input type="text" id="siteDomain">
-                        <label>Favicon (PNG Recommended)</label>
-                        <input type="text" id="faviconUrl">
-                        <label>Logo URL</label>
-                        <input type="text" id="logoUrl">
+                        <label>Site Name</label><input type="text" id="siteName">
+                        <label>Domain</label><input type="text" id="siteDomain">
+                        <label>Logo URL</label><input type="text" id="logoUrl">
                     </div>
                     <div class="card">
-                        <h3>Homepage SEO</h3>
-                        <label>H1 Title</label>
-                        <input type="text" id="homeH1">
-                        <label>Meta Title</label>
-                        <input type="text" id="metaTitle">
-                        <label>Meta Description</label>
-                        <textarea id="metaDesc" rows="3"></textarea>
-                        <label>Live Status Text</label>
-                        <input type="text" id="liveStatus">
+                        <h3>SEO</h3>
+                        <label>Meta Title</label><input type="text" id="metaTitle">
+                        <label>Meta Desc</label><textarea id="metaDesc"></textarea>
                     </div>
                 </div>
-
                 <div class="card full-width">
-                    <h3>API Configuration</h3>
-                    <label>Streamed.PK API URL</label>
-                    <input type="text" id="apiStreamed">
-                    <label>TopEmbed.PW API URL</label>
-                    <input type="text" id="apiTopembed">
+                    <h3>APIs</h3>
+                    <label>Streamed.PK URL</label><input type="text" id="apiStreamed">
+                    <label>TopEmbed URL</label><input type="text" id="apiTopembed">
                 </div>
             </section>
 
-            <!-- TAB 2: THEME DESIGNER -->
+            <!-- TAB 2: THEME (This was missing) -->
             <section id="tab-theme" class="tab-content">
-                <div class="header-box">
-                    <h1>Theme Designer</h1>
-                    <p>Customize colors to create unique looking sites.</p>
-                </div>
-
+                <div class="header-box"><h1>Theme Designer</h1></div>
                 <div class="grid-2">
                     <div class="card">
-                        <h3>Background Colors</h3>
+                        <h3>Brand Colors</h3>
+                        <label>Primary Brand (Red)</label>
+                        <div class="color-group"><input type="color" id="themeAccent"><input type="text" id="txtAccent"></div>
                         
-                        <label>Body Background</label>
-                        <div class="color-group">
-                            <input type="color" id="themeBgBody">
-                            <input type="text" id="txtBgBody" oninput="syncColor(this, 'themeBgBody')">
-                        </div>
+                        <label>Darker Brand (Hover)</label>
+                        <div class="color-group"><input type="color" id="themeDark"><input type="text" id="txtDark"></div>
 
-                        <label>Card/Table Background</label>
-                        <div class="color-group">
-                            <input type="color" id="themeBgCard">
-                            <input type="text" id="txtBgCard" oninput="syncColor(this, 'themeBgCard')">
-                        </div>
+                        <label>Status Green</label>
+                        <div class="color-group"><input type="color" id="themeLive"><input type="text" id="txtLive"></div>
 
-                        <label>Sticky Header Background</label>
-                        <div class="color-group">
-                            <input type="color" id="themeBgHeader">
-                            <input type="text" id="txtBgHeader" oninput="syncColor(this, 'themeBgHeader')">
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h3>Text & Accents</h3>
-                        
-                        <label>Main Text Color</label>
-                        <div class="color-group">
-                            <input type="color" id="themeTextMain">
-                            <input type="text" id="txtTextMain" oninput="syncColor(this, 'themeTextMain')">
-                        </div>
-
-                        <label>Accent Color (Buttons/Links)</label>
-                        <div class="color-group">
-                            <input type="color" id="themeAccent">
-                            <input type="text" id="txtAccent" oninput="syncColor(this, 'themeAccent')">
-                        </div>
-
-                        <label>Live Indicator (Red/Green)</label>
-                        <div class="color-group">
-                            <input type="color" id="themeLive">
-                            <input type="text" id="txtLive" oninput="syncColor(this, 'themeLive')">
-                        </div>
-
-                        <label>Border Radius (px)</label>
-                        <input type="text" id="themeRadius" placeholder="6px">
+                        <label>Accent Gold</label>
+                        <div class="color-group"><input type="color" id="themeGold"><input type="text" id="txtGold"></div>
                     </div>
                 </div>
             </section>
@@ -143,14 +85,8 @@
 
             <!-- TAB 4: ARTICLE -->
             <section id="tab-article" class="tab-content">
-                <div class="header-box">
-                    <h1>SEO Article Editor</h1>
-                    <div class="editor-selector">
-                        <select id="pageSelector">
-                            <option value="home">Homepage</option>
-                        </select>
-                    </div>
-                </div>
+                <div class="header-box"><h1>SEO Article</h1></div>
+                <select id="pageSelector" style="margin-bottom:10px;"><option value="home">Homepage</option></select>
                 <textarea id="tinymce-editor"></textarea>
             </section>
 
@@ -160,9 +96,8 @@
     <!-- Auth Modal -->
     <div id="authModal" class="modal">
         <div class="modal-content">
-            <h3>🔐 Admin Access</h3>
-            <p>Enter GitHub Personal Access Token</p>
-            <input type="password" id="ghToken" placeholder="ghp_xxxxxxxx">
+            <h3>Login</h3>
+            <input type="password" id="ghToken" placeholder="GitHub Token">
             <button onclick="saveToken()">Connect</button>
         </div>
     </div>
