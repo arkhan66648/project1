@@ -301,7 +301,9 @@ def build_html(template, config, page_conf):
     hero_pills = ""
     for item in config.get('hero_categories', []):
         # Active state logic
-        is_active = "active" if page_conf['title'] == item['title'] else ""
+        # Use .get() to avoid crash, fallback to h1 if title is missing
+page_title = page_conf.get('title', page_conf.get('h1', ''))
+is_active = "active" if page_title == item['title'] else ""
         path = f"/{item['folder']}/"
         hero_pills += f'<a href="{path}" class="cat-pill {is_active}">{item["title"]}</a>'
 
@@ -406,7 +408,7 @@ def generate_site(config):
     pages = config.get('pages', [])
     # Fallback if no pages defined
     if not pages: 
-        pages = [{"slug": "home", "type": "schedule", "h1": "Live Sports", "hero_text": "Welcome", "meta_title": "Home", "content": ""}]
+        pages = [{"title": "Home", "slug": "home", "type": "schedule", "h1": "Live Sports", "hero_text": "Welcome", "meta_title": "Home", "content": ""}]
 
     for p in pages:
         # Prepare Data
