@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamCMS Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>StreamEast Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -17,76 +17,129 @@
                 <h2>⚡ StreamCMS</h2>
             </div>
             <nav>
-                <button class="nav-btn active" onclick="switchTab('settings')">⚙️ Settings</button>
-                <button class="nav-btn" onclick="switchTab('theme')">🎨 Theme & Design</button>
-                <button class="nav-btn" onclick="switchTab('sitelinks')">🔗 Sitelinks</button>
-                <button class="nav-btn" onclick="switchTab('article')">📝 SEO Content</button>
+                <button class="nav-btn active" onclick="switchTab('general')">⚙️ General & SEO</button>
+                <button class="nav-btn" onclick="switchTab('appearance')">🎨 Appearance</button>
+                <button class="nav-btn" onclick="switchTab('content')">🔗 Menu & Categories</button>
+                <button class="nav-btn" onclick="switchTab('social')">📊 Social Stats</button>
+                <button class="nav-btn" onclick="switchTab('article')">📝 Homepage Article</button>
             </nav>
             <div class="sidebar-footer">
-                <button id="saveBtn" class="save-btn">💾 Save All</button>
-                <p id="statusMsg" class="status-ready">Ready</p>
+                <button id="saveBtn" class="save-btn">💾 Save Changes</button>
+                <p id="statusMsg" class="status-ready">System Ready</p>
             </div>
         </aside>
 
         <main class="content-area">
 
-            <!-- TAB 1: SETTINGS -->
-            <section id="tab-settings" class="tab-content active">
-                <div class="header-box"><h1>Global Settings</h1></div>
+            <!-- TAB 1: GENERAL -->
+            <section id="tab-general" class="tab-content active">
+                <div class="header-box"><h1>General Settings</h1></div>
                 <div class="grid-2">
                     <div class="card">
-                        <h3>Identity</h3>
-                        <label>Site Name</label><input type="text" id="siteName">
+                        <h3>Site Identity (Double Color)</h3>
+                        <div class="grid-2">
+                            <div><label>Title Part 1 (White)</label><input type="text" id="titleP1" placeholder="Stream"></div>
+                            <div><label>Title Part 2 (Color)</label><input type="text" id="titleP2" placeholder="East"></div>
+                        </div>
                         <label>Domain</label><input type="text" id="siteDomain">
-                        <label>Logo URL</label><input type="text" id="logoUrl">
+                        <label>Logo URL (HD JPG)</label><input type="text" id="logoUrl">
                     </div>
                     <div class="card">
-                        <h3>SEO</h3>
+                        <h3>SEO Metadata</h3>
                         <label>Meta Title</label><input type="text" id="metaTitle">
-                        <label>Meta Desc</label><textarea id="metaDesc"></textarea>
+                        <label>Meta Description</label><textarea id="metaDesc" style="height:100px"></textarea>
                     </div>
                 </div>
                 <div class="card full-width">
-                    <h3>APIs</h3>
-                    <label>Streamed.PK URL</label><input type="text" id="apiStreamed">
-                    <label>TopEmbed URL</label><input type="text" id="apiTopembed">
+                    <h3>API Sources</h3>
+                    <label>Streamed.PK API</label><input type="text" id="apiStreamed">
+                    <label>TopEmbed API</label><input type="text" id="apiTopembed">
+                </div>
+                <div class="card full-width">
+                    <h3>Footer Search Keywords (Comma separated)</h3>
+                    <input type="text" id="footerKeywords" placeholder="methstreams, crackstreams, buffstreams">
                 </div>
             </section>
 
-            <!-- TAB 2: THEME (This was missing) -->
-            <section id="tab-theme" class="tab-content">
-                <div class="header-box"><h1>Theme Designer</h1></div>
+            <!-- TAB 2: APPEARANCE -->
+            <section id="tab-appearance" class="tab-content">
+                <div class="header-box">
+                    <h1>Appearance</h1>
+                    <button class="btn-danger" onclick="resetTheme()">↺ Reset to Defaults</button>
+                </div>
+                
                 <div class="grid-2">
                     <div class="card">
                         <h3>Brand Colors</h3>
-                        <label>Primary Brand (Red)</label>
-                        <div class="color-group"><input type="color" id="themeAccent"><input type="text" id="txtAccent"></div>
+                        <label>Brand Primary (Red)</label>
+                        <div class="color-group"><input type="color" id="colPrimary"><input type="text" id="txtPrimary"></div>
                         
-                        <label>Darker Brand (Hover)</label>
-                        <div class="color-group"><input type="color" id="themeDark"><input type="text" id="txtDark"></div>
-
-                        <label>Status Green</label>
-                        <div class="color-group"><input type="color" id="themeLive"><input type="text" id="txtLive"></div>
+                        <label>Brand Dark (Hover)</label>
+                        <div class="color-group"><input type="color" id="colDark"><input type="text" id="txtDark"></div>
 
                         <label>Accent Gold</label>
-                        <div class="color-group"><input type="color" id="themeGold"><input type="text" id="txtGold"></div>
+                        <div class="color-group"><input type="color" id="colGold"><input type="text" id="txtGold"></div>
+                        
+                        <label>Background Body</label>
+                        <div class="color-group"><input type="color" id="colBg"><input type="text" id="txtBg"></div>
+                    </div>
+                    <div class="card">
+                        <h3>Typography</h3>
+                        <label>Font Family</label>
+                        <select id="fontFamily">
+                            <option value="system-ui">System UI (Apple/Windows Default)</option>
+                            <option value="'Inter', sans-serif">Inter (Modern)</option>
+                            <option value="'Roboto', sans-serif">Roboto</option>
+                            <option value="monospace">Monospace (Hacker)</option>
+                        </select>
+                        <div style="margin-top:15px; padding:10px; background:#111; border-radius:4px;">
+                            <span id="fontPreview" style="color:white; font-size:1.2rem;">Preview Text 123</span>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 3: SITELINKS -->
-            <section id="tab-sitelinks" class="tab-content">
-                <div class="header-box">
-                    <h1>Sitelinks</h1>
-                    <button class="btn-primary" onclick="addSitelinkUI()">+ Add Page</button>
+            <!-- TAB 3: CONTENT (MENUS) -->
+            <section id="tab-content" class="tab-content">
+                <div class="header-box"><h1>Menus & Links</h1></div>
+                
+                <div class="grid-2">
+                    <!-- HERO CATEGORIES -->
+                    <div class="card">
+                        <h3>Hero Categories (Folder Generator)</h3>
+                        <p style="font-size:0.8rem; color:#666;">These appear as Pills below the Hero Title.</p>
+                        <div id="hero-container"></div>
+                        <button class="btn-primary" onclick="addHeroUI()">+ Add Category</button>
+                    </div>
+
+                    <!-- HEADER MENU -->
+                    <div class="card">
+                        <h3>Header Menu (Right Side)</h3>
+                        <p style="font-size:0.8rem; color:#666;">Static links like FAQs, Features.</p>
+                        <div id="header-container"></div>
+                        <button class="btn-primary" onclick="addHeaderUI()">+ Add Link</button>
+                    </div>
                 </div>
-                <div id="sitelinks-container"></div>
             </section>
 
-            <!-- TAB 4: ARTICLE -->
+            <!-- TAB 4: SOCIALS -->
+            <section id="tab-social" class="tab-content">
+                <div class="header-box"><h1>Social Counters</h1><p>Set the numbers displayed on the sidebar.</p></div>
+                <div class="grid-2">
+                    <div class="card">
+                        <label>Telegram Count</label><input type="text" id="socTelegram" placeholder="12k">
+                        <label>Twitter/X Count</label><input type="text" id="socTwitter" placeholder="8k">
+                    </div>
+                    <div class="card">
+                        <label>Discord Count</label><input type="text" id="socDiscord" placeholder="5k">
+                        <label>Reddit Count</label><input type="text" id="socReddit" placeholder="3k">
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: ARTICLE -->
             <section id="tab-article" class="tab-content">
-                <div class="header-box"><h1>SEO Article</h1></div>
-                <select id="pageSelector" style="margin-bottom:10px;"><option value="home">Homepage</option></select>
+                <div class="header-box"><h1>Homepage Article</h1></div>
                 <textarea id="tinymce-editor"></textarea>
             </section>
 
@@ -96,9 +149,9 @@
     <!-- Auth Modal -->
     <div id="authModal" class="modal">
         <div class="modal-content">
-            <h3>Login</h3>
-            <input type="password" id="ghToken" placeholder="GitHub Token">
-            <button onclick="saveToken()">Connect</button>
+            <h3>Admin Access</h3>
+            <input type="password" id="ghToken" placeholder="Enter GitHub Token">
+            <button onclick="saveToken()">Login</button>
         </div>
     </div>
 
