@@ -1,13 +1,15 @@
 {
   "site_settings": {
-    "title_part_1": "",
-    "title_part_2": "",
+    "title_part_1": "Stream",
+    "title_part_2": "East",
     "domain": "streameast.app",
     "logo_url": "assets/logo.png",
-    "meta_title": "StreamEast - Official Free Sports Streaming",
-    "meta_desc": "Watch NFL, NBA, UFC, and Soccer streams live in HD. Free sports streaming with no sign-up required.",
+    "meta_title": "StreamEast - #1 Free Live NBA, NFL, UFC & MLB Streams (2025)",
+    "meta_desc": "Official StreamEast. Watch NBA, NFL, UFC, and MLB live streams free in HD. The #1 alternative to MethStreams with System Status: Online. No Sign-up.",
     "footer_keywords": [
-      ""
+      "crackstreams",
+      "methstreams",
+      "sportsurge"
     ]
   },
   "theme": {
