@@ -301,9 +301,10 @@ def build_html(template, config, page_conf):
     hero_pills = ""
     for item in config.get('hero_categories', []):
         # Active state logic
-        # Use .get() to avoid crash, fallback to h1 if title is missing
+        # Safe on BOTH sides
 page_title = page_conf.get('title', page_conf.get('h1', ''))
-is_active = "active" if page_title == item['title'] else ""
+item_title = item.get('title', '') 
+is_active = "active" if page_title == item_title else ""
         path = f"/{item['folder']}/"
         hero_pills += f'<a href="{path}" class="cat-pill {is_active}">{item["title"]}</a>'
 
@@ -319,7 +320,9 @@ is_active = "active" if page_title == item['title'] else ""
     matches_style = 'block' if page_conf['type'] in ['home', 'schedule'] else 'none'
     
     # If specific category page (e.g. NBA), JS needs to know
-    js_category = page_conf['title'] if page_conf['type'] == 'schedule' and page_conf['slug'] != 'home' else 'home'
+    # Use .get() here too
+cat_title = page_conf.get('title', 'home')
+js_config = f'window.PAGE_CATEGORY = "{cat_title}"; window.IS_SUBPAGE = {str(page_conf.get("slug") != "home").lower()};'
     
     # --- 3. INJECT VARIABLES ---
     html = template
