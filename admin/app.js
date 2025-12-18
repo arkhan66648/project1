@@ -1,8 +1,8 @@
 // ==========================================
 // CONFIG: UPDATE THESE!
 // ==========================================
-const REPO_OWNER = 'YOUR_GITHUB_USERNAME'; // UPDATE THIS
-const REPO_NAME = 'YOUR_REPO_NAME';       // UPDATE THIS
+const REPO_OWNER = 'arkhan66648'; // UPDATE THIS
+const REPO_NAME = 'project1';       // UPDATE THIS
 const FILE_PATH = 'data/config.json';
 const BRANCH = 'main'; 
 
