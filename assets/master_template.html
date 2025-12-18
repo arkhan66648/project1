@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>{{META_TITLE}}</title>
+    <meta name="description" content="{{META_DESC}}">
+    <link rel="canonical" href="https://{{DOMAIN}}/">
+    <meta name="theme-color" content="{{BRAND_PRIMARY}}">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="{{META_TITLE}}">
+    <meta property="og:image" content="{{LOGO_URL}}">
+    
+    <!-- 1. STATIC SCHEMA (WebSite, Org) - Injected by Python -->
+    <script type="application/ld+json">
+        {{STATIC_SCHEMA}}
+    </script>
+    
+    <!-- 2. DYNAMIC SCHEMA (Live Badge) - Injected by JS -->
+    <script id="dynamic-schema" type="application/ld+json"></script>
+
+    <style>
+        /* --- DYNAMIC THEME VARIABLES --- */
+        :root {
+            --brand-primary: {{BRAND_PRIMARY}};
+            --brand-dark: {{BRAND_DARK}};
+            --status-green: {{STATUS}};
+            --accent-gold: {{ACCENT}};
+            --bg-body: #050505;
+            --bg-glass: rgba(18, 18, 18, 0.85);
+            --border: #222;
+            --text-main: #ffffff;
+            --text-muted: #888;
+        }
+
+        /* [KEEP ALL YOUR CSS EXACTLY AS YOU DESIGNED IT] */
+        /* ... Paste your CSS here ... */
+        
+        /* Add this for the JS injection to work */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    
+    <!-- [Social Sidebars Code ...] -->
+
+    <header>
+        <div class="header-container">
+            <a href="/" class="logo-link">
+                <img src="{{LOGO_URL}}" alt="{{SITE_NAME}}" width="40" height="40" class="logo-img">
+                <div class="logo-text">{{SITE_NAME}}</div>
+            </a>
+
+            <nav class="nav-links">
+                <!-- Python injects menu here -->
+                {{NAV_LINKS}} 
+            </nav>
+            <button class="hamburger" onclick="toggleMenu()">☰</button>
+        </div>
+    </header>
+
+    <div class="mobile-menu" id="mobileMenu">
+        {{NAV_LINKS}}
+    </div>
+
+    <div class="hero">
+        <div class="sys-status"><div class="dot"></div> System Status: Online</div>
+        <h1>{{SITE_NAME}} - #1 Free Live Sports</h1>
+        
+        <p class="entity-intro">
+            Welcome to the official <strong>{{SITE_NAME}}</strong>. The most reliable platform for free NBA, NFL, UFC, and MLB streams in HD.
+        </p>
+
+        <div class="cat-scroll">
+            <a href="#nba" class="cat-pill">🏀 NBA</a>
+            <a href="#nfl" class="cat-pill">🏈 NFL</a>
+            <a href="#ufc" class="cat-pill">🥊 UFC</a>
+            <a href="#mlb" class="cat-pill">⚾ MLB</a>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <!-- Search Warning Box -->
+        <div id="searchMsgBox" style="display:none; background:#1a1a1a; border:1px solid var(--brand-primary); padding:15px; border-radius:8px; margin-bottom:20px; text-align:center;">
+             <h3 style="margin:0 0 5px 0; color:white;">Looking for <span id="searchTermDisplay" style="color:var(--brand-primary)"></span>?</h3>
+             <p style="margin:0; color:#aaa; font-size:0.85rem;">{{SITE_NAME}} is the #1 authorized alternative.</p>
+        </div>
+
+        <!-- ================= LIVE MATCHES (Injected by JS) ================= -->
+        <div class="sec-head">
+            <div class="sec-title"><div class="live-dot"></div> Important & Live</div>
+        </div>
+
+        <!-- This is where JS will inject rows -->
+        <div class="match-list" id="live-matches-container">
+            <div style="padding:20px; text-align:center; color:#666;">Loading live streams...</div>
+        </div>
+
+        <div class="show-more-container">
+            <button class="btn-show-more" id="btnShowMore" style="display:none">Show More ▼</button>
+        </div>
+
+        <!-- ================= UPCOMING SECTION ================= -->
+        <div class="sec-head">
+            <div class="sec-title">📅 Upcoming Schedule</div>
+        </div>
+        <div class="match-list" id="upcoming-matches-container"></div>
+
+        <!-- ================= ARTICLE (Editable via Admin) ================= -->
+        <div class="seo-box" id="faq">
+            {{HOMEPAGE_ARTICLE}}
+        </div>
+
+        <div class="partners">
+            <div style="font-size:0.7rem; font-weight:700; color:#444; margin-bottom:10px;">POPULAR SEARCHES</div>
+            <a href="/?q=methstreams" class="p-tag">MethStreams</a>
+            <a href="/?q=crackstreams" class="p-tag">CrackStreams</a>
+        </div>
+
+    </div>
+
+    <footer>
+        &copy; 2025 {{SITE_NAME}}. All rights reserved.
+    </footer>
+
+    <!-- Video Modal -->
+    <div class="video-modal" id="vModal">
+        <div class="vm-head"><button class="vm-close" onclick="closeStream()">Close ✕</button></div>
+        <div id="vContainer" style="flex:1; background:black; display:flex; align-items:center; justify-content:center;"></div>
+    </div>
+
+    <!-- MAIN JS -->
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
