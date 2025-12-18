@@ -111,24 +111,16 @@ function populateUI(data) {
     setVal('siteName', s.site_name);
     setVal('siteDomain', s.domain);
     setVal('logoUrl', s.logo_url);
-    setVal('faviconUrl', s.favicon);
-    setVal('homeH1', s.home_h1);
     setVal('metaTitle', s.meta_title);
     setVal('metaDesc', s.meta_desc);
-    setVal('liveStatus', s.live_status_text);
-
-    // APIs
     setVal('apiStreamed', api.streamed_url);
     setVal('apiTopembed', api.topembed_url);
 
-    // Theme (Color Pickers)
-    setColor('themeBgBody', 'txtBgBody', t.bg_body);
-    setColor('themeBgCard', 'txtBgCard', t.bg_card);
-    setColor('themeBgHeader', 'txtBgHeader', t.bg_header);
-    setColor('themeTextMain', 'txtTextMain', t.text_main);
-    setColor('themeAccent', 'txtAccent', t.color_accent);
-    setColor('themeLive', 'txtLive', t.color_live);
-    setVal('themeRadius', t.border_radius);
+    // Theme Mappings
+    setColor('themeAccent', 'txtAccent', t.color_accent || '#D00000');
+    setColor('themeDark', 'txtDark', t.brand_dark || '#8a0000');
+    setColor('themeLive', 'txtLive', t.color_live || '#00e676');
+    setColor('themeGold', 'txtGold', t.color_gold || '#FFD700');
 
     // Sitelinks
     const container = document.getElementById('sitelinks-container');
@@ -143,21 +135,15 @@ function updateDataFromUI() {
         site_name: getVal('siteName'),
         domain: getVal('siteDomain'),
         logo_url: getVal('logoUrl'),
-        favicon: getVal('faviconUrl'),
-        home_h1: getVal('homeH1'),
         meta_title: getVal('metaTitle'),
-        meta_desc: getVal('metaDesc'),
-        live_status_text: getVal('liveStatus')
+        meta_desc: getVal('metaDesc')
     };
 
     configData.theme = {
-        bg_body: getVal('themeBgBody'),
-        bg_card: getVal('themeBgCard'),
-        bg_header: getVal('themeBgHeader'),
-        text_main: getVal('themeTextMain'),
         color_accent: getVal('themeAccent'),
+        brand_dark: getVal('themeDark'),
         color_live: getVal('themeLive'),
-        border_radius: getVal('themeRadius')
+        color_gold: getVal('themeGold')
     };
 
     configData.api_keys = {
