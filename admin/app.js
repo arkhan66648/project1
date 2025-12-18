@@ -1,40 +1,47 @@
 // ==========================================
-// CONFIGURATION
+// CONFIG: UPDATE THESE!
 // ==========================================
-const REPO_OWNER = 'arkhan66648'; // UPDATE THIS
-const REPO_NAME = 'project1';       // UPDATE THIS
+const REPO_OWNER = 'arkhan66648'; 
+const REPO_NAME = 'project1'; 
 const FILE_PATH = 'data/config.json';
 const BRANCH = 'main'; 
 
-// DEFAULT THEME (For Reset Button)
-const DEFAULT_THEME = {
-    brand_primary: "#D00000",
-    brand_dark: "#8a0000",
-    accent_gold: "#FFD700",
-    bg_body: "#050505",
-    font_family: "system-ui"
+// THEME PRESETS
+const THEMES = {
+    red: { primary: "#D00000", dark: "#8a0000", accent: "#FFD700", status: "#00e676", bg: "#050505", t1: "#ffffff", t2: "#D00000" },
+    blue: { primary: "#0056D2", dark: "#003c96", accent: "#00C2CB", status: "#00e676", bg: "#050505", t1: "#ffffff", t2: "#0056D2" },
+    green: { primary: "#008f39", dark: "#006428", accent: "#BBF7D0", status: "#22c55e", bg: "#050505", t1: "#ffffff", t2: "#008f39" },
+    purple: { primary: "#7C3AED", dark: "#5B21B6", accent: "#F472B6", status: "#34d399", bg: "#050505", t1: "#ffffff", t2: "#7C3AED" }
 };
 
 let currentSha = null;
 let configData = {};
+let activePageIndex = -1;
 
 document.addEventListener("DOMContentLoaded", () => {
     tinymce.init({
         selector: '#tinymce-editor',
-        height: 500,
+        height: 400,
         skin: "oxide-dark",
         content_css: "dark",
         plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline | link image media table | align'
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline | link image media table | align',
+        setup: (editor) => { editor.on('change', () => { if(activePageIndex > -1) configData.pages[activePageIndex].content = editor.getContent(); }); }
     });
 
     const token = localStorage.getItem('gh_token');
     if (!token) document.getElementById('authModal').style.display = 'flex';
     else loadConfig();
 
-    // Font Preview Listener
-    document.getElementById('fontFamily').addEventListener('change', (e) => {
-        document.getElementById('fontPreview').style.fontFamily = e.target.value;
+    // Live Font Preview
+    const updatePreview = () => {
+        const prev = document.getElementById('fontPreview');
+        prev.style.fontFamily = getVal('fontFamily');
+        prev.innerHTML = `<span style="color:${getVal('colT1')}">${getVal('titleP1') || 'Stream'}</span><span style="color:${getVal('colT2')}">${getVal('titleP2') || 'East'}</span>`;
+        if(document.getElementById('titleItalic').checked) prev.style.fontStyle = 'italic'; else prev.style.fontStyle = 'normal';
+    };
+    ['fontFamily','titleP1','titleP2','colT1','colT2','titleItalic'].forEach(id => {
+        document.getElementById(id).addEventListener('input', updatePreview);
     });
 });
 
@@ -50,6 +57,10 @@ async function loadConfig() {
         const data = await res.json();
         currentSha = data.sha;
         configData = JSON.parse(atob(data.content));
+        
+        // Ensure pages array exists
+        if(!configData.pages) configData.pages = [{slug: 'home', type:'schedule', title:'Home', content:''}];
+        
         populateUI(configData);
     } catch (err) { console.error(err); alert("Failed to load config."); }
 }
@@ -65,18 +76,25 @@ function populateUI(data) {
     setVal('titleP2', s.title_part_2);
     setVal('siteDomain', s.domain);
     setVal('logoUrl', s.logo_url);
-    setVal('metaTitle', s.meta_title);
-    setVal('metaDesc', s.meta_desc);
+    setVal('faviconUrl', s.favicon);
+    setVal('gaId', s.ga_id);
+    setVal('customMeta', s.custom_meta);
+    setVal('footerKw', (s.footer_keywords || []).join(', '));
+
     setVal('apiStreamed', api.streamed_url);
     setVal('apiTopembed', api.topembed_url);
-    setVal('footerKeywords', (s.footer_keywords || []).join(', '));
 
     // Appearance
-    setColor('colPrimary', 'txtPrimary', t.brand_primary || DEFAULT_THEME.brand_primary);
-    setColor('colDark', 'txtDark', t.brand_dark || DEFAULT_THEME.brand_dark);
-    setColor('colGold', 'txtGold', t.accent_gold || DEFAULT_THEME.accent_gold);
-    setColor('colBg', 'txtBg', t.bg_body || DEFAULT_THEME.bg_body);
-    setVal('fontFamily', t.font_family || DEFAULT_THEME.font_family);
+    setColor('colPrimary', 'txtPrimary', t.brand_primary || '#D00000');
+    setColor('colDark', 'txtDark', t.brand_dark || '#8a0000');
+    setColor('colGold', 'txtGold', t.accent_gold || '#FFD700');
+    setColor('colStatus', 'txtStatus', t.status_green || '#00e676');
+    setColor('colBg', 'txtBg', t.bg_body || '#050505');
+    setVal('fontFamily', t.font_family || 'system-ui');
+    
+    setColor('colT1', 'txtT1', t.title_color_1 || '#ffffff');
+    setColor('colT2', 'txtT2', t.title_color_2 || '#D00000');
+    document.getElementById('titleItalic').checked = t.title_italic || false;
 
     // Socials
     setVal('socTelegram', soc.telegram);
@@ -84,7 +102,7 @@ function populateUI(data) {
     setVal('socDiscord', soc.discord);
     setVal('socReddit', soc.reddit);
 
-    // Lists (Hero & Header)
+    // Menus
     const hContainer = document.getElementById('hero-container');
     hContainer.innerHTML = '';
     (data.hero_categories || []).forEach(item => addHeroUI(item));
@@ -92,34 +110,109 @@ function populateUI(data) {
     const mContainer = document.getElementById('header-container');
     mContainer.innerHTML = '';
     (data.header_menu || []).forEach(item => addHeaderUI(item));
+
+    // Pages
+    renderPageList();
 }
 
 // ==========================================
-// SAVING
+// PAGE MANAGER (Major Feature)
+// ==========================================
+function renderPageList() {
+    const list = document.getElementById('pagesList');
+    list.innerHTML = '';
+    configData.pages.forEach((page, index) => {
+        const div = document.createElement('div');
+        div.className = `page-list-item ${index === activePageIndex ? 'active' : ''}`;
+        div.innerHTML = `<strong>${page.slug}</strong> <small>(${page.type})</small>`;
+        div.onclick = () => loadPageToEditor(index);
+        list.appendChild(div);
+    });
+}
+
+function loadPageToEditor(index) {
+    activePageIndex = index;
+    const page = configData.pages[index];
+    renderPageList(); // Update active class
+    
+    document.getElementById('pageEditor').style.display = 'flex';
+    document.getElementById('editHeading').innerText = `Editing: ${page.slug}`;
+    document.getElementById('btnDeletePage').style.display = page.slug === 'home' ? 'none' : 'block';
+
+    setVal('pSlug', page.slug);
+    setVal('pType', page.type);
+    setVal('pH1', page.h1);
+    setVal('pHero', page.hero_text);
+    setVal('pMetaTitle', page.meta_title);
+    setVal('pMetaDesc', page.meta_desc);
+    
+    if(tinymce.get('tinymce-editor')) tinymce.get('tinymce-editor').setContent(page.content || '');
+}
+
+function saveCurrentPageLocal() {
+    if(activePageIndex === -1) return;
+    const page = configData.pages[activePageIndex];
+    
+    page.slug = getVal('pSlug');
+    page.type = getVal('pType');
+    page.h1 = getVal('pH1');
+    page.hero_text = getVal('pHero');
+    page.meta_title = getVal('pMetaTitle');
+    page.meta_desc = getVal('pMetaDesc');
+    page.content = tinymce.get('tinymce-editor').getContent();
+    
+    renderPageList();
+    alert("Page updated locally. Click 'Save All Changes' to publish.");
+}
+
+function createNewPage() {
+    const newPage = { slug: 'new-page', type: 'static', h1: 'New Page', content: '' };
+    configData.pages.push(newPage);
+    loadPageToEditor(configData.pages.length - 1);
+}
+
+function deleteCurrentPage() {
+    if(confirm("Delete this page?")) {
+        configData.pages.splice(activePageIndex, 1);
+        activePageIndex = -1;
+        document.getElementById('pageEditor').style.display = 'none';
+        renderPageList();
+    }
+}
+
+// ==========================================
+// SAVING GLOBAL CONFIG
 // ==========================================
 async function saveConfig() {
     const btn = document.getElementById('saveBtn');
     btn.textContent = "Saving..."; btn.disabled = true;
 
-    // Construct Data Object
+    // Gather General Settings
     configData.site_settings = {
         title_part_1: getVal('titleP1'),
         title_part_2: getVal('titleP2'),
         domain: getVal('siteDomain'),
         logo_url: getVal('logoUrl'),
-        meta_title: getVal('metaTitle'),
-        meta_desc: getVal('metaDesc'),
-        footer_keywords: getVal('footerKeywords').split(',').map(s => s.trim())
+        favicon: getVal('faviconUrl'),
+        ga_id: getVal('gaId'),
+        custom_meta: getVal('customMeta'),
+        footer_keywords: getVal('footerKw').split(',').map(s=>s.trim())
     };
 
+    // Gather Theme (Excluding Content)
     configData.theme = {
         brand_primary: getVal('colPrimary'),
         brand_dark: getVal('colDark'),
         accent_gold: getVal('colGold'),
+        status_green: getVal('colStatus'),
         bg_body: getVal('colBg'),
-        font_family: getVal('fontFamily')
+        font_family: getVal('fontFamily'),
+        title_color_1: getVal('colT1'),
+        title_color_2: getVal('colT2'),
+        title_italic: document.getElementById('titleItalic').checked
     };
 
+    // Gather Socials
     configData.social_stats = {
         telegram: getVal('socTelegram'),
         twitter: getVal('socTwitter'),
@@ -127,12 +220,13 @@ async function saveConfig() {
         reddit: getVal('socReddit')
     };
 
+    // Gather APIs
     configData.api_keys = {
         streamed_url: getVal('apiStreamed'),
         topembed_url: getVal('apiTopembed')
     };
 
-    // Arrays
+    // Gather Menus
     configData.hero_categories = [];
     document.querySelectorAll('.hero-item').forEach(el => {
         configData.hero_categories.push({
@@ -149,7 +243,7 @@ async function saveConfig() {
         });
     });
 
-    // Github Put Request
+    // Send to GitHub
     const token = localStorage.getItem('gh_token');
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(configData, null, 2))));
     
@@ -157,50 +251,46 @@ async function saveConfig() {
         const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
             method: 'PUT',
             headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: "Admin Update", content: content, sha: currentSha, branch: BRANCH })
+            body: JSON.stringify({ message: "Admin: Full Config Update", content: content, sha: currentSha, branch: BRANCH })
         });
         const data = await res.json();
         currentSha = data.content.sha;
-        alert("Saved! Site will update in ~2 mins.");
-    } catch (e) { alert("Error saving."); }
-    btn.textContent = "💾 Save Changes"; btn.disabled = false;
+        alert("Saved! Site update triggered.");
+    } catch (e) { console.error(e); alert("Save Error."); }
+    btn.textContent = "💾 Save All Changes"; btn.disabled = false;
 }
 
 // ==========================================
 // UI MANAGERS
 // ==========================================
+function applyTheme(name) {
+    const t = THEMES[name];
+    if(!t) return;
+    setColor('colPrimary', 'txtPrimary', t.primary);
+    setColor('colDark', 'txtDark', t.dark);
+    setColor('colGold', 'txtGold', t.accent);
+    setColor('colStatus', 'txtStatus', t.status);
+    setColor('colBg', 'txtBg', t.bg);
+    setColor('colT1', 'txtT1', t.t1);
+    setColor('colT2', 'txtT2', t.t2);
+}
+
 function addHeroUI(data = {title:'', folder:''}) {
     const div = document.createElement('div');
     div.className = 'hero-item sitelink-item';
-    div.innerHTML = `
-        <div style="display:flex; gap:10px;">
-            <input type="text" class="h-title" placeholder="Name (e.g. 🏀 NBA)" value="${data.title}">
-            <input type="text" class="h-folder" placeholder="Folder (e.g. nba)" value="${data.folder}">
-            <button class="btn-delete" onclick="this.parentElement.parentElement.remove()">✕</button>
-        </div>`;
+    div.innerHTML = `<input type="text" class="h-title" placeholder="Name" value="${data.title}">
+                     <input type="text" class="h-folder" placeholder="Folder" value="${data.folder}">
+                     <button class="btn-delete" onclick="this.parentElement.remove()">✕</button>`;
     document.getElementById('hero-container').appendChild(div);
 }
 
 function addHeaderUI(data = {title:'', url:''}) {
     const div = document.createElement('div');
     div.className = 'menu-item sitelink-item';
-    div.innerHTML = `
-        <div style="display:flex; gap:10px;">
-            <input type="text" class="m-title" placeholder="Link Name" value="${data.title}">
-            <input type="text" class="m-url" placeholder="URL (#id or https://)" value="${data.url}">
-            <button class="btn-delete" onclick="this.parentElement.parentElement.remove()">✕</button>
-        </div>`;
+    div.innerHTML = `<input type="text" class="m-title" placeholder="Link Name" value="${data.title}">
+                     <input type="text" class="m-url" placeholder="URL" value="${data.url}">
+                     <button class="btn-delete" onclick="this.parentElement.remove()">✕</button>`;
     document.getElementById('header-container').appendChild(div);
-}
-
-function resetTheme() {
-    if(confirm("Reset all colors to default?")) {
-        setColor('colPrimary', 'txtPrimary', DEFAULT_THEME.brand_primary);
-        setColor('colDark', 'txtDark', DEFAULT_THEME.brand_dark);
-        setColor('colGold', 'txtGold', DEFAULT_THEME.accent_gold);
-        setColor('colBg', 'txtBg', DEFAULT_THEME.bg_body);
-        setVal('fontFamily', DEFAULT_THEME.font_family);
-    }
 }
 
 // Helpers
