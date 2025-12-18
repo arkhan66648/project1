@@ -1,8 +1,8 @@
 // ==========================================
 // CONFIG: UPDATE THESE!
 // ==========================================
-const REPO_OWNER = 'arkhan66648'; 
-const REPO_NAME = 'project1'; 
+const REPO_OWNER = 'YOUR_GITHUB_USERNAME'; // UPDATE THIS
+const REPO_NAME = 'YOUR_REPO_NAME';       // UPDATE THIS
 const FILE_PATH = 'data/config.json';
 const BRANCH = 'main'; 
 
@@ -59,7 +59,7 @@ async function loadConfig() {
         configData = JSON.parse(atob(data.content));
         
         // Ensure pages array exists
-        if(!configData.pages) configData.pages = [{slug: 'home', type:'schedule', title:'Home', content:''}];
+        if(!configData.pages) configData.pages = [{slug: 'home', type:'schedule', h1:'Home', content:''}];
         
         populateUI(configData);
     } catch (err) { console.error(err); alert("Failed to load config."); }
@@ -156,6 +156,7 @@ function saveCurrentPageLocal() {
     page.slug = getVal('pSlug');
     page.type = getVal('pType');
     page.h1 = getVal('pH1');
+    page.title = getVal('pH1'); // Fallback title
     page.hero_text = getVal('pHero');
     page.meta_title = getVal('pMetaTitle');
     page.meta_desc = getVal('pMetaDesc');
@@ -242,6 +243,9 @@ async function saveConfig() {
             url: el.querySelector('.m-url').value
         });
     });
+    
+    // IMPORTANT: configData.pages is already updated by saveCurrentPageLocal()
+    // We just need to ensure it's part of the object we send (it is, because we modify configData directly)
 
     // Send to GitHub
     const token = localStorage.getItem('gh_token');
