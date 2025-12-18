@@ -115,7 +115,7 @@ def fetch_streamed_pk(url):
                 "id": str(m['id']),
                 "title": title,
                 "sport": sport,
-                "league": league,
+                "league": league, # Sub-category
                 "start_time": m['date'],
                 "viewers": m.get('viewers', 0),
                 "streams": processed_streams,
@@ -233,6 +233,7 @@ def build_html(template, config, page_conf):
     for item in config.get('hero_categories', []):
         
         # --- FIXED LOGIC START ---
+        # We use .get() here to prevent KeyError if 'title' or 'h1' is missing
         page_title = page_conf.get('title', page_conf.get('h1', ''))
         item_title = item.get('title', '')
         is_active = "active" if page_title == item_title else ""
@@ -252,8 +253,8 @@ def build_html(template, config, page_conf):
     js_config = f'window.PAGE_CATEGORY = "{cat_title}"; window.IS_SUBPAGE = {str(slug_safe != "home").lower()};'
     # --- FIXED LOGIC END ---
 
-    search_style = 'block' if page_conf['type'] in ['home', 'schedule'] else 'none'
-    matches_style = 'block' if page_conf['type'] in ['home', 'schedule'] else 'none'
+    search_style = 'block' if page_conf.get('type') in ['home', 'schedule'] else 'none'
+    matches_style = 'block' if page_conf.get('type') in ['home', 'schedule'] else 'none'
     
     html = template
     html = html.replace('{{BRAND_PRIMARY}}', t.get('brand_primary', '#D00000'))
@@ -282,11 +283,12 @@ def build_html(template, config, page_conf):
     html = html.replace('{{HERO_PILLS}}', hero_pills)
     html = html.replace('{{FOOTER_KEYWORDS}}', footer_kw)
 
-    html = html.replace('{{H1}}', page_conf['h1'])
-    html = html.replace('{{HERO_TEXT}}', page_conf['hero_text'])
-    html = html.replace('{{META_TITLE}}', page_conf['meta_title'])
-    html = html.replace('{{META_DESC}}', page_conf['meta_desc'])
-    html = html.replace('{{ARTICLE_CONTENT}}', page_conf['content'])
+    # --- CRITICAL FIX: Use .get() here to prevent KeyError: 'h1' ---
+    html = html.replace('{{H1}}', page_conf.get('h1', 'Live Sports'))
+    html = html.replace('{{HERO_TEXT}}', page_conf.get('hero_text', ''))
+    html = html.replace('{{META_TITLE}}', page_conf.get('meta_title', ''))
+    html = html.replace('{{META_DESC}}', page_conf.get('meta_desc', ''))
+    html = html.replace('{{ARTICLE_CONTENT}}', page_conf.get('content', ''))
     
     html = html.replace('{{DISPLAY_SEARCH}}', search_style)
     html = html.replace('{{DISPLAY_MATCHES}}', matches_style)
@@ -297,7 +299,7 @@ def build_html(template, config, page_conf):
     html = html.replace('{{GA_CODE}}', ga_code)
     html = html.replace('{{CUSTOM_META}}', s.get('custom_meta', ''))
 
-    if page_conf['slug'] != 'home':
+    if page_conf.get('slug') != 'home':
         html = html.replace('href="assets', 'href="../assets')
         html = html.replace('src="assets', 'src="../assets')
         html = html.replace('href="/', 'href="../') 
@@ -334,7 +336,7 @@ def generate_site(config):
     for p in pages:
         html = build_html(template, config, p)
         
-        if p['slug'] == 'home':
+        if p.get('slug') == 'home':
             with open('index.html', 'w', encoding='utf-8') as f: f.write(html)
             print("✅ Built Homepage")
         else:
