@@ -6,23 +6,25 @@
     
     <title>Watch NFL Live Streams Free</title>
     <meta name="description" content="Full schedule of NFL games live in HD.">
-    <link rel="canonical" href="https://streameast.app/">
     <meta name="theme-color" content="#3b82f6">
-    
+    <link rel="canonical" href="https://streameast.app/">
+
     <!-- Open Graph -->
     <meta property="og:title" content="Watch NFL Live Streams Free">
     <meta property="og:image" content="assets/logo.png">
-    
-    <!-- 1. STATIC SCHEMA (WebSite, Org) - Injected by Python -->
+    <meta property="og:url" content="https://streameast.app/">
+    <link rel="icon" href="assets/icon.png">
+
+    <!-- STATIC SCHEMA (Injected by Python) -->
     <script type="application/ld+json">
         {"@context": "https://schema.org", "@graph": [{"@type": "WebSite", "name": "StreamEast US", "url": "https://streameast.app"}, {"@type": "Organization", "name": "StreamEast US", "logo": "assets/logo.png"}]}
     </script>
     
-    <!-- 2. DYNAMIC SCHEMA (Live Badge) - Injected by JS -->
+    <!-- DYNAMIC SCHEMA (Injected by JS) -->
     <script id="dynamic-schema" type="application/ld+json"></script>
-
+    
     <style>
-        /* --- DYNAMIC THEME VARIABLES --- */
+        /* --- CORE VARIABLES --- */
         :root {
             --brand-primary: #3b82f6;
             --brand-dark: #8a0000;
@@ -35,84 +37,158 @@
             --text-muted: #888;
         }
 
-        /* [KEEP ALL YOUR CSS EXACTLY AS YOU DESIGNED IT] */
-        /* ... Paste your CSS here ... */
+        /* [YOUR CSS EXACTLY AS PROVIDED] */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif; background: var(--bg-body); color: var(--text-main); font-size: 14px; padding-bottom: 70px; }
+        a { text-decoration: none; color: inherit; transition: 0.2s; }
+        button { cursor: pointer; border: none; font-family: inherit; }
+
+        header { background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); height: 60px; width: 100%; position: fixed; top: 0; z-index: 100; }
+        .header-container { max-width: 1100px; margin: 0 auto; height: 100%; padding: 0 15px; display: flex; align-items: center; justify-content: space-between; }
         
-        /* Add this for the JS injection to work */
-        .hidden { display: none !important; }
+        .logo-link { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo-img { height: 35px; width: 35px; border-radius: 6px; object-fit: cover; box-shadow: 0 0 10px rgba(208,0,0,0.3); }
+        .logo-text { font-size: 1.4rem; font-weight: 900; font-style: italic; letter-spacing: -1px; text-transform: uppercase; line-height: 1; }
+        .logo-text span { color: var(--brand-primary); }
+
+        .nav-links { display: none; gap: 20px; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #aaa; }
+        .nav-links a:hover { color: white; }
+        .hamburger { display: block; font-size: 1.4rem; color: white; background: none; }
+        
+        .mobile-menu { position: fixed; top: 60px; left: 0; width: 100%; background: #0f0f0f; border-bottom: 1px solid var(--border); display: none; flex-direction: column; z-index: 99; }
+        .mobile-menu.active { display: flex; }
+        .mobile-menu a { padding: 15px 20px; border-bottom: 1px solid #1f1f1f; font-weight: 600; }
+        @media (min-width: 900px) { .nav-links { display: flex; } .hamburger { display: none; } }
+
+        .hero { padding: 90px 15px 15px 15px; text-align: center; background: radial-gradient(circle at top, #1a0505 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); }
+        .sys-status { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 230, 118, 0.08); border: 1px solid rgba(0, 230, 118, 0.2); padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; font-size: 0.75rem; font-weight: 700; color: var(--status-green); }
+        .dot { width: 6px; height: 6px; background: var(--status-green); border-radius: 50%; box-shadow: 0 0 8px var(--status-green); animation: pulse 2s infinite; }
+        h1 { margin: 0 0 20px 0; font-size: 1.8rem; line-height: 1.2; color: white; font-weight: 800; }
+        h1 span { color: var(--brand-primary); }
+
+        .cat-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 10px 5px; justify-content: flex-start; scrollbar-width: none; max-width: 100%; margin: 0 auto; }
+        .cat-pill { background: #111; border: 1px solid var(--border); padding: 8px 18px; border-radius: 50px; font-weight: 700; font-size: 0.8rem; white-space: nowrap; color: #ccc; flex-shrink: 0; }
+        .cat-pill:hover, .cat-pill.active { border-color: var(--brand-primary); color: white; background: rgba(208,0,0,0.1); }
+
+        .desktop-social { position: fixed; left: 0; top: 50%; transform: translateY(-50%); display: none; flex-direction: column; z-index: 90; background: rgba(10,10,10,0.8); border: 1px solid var(--border); border-left: 0; border-radius: 0 10px 10px 0; overflow: hidden; }
+        .ds-item { padding: 12px 10px; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s; border-bottom: 1px solid #222; width: 60px; }
+        .ds-item:last-child { border-bottom: none; }
+        .ds-item:hover { background: var(--brand-primary); }
+        .ds-item svg { width: 22px; height: 22px; fill: #ddd; transition: 0.2s; }
+        .ds-item:hover svg { fill: white; }
+        .stat-val { font-size: 0.6rem; font-weight: 700; margin-top: 4px; color: #aaa; }
+        .ds-item:hover .stat-val { color: white; }
+
+        .mobile-social { position: fixed; bottom: 0; left: 0; width: 100%; height: 55px; background: rgba(10,10,10,0.98); backdrop-filter: blur(10px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 999; }
+        .ms-item { display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; }
+        .ms-item svg { width: 20px; height: 20px; fill: #999; }
+        .ms-count { font-size: 0.6rem; color: var(--brand-primary); font-weight: 700; background: #222; padding: 2px 6px; border-radius: 10px; margin-top: 3px; }
+        @media (min-width: 1000px) { .desktop-social { display: flex; } .mobile-social { display: none; } body { padding-bottom: 0; } .cat-scroll { justify-content: center; } }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px 15px; }
+        .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 30px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #1a1a1a; }
+        .sec-title { font-size: 1.1rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
+        .live-dot { width: 8px; height: 8px; background: var(--brand-primary); border-radius: 50%; box-shadow: 0 0 10px var(--brand-primary); }
+        .sec-right-link { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; }
+
+        /* GRID LAYOUT FOR MATCHES */
+        .match-row { display: grid; grid-template-columns: 40px 1fr 65px 60px; align-items: center; gap: 8px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 6px; padding: 10px 8px; margin-bottom: 8px; position: relative; transition: 0.2s; }
+        .match-row:hover { border-color: #444; transform: translateY(-2px); }
+        .match-row.live { border-left: 3px solid var(--brand-primary); background: linear-gradient(90deg, rgba(208,0,0,0.06) 0%, rgba(20,20,20,0.8) 100%); }
+
+        .col-time { text-align: center; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+        .time-main { font-size: 0.75rem; font-weight: 700; color: white; }
+        .time-sub { font-size: 0.6rem; color: #888; }
+        .live-txt { color: var(--brand-primary); font-weight: 900; animation: blink 1.5s infinite; font-size: 0.65rem; }
+
+        .col-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; justify-content: center; }
+        .league-tag { font-size: 0.6rem; color: #666; font-weight: 700; text-transform: uppercase; }
+        .team-name { font-size: 0.85rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .col-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; justify-content: center; }
+        .meta-top { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); display: flex; align-items: center; gap: 4px; }
+        .meta-bot { font-size: 0.6rem; color: #aaa; border: 1px solid #333; padding: 1px 4px; border-radius: 3px; }
+
+        .col-action { display: flex; justify-content: flex-end; }
+        .btn-watch { background: var(--brand-primary); color: white; font-size: 0.65rem; font-weight: 800; padding: 8px 10px; border-radius: 4px; width: 100%; text-transform: uppercase; }
+        .btn-watch:hover { background: var(--brand-dark); }
+        .btn-notify { background: transparent; border: 1px solid #333; color: #888; padding: 6px 0; }
+
+        @media (min-width: 768px) { .match-row { grid-template-columns: 70px 1fr 100px 100px; padding: 15px 20px; gap: 20px; } .team-name { font-size: 1rem; } .btn-watch { font-size: 0.8rem; padding: 10px 0; } .col-meta { gap: 5px; } }
+
+        .entity-intro { color: #999; font-size: 0.9rem; line-height: 1.5; text-align: center; max-width: 800px; margin: 0 auto 0 auto; padding: 10px; }
+        .seo-box { background: #0a0a0a; border: 1px solid var(--border); padding: 25px; border-radius: 10px; margin-top: 40px; }
+        .seo-box h2 { color: white; font-size: 1.1rem; margin-top: 0; }
+        .seo-box p { color: #777; font-size: 0.9rem; line-height: 1.6; }
+
+        .partners { margin-top: 20px; text-align: center; border-top: 1px solid var(--border); padding-top: 20px; }
+        .p-tag { display: inline-block; font-size: 0.75rem; color: #555; border: 1px solid #222; padding: 6px 12px; border-radius: 20px; margin: 4px; }
+        .p-tag:hover { border-color: var(--brand-primary); color: white; }
+
+        footer { text-align: center; padding: 40px 20px; color: #444; font-size: 0.75rem; margin-bottom: 50px; }
+        .video-modal { position: fixed; inset: 0; background: black; z-index: 2000; display: none; flex-direction: column; }
+        .vm-head { padding: 10px; background: #111; display: flex; justify-content: flex-end; }
+        .vm-close { color: white; font-weight: 700; padding: 5px 15px; background: #333; border-radius: 4px; }
+        @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
     </style>
 </head>
 <body>
-    
-    <!-- [Social Sidebars Code ...] -->
+    <!-- [Social SVGs Logic Kept Same] -->
+    <!-- ... (Desktop Social & Mobile Social Divs) ... -->
 
     <header>
         <div class="header-container">
             <a href="../" class="logo-link">
-                <img src="assets/logo.png" alt="StreamEast US" width="40" height="40" class="logo-img">
+                <img src="assets/logo.png" alt="StreamEast US" width="35" height="35" class="logo-img">
                 <div class="logo-text">StreamEast US</div>
             </a>
-
             <nav class="nav-links">
-                <!-- Python injects menu here -->
                 <a href="../nfl/">NFL</a>
- 
+
             </nav>
             <button class="hamburger" onclick="toggleMenu()">☰</button>
         </div>
     </header>
 
-    <div class="mobile-menu" id="mobileMenu">
-        <a href="../nfl/">NFL</a>
-
-    </div>
+    <div class="mobile-menu" id="mobileMenu"><a href="../nfl/">NFL</a>
+</div>
 
     <div class="hero">
         <div class="sys-status"><div class="dot"></div> System Status: Online</div>
         <h1>StreamEast US - #1 Free Live Sports</h1>
-        
-        <p class="entity-intro">
-            Welcome to the official <strong>StreamEast US</strong>. The most reliable platform for free NBA, NFL, UFC, and MLB streams in HD.
-        </p>
-
+        <p class="entity-intro">Welcome to official <strong>StreamEast US</strong>. Best free HD streams.</p>
         <div class="cat-scroll">
-            <a href="#nba" class="cat-pill">🏀 NBA</a>
-            <a href="#nfl" class="cat-pill">🏈 NFL</a>
-            <a href="#ufc" class="cat-pill">🥊 UFC</a>
-            <a href="#mlb" class="cat-pill">⚾ MLB</a>
+            <a href="../nba/" class="cat-pill">🏀 NBA</a>
+            <a href="../nfl/" class="cat-pill">🏈 NFL</a>
+            <a href="../ufc/" class="cat-pill">🥊 UFC</a>
         </div>
     </div>
 
     <div class="container">
-        
-        <!-- Search Warning Box -->
+        <!-- Search Warning -->
         <div id="searchMsgBox" style="display:none; background:#1a1a1a; border:1px solid var(--brand-primary); padding:15px; border-radius:8px; margin-bottom:20px; text-align:center;">
              <h3 style="margin:0 0 5px 0; color:white;">Looking for <span id="searchTermDisplay" style="color:var(--brand-primary)"></span>?</h3>
-             <p style="margin:0; color:#aaa; font-size:0.85rem;">StreamEast US is the #1 authorized alternative.</p>
+             <p style="margin:0; color:#aaa; font-size:0.85rem;">StreamEast US is the authorized alternative.</p>
         </div>
 
-        <!-- ================= LIVE MATCHES (Injected by JS) ================= -->
+        <!-- LIVE MATCHES -->
         <div class="sec-head">
             <div class="sec-title"><div class="live-dot"></div> Important & Live</div>
         </div>
-
-        <!-- This is where JS will inject rows -->
-        <div class="match-list" id="live-matches-container">
-            <div style="padding:20px; text-align:center; color:#666;">Loading live streams...</div>
+        
+        <!-- DYNAMIC CONTAINER (Matches injected here) -->
+        <div id="live-matches-container" class="match-list">
+            <div style="padding:20px; text-align:center; color:#666;">Loading live matches...</div>
         </div>
 
-        <div class="show-more-container">
-            <button class="btn-show-more" id="btnShowMore" style="display:none">Show More ▼</button>
-        </div>
-
-        <!-- ================= UPCOMING SECTION ================= -->
+        <!-- UPCOMING -->
         <div class="sec-head">
             <div class="sec-title">📅 Upcoming Schedule</div>
         </div>
-        <div class="match-list" id="upcoming-matches-container"></div>
+        <div id="upcoming-matches-container" class="match-list"></div>
 
-        <!-- ================= ARTICLE (Editable via Admin) ================= -->
-        <div class="seo-box" id="faq">
+        <!-- SEO ARTICLE -->
+        <div class="seo-box">
             
         </div>
 
@@ -121,12 +197,9 @@
             <a href="../?q=methstreams" class="p-tag">MethStreams</a>
             <a href="../?q=crackstreams" class="p-tag">CrackStreams</a>
         </div>
-
     </div>
 
-    <footer>
-        &copy; 2025 StreamEast US. All rights reserved.
-    </footer>
+    <footer>&copy; 2025 StreamEast US. All rights reserved.</footer>
 
     <!-- Video Modal -->
     <div class="video-modal" id="vModal">
@@ -134,7 +207,16 @@
         <div id="vContainer" style="flex:1; background:black; display:flex; align-items:center; justify-content:center;"></div>
     </div>
 
-    <!-- MAIN JS -->
     <script src="assets/js/main.js"></script>
+    <script>
+        function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
+        // Internal Partner Search Logic
+        const urlParams = new URLSearchParams(window.location.search);
+        const q = urlParams.get('q');
+        if(q) {
+            document.getElementById('searchMsgBox').style.display = 'block';
+            document.getElementById('searchTermDisplay').innerText = q.toUpperCase();
+        }
+    </script>
 <script>window.PAGE_CATEGORY = "NFL"; window.IS_SUBPAGE = true;</script></body>
 </html>
