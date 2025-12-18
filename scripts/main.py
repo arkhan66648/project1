@@ -4,10 +4,23 @@ import requests
 import os
 import base64
 import sys
+from datetime import datetime
 
 # ==========================================
-# CONFIGURATION
+# 1. CONFIGURATION & PRIORITY
 # ==========================================
+# Higher number = Appears higher in "Trending" and "Upcoming"
+SPORT_PRIORITY = { 
+    "NFL": 100, 
+    "NBA": 90, 
+    "UFC": 85, 
+    "MLB": 80, 
+    "NHL": 70, 
+    "Soccer": 60, 
+    "F1": 50,
+    "Boxing": 45
+}
+
 LEAGUE_KEYWORDS = {
     "NFL": ["NFL", "Super Bowl", "American Football"],
     "NBA": ["NBA", "Basketball", "Playoffs"],
@@ -24,18 +37,17 @@ NOW_MS = int(time.time() * 1000)
 
 def load_config():
     if not os.path.exists('data/config.json'):
-        print("⚠️ Config not found at data/config.json. Using defaults.")
-        return {"site_settings": {}, "api_keys": {}, "theme": {}, "site_links": []}
-    
+        print("⚠️ Config not found. Using defaults.")
+        return {}
     try:
         with open('data/config.json', 'r', encoding='utf-8') as f:
             return json.load(f)
     except Exception as e:
         print(f"⚠️ Error reading config: {e}")
-        return {"site_settings": {}, "api_keys": {}, "theme": {}, "site_links": []}
+        return {}
 
 # ==========================================
-# HELPER FUNCTIONS
+# 2. HELPER FUNCTIONS
 # ==========================================
 def obfuscate_link(link):
     if not link: return ""
@@ -53,11 +65,11 @@ def detect_league(category, title):
     return category
 
 # ==========================================
-# FETCHING DATA
+# 3. DATA FETCHING
 # ==========================================
 def fetch_streamed_pk(url):
     if not url: return []
-    print(f"Fetching Streamed.pk from: {url}")
+    print(f"Fetching Streamed.pk...")
     try:
         data = requests.get(url, timeout=15).json()
         matches = []
@@ -85,7 +97,6 @@ def fetch_streamed_pk(url):
                 "teams": m.get('teams', {}),
                 "is_live": False 
             })
-        print(f"✅ Streamed.pk: Found {len(matches)} matches")
         return matches
     except Exception as e:
         print(f"❌ Error Streamed.pk: {e}")
@@ -93,7 +104,7 @@ def fetch_streamed_pk(url):
 
 def fetch_topembed(url):
     if not url: return []
-    print(f"Fetching TopEmbed from: {url}")
+    print(f"Fetching TopEmbed...")
     try:
         data = requests.get(url, timeout=15).json()
         matches = []
@@ -112,14 +123,13 @@ def fetch_topembed(url):
                     "streams": [{"source": "topembed", "id": obfuscate_link(str(raw_link))}],
                     "teams": {},
                 })
-        print(f"✅ TopEmbed: Found {len(matches)} matches")
         return matches
     except Exception as e:
         print(f"❌ Error TopEmbed: {e}")
         return []
 
 # ==========================================
-# MERGE & PROCESS
+# 4. MERGE & RANKING LOGIC
 # ==========================================
 def merge_matches(master_list, backup_list):
     final_list = master_list.copy()
@@ -142,77 +152,123 @@ def process_data(matches, config):
     output = { "updated": NOW_MS, "important": [], "categories": {} }
     
     for m in matches:
+        # Cleanup Old matches (4 hours)
         if NOW_MS > (m['start_time'] + (14400000)) and m['viewers'] < 50: continue
             
         time_diff = m['start_time'] - NOW_MS
         is_live = m['start_time'] <= NOW_MS
         m['is_live'] = is_live
+        
+        # Show Button logic
         m['show_button'] = is_live or (0 < time_diff < 1800000)
 
+        # Assign USA Priority Score
+        base_priority = SPORT_PRIORITY.get(m['sport'], 10)
+        if is_live: base_priority += 200 # Live matches float to top
+        m['priority'] = base_priority + (m['viewers'] / 100)
+
+        # Categorize
         if m['sport'] not in output['categories']: output['categories'][m['sport']] = []
         output['categories'][m['sport']].append(m)
         
+        # Hero Table Logic (Top Priority Only)
         is_hero = False
         if is_live and m['viewers'] > 50: is_hero = True
         if (0 < time_diff < 3600000) and m['sport'] in USA_TARGETS: is_hero = True
         
         if is_hero: output['important'].append(m)
 
-    output['important'].sort(key=lambda x: x['viewers'], reverse=True)
+    # Sort Trending by Calculated Priority
+    output['important'].sort(key=lambda x: x['priority'], reverse=True)
     return output
 
 # ==========================================
-# HTML GENERATOR
+# 5. HTML GENERATOR (MASTER TEMPLATE)
 # ==========================================
 def build_single_page(template, config, page_data=None):
     s = config.get('site_settings', {})
     t = config.get('theme', {})
-    links = config.get('site_links', [])
-
-    # Navigation HTML
-    nav_html = ""
-    for link in links:
-        slug = link['slug'].strip('/')
-        nav_html += f'<a href="/{slug}/">{link["title"]}</a>\n'
-
-    # Inject Variables
-    html = template
-    html = html.replace('{{BRAND_PRIMARY}}', t.get('color_accent', '#D00000'))
-    html = html.replace('{{BRAND_DARK}}', t.get('brand_dark', '#8a0000'))
-    html = html.replace('{{ACCENT}}', t.get('color_accent', '#FFD700'))
-    html = html.replace('{{STATUS}}', t.get('color_live', '#00e676'))
+    soc = config.get('social_stats', {})
     
-    html = html.replace('{{SITE_NAME}}', s.get('site_name', 'StreamEast'))
-    html = html.replace('{{LOGO_URL}}', s.get('logo_url', '/assets/streameast-logo-hd.jpg'))
-    html = html.replace('{{DOMAIN}}', s.get('domain', 'streameast.app'))
-    html = html.replace('{{NAV_LINKS}}', nav_html)
+    # 1. Build HEADER Menu (Right Side)
+    # Uses 'header_menu' from config
+    header_menu_html = ""
+    for item in config.get('header_menu', []):
+        header_menu_html += f'<a href="{item["url"]}">{item["title"]}</a>'
 
+    # 2. Build HERO PILLS (Categories)
+    # Uses 'hero_categories' from config
+    hero_pills_html = ""
+    for item in config.get('hero_categories', []):
+        path = f'/{item["folder"]}/index.html'
+        # Check active state
+        active_class = "active" if page_data and page_data['title'] == item['title'] else ""
+        hero_pills_html += f'<a href="{path}" class="cat-pill {active_class}">{item["title"]}</a>'
+
+    # 3. Build FOOTER Keywords
+    footer_html = ""
+    for kw in s.get('footer_keywords', []):
+        if kw: footer_html += f'<a href="/?q={kw.strip()}" class="p-tag">{kw.strip()}</a>'
+
+    # 4. INJECT VARIABLES
+    html = template
+    
+    # Theme & Colors
+    html = html.replace('{{BRAND_PRIMARY}}', t.get('brand_primary', '#D00000'))
+    html = html.replace('{{BRAND_DARK}}', t.get('brand_dark', '#8a0000'))
+    html = html.replace('{{ACCENT}}', t.get('accent_gold', '#FFD700'))
+    html = html.replace('{{STATUS}}', t.get('status_green', '#00e676'))
+    html = html.replace('{{BG_BODY}}', t.get('bg_body', '#050505'))
+    html = html.replace('{{FONT_FAMILY}}', t.get('font_family', 'system-ui'))
+
+    # Site Identity
+    html = html.replace('{{TITLE_P1}}', s.get('title_part_1', 'Stream'))
+    html = html.replace('{{TITLE_P2}}', s.get('title_part_2', 'East'))
+    html = html.replace('{{SITE_NAME}}', s.get('site_name', 'StreamEast'))
+    html = html.replace('{{LOGO_URL}}', s.get('logo_url', 'assets/logo.png'))
+    html = html.replace('{{DOMAIN}}', s.get('domain', 'streameast.app'))
+    html = html.replace('{{FAVICON}}', s.get('logo_url', 'assets/logo.png')) # Fallback to logo
+
+    # Social Stats
+    html = html.replace('{{SOC_TELEGRAM}}', soc.get('telegram', '12k'))
+    html = html.replace('{{SOC_TWITTER}}', soc.get('twitter', '8k'))
+    html = html.replace('{{SOC_DISCORD}}', soc.get('discord', '5k'))
+    html = html.replace('{{SOC_REDDIT}}', soc.get('reddit', '3k'))
+
+    # Content Injection
+    html = html.replace('{{HEADER_MENU}}', header_menu_html)
+    html = html.replace('{{HERO_PILLS}}', hero_pills_html)
+    html = html.replace('{{FOOTER_KEYWORDS}}', footer_html)
+
+    # Page Specifics
     if page_data:
-        # SUBPAGE
+        # SUBPAGE MODE
         html = html.replace('{{META_TITLE}}', page_data.get('meta_title', ''))
         html = html.replace('{{META_DESC}}', page_data.get('meta_desc', ''))
         html = html.replace('{{HOMEPAGE_ARTICLE}}', page_data.get('article', ''))
         
-        # Adjust Relative Paths
-        html = html.replace('src="/assets', 'src="../assets')
-        html = html.replace('href="/assets', 'href="../assets')
+        # Fix paths for subfolder depth
+        html = html.replace('href="assets', 'href="../assets')
+        html = html.replace('src="assets', 'src="../assets')
         html = html.replace('href="/', 'href="../') 
         html = html.replace('data/matches.json', '../data/matches.json')
 
-        js_config = f'window.PAGE_CATEGORY = "{page_data["title"]}"; window.IS_SUBPAGE = true;'
+        # Inject JS Flag
+        js_flag = f'window.PAGE_CATEGORY = "{page_data["title"]}"; window.IS_SUBPAGE = true;'
         if 'window.IS_SUBPAGE = false;' in html:
-            html = html.replace('window.IS_SUBPAGE = false;', js_config)
+            html = html.replace('window.IS_SUBPAGE = false;', js_flag)
         else:
-            html = html.replace('</body>', f'<script>{js_config}</script></body>')
+            html = html.replace('</body>', f'<script>{js_flag}</script></body>')
     else:
-        # HOMEPAGE
+        # HOMEPAGE MODE
         html = html.replace('{{META_TITLE}}', s.get('meta_title', ''))
         html = html.replace('{{META_DESC}}', s.get('meta_desc', ''))
         
-        article_content = ""
+        # Load Homepage Article
+        art = ""
         if os.path.exists('data/articles/home.html'):
-            with open('data/articles/home.html', 'r', encoding='utf-8') as f: article_content = f.read()
-        html = html.replace('{{HOMEPAGE_ARTICLE}}', article_content)
+            with open('data/articles/home.html', 'r', encoding='utf-8') as f: art = f.read()
+        html = html.replace('{{HOMEPAGE_ARTICLE}}', art)
 
     # Static Schema
     static_schema = {
@@ -229,47 +285,43 @@ def build_single_page(template, config, page_data=None):
 def generate_all_pages(config):
     print("Generating Pages...")
     
-    # 1. LOAD TEMPLATE (With Error Checking)
+    # 1. LOAD TEMPLATE
     if not os.path.exists('assets/master_template.html'):
-        print("❌ CRITICAL ERROR: assets/master_template.html NOT FOUND!")
-        print(f"Current Directory: {os.getcwd()}")
-        print(f"Directory Contents: {os.listdir('.')}")
-        if os.path.exists('assets'):
-            print(f"Assets Contents: {os.listdir('assets')}")
-        sys.exit(1) # Force workflow failure so you see red x
+        print("❌ CRITICAL: assets/master_template.html NOT FOUND!")
+        sys.exit(1)
 
     try:
-        # FORCE UTF-8 TO HANDLE EMOJIS 🏀
         with open('assets/master_template.html', 'r', encoding='utf-8') as f: 
             template = f.read()
     except Exception as e:
         print(f"❌ Error reading template: {e}")
         sys.exit(1)
 
-    # 2. HOMEPAGE
+    # 2. GENERATE HOMEPAGE
     try:
         home_html = build_single_page(template, config, page_data=None)
         with open('index.html', 'w', encoding='utf-8') as f: f.write(home_html)
         print("✅ Saved index.html")
     except Exception as e:
         print(f"❌ Error saving index.html: {e}")
-        sys.exit(1)
 
-    # 3. SUBPAGES
-    for link in config.get('site_links', []):
-        slug = link['slug'].strip('/')
+    # 3. GENERATE CATEGORY SUB-PAGES
+    # Iterate over 'hero_categories' which serve as the main category pages
+    for item in config.get('hero_categories', []):
+        slug = item['folder'].strip('/')
         if not os.path.exists(slug): os.makedirs(slug, exist_ok=True)
         
+        # Load Article
         cat_article = ""
-        article_path = f"data/articles/{slug}.html"
-        if os.path.exists(article_path):
-            with open(article_path, 'r', encoding='utf-8') as f: cat_article = f.read()
+        art_path = f"data/articles/{slug}.html"
+        if os.path.exists(art_path):
+            with open(art_path, 'r', encoding='utf-8') as f: cat_article = f.read()
 
         page_data = {
             'slug': slug,
-            'title': link['title'],
-            'meta_title': link.get('meta_title', link['title']),
-            'meta_desc': link.get('meta_desc', ''),
+            'title': item['title'], # This matches the Sport Name (e.g., "🏀 NBA")
+            'meta_title': f"{item['title']} Live Streams - {config['site_settings'].get('site_name')}",
+            'meta_desc': f"Watch {item['title']} live free.",
             'article': cat_article
         }
 
@@ -282,23 +334,24 @@ def generate_all_pages(config):
 # MAIN EXECUTION
 # ==========================================
 if __name__ == "__main__":
-    print("--- Starting Match Update ---")
+    print("--- Starting Update ---")
     
-    # Ensure data folder exists
     os.makedirs('data', exist_ok=True)
-    
     conf = load_config()
     
-    s_data = fetch_streamed_pk(conf['api_keys'].get('streamed_url', ''))
-    t_data = fetch_topembed(conf['api_keys'].get('topembed_url', ''))
+    # API
+    s_data = fetch_streamed_pk(conf.get('api_keys', {}).get('streamed_url', ''))
+    t_data = fetch_topembed(conf.get('api_keys', {}).get('topembed_url', ''))
     
+    # Process
     merged = merge_matches(s_data, t_data)
     final_json = process_data(merged, conf)
     
-    # Save with UTF-8
+    # Save Data
     with open('data/matches.json', 'w', encoding='utf-8') as f:
         json.dump(final_json, f)
     print("✅ matches.json saved.")
     
+    # Build HTML
     generate_all_pages(conf)
     print("--- Update Complete ---")
