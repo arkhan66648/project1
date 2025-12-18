@@ -46,11 +46,11 @@
   },
   "hero_categories": [
     {
-      "title": "ð NBA",
+      "title": "Ã°ÂÂÂ NBA",
       "folder": "nba"
     },
     {
-      "title": "â½ Soccer",
+      "title": "Ã¢ÂÂ½ Soccer",
       "folder": "soccer"
     }
   ],
@@ -66,6 +66,16 @@
       "type": "schedule",
       "title": "Home",
       "content": ""
+    },
+    {
+      "slug": "testpage",
+      "type": "schedule",
+      "h1": "New Page",
+      "content": "",
+      "title": "New Page",
+      "hero_text": "",
+      "meta_title": "",
+      "meta_desc": ""
     }
   ]
 }
