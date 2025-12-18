@@ -22,7 +22,7 @@
     "font_family": "system-ui",
     "title_color_1": "#ffffff",
     "title_color_2": "#d00000",
-    "title_italic": false
+    "title_italic": true
   },
   "api_keys": {
     "streamed_url": "https://streamed.pk/api/matches/all",
@@ -46,11 +46,11 @@
   },
   "hero_categories": [
     {
-      "title": "🏀 NBA",
+      "title": "ð NBA",
       "folder": "nba"
     },
     {
-      "title": "⚽ Soccer",
+      "title": "â½ Soccer",
       "folder": "soccer"
     }
   ],
