@@ -46,16 +46,12 @@
   },
   "hero_categories": [
     {
-      "title": "Ã°ÂÂÂ NBA",
+      "title": "🏀 NBA",
       "folder": "nba"
     },
     {
-      "title": "ð NFL",
-      "folder": "nfl"
-    },
-    {
-      "title": "Test",
-      "folder": "test"
+      "title": "⚽ Soccer",
+      "folder": "soccer"
     }
   ],
   "header_menu": [
