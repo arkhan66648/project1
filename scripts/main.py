@@ -3,7 +3,7 @@ import time
 import requests
 import os
 import base64
-from datetime import datetime
+import sys
 
 # ==========================================
 # CONFIGURATION
@@ -23,13 +23,16 @@ USA_TARGETS = ["NFL", "NBA", "UFC", "NHL", "MLB"]
 NOW_MS = int(time.time() * 1000)
 
 def load_config():
-    # Load config or return default if missing to prevent crash
     if not os.path.exists('data/config.json'):
-        print("Config not found, using defaults.")
+        print("⚠️ Config not found at data/config.json. Using defaults.")
         return {"site_settings": {}, "api_keys": {}, "theme": {}, "site_links": []}
     
-    with open('data/config.json', 'r') as f:
-        return json.load(f)
+    try:
+        with open('data/config.json', 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"⚠️ Error reading config: {e}")
+        return {"site_settings": {}, "api_keys": {}, "theme": {}, "site_links": []}
 
 # ==========================================
 # HELPER FUNCTIONS
@@ -54,6 +57,7 @@ def detect_league(category, title):
 # ==========================================
 def fetch_streamed_pk(url):
     if not url: return []
+    print(f"Fetching Streamed.pk from: {url}")
     try:
         data = requests.get(url, timeout=15).json()
         matches = []
@@ -79,15 +83,17 @@ def fetch_streamed_pk(url):
                 "viewers": m.get('viewers', 0),
                 "streams": processed_streams,
                 "teams": m.get('teams', {}),
-                "is_live": False
+                "is_live": False 
             })
+        print(f"✅ Streamed.pk: Found {len(matches)} matches")
         return matches
     except Exception as e:
-        print(f"Error Streamed.pk: {e}")
+        print(f"❌ Error Streamed.pk: {e}")
         return []
 
 def fetch_topembed(url):
     if not url: return []
+    print(f"Fetching TopEmbed from: {url}")
     try:
         data = requests.get(url, timeout=15).json()
         matches = []
@@ -106,9 +112,10 @@ def fetch_topembed(url):
                     "streams": [{"source": "topembed", "id": obfuscate_link(str(raw_link))}],
                     "teams": {},
                 })
+        print(f"✅ TopEmbed: Found {len(matches)} matches")
         return matches
     except Exception as e:
-        print(f"Error TopEmbed: {e}")
+        print(f"❌ Error TopEmbed: {e}")
         return []
 
 # ==========================================
@@ -155,74 +162,59 @@ def process_data(matches, config):
     return output
 
 # ==========================================
-# HTML GENERATOR (FIXED)
+# HTML GENERATOR
 # ==========================================
 def build_single_page(template, config, page_data=None):
-    """
-    Helper to generate HTML for one page (Home or Subpage)
-    page_data: { 'slug': 'nfl', 'title': 'NFL', 'meta_title': '...', 'article': '...' }
-    """
     s = config.get('site_settings', {})
     t = config.get('theme', {})
     links = config.get('site_links', [])
 
-    # 1. Navigation HTML
+    # Navigation HTML
     nav_html = ""
     for link in links:
         slug = link['slug'].strip('/')
-        # Logic: If we are on home, link is /nfl/. If on /nfl/, link is ./
-        # For simplicity in static hosting, we use absolute /slug/ paths
         nav_html += f'<a href="/{slug}/">{link["title"]}</a>\n'
 
-    # 2. Inject Variables
+    # Inject Variables
     html = template
-    
-    # Colors
     html = html.replace('{{BRAND_PRIMARY}}', t.get('color_accent', '#D00000'))
     html = html.replace('{{BRAND_DARK}}', t.get('brand_dark', '#8a0000'))
     html = html.replace('{{ACCENT}}', t.get('color_accent', '#FFD700'))
     html = html.replace('{{STATUS}}', t.get('color_live', '#00e676'))
     
-    # Global Site Info
     html = html.replace('{{SITE_NAME}}', s.get('site_name', 'StreamEast'))
     html = html.replace('{{LOGO_URL}}', s.get('logo_url', '/assets/streameast-logo-hd.jpg'))
     html = html.replace('{{DOMAIN}}', s.get('domain', 'streameast.app'))
     html = html.replace('{{NAV_LINKS}}', nav_html)
 
-    # 3. Page Specific Info
     if page_data:
         # SUBPAGE
         html = html.replace('{{META_TITLE}}', page_data.get('meta_title', ''))
         html = html.replace('{{META_DESC}}', page_data.get('meta_desc', ''))
         html = html.replace('{{HOMEPAGE_ARTICLE}}', page_data.get('article', ''))
         
-        # Adjust Relative Paths for Subfolder
+        # Adjust Relative Paths
         html = html.replace('src="/assets', 'src="../assets')
         html = html.replace('href="/assets', 'href="../assets')
-        html = html.replace('href="/', 'href="../') # Fix logo
+        html = html.replace('href="/', 'href="../') 
         html = html.replace('data/matches.json', '../data/matches.json')
 
-        # Inject JS Flag
         js_config = f'window.PAGE_CATEGORY = "{page_data["title"]}"; window.IS_SUBPAGE = true;'
-        # We append this to the body if the placeholder isn't there, or use a known hook
         if 'window.IS_SUBPAGE = false;' in html:
             html = html.replace('window.IS_SUBPAGE = false;', js_config)
         else:
-            # Fallback: Inject before closing body
             html = html.replace('</body>', f'<script>{js_config}</script></body>')
-
     else:
         # HOMEPAGE
         html = html.replace('{{META_TITLE}}', s.get('meta_title', ''))
         html = html.replace('{{META_DESC}}', s.get('meta_desc', ''))
         
-        # Load Home Article
         article_content = ""
         if os.path.exists('data/articles/home.html'):
-            with open('data/articles/home.html', 'r') as f: article_content = f.read()
+            with open('data/articles/home.html', 'r', encoding='utf-8') as f: article_content = f.read()
         html = html.replace('{{HOMEPAGE_ARTICLE}}', article_content)
 
-    # 4. Static Schema
+    # Static Schema
     static_schema = {
         "@context": "https://schema.org",
         "@graph": [
@@ -237,29 +229,41 @@ def build_single_page(template, config, page_data=None):
 def generate_all_pages(config):
     print("Generating Pages...")
     
-    # Load Template
+    # 1. LOAD TEMPLATE (With Error Checking)
+    if not os.path.exists('assets/master_template.html'):
+        print("❌ CRITICAL ERROR: assets/master_template.html NOT FOUND!")
+        print(f"Current Directory: {os.getcwd()}")
+        print(f"Directory Contents: {os.listdir('.')}")
+        if os.path.exists('assets'):
+            print(f"Assets Contents: {os.listdir('assets')}")
+        sys.exit(1) # Force workflow failure so you see red x
+
     try:
-        with open('assets/master_template.html', 'r') as f: template = f.read()
-    except FileNotFoundError:
-        print("CRITICAL: assets/master_template.html not found.")
-        return
+        # FORCE UTF-8 TO HANDLE EMOJIS 🏀
+        with open('assets/master_template.html', 'r', encoding='utf-8') as f: 
+            template = f.read()
+    except Exception as e:
+        print(f"❌ Error reading template: {e}")
+        sys.exit(1)
 
-    # 1. Generate Homepage
-    home_html = build_single_page(template, config, page_data=None)
-    with open('index.html', 'w') as f: f.write(home_html)
-    print("Saved index.html")
+    # 2. HOMEPAGE
+    try:
+        home_html = build_single_page(template, config, page_data=None)
+        with open('index.html', 'w', encoding='utf-8') as f: f.write(home_html)
+        print("✅ Saved index.html")
+    except Exception as e:
+        print(f"❌ Error saving index.html: {e}")
+        sys.exit(1)
 
-    # 2. Generate Sub-pages
+    # 3. SUBPAGES
     for link in config.get('site_links', []):
         slug = link['slug'].strip('/')
-        # Create directory
         if not os.path.exists(slug): os.makedirs(slug, exist_ok=True)
         
-        # Load specific article
         cat_article = ""
         article_path = f"data/articles/{slug}.html"
         if os.path.exists(article_path):
-            with open(article_path, 'r') as f: cat_article = f.read()
+            with open(article_path, 'r', encoding='utf-8') as f: cat_article = f.read()
 
         page_data = {
             'slug': slug,
@@ -271,30 +275,30 @@ def generate_all_pages(config):
 
         sub_html = build_single_page(template, config, page_data)
         
-        with open(f"{slug}/index.html", 'w') as f: f.write(sub_html)
-        print(f"Saved {slug}/index.html")
+        with open(f"{slug}/index.html", 'w', encoding='utf-8') as f: f.write(sub_html)
+        print(f"✅ Saved {slug}/index.html")
 
 # ==========================================
-# MAIN
+# MAIN EXECUTION
 # ==========================================
 if __name__ == "__main__":
-    print("Starting Update...")
+    print("--- Starting Match Update ---")
+    
+    # Ensure data folder exists
+    os.makedirs('data', exist_ok=True)
+    
     conf = load_config()
     
-    # 1. API Fetch
     s_data = fetch_streamed_pk(conf['api_keys'].get('streamed_url', ''))
     t_data = fetch_topembed(conf['api_keys'].get('topembed_url', ''))
     
-    # 2. Merge & Process
     merged = merge_matches(s_data, t_data)
     final_json = process_data(merged, conf)
     
-    # 3. Save JSON (CRITICAL FIX: Create directory first)
-    os.makedirs('data', exist_ok=True) # <--- THIS FIXES YOUR ERROR
-    with open('data/matches.json', 'w') as f:
+    # Save with UTF-8
+    with open('data/matches.json', 'w', encoding='utf-8') as f:
         json.dump(final_json, f)
-    print("matches.json saved.")
+    print("✅ matches.json saved.")
     
-    # 4. Build HTML
     generate_all_pages(conf)
-    print("Done.")
+    print("--- Update Complete ---")
