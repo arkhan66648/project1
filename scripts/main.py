@@ -28,10 +28,7 @@ LEAGUE_KEYWORDS = {
     "Tennis": ["Tennis", "ATP", "WTA", "Open"]
 }
 
-TEAM_COLORS = [
-    "#D00000", "#0056D2", "#008f39", "#7C3AED", "#FFD700", "#ff5722", "#00bcd4", "#e91e63"
-]
-
+TEAM_COLORS = ["#D00000", "#0056D2", "#008f39", "#7C3AED", "#FFD700", "#ff5722", "#00bcd4", "#e91e63"]
 USA_TARGETS = ["NFL", "NBA", "UFC", "NHL", "MLB"]
 NOW_MS = int(time.time() * 1000)
 
@@ -49,10 +46,7 @@ def obfuscate_link(link):
     return base64.b64encode(link.encode('utf-8')).decode('utf-8')
 
 def detect_sport_and_league(category, title):
-    # Returns (Sport, League)
     text = (str(category) + " " + str(title)).upper()
-    
-    # 1. Identify Sport
     sport = "Other"
     for sp, keywords in LEAGUE_KEYWORDS.items():
         for k in keywords:
@@ -60,56 +54,35 @@ def detect_sport_and_league(category, title):
                 sport = sp
                 break
         if sport != "Other": break
-    
     league = category if category and category != sport else sport
-    
     if category == "American Football": league = "NFL"
     if category == "Basketball": league = "NBA"
-    
     return sport, league
 
 def generate_team_ui(title):
     teams = []
-    
-    # Splitters
     parts = title.split(' vs ')
     if len(parts) < 2: parts = title.split(' - ')
-    
-    if len(parts) < 2:
-        parts = [title]
+    if len(parts) < 2: parts = [title]
 
     for name in parts:
         clean_name = name.strip()
         if not clean_name: continue
-        
-        # Letter: First char
         letter = clean_name[0].upper()
-        
         hash_val = int(hashlib.md5(clean_name.encode('utf-8')).hexdigest(), 16)
         color = TEAM_COLORS[hash_val % len(TEAM_COLORS)]
-        
-        teams.append({
-            "name": clean_name,
-            "letter": letter,
-            "color": color
-        })
-        
+        teams.append({"name": clean_name, "letter": letter, "color": color})
     return teams
 
 def apply_hype_engine(real_viewers, sport):
-    # Hype Engine Logic
     v = int(real_viewers)
     if v == 0: return 0
-    
     multiplier = 1
     if v < 100: multiplier = 15
     elif 100 <= v < 10000: multiplier = 15
     elif 10000 <= v < 50000: multiplier = 10
     elif v >= 50000: multiplier = 5
-    
     hype_viewers = v * multiplier
-    
-    max_cap = SPORT_PRIORITY.get(sport, 50) * 2000 
     
     if sport == "Other" and hype_viewers > 20000:
         hype_viewers = 20000 + (hype_viewers - 20000) // 10
@@ -164,7 +137,6 @@ def fetch_topembed(url):
                 start_ms = int(ev['unix_timestamp']) * 1000
                 sport, league = detect_sport_and_league(ev.get('sport', ''), ev['match'])
                 raw_link = ev.get('url', '')
-                
                 matches.append({
                     "id": f"te_{ev['unix_timestamp']}_{ev['match'][:5].replace(' ','')}",
                     "title": ev['match'],
@@ -181,7 +153,7 @@ def fetch_topembed(url):
         return []
 
 # ==========================================
-# 4. PROCESSING (The Brain)
+# 4. PROCESSING
 # ==========================================
 def merge_matches(master_list, backup_list):
     final_list = master_list.copy()
@@ -201,13 +173,7 @@ def merge_matches(master_list, backup_list):
     return final_list
 
 def process_data(matches, config):
-    output = { 
-        "updated": NOW_MS, 
-        "important": [],
-        "categories": {},
-        "all_matches": []
-    }
-    
+    output = { "updated": NOW_MS, "important": [], "categories": {}, "all_matches": [] }
     trending_ids = set()
 
     for m in matches:
@@ -215,10 +181,10 @@ def process_data(matches, config):
         
         time_diff = m['start_time'] - NOW_MS
         is_live = m['start_time'] <= NOW_MS
+        
         real_viewers = m['viewers']
         hype_viewers = apply_hype_engine(real_viewers, m['sport'])
         
-        # 4. Enhance Object
         m['is_live'] = is_live
         m['viewers'] = hype_viewers
         m['show_button'] = is_live or (0 < time_diff < 1800000)
@@ -236,10 +202,10 @@ def process_data(matches, config):
 
     for m in output['all_matches']:
         if m['id'] in trending_ids: continue
-        
         sport = m['sport']
         if sport not in output['categories']: output['categories'][sport] = []
         output['categories'][sport].append(m)
+
     def sort_score(x):
         p = SPORT_PRIORITY.get(x['sport'], 10)
         return (p * 1000) + x['viewers']
@@ -252,12 +218,9 @@ def process_data(matches, config):
     return output
 
 # ==========================================
-# 5. HTML GENERATOR (SSG)
+# 5. HTML GENERATOR
 # ==========================================
 def build_html(template, config, page_conf):
-    """
-    page_conf: { slug, type, h1, hero_text, meta_title, meta_desc, content }
-    """
     s = config.get('site_settings', {})
     t = config.get('theme', {})
     soc = config.get('social_stats', {})
@@ -268,10 +231,13 @@ def build_html(template, config, page_conf):
         
     hero_pills = ""
     for item in config.get('hero_categories', []):
-
-page_title = page_conf.get('title', page_conf.get('h1', ''))
-item_title = item.get('title', '') 
-is_active = "active" if page_title == item_title else ""
+        
+        # --- FIXED LOGIC START ---
+        page_title = page_conf.get('title', page_conf.get('h1', ''))
+        item_title = item.get('title', '')
+        is_active = "active" if page_title == item_title else ""
+        # --- FIXED LOGIC END ---
+        
         path = f"/{item['folder']}/"
         hero_pills += f'<a href="{path}" class="cat-pill {is_active}">{item["title"]}</a>'
 
@@ -279,15 +245,17 @@ is_active = "active" if page_title == item_title else ""
     for k in s.get('footer_keywords', []):
         if k: footer_kw += f'<span class="p-tag" onclick="handlePartnerTerm(\'{k.strip()}\')">{k.strip()}</span>'
 
+    # JS CONFIG LOGIC
+    # --- FIXED LOGIC START ---
+    cat_title = page_conf.get('title', 'home')
+    slug_safe = page_conf.get('slug', 'home')
+    js_config = f'window.PAGE_CATEGORY = "{cat_title}"; window.IS_SUBPAGE = {str(slug_safe != "home").lower()};'
+    # --- FIXED LOGIC END ---
+
     search_style = 'block' if page_conf['type'] in ['home', 'schedule'] else 'none'
     matches_style = 'block' if page_conf['type'] in ['home', 'schedule'] else 'none'
     
-cat_title = page_conf.get('title', 'home')
-js_config = f'window.PAGE_CATEGORY = "{cat_title}"; window.IS_SUBPAGE = {str(page_conf.get("slug") != "home").lower()};'
-    
     html = template
-    
-    # Theme
     html = html.replace('{{BRAND_PRIMARY}}', t.get('brand_primary', '#D00000'))
     html = html.replace('{{BRAND_DARK}}', t.get('brand_dark', '#8a0000'))
     html = html.replace('{{ACCENT}}', t.get('accent_gold', '#FFD700'))
@@ -335,7 +303,6 @@ js_config = f'window.PAGE_CATEGORY = "{cat_title}"; window.IS_SUBPAGE = {str(pag
         html = html.replace('href="/', 'href="../') 
         html = html.replace('data/matches.json', '../data/matches.json')
     
-    js_config = f'window.PAGE_CATEGORY = "{js_category}"; window.IS_SUBPAGE = {str(page_conf["slug"] != "home").lower()};'
     html = html.replace('//JS_CONFIG_HERE', js_config)
 
     schema = {
@@ -358,9 +325,11 @@ def generate_site(config):
     with open('assets/master_template.html', 'r', encoding='utf-8') as f:
         template = f.read()
 
+    # --- FIXED LOGIC START ---
     pages = config.get('pages', [])
     if not pages: 
-        pages = [{"title": "Home", "slug": "home", "type": "schedule", "h1": "Live Sports", "hero_text": "Welcome", "meta_title": "Home", "content": ""}]
+        pages = [{"title": "Home", "slug": "home", "type": "schedule", "h1": "Live Sports", "hero_text": "Welcome", "meta_title": "Home", "content": "", "meta_desc": ""}]
+    # --- FIXED LOGIC END ---
 
     for p in pages:
         html = build_html(template, config, p)
