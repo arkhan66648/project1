@@ -3,283 +3,147 @@ import time
 import requests
 import os
 import base64
-import shutil
 from datetime import datetime
 
 # ==========================================
-# CONFIGURATION
+# 1. THEME PRESETS (Professional Colors)
 # ==========================================
-
-# 1. League Detection / Keywords
-LEAGUE_KEYWORDS = {
-    "NFL": ["NFL", "Super Bowl", "American Football"],
-    "NBA": ["NBA", "Basketball", "Playoffs"],
-    "NHL": ["NHL", "Ice Hockey", "Stanley Cup"],
-    "MLB": ["MLB", "Baseball"],
-    "UFC": ["UFC", "MMA", "Fighting", "Fight Night", "Bellator"],
-    "F1": ["Formula 1", "F1", "Grand Prix"],
-    "Boxing": ["Boxing", "Fight"],
-    "Soccer": ["Soccer", "Premier League", "Champions League", "La Liga", "MLS", "Bundesliga"]
+THEMES = {
+    "red": {
+        "brand_primary": "#D00000",
+        "brand_dark": "#8a0000",
+        "accent": "#FFD700",
+        "status": "#00e676"
+    },
+    "blue": {
+        "brand_primary": "#0056D2",
+        "brand_dark": "#003c96",
+        "accent": "#00C2CB",
+        "status": "#00e676"
+    },
+    "green": {
+        "brand_primary": "#008f39",
+        "brand_dark": "#006428",
+        "accent": "#BBF7D0",
+        "status": "#22c55e"
+    },
+    "purple": {
+        "brand_primary": "#7C3AED",
+        "brand_dark": "#5B21B6",
+        "accent": "#F472B6",
+        "status": "#34d399"
+    }
 }
 
-# 2. Priority Settings (USA Focus)
-USA_TARGETS = ["NFL", "NBA", "UFC", "NHL", "MLB"]
-NOW_MS = int(time.time() * 1000)
-
+# Standard Config Load
 def load_config():
     with open('data/config.json', 'r') as f:
         return json.load(f)
 
-# ==========================================
-# HELPER: ENCRYPTION (BASE64)
-# ==========================================
-def obfuscate_link(link):
-    """
-    Takes a raw URL (e.g., https://stream.com/live)
-    Returns Base64 String (e.g., aHR0cHM6Ly9zdHJlYW0uY29tL2xpdmU=)
-    """
-    if not link: return ""
-    # Convert string to bytes, encode, then back to string
-    return base64.b64encode(link.encode('utf-8')).decode('utf-8')
+# ... [Keep your fetch_streamed_pk, fetch_topembed, obfuscate_link, merge_matches functions EXACTLY as they were in previous steps] ...
 
-def detect_league(category, title):
-    text = (str(category) + " " + str(title)).upper()
-    
-    for league, keywords in LEAGUE_KEYWORDS.items():
-        for k in keywords:
-            if k.upper() in text:
-                if category == "American Football": return "NFL" 
-                if category == "Basketball": return "NBA"
-                if category in ["Fighting", "MMA"]: return "UFC"
-                return league
-    return category
+# ... [Include process_data function from previous steps] ...
 
 # ==========================================
-# FETCHING DATA
+# NEW: STATIC HTML GENERATOR
 # ==========================================
+def generate_html(data, config):
+    # 1. Select Theme (Default to Red if not set)
+    selected_theme = config.get('theme_color', 'red')
+    colors = THEMES.get(selected_theme, THEMES['red'])
 
-def fetch_streamed_pk(url):
-    try:
-        data = requests.get(url, timeout=15).json()
-        matches = []
-        for m in data:
-            title = m.get('title', 'Unknown Match')
-            raw_cat = m.get('category', 'Other')
-            league = detect_league(raw_cat, title)
-            
-            # Process Streams: Encode them immediately
-            processed_streams = []
-            for src in m.get('sources', []):
-                # Streamed.pk often gives an ID or a direct link. 
-                # We assume 'id' or 'url' is the stream target.
-                raw_link = src.get('url') or src.get('id') or ""
-                processed_streams.append({
-                    "source": src.get('source', 'streamed'),
-                    "id": obfuscate_link(str(raw_link)), # ENCODING APPLIED HERE
-                    "resolution": "HD"
-                })
+    # 2. Build Navigation HTML (Server Side for Speed)
+    # This loops through your site_links and builds the <a> tags
+    nav_html = ""
+    for link in config['site_links']:
+        slug = link['slug'].strip('/')
+        # Determine if we are at root or subpage later, 
+        # but for static build we usually assume relative paths
+        nav_html += f'<a href="/{slug}">{link["title"]}</a>\n'
 
-            matches.append({
-                "id": str(m['id']),
-                "title": title,
-                "sport": league,
-                "start_time": m['date'], # Already in MS
-                "viewers": m.get('viewers', 0),
-                "streams": processed_streams,
-                "teams": m.get('teams', {}),
-                "image": f"https://streamed.pk/api/images/poster/{m['teams']['home']['badge']}/{m['teams']['away']['badge']}.webp" if m.get('teams') else "assets/fallback.jpg",
-                "origin": "streamed"
-            })
-        return matches
-    except Exception as e:
-        print(f"Error fetching Streamed.pk: {e}")
-        return []
-
-def fetch_topembed(url):
-    try:
-        data = requests.get(url, timeout=15).json()
-        matches = []
-        # TopEmbed structure: events -> "date" -> [list]
-        for date_key, events in data.get('events', {}).items():
-            for ev in events:
-                start_ms = int(ev['unix_timestamp']) * 1000
-                league = detect_league(ev.get('sport', ''), ev['match'])
-                
-                # Format & Encode Stream
-                raw_link = ev.get('url', '')
-                stream_obj = {
-                    "source": "topembed", 
-                    "id": obfuscate_link(str(raw_link)), # ENCODING APPLIED HERE
-                    "resolution": "HD" 
+    # 3. Build Static Schema (WebSite + Organization)
+    # We bake this into the HTML so Google sees it immediately
+    static_schema = {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "WebSite",
+                "name": config['site_settings']['site_name'],
+                "url": f"https://{config['site_settings']['domain']}",
+                "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": f"https://{config['site_settings']['domain']}/?q={{search_term_string}}",
+                    "query-input": "required name=search_term_string"
                 }
-
-                matches.append({
-                    "id": f"te_{ev['unix_timestamp']}_{ev['match'][:5].replace(' ','')}",
-                    "title": ev['match'],
-                    "sport": league,
-                    "start_time": start_ms,
-                    "viewers": 0, # TopEmbed doesn't provide viewers
-                    "streams": [stream_obj],
-                    "teams": {},
-                    "image": "assets/fallback.jpg",
-                    "origin": "topembed"
-                })
-        return matches
-    except Exception as e:
-        print(f"Error fetching TopEmbed: {e}")
-        return []
-
-# ==========================================
-# MERGING LOGIC
-# ==========================================
-
-def merge_matches(master_list, backup_list):
-    final_list = master_list.copy()
-    
-    for backup in backup_list:
-        found = False
-        for master in final_list:
-            # Match Logic: Same Sport + Time within 45m
-            time_diff = abs(master['start_time'] - backup['start_time'])
-            
-            if master['sport'] == backup['sport'] and time_diff < (45 * 60 * 1000):
-                # Fuzzy Title Logic
-                m_words = set(w.lower() for w in master['title'].split() if len(w) > 3)
-                b_words = set(w.lower() for w in backup['title'].split() if len(w) > 3)
-                
-                # If titles share significant words, merge streams
-                if m_words & b_words: 
-                    master['streams'].extend(backup['streams'])
-                    found = True
-                    break
-        
-        # Add unique backup matches only if they are target sports
-        if not found and backup['sport'] in USA_TARGETS:
-            final_list.append(backup)
-            
-    return final_list
-
-# ==========================================
-# PROCESSING & RANKING
-# ==========================================
-
-def process_data(matches, config):
-    output = {
-        "updated": NOW_MS,
-        "important": [],
-        "categories": {},
-        "home_schema": []
+            },
+            {
+                "@type": "Organization",
+                "name": config['site_settings']['site_name'],
+                "url": f"https://{config['site_settings']['domain']}",
+                "logo": config['site_settings']['logo_url'],
+                "sameAs": config.get('social_links', [])
+            }
+        ]
     }
-    
-    # Pre-calculate domain for schema
-    domain = config['site_settings'].get('domain', 'localhost')
+    static_schema_json = json.dumps(static_schema)
 
-    for m in matches:
-        # 1. Cleanup Old Matches (Keep if high viewers or barely finished)
-        if NOW_MS > (m['start_time'] + (4 * 3600000)) and m['viewers'] < 50:
-            continue
-            
-        # 2. Categorize
-        if m['sport'] not in output['categories']:
-            output['categories'][m['sport']] = []
-        output['categories'][m['sport']].append(m)
-        
-        # 3. Hero Table Logic (Important)
-        # Condition: Live OR (Target Sport & Starts < 1hr)
-        time_diff = m['start_time'] - NOW_MS
-        is_live = m['start_time'] <= NOW_MS
-        starts_soon = 0 < time_diff < 3600000 # 1 Hour
-
-        m['is_live'] = is_live
-        
-        is_important = False
-        if is_live and m['viewers'] > 50: is_important = True
-        if starts_soon and m['sport'] in USA_TARGETS: is_important = True
-        
-        # Flag for frontend button
-        # Show button if Live OR starts in < 30 mins
-        m['show_button'] = is_live or (0 < time_diff < 1800000)
-
-        if is_important:
-            output['important'].append(m)
-            
-            # Schema for Important events
-            output['home_schema'].append({
-                "@context": "https://schema.org",
-                "@type": "BroadcastEvent",
-                "name": m['title'],
-                "startDate": datetime.fromtimestamp(m['start_time']/1000).isoformat(),
-                "eventStatus": "https://schema.org/EventLive" if is_live else "https://schema.org/EventScheduled",
-                "location": {"@type": "Place", "name": "Online"},
-                "url": f"https://{domain}/?watch={m['id']}"
-            })
-
-    # Sort by Viewers (Descending)
-    output['important'].sort(key=lambda x: x['viewers'], reverse=True)
-    
-    return output
-
-# ==========================================
-# PAGE GENERATION (SSG)
-# ==========================================
-
-def generate_pages(data, config):
-    # Load Template
+    # 4. Load Your Master Template
+    # We expect your design to be saved as 'assets/master_template.html'
     try:
-        with open('assets/page_template.html', 'r') as f: template = f.read()
+        with open('assets/master_template.html', 'r') as f:
+            html = f.read()
     except FileNotFoundError:
-        print("Template not found. Skipping page gen.")
+        print("Master template not found!")
         return
 
-    # Create Pages for Site Links
-    for page_conf in config.get('site_links', []):
-        slug = page_conf['slug'].strip('/')
-        title = page_conf['title']
-        
-        # 1. Prepare Folder: /nfl/
-        if not os.path.exists(slug):
-            os.makedirs(slug, exist_ok=True)
-            
-        # 2. Prepare Data
-        # We inject the specific category into the JS variable in the template
-        article_path = f"data/articles/{slug}.html"
-        article_content = ""
-        if os.path.exists(article_path):
-            with open(article_path, 'r') as af: article_content = af.read()
+    # 5. INJECT VARIABLES (The Magic)
+    
+    # CSS Colors
+    html = html.replace('{{BRAND_PRIMARY}}', colors['brand_primary'])
+    html = html.replace('{{BRAND_DARK}}', colors['brand_dark'])
+    html = html.replace('{{ACCENT}}', colors['accent'])
+    html = html.replace('{{STATUS}}', colors['status'])
+    
+    # Content
+    s = config['site_settings']
+    html = html.replace('{{SITE_NAME}}', s['site_name'])
+    html = html.replace('{{META_TITLE}}', s['meta_title'])
+    html = html.replace('{{META_DESC}}', s['meta_desc'])
+    html = html.replace('{{LOGO_URL}}', s['logo_url'])
+    html = html.replace('{{DOMAIN}}', s['domain'])
+    
+    # Navigation & Article
+    html = html.replace('{{NAV_LINKS}}', nav_html)
+    
+    # Home Article (Load from file if exists)
+    try:
+        with open('data/articles/home.html', 'r') as af:
+            html = html.replace('{{HOMEPAGE_ARTICLE}}', af.read())
+    except:
+        html = html.replace('{{HOMEPAGE_ARTICLE}}', "<p>Welcome to the #1 Streaming Site.</p>")
 
-        # 3. Replace Placeholders
-        html = template
-        html = html.replace('{{TITLE}}', page_conf.get('meta_title', title))
-        html = html.replace('{{DESC}}', page_conf.get('meta_desc', ''))
-        html = html.replace('{{H1}}', title)
-        html = html.replace('{{CATEGORY}}', title) # JS uses this to filter
-        html = html.replace('{{ARTICLE}}', article_content)
+    # Schema Injection
+    html = html.replace('{{STATIC_SCHEMA}}', static_schema_json)
 
-        # 4. Save
-        with open(f"{slug}/index.html", 'w') as f:
-            f.write(html)
-        print(f"Generated: {slug}/index.html")
+    # 6. Save as index.html
+    with open('index.html', 'w') as f:
+        f.write(html)
+    print("Generated Optimized index.html")
+
+    # 7. Generate Sub-Pages (Similar logic, just updated paths)
+    # [You can adapt the previous generate_pages function here using the same logic]
 
 # ==========================================
-# MAIN
+# MAIN EXECUTION
 # ==========================================
 if __name__ == "__main__":
-    print("--- Starting Update ---")
     conf = load_config()
-    
-    # Fetch & Merge
-    s_data = fetch_streamed_pk(conf['api_keys']['streamed_url'])
-    t_data = fetch_topembed(conf['api_keys']['topembed_url'])
-    merged = merge_matches(s_data, t_data)
-    
-    # Process (Encryption happens inside fetch functions)
-    final_json = process_data(merged, conf)
+    # ... Fetch, Merge, Process logic ...
+    # final_json = ...
     
     # Save Data
     with open('data/matches.json', 'w') as f:
         json.dump(final_json, f)
-    print("matches.json saved.")
         
-    # Build Pages
-    generate_pages(final_json, conf)
-    print("--- Update Complete ---")
+    # Generate HTML
+    generate_html(final_json, conf)
