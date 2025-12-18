@@ -3,85 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Meta info will be populated by JS for fallback, but best hardcoded for main page -->
-    <title>StreamEast US - Live Sports</title>
-    <meta name="description" content="Watch NFL, NBA, UFC and MLB live streams free.">
     
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="icon" href="assets/icon.png"> <!-- Fallback, config updates this -->
+    <title>StreamEast - Official Free Sports Streaming</title>
+    <meta name="description" content="Watch NFL, NBA, UFC, and Soccer streams live in HD. Free sports streaming with no sign-up required.">
+    <link rel="canonical" href="https://streameast.app/">
+    <meta name="theme-color" content="#3b82f6">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="StreamEast - Official Free Sports Streaming">
+    <meta property="og:image" content="assets/logo.png">
+    
+    <!-- 1. STATIC SCHEMA (WebSite, Org) - Injected by Python -->
+    <script type="application/ld+json">
+        {"@context": "https://schema.org", "@graph": [{"@type": "WebSite", "name": "StreamEast US", "url": "https://streameast.app"}, {"@type": "Organization", "name": "StreamEast US", "logo": "assets/logo.png"}]}
+    </script>
+    
+    <!-- 2. DYNAMIC SCHEMA (Live Badge) - Injected by JS -->
+    <script id="dynamic-schema" type="application/ld+json"></script>
+
+    <style>
+        /* --- DYNAMIC THEME VARIABLES --- */
+        :root {
+            --brand-primary: #3b82f6;
+            --brand-dark: #8a0000;
+            --status-green: #ef4444;
+            --accent-gold: #3b82f6;
+            --bg-body: #050505;
+            --bg-glass: rgba(18, 18, 18, 0.85);
+            --border: #222;
+            --text-main: #ffffff;
+            --text-muted: #888;
+        }
+
+        /* [KEEP ALL YOUR CSS EXACTLY AS YOU DESIGNED IT] */
+        /* ... Paste your CSS here ... */
+        
+        /* Add this for the JS injection to work */
+        .hidden { display: none !important; }
+    </style>
 </head>
 <body>
+    
+    <!-- [Social Sidebars Code ...] -->
 
-    <!-- Header -->
-    <header class="sticky-header">
-        <div class="logo"><a href="/">StreamRanking</a></div>
-        <nav id="site-links-nav">
-            <!-- JS Inject -->
-        </nav>
+    <header>
+        <div class="header-container">
+            <a href="/" class="logo-link">
+                <img src="assets/logo.png" alt="StreamEast US" width="40" height="40" class="logo-img">
+                <div class="logo-text">StreamEast US</div>
+            </a>
+
+            <nav class="nav-links">
+                <!-- Python injects menu here -->
+                <a href="/nfl/">NFL</a>
+ 
+            </nav>
+            <button class="hamburger" onclick="toggleMenu()">☰</button>
+        </div>
     </header>
 
-    <!-- Hero -->
-    <section class="hero">
-        <h1 id="hero-title">Loading...</h1>
-        <div class="live-status">
-            <span class="live-dot"></span> <span id="status-text">Live</span>
-        </div>
-    </section>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="/nfl/">NFL</a>
 
-    <!-- Search -->
-    <div class="search-container">
-        <input type="text" id="match-search" placeholder="Search for Team, League or Event...">
+    </div>
+
+    <div class="hero">
+        <div class="sys-status"><div class="dot"></div> System Status: Online</div>
+        <h1>StreamEast US - #1 Free Live Sports</h1>
+        
+        <p class="entity-intro">
+            Welcome to the official <strong>StreamEast US</strong>. The most reliable platform for free NBA, NFL, UFC, and MLB streams in HD.
+        </p>
+
+        <div class="cat-scroll">
+            <a href="#nba" class="cat-pill">🏀 NBA</a>
+            <a href="#nfl" class="cat-pill">🏈 NFL</a>
+            <a href="#ufc" class="cat-pill">🥊 UFC</a>
+            <a href="#mlb" class="cat-pill">⚾ MLB</a>
+        </div>
     </div>
 
     <div class="container">
         
-        <!-- Important Matches Table -->
-        <section class="match-section" id="section-important">
-            <h2>🔥 Trending & Live Now</h2>
-            <table class="match-table">
-                <thead>
-                    <tr>
-                        <th class="col-time">Time</th>
-                        <th class="col-match">Match Details</th>
-                        <th class="col-action">Stream</th>
-                    </tr>
-                </thead>
-                <tbody id="table-important">
-                    <!-- JS Rows -->
-                </tbody>
-            </table>
-        </section>
-
-        <!-- Dynamic Category Tables -->
-        <div id="category-wrapper">
-            <!-- JS will build sections here -->
+        <!-- Search Warning Box -->
+        <div id="searchMsgBox" style="display:none; background:#1a1a1a; border:1px solid var(--brand-primary); padding:15px; border-radius:8px; margin-bottom:20px; text-align:center;">
+             <h3 style="margin:0 0 5px 0; color:white;">Looking for <span id="searchTermDisplay" style="color:var(--brand-primary)"></span>?</h3>
+             <p style="margin:0; color:#aaa; font-size:0.85rem;">StreamEast US is the #1 authorized alternative.</p>
         </div>
 
-        <!-- SEO Content -->
-        <article class="seo-content" id="home-article">
-            <!-- Content loaded from data/articles/home.html or default -->
-            <h3>Fastest Sports Streams</h3>
-            <p>Welcome to the best place to watch NFL, NBA, UFC, and Soccer. We aggregate streams from Streamed.pk and TopEmbed to bring you the most reliable HD links. Our system updates every 5 minutes.</p>
-        </article>
+        <!-- ================= LIVE MATCHES (Injected by JS) ================= -->
+        <div class="sec-head">
+            <div class="sec-title"><div class="live-dot"></div> Important & Live</div>
+        </div>
+
+        <!-- This is where JS will inject rows -->
+        <div class="match-list" id="live-matches-container">
+            <div style="padding:20px; text-align:center; color:#666;">Loading live streams...</div>
+        </div>
+
+        <div class="show-more-container">
+            <button class="btn-show-more" id="btnShowMore" style="display:none">Show More ▼</button>
+        </div>
+
+        <!-- ================= UPCOMING SECTION ================= -->
+        <div class="sec-head">
+            <div class="sec-title">📅 Upcoming Schedule</div>
+        </div>
+        <div class="match-list" id="upcoming-matches-container"></div>
+
+        <!-- ================= ARTICLE (Editable via Admin) ================= -->
+        <div class="seo-box" id="faq">
+            
+        </div>
+
+        <div class="partners">
+            <div style="font-size:0.7rem; font-weight:700; color:#444; margin-bottom:10px;">POPULAR SEARCHES</div>
+            <a href="/?q=methstreams" class="p-tag">MethStreams</a>
+            <a href="/?q=crackstreams" class="p-tag">CrackStreams</a>
+        </div>
+
     </div>
 
-    <!-- HIDDEN PLAYER OVERLAY (CLOAKING) -->
-    <div id="stream-overlay" class="player-overlay">
-        <div class="overlay-header">
-            <span id="overlay-title">Watching Stream</span>
-            <button class="close-btn" onclick="closePlayer()">✖ Close Stream</button>
-        </div>
-        <div class="iframe-container" id="player-box">
-            <!-- Iframe injected here on click -->
-        </div>
+    <footer>
+        &copy; 2025 StreamEast US. All rights reserved.
+    </footer>
+
+    <!-- Video Modal -->
+    <div class="video-modal" id="vModal">
+        <div class="vm-head"><button class="vm-close" onclick="closeStream()">Close ✕</button></div>
+        <div id="vContainer" style="flex:1; background:black; display:flex; align-items:center; justify-content:center;"></div>
     </div>
 
-    <script>
-        // Configuration flags
-        window.IS_SUBPAGE = false;
-        window.PAGE_CATEGORY = "ALL";
-    </script>
+    <!-- MAIN JS -->
     <script src="assets/js/main.js"></script>
-
 </body>
 </html>
