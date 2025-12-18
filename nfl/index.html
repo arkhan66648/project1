@@ -4,51 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Watch NFL Live Streams Free</title>
-    <meta name="description" content="Full schedule of NFL games live in HD.">
-    <meta name="theme-color" content="#3b82f6">
+    <title>🏈 NFL Live Streams - None</title>
+    <meta name="description" content="Watch 🏈 NFL live free.">
+    <meta name="theme-color" content="#d00000">
     <link rel="canonical" href="https://streameast.app/">
+    <link rel="icon" href="../assets/logo.png">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Watch NFL Live Streams Free">
+    <meta property="og:title" content="🏈 NFL Live Streams - None">
     <meta property="og:image" content="assets/logo.png">
     <meta property="og:url" content="https://streameast.app/">
-    <link rel="icon" href="assets/icon.png">
 
-    <!-- STATIC SCHEMA (Injected by Python) -->
-    <script type="application/ld+json">
-        {"@context": "https://schema.org", "@graph": [{"@type": "WebSite", "name": "StreamEast US", "url": "https://streameast.app"}, {"@type": "Organization", "name": "StreamEast US", "logo": "assets/logo.png"}]}
-    </script>
-    
-    <!-- DYNAMIC SCHEMA (Injected by JS) -->
+    <!-- STATIC SCHEMA -->
+    <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebSite", "name": null, "url": "https://streameast.app"}, {"@type": "Organization", "name": null, "logo": "assets/logo.png"}]}</script>
+    <!-- DYNAMIC SCHEMA (Live Badge) -->
     <script id="dynamic-schema" type="application/ld+json"></script>
     
     <style>
-        /* --- CORE VARIABLES --- */
         :root {
-            --brand-primary: #3b82f6;
+            --brand-primary: #d00000;
             --brand-dark: #8a0000;
-            --status-green: #ef4444;
-            --accent-gold: #3b82f6;
+            --status-green: #00e676;
+            --accent-gold: #ffd700;
             --bg-body: #050505;
-            --bg-glass: rgba(18, 18, 18, 0.85);
+            --bg-glass: rgba(20, 20, 20, 0.95);
             --border: #222;
             --text-main: #ffffff;
             --text-muted: #888;
+            --font-main: system-ui;
         }
 
-        /* [YOUR CSS EXACTLY AS PROVIDED] */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif; background: var(--bg-body); color: var(--text-main); font-size: 14px; padding-bottom: 70px; }
+        body { margin: 0; font-family: var(--font-main); background: var(--bg-body); color: var(--text-main); font-size: 14px; padding-bottom: 70px; }
         a { text-decoration: none; color: inherit; transition: 0.2s; }
         button { cursor: pointer; border: none; font-family: inherit; }
 
+        /* HEADER */
         header { background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); height: 60px; width: 100%; position: fixed; top: 0; z-index: 100; }
         .header-container { max-width: 1100px; margin: 0 auto; height: 100%; padding: 0 15px; display: flex; align-items: center; justify-content: space-between; }
         
         .logo-link { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-        .logo-img { height: 35px; width: 35px; border-radius: 6px; object-fit: cover; box-shadow: 0 0 10px rgba(208,0,0,0.3); }
-        .logo-text { font-size: 1.4rem; font-weight: 900; font-style: italic; letter-spacing: -1px; text-transform: uppercase; line-height: 1; }
+        .logo-img { height: 35px; width: 35px; border-radius: 6px; object-fit: cover; box-shadow: 0 0 10px rgba(255,255,255,0.1); }
+        .logo-text { font-size: 1.4rem; font-weight: 900; font-style: italic; letter-spacing: -1px; text-transform: uppercase; line-height: 1; color: white; }
         .logo-text span { color: var(--brand-primary); }
 
         .nav-links { display: none; gap: 20px; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #aaa; }
@@ -57,166 +54,188 @@
         
         .mobile-menu { position: fixed; top: 60px; left: 0; width: 100%; background: #0f0f0f; border-bottom: 1px solid var(--border); display: none; flex-direction: column; z-index: 99; }
         .mobile-menu.active { display: flex; }
-        .mobile-menu a { padding: 15px 20px; border-bottom: 1px solid #1f1f1f; font-weight: 600; }
+        .mobile-menu a { padding: 15px 20px; border-bottom: 1px solid #1f1f1f; font-weight: 600; color: #ddd; }
         @media (min-width: 900px) { .nav-links { display: flex; } .hamburger { display: none; } }
 
-        .hero { padding: 90px 15px 15px 15px; text-align: center; background: radial-gradient(circle at top, #1a0505 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); }
+        /* HERO */
+        .hero { padding: 90px 15px 20px 15px; text-align: center; background: radial-gradient(circle at top, #111 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); }
         .sys-status { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 230, 118, 0.08); border: 1px solid rgba(0, 230, 118, 0.2); padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; font-size: 0.75rem; font-weight: 700; color: var(--status-green); }
         .dot { width: 6px; height: 6px; background: var(--status-green); border-radius: 50%; box-shadow: 0 0 8px var(--status-green); animation: pulse 2s infinite; }
-        h1 { margin: 0 0 20px 0; font-size: 1.8rem; line-height: 1.2; color: white; font-weight: 800; }
+        h1 { margin: 0 0 15px 0; font-size: 1.8rem; line-height: 1.2; color: white; font-weight: 800; }
         h1 span { color: var(--brand-primary); }
+        .entity-intro { color: #999; font-size: 0.9rem; line-height: 1.5; text-align: center; max-width: 800px; margin: 0 auto 15px auto; padding: 0 10px; }
 
         .cat-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 10px 5px; justify-content: flex-start; scrollbar-width: none; max-width: 100%; margin: 0 auto; }
         .cat-pill { background: #111; border: 1px solid var(--border); padding: 8px 18px; border-radius: 50px; font-weight: 700; font-size: 0.8rem; white-space: nowrap; color: #ccc; flex-shrink: 0; }
-        .cat-pill:hover, .cat-pill.active { border-color: var(--brand-primary); color: white; background: rgba(208,0,0,0.1); }
+        .cat-pill:hover, .cat-pill.active { border-color: var(--brand-primary); color: white; background: rgba(255,255,255,0.05); }
+        @media (min-width: 1000px) { .cat-scroll { justify-content: center; } }
 
-        .desktop-social { position: fixed; left: 0; top: 50%; transform: translateY(-50%); display: none; flex-direction: column; z-index: 90; background: rgba(10,10,10,0.8); border: 1px solid var(--border); border-left: 0; border-radius: 0 10px 10px 0; overflow: hidden; }
+        /* SEARCH BOX */
+        .search-wrapper { max-width: 600px; margin: 20px auto 0 auto; position: relative; }
+        .search-input { width: 100%; padding: 12px 20px; background: #151515; border: 1px solid #333; border-radius: 50px; color: white; outline: none; transition: 0.3s; }
+        .search-input:focus { border-color: var(--brand-primary); box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+
+        /* SOCIAL BARS */
+        .desktop-social { position: fixed; left: 0; top: 50%; transform: translateY(-50%); display: none; flex-direction: column; z-index: 90; background: rgba(10,10,10,0.9); border: 1px solid var(--border); border-left: 0; border-radius: 0 10px 10px 0; overflow: hidden; }
         .ds-item { padding: 12px 10px; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s; border-bottom: 1px solid #222; width: 60px; }
         .ds-item:last-child { border-bottom: none; }
         .ds-item:hover { background: var(--brand-primary); }
-        .ds-item svg { width: 22px; height: 22px; fill: #ddd; transition: 0.2s; }
+        .ds-item svg { width: 20px; height: 20px; fill: #ddd; }
         .ds-item:hover svg { fill: white; }
         .stat-val { font-size: 0.6rem; font-weight: 700; margin-top: 4px; color: #aaa; }
         .ds-item:hover .stat-val { color: white; }
+        @media (min-width: 1000px) { .desktop-social { display: flex; } }
 
-        .mobile-social { position: fixed; bottom: 0; left: 0; width: 100%; height: 55px; background: rgba(10,10,10,0.98); backdrop-filter: blur(10px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 999; }
-        .ms-item { display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; }
-        .ms-item svg { width: 20px; height: 20px; fill: #999; }
-        .ms-count { font-size: 0.6rem; color: var(--brand-primary); font-weight: 700; background: #222; padding: 2px 6px; border-radius: 10px; margin-top: 3px; }
-        @media (min-width: 1000px) { .desktop-social { display: flex; } .mobile-social { display: none; } body { padding-bottom: 0; } .cat-scroll { justify-content: center; } }
-
+        /* MATCH TABLES */
         .container { max-width: 1000px; margin: 0 auto; padding: 20px 15px; }
-        .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 30px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #1a1a1a; }
+        .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 30px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #222; }
         .sec-title { font-size: 1.1rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
         .live-dot { width: 8px; height: 8px; background: var(--brand-primary); border-radius: 50%; box-shadow: 0 0 10px var(--brand-primary); }
-        .sec-right-link { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; }
-
-        /* GRID LAYOUT FOR MATCHES */
-        .match-row { display: grid; grid-template-columns: 40px 1fr 65px 60px; align-items: center; gap: 8px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 6px; padding: 10px 8px; margin-bottom: 8px; position: relative; transition: 0.2s; }
+        
+        .match-row { display: grid; grid-template-columns: 50px 1fr 70px 70px; align-items: center; gap: 10px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 6px; padding: 12px 10px; margin-bottom: 8px; transition: 0.2s; }
         .match-row:hover { border-color: #444; transform: translateY(-2px); }
-        .match-row.live { border-left: 3px solid var(--brand-primary); background: linear-gradient(90deg, rgba(208,0,0,0.06) 0%, rgba(20,20,20,0.8) 100%); }
+        .match-row.live { border-left: 3px solid var(--brand-primary); background: linear-gradient(90deg, rgba(200,0,0,0.05) 0%, rgba(20,20,20,0.8) 100%); }
 
-        .col-time { text-align: center; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
-        .time-main { font-size: 0.75rem; font-weight: 700; color: white; }
-        .time-sub { font-size: 0.6rem; color: #888; }
-        .live-txt { color: var(--brand-primary); font-weight: 900; animation: blink 1.5s infinite; font-size: 0.65rem; }
+        .col-time { text-align: center; display: flex; flex-direction: column; justify-content: center; }
+        .time-main { font-size: 0.8rem; font-weight: 700; color: white; }
+        .time-sub { font-size: 0.65rem; color: #888; }
+        .live-txt { color: var(--brand-primary); font-weight: 900; animation: blink 1.5s infinite; font-size: 0.7rem; }
 
-        .col-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; justify-content: center; }
-        .league-tag { font-size: 0.6rem; color: #666; font-weight: 700; text-transform: uppercase; }
-        .team-name { font-size: 0.85rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .col-info { display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
+        .league-tag { font-size: 0.65rem; color: #666; font-weight: 700; text-transform: uppercase; }
+        .team-name { font-size: 0.9rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
+        /* CSS Circle for Teams */
+        .team-dot { width: 6px; height: 6px; background: #444; border-radius: 50%; display: inline-block; }
 
-        .col-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; justify-content: center; }
-        .meta-top { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); display: flex; align-items: center; gap: 4px; }
-        .meta-bot { font-size: 0.6rem; color: #aaa; border: 1px solid #333; padding: 1px 4px; border-radius: 3px; }
+        .col-meta { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
+        .meta-top { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); white-space: nowrap; }
+        .meta-bot { font-size: 0.65rem; color: #aaa; background: #222; padding: 2px 5px; border-radius: 4px; margin-top: 2px; }
 
         .col-action { display: flex; justify-content: flex-end; }
-        .btn-watch { background: var(--brand-primary); color: white; font-size: 0.65rem; font-weight: 800; padding: 8px 10px; border-radius: 4px; width: 100%; text-transform: uppercase; }
+        .btn-watch { background: var(--brand-primary); color: white; font-size: 0.7rem; font-weight: 800; padding: 8px 0; border-radius: 4px; width: 100%; text-transform: uppercase; }
         .btn-watch:hover { background: var(--brand-dark); }
-        .btn-notify { background: transparent; border: 1px solid #333; color: #888; padding: 6px 0; }
+        .btn-notify { background: transparent; border: 1px solid #333; color: #888; }
 
-        @media (min-width: 768px) { .match-row { grid-template-columns: 70px 1fr 100px 100px; padding: 15px 20px; gap: 20px; } .team-name { font-size: 1rem; } .btn-watch { font-size: 0.8rem; padding: 10px 0; } .col-meta { gap: 5px; } }
+        @media (min-width: 768px) { .match-row { grid-template-columns: 80px 1fr 100px 100px; padding: 15px 20px; gap: 20px; } .team-name { font-size: 1rem; } .btn-watch { font-size: 0.8rem; } }
 
-        .entity-intro { color: #999; font-size: 0.9rem; line-height: 1.5; text-align: center; max-width: 800px; margin: 0 auto 0 auto; padding: 10px; }
+        /* SEO & FOOTER */
         .seo-box { background: #0a0a0a; border: 1px solid var(--border); padding: 25px; border-radius: 10px; margin-top: 40px; }
         .seo-box h2 { color: white; font-size: 1.1rem; margin-top: 0; }
         .seo-box p { color: #777; font-size: 0.9rem; line-height: 1.6; }
 
         .partners { margin-top: 20px; text-align: center; border-top: 1px solid var(--border); padding-top: 20px; }
-        .p-tag { display: inline-block; font-size: 0.75rem; color: #555; border: 1px solid #222; padding: 6px 12px; border-radius: 20px; margin: 4px; }
+        .p-tag { display: inline-block; font-size: 0.75rem; color: #555; border: 1px solid #222; padding: 6px 12px; border-radius: 20px; margin: 4px; cursor: pointer; transition:0.2s;}
         .p-tag:hover { border-color: var(--brand-primary); color: white; }
 
         footer { text-align: center; padding: 40px 20px; color: #444; font-size: 0.75rem; margin-bottom: 50px; }
+        
+        /* SEARCH POPUP */
+        .search-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .sp-content { background: #1a1a1a; padding: 30px; border-radius: 10px; border: 1px solid var(--brand-primary); text-align: center; max-width: 90%; }
+        .sp-loader { border: 3px solid #333; border-top: 3px solid var(--brand-primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s infinite; margin: 15px auto; }
+
+        /* VIDEO MODAL */
         .video-modal { position: fixed; inset: 0; background: black; z-index: 2000; display: none; flex-direction: column; }
         .vm-head { padding: 10px; background: #111; display: flex; justify-content: flex-end; }
         .vm-close { color: white; font-weight: 700; padding: 5px 15px; background: #333; border-radius: 4px; }
+
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <!-- [Social SVGs Logic Kept Same] -->
-    <!-- ... (Desktop Social & Mobile Social Divs) ... -->
+
+    <!-- SIDEBAR (Socials injected by Python) -->
+    <div class="desktop-social">
+        <div class="ds-item"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.52-1.4.51-.46-.01-1.35-.26-2.01-.48-.81-.27-1.44-.4-1.38-.85.03-.24.37-.49 1.02-.75 4-.174 6.67-2.9 8.04-3.52 3.83-1.74 4.62-2.05 5.15-2.06.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.13-.02.24z"/></svg><span class="stat-val">44k</span></div>
+        <div class="ds-item"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span class="stat-val">4k</span></div>
+        <div class="ds-item"><svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg><span class="stat-val">77k</span></div>
+        <div class="ds-item"><svg viewBox="0 0 24 24"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg><span class="stat-val">333k</span></div>
+    </div>
 
     <header>
         <div class="header-container">
             <a href="../" class="logo-link">
-                <img src="assets/logo.png" alt="StreamEast US" width="35" height="35" class="logo-img">
-                <div class="logo-text">StreamEast US</div>
+                <img src="../assets/logo.png" alt="StreamEast" width="35" height="35" class="logo-img">
+                <div class="logo-text">Stream<span>East</span></div>
             </a>
             <nav class="nav-links">
-                <a href="../nfl/">NFL</a>
-
+                <a href="https://crackstreams.help/#faqs">FAQs</a>
             </nav>
             <button class="hamburger" onclick="toggleMenu()">☰</button>
         </div>
     </header>
 
-    <div class="mobile-menu" id="mobileMenu"><a href="../nfl/">NFL</a>
-</div>
+    <div class="mobile-menu" id="mobileMenu"><a href="https://crackstreams.help/#faqs">FAQs</a></div>
 
     <div class="hero">
         <div class="sys-status"><div class="dot"></div> System Status: Online</div>
-        <h1>StreamEast US - #1 Free Live Sports</h1>
-        <p class="entity-intro">Welcome to official <strong>StreamEast US</strong>. Best free HD streams.</p>
+        <h1>StreamEast - #1 Free Live Sports</h1>
+        <p class="entity-intro">
+            Welcome to the official <strong>StreamEast</strong>. The most reliable platform for free NBA, NFL, UFC, and MLB streams in HD. No lag, no sign-ups.
+        </p>
         <div class="cat-scroll">
-            <a href="../nba/" class="cat-pill">🏀 NBA</a>
-            <a href="../nfl/" class="cat-pill">🏈 NFL</a>
-            <a href="../ufc/" class="cat-pill">🥊 UFC</a>
+            <a href="../nba/index.html" class="cat-pill ">🏀 NBA</a><a href="../nfl/index.html" class="cat-pill active">🏈 NFL</a>
         </div>
     </div>
 
     <div class="container">
-        <!-- Search Warning -->
-        <div id="searchMsgBox" style="display:none; background:#1a1a1a; border:1px solid var(--brand-primary); padding:15px; border-radius:8px; margin-bottom:20px; text-align:center;">
-             <h3 style="margin:0 0 5px 0; color:white;">Looking for <span id="searchTermDisplay" style="color:var(--brand-primary)"></span>?</h3>
-             <p style="margin:0; color:#aaa; font-size:0.85rem;">StreamEast US is the authorized alternative.</p>
+        
+        <!-- SEARCH BOX -->
+        <div class="search-wrapper">
+            <input type="text" id="match-search" class="search-input" placeholder="Search by a team or match..">
         </div>
 
-        <!-- LIVE MATCHES -->
-        <div class="sec-head">
-            <div class="sec-title"><div class="live-dot"></div> Important & Live</div>
+        <!-- SEARCH WARNING (Hidden) -->
+        <div id="searchMsgBox" style="display:none; margin-top:20px; background:#1a1a1a; border:1px solid var(--brand-primary); padding:15px; border-radius:8px; text-align:center;">
+             <h3 style="margin:0 0 5px 0; color:white;">Looking for <span id="searchTermDisplay" style="color:var(--brand-primary)"></span>?</h3>
+             <p style="margin:0; color:#aaa; font-size:0.85rem;">StreamEast is the #1 authorized alternative.</p>
         </div>
-        
-        <!-- DYNAMIC CONTAINER (Matches injected here) -->
+
+        <!-- TRENDING -->
+        <div class="sec-head">
+            <div class="sec-title"><div class="live-dot"></div> Trending Live</div>
+            <div class="sec-right-link">● Live Now</div>
+        </div>
         <div id="live-matches-container" class="match-list">
-            <div style="padding:20px; text-align:center; color:#666;">Loading live matches...</div>
+            <div style="padding:30px; text-align:center; color:#666;">Loading live streams...</div>
+        </div>
+        <div class="show-more-container">
+            <button class="btn-watch" id="btnShowMore" style="display:none; width:auto; padding:10px 30px; background:#222; border:1px solid #333;" onclick="showAllTrending()">Show All Trending ▼</button>
         </div>
 
         <!-- UPCOMING -->
-        <div class="sec-head">
-            <div class="sec-title">📅 Upcoming Schedule</div>
-        </div>
-        <div id="upcoming-matches-container" class="match-list"></div>
+        <div id="upcoming-wrapper"></div>
 
         <!-- SEO ARTICLE -->
-        <div class="seo-box">
+        <div class="seo-box" id="faq">
             
         </div>
 
+        <!-- PARTNERS / KEYWORDS -->
         <div class="partners">
             <div style="font-size:0.7rem; font-weight:700; color:#444; margin-bottom:10px;">POPULAR SEARCHES</div>
-            <a href="../?q=methstreams" class="p-tag">MethStreams</a>
-            <a href="../?q=crackstreams" class="p-tag">CrackStreams</a>
+            <a href="../?q=crackstreams" class="p-tag">crackstreams</a><a href="../?q=methstreams" class="p-tag">methstreams</a><a href="../?q=sportsurge" class="p-tag">sportsurge</a>
         </div>
     </div>
 
-    <footer>&copy; 2025 StreamEast US. All rights reserved.</footer>
+    <footer>&copy; 2025 StreamEast. All rights reserved.</footer>
 
-    <!-- Video Modal -->
+    <!-- POPUPS -->
+    <div class="search-popup" id="keywordPopup">
+        <div class="sp-content">
+            <h3>Searching for "<span id="kp-term" style="color:var(--brand-primary)"></span>"...</h3>
+            <div class="sp-loader"></div>
+            <p>Found best alternative: <strong>StreamEast</strong></p>
+        </div>
+    </div>
+
     <div class="video-modal" id="vModal">
         <div class="vm-head"><button class="vm-close" onclick="closeStream()">Close ✕</button></div>
         <div id="vContainer" style="flex:1; background:black; display:flex; align-items:center; justify-content:center;"></div>
     </div>
 
-    <script src="assets/js/main.js"></script>
-    <script>
-        function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
-        // Internal Partner Search Logic
-        const urlParams = new URLSearchParams(window.location.search);
-        const q = urlParams.get('q');
-        if(q) {
-            document.getElementById('searchMsgBox').style.display = 'block';
-            document.getElementById('searchTermDisplay').innerText = q.toUpperCase();
-        }
-    </script>
-<script>window.PAGE_CATEGORY = "NFL"; window.IS_SUBPAGE = true;</script></body>
+    <script src="../assets/js/main.js"></script>
+    <script>function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }</script>
+<script>window.PAGE_CATEGORY = "🏈 NFL"; window.IS_SUBPAGE = true;</script></body>
 </html>
