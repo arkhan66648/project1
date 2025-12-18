@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamEast Admin</title>
+    <title>StreamCMS Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
     <link rel="stylesheet" href="style.css">
@@ -11,7 +11,6 @@
 <body>
 
     <div class="cms-container">
-        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="logo-area">
                 <h2>⚡ StreamCMS</h2>
@@ -19,112 +18,195 @@
             <nav>
                 <button class="nav-btn active" onclick="switchTab('general')">⚙️ General & SEO</button>
                 <button class="nav-btn" onclick="switchTab('appearance')">🎨 Appearance</button>
-                <button class="nav-btn" onclick="switchTab('content')">🔗 Menu & Categories</button>
+                <button class="nav-btn" onclick="switchTab('pages')">📄 Pages & Content</button>
+                <button class="nav-btn" onclick="switchTab('menus')">🔗 Menus</button>
                 <button class="nav-btn" onclick="switchTab('social')">📊 Social Stats</button>
-                <button class="nav-btn" onclick="switchTab('article')">📝 Homepage Article</button>
             </nav>
             <div class="sidebar-footer">
-                <button id="saveBtn" class="save-btn">💾 Save Changes</button>
+                <button id="saveBtn" class="save-btn">💾 Save All Changes</button>
                 <p id="statusMsg" class="status-ready">System Ready</p>
             </div>
         </aside>
 
         <main class="content-area">
 
-            <!-- TAB 1: GENERAL -->
+            <!-- TAB 1: GENERAL & SEO -->
             <section id="tab-general" class="tab-content active">
                 <div class="header-box"><h1>General Settings</h1></div>
                 <div class="grid-2">
                     <div class="card">
-                        <h3>Site Identity (Double Color)</h3>
+                        <h3>Site Identity</h3>
                         <div class="grid-2">
-                            <div><label>Title Part 1 (White)</label><input type="text" id="titleP1" placeholder="Stream"></div>
-                            <div><label>Title Part 2 (Color)</label><input type="text" id="titleP2" placeholder="East"></div>
+                            <div><label>Title Part 1</label><input type="text" id="titleP1" placeholder="Stream"></div>
+                            <div><label>Title Part 2</label><input type="text" id="titleP2" placeholder="East"></div>
                         </div>
-                        <label>Domain</label><input type="text" id="siteDomain">
-                        <label>Logo URL (HD JPG)</label><input type="text" id="logoUrl">
+                        <label>Domain Name</label><input type="text" id="siteDomain" placeholder="streameast.app">
+                        <label>Logo URL (JPG/PNG)</label><input type="text" id="logoUrl">
+                        <label>Favicon URL (PNG Recommended)</label><input type="text" id="faviconUrl">
                     </div>
                     <div class="card">
-                        <h3>SEO Metadata</h3>
-                        <label>Meta Title</label><input type="text" id="metaTitle">
-                        <label>Meta Description</label><textarea id="metaDesc" style="height:100px"></textarea>
+                        <h3>Tracking & Verification</h3>
+                        <label>Google Analytics ID (G-XXXX)</label>
+                        <input type="text" id="gaId" placeholder="Leave empty to disable">
+                        
+                        <label>Custom Meta Tags (HTML)</label>
+                        <textarea id="customMeta" placeholder='<meta name="google-site-verification" ...>' rows="4"></textarea>
+                        
+                        <label>Footer Related Keywords (Comma separated)</label>
+                        <textarea id="footerKw" rows="3"></textarea>
                     </div>
                 </div>
                 <div class="card full-width">
                     <h3>API Sources</h3>
-                    <label>Streamed.PK API</label><input type="text" id="apiStreamed">
-                    <label>TopEmbed API</label><input type="text" id="apiTopembed">
-                </div>
-                <div class="card full-width">
-                    <h3>Footer Search Keywords (Comma separated)</h3>
-                    <input type="text" id="footerKeywords" placeholder="methstreams, crackstreams, buffstreams">
+                    <div class="grid-2">
+                        <div><label>Streamed.PK API</label><input type="text" id="apiStreamed"></div>
+                        <div><label>TopEmbed API</label><input type="text" id="apiTopembed"></div>
+                    </div>
                 </div>
             </section>
 
             <!-- TAB 2: APPEARANCE -->
             <section id="tab-appearance" class="tab-content">
                 <div class="header-box">
-                    <h1>Appearance</h1>
-                    <button class="btn-danger" onclick="resetTheme()">↺ Reset to Defaults</button>
+                    <h1>Theme & Design</h1>
+                    <div class="theme-presets">
+                        <span>Presets:</span>
+                        <button class="t-btn t-red" onclick="applyTheme('red')"></button>
+                        <button class="t-btn t-blue" onclick="applyTheme('blue')"></button>
+                        <button class="t-btn t-green" onclick="applyTheme('green')"></button>
+                        <button class="t-btn t-purple" onclick="applyTheme('purple')"></button>
+                    </div>
                 </div>
                 
                 <div class="grid-2">
                     <div class="card">
-                        <h3>Brand Colors</h3>
-                        <label>Brand Primary (Red)</label>
+                        <h3>Colors</h3>
+                        <label>Primary Brand Color</label>
                         <div class="color-group"><input type="color" id="colPrimary"><input type="text" id="txtPrimary"></div>
                         
-                        <label>Brand Dark (Hover)</label>
+                        <label>Darker Shade (Hover)</label>
                         <div class="color-group"><input type="color" id="colDark"><input type="text" id="txtDark"></div>
 
                         <label>Accent Gold</label>
                         <div class="color-group"><input type="color" id="colGold"><input type="text" id="txtGold"></div>
                         
-                        <label>Background Body</label>
+                        <label>System Status (Green)</label>
+                        <div class="color-group"><input type="color" id="colStatus"><input type="text" id="txtStatus"></div>
+
+                        <label>Page Background</label>
                         <div class="color-group"><input type="color" id="colBg"><input type="text" id="txtBg"></div>
                     </div>
+
                     <div class="card">
                         <h3>Typography</h3>
                         <label>Font Family</label>
                         <select id="fontFamily">
-                            <option value="system-ui">System UI (Apple/Windows Default)</option>
+                            <option value="system-ui">System UI (Fastest)</option>
                             <option value="'Inter', sans-serif">Inter (Modern)</option>
                             <option value="'Roboto', sans-serif">Roboto</option>
-                            <option value="monospace">Monospace (Hacker)</option>
+                            <option value="'Oswald', sans-serif">Oswald (Sports)</option>
                         </select>
-                        <div style="margin-top:15px; padding:10px; background:#111; border-radius:4px;">
-                            <span id="fontPreview" style="color:white; font-size:1.2rem;">Preview Text 123</span>
+
+                        <div class="grid-2" style="margin-top:15px;">
+                            <div>
+                                <label>Title Color P1</label>
+                                <div class="color-group"><input type="color" id="colT1"><input type="text" id="txtT1"></div>
+                            </div>
+                            <div>
+                                <label>Title Color P2</label>
+                                <div class="color-group"><input type="color" id="colT2"><input type="text" id="txtT2"></div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:15px;">
+                            <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                                <input type="checkbox" id="titleItalic"> 
+                                <span>Italic Site Title</span>
+                            </label>
+                        </div>
+                        
+                        <div class="preview-box">
+                            <span id="fontPreview">StreamEast</span>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 3: CONTENT (MENUS) -->
-            <section id="tab-content" class="tab-content">
-                <div class="header-box"><h1>Menus & Links</h1></div>
+            <!-- TAB 3: PAGES MANAGER -->
+            <section id="tab-pages" class="tab-content">
+                <div class="header-box">
+                    <h1>Page Manager</h1>
+                    <button class="btn-primary" onclick="createNewPage()">+ Create New Page</button>
+                </div>
                 
-                <div class="grid-2">
-                    <!-- HERO CATEGORIES -->
-                    <div class="card">
-                        <h3>Hero Categories (Folder Generator)</h3>
-                        <p style="font-size:0.8rem; color:#666;">These appear as Pills below the Hero Title.</p>
-                        <div id="hero-container"></div>
-                        <button class="btn-primary" onclick="addHeroUI()">+ Add Category</button>
+                <div class="pages-layout">
+                    <!-- Left: List -->
+                    <div class="pages-list" id="pagesList">
+                        <!-- Items injected by JS -->
                     </div>
 
-                    <!-- HEADER MENU -->
-                    <div class="card">
-                        <h3>Header Menu (Right Side)</h3>
-                        <p style="font-size:0.8rem; color:#666;">Static links like FAQs, Features.</p>
-                        <div id="header-container"></div>
-                        <button class="btn-primary" onclick="addHeaderUI()">+ Add Link</button>
+                    <!-- Right: Editor -->
+                    <div class="page-editor" id="pageEditor" style="display:none;">
+                        <div class="editor-header">
+                            <h3 id="editHeading">Editing: Home</h3>
+                            <div>
+                                <button class="btn-danger" id="btnDeletePage" onclick="deleteCurrentPage()">Delete</button>
+                                <button class="btn-primary" onclick="saveCurrentPageLocal()">✔ Done</button>
+                            </div>
+                        </div>
+
+                        <div class="grid-2">
+                            <div>
+                                <label>Slug (URL path)</label>
+                                <input type="text" id="pSlug" placeholder="e.g. nfl">
+                            </div>
+                            <div>
+                                <label>Page Type</label>
+                                <select id="pType">
+                                    <option value="schedule">Schedule/Category (Has Matches)</option>
+                                    <option value="static">Static Page (Text Only)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid-2">
+                            <div><label>H1 Title</label><input type="text" id="pH1"></div>
+                            <div><label>Hero Text (Below H1)</label><input type="text" id="pHero"></div>
+                        </div>
+
+                        <div class="grid-2">
+                            <div><label>Meta Title</label><input type="text" id="pMetaTitle"></div>
+                            <div><label>Meta Description</label><textarea id="pMetaDesc" rows="2"></textarea></div>
+                        </div>
+
+                        <label>Page Content (Article)</label>
+                        <textarea id="tinymce-editor"></textarea>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 4: SOCIALS -->
+            <!-- TAB 4: MENUS -->
+            <section id="tab-menus" class="tab-content">
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Hero Categories (Folder Generator)</h3>
+                        <p style="font-size:0.8rem; color:#888;">Creates folders like /nba/ and adds button to Hero.</p>
+                        <div id="hero-container"></div>
+                        <button class="btn-add" onclick="addHeroUI()">+ Add Category</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>Header Menu (Right Side)</h3>
+                        <p style="font-size:0.8rem; color:#888;">Static links like FAQs, Contacts.</p>
+                        <div id="header-container"></div>
+                        <button class="btn-add" onclick="addHeaderUI()">+ Add Link</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: SOCIALS -->
             <section id="tab-social" class="tab-content">
-                <div class="header-box"><h1>Social Counters</h1><p>Set the numbers displayed on the sidebar.</p></div>
+                <div class="header-box"><h1>Social Counters</h1></div>
                 <div class="grid-2">
                     <div class="card">
                         <label>Telegram Count</label><input type="text" id="socTelegram" placeholder="12k">
@@ -135,12 +217,6 @@
                         <label>Reddit Count</label><input type="text" id="socReddit" placeholder="3k">
                     </div>
                 </div>
-            </section>
-
-            <!-- TAB 5: ARTICLE -->
-            <section id="tab-article" class="tab-content">
-                <div class="header-box"><h1>Homepage Article</h1></div>
-                <textarea id="tinymce-editor"></textarea>
             </section>
 
         </main>
