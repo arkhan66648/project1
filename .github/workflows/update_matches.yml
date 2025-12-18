@@ -1,11 +1,11 @@
-name: Update Matches & Site
+name: Update Matches
 
 on:
+  repository_dispatch:
+    types: [trigger-update]
+  workflow_dispatch:
   schedule:
-    # Runs every 5 minutes
-    - cron: '*/5 * * * *'
-  workflow_dispatch: 
-    # Allows you to click "Run Now" button manually from GitHub Actions tab
+    - cron: '*/15 * * * *' # Backup schedule
 
 permissions:
   contents: write
@@ -15,41 +15,37 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # 1. Checkout the repository content
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # 2. Set up Python environment
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      # 3. Install the dependencies (requests)
       - name: Install Dependencies
-        run: |
-          pip install requests
+        run: pip install requests
 
-      # 4. Run the "Brain" script (Phase 3)
       - name: Run Match Generator
         run: python scripts/main.py
 
-      # 5. Commit and Push changes
       - name: Commit & Push Changes
         run: |
           git config --global user.name 'StreamBot'
           git config --global user.email 'bot@noreply.github.com'
           
-          # Check for changes before committing
-          git add data/matches.json
-          git add data/config.json
-          git add */index.html 
+          # 1. Add ALL changes (Fixes the "unstaged changes" error)
+          git add .
           
-          # Only commit if there are changes
+          # 2. Check status (Optional, for debugging log)
+          git status
+          
+          # 3. Commit
           timestamp=$(date -u)
-          git commit -m "Auto-update matches: ${timestamp}" || exit 0
+          git commit -m "Auto-update matches: ${timestamp}" || echo "No changes to commit"
           
-          # Pull latest changes (in case Admin panel updated config.json) to avoid conflicts
+          # 4. Pull latest changes safely (rebase)
           git pull --rebase
           
+          # 5. Push
           git push
