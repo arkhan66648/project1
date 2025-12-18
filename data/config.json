@@ -1,16 +1,21 @@
 {
   "site_settings": {
-    "site_name": "StreamEast US",
+    "title_part_1": "",
+    "title_part_2": "",
     "domain": "streameast.app",
     "logo_url": "assets/logo.png",
     "meta_title": "StreamEast - Official Free Sports Streaming",
-    "meta_desc": "Watch NFL, NBA, UFC, and Soccer streams live in HD. Free sports streaming with no sign-up required."
+    "meta_desc": "Watch NFL, NBA, UFC, and Soccer streams live in HD. Free sports streaming with no sign-up required.",
+    "footer_keywords": [
+      ""
+    ]
   },
   "theme": {
-    "color_accent": "#3b82f6",
+    "brand_primary": "#d00000",
     "brand_dark": "#8a0000",
-    "color_live": "#ef4444",
-    "color_gold": "#ffd700"
+    "accent_gold": "#ffd700",
+    "bg_body": "#050505",
+    "font_family": "system-ui"
   },
   "api_keys": {
     "streamed_url": "https://streamed.pk/api/matches/all",
@@ -24,6 +29,28 @@
       "priority": 1,
       "meta_title": "Watch NFL Live Streams Free",
       "meta_desc": "Full schedule of NFL games live in HD."
+    }
+  ],
+  "social_stats": {
+    "telegram": "",
+    "twitter": "",
+    "discord": "",
+    "reddit": ""
+  },
+  "hero_categories": [
+    {
+      "title": "🏀 NBA",
+      "folder": "nba"
+    },
+    {
+      "title": "🏈 NFL",
+      "folder": "nfl"
+    }
+  ],
+  "header_menu": [
+    {
+      "title": "FAQs",
+      "url": "https://crackstreams.help/#faqs"
     }
   ]
 }
