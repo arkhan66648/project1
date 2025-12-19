@@ -9,8 +9,8 @@
     "custom_meta": "",
     "footer_keywords": [
       "crackstreams",
-      "   methstreams",
-      "   sportsurge"
+      "    methstreams",
+      "    sportsurge"
     ]
   },
   "theme": {
@@ -47,7 +47,13 @@
     "discord": "77k",
     "reddit": "333k"
   },
-  "hero_categories": [],
+  "hero_categories": [
+    {
+      "title": "🏀 NBA",
+      "url": "/nba/",
+      "highlight": false
+    }
+  ],
   "header_menu": [],
   "pages": [
     {
