@@ -243,7 +243,11 @@ def build_site():
     js_conf = {"siteName": s.get('domain'), "timezone": tgt_tz}
     template = template.replace('//JS_CONFIG_HERE', f"window.SITE_CONFIG = {json.dumps(js_conf)};")
     template = template.replace('{{STATIC_SCHEMA}}', "[]")
-    template = template.replace('{{FOOTER_KEYWORDS}}', s.get('footer_keywords', []).join(', ') if isinstance(s.get('footer_keywords'), list) else "")
+    
+    # --- FIX: LIST JOIN ERROR ---
+    kw_list = s.get('footer_keywords', [])
+    kw_str = ', '.join(kw_list) if isinstance(kw_list, list) else ""
+    template = template.replace('{{FOOTER_KEYWORDS}}', kw_str)
 
     # --- PAGE GENERATION ---
     if not pages_conf: pages_conf = [{"slug": "home", "type": "schedule"}]
