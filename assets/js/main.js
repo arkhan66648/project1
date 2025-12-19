@@ -32,7 +32,7 @@ async function loadMatches() {
 
         // 3. Render Upcoming Categories
         if (CFG.pageType === 'schedule') {
-            renderUpcoming(data.categories, data.all_matches); // Pass all_matches for category page filtering
+            renderUpcoming(data.categories, data.all_matches);
         }
 
         // Update Online Count
@@ -66,7 +66,6 @@ function renderTrending(matches) {
         container.appendChild(row);
     });
 
-    // View Rest Logic
     if (matches.length > 5 && btnMore) {
         btnMore.style.display = 'inline-block';
         btnMore.textContent = `Show ${matches.length - 5} More Matches ▼`;
@@ -84,7 +83,6 @@ function renderWildcard(matches) {
     const catName = CFG.wildcard.category;
     const sectionId = CFG.wildcard.id || 'wildcard';
     
-    // Header
     let html = `
         <div class="sec-head" id="${sectionId}">
             <div class="sec-title">🔥 Upcoming ${catName}</div>
@@ -93,10 +91,9 @@ function renderWildcard(matches) {
     `;
 
     if (matches.length === 0) {
-        // Fallback Entity Text
         html += `<p class="entity-intro" style="text-align:center; margin:20px;">${CFG.wildcard.fallback || 'No upcoming matches found.'}</p>`;
     } else {
-        wrapper.innerHTML = html + '</div>'; // Temp close to append elements
+        wrapper.innerHTML = html + '</div>';
         const list = wrapper.querySelector('.match-list');
         matches.forEach(m => list.appendChild(createMatchRow(m)));
         return;
@@ -108,10 +105,9 @@ function renderUpcoming(categories, allData) {
     const wrapper = document.getElementById('upcoming-wrapper');
     if (!wrapper) return;
 
-    // If Category Page, filter only that category
+    // If Category Page
     if (!CFG.isHome && CFG.category) {
         const catName = CFG.category.toLowerCase();
-        // Try exact match in categories OR filter all data
         const catMatches = categories[Object.keys(categories).find(k=>k.toLowerCase()===catName)] || 
                            allData.filter(m => m.sport.toLowerCase() === catName || m.league.toLowerCase() === catName);
         
@@ -123,7 +119,7 @@ function renderUpcoming(categories, allData) {
         return;
     }
 
-    // Home Page: Loop Categories (excluding Wildcard if duplicate check needed, but Python handles that)
+    // Home Page
     Object.keys(categories).forEach(sport => {
         const matches = categories[sport];
         if (matches.length > 0) {
@@ -138,34 +134,28 @@ function renderUpcoming(categories, allData) {
                 <div class="match-list"></div>
             `;
             const list = sec.querySelector('.match-list');
-            // Limit to 4 for Home
             matches.slice(0, 4).forEach(m => list.appendChild(createMatchRow(m)));
             wrapper.appendChild(sec);
         }
     });
 }
 
-// ==============================================
-// MATCH ROW GENERATOR (3-COLUMN LAYOUT)
-// ==============================================
 function createMatchRow(match) {
     const div = document.createElement('div');
     div.className = match.is_live ? 'match-row live' : 'match-row';
     div.dataset.search = (match.title + " " + match.league).toLowerCase();
 
-    // COL 1: Time/Date OR Live/Runtime
+    // Col 1: Time/Runtime
     let col1 = '';
     if (match.is_live) {
-        // "34'" or "HT" from backend
         const runtime = match.running_time || "LIVE"; 
         col1 = `<span class="live-txt">LIVE</span><span class="time-sub" style="color:#fff">${runtime}</span>`;
     } else {
-        // Compact: "7:30 PM" \n "Oct 12"
         col1 = `<span class="time-main">${match.fmt_time.split(' ')[0]} <small>${match.fmt_time.split(' ')[1]}</small></span>
                 <span class="time-sub">${match.fmt_date}</span>`;
     }
 
-    // COL 2: Teams
+    // Col 2: Teams & League
     let col2 = '';
     const teams = match.teams_ui || [];
     if(teams.length > 0) {
@@ -176,45 +166,34 @@ function createMatchRow(match) {
     }
     col2 = `<div class="league-tag">${match.league}</div>` + col2;
 
-    // COL 3: Meta/Button
+    // Col 3: Meta/Button
     let col3 = '';
     if (match.show_button) {
-        // Viewer Emoji Logic
         const v = match.viewers || 0;
         let icon = '⚡'; 
-        if(v > 1000) icon = '📈';
-        if(v > 10000) icon = '🔥';
-        if(v > 50000) icon = '👁️';
+        if(v > 1000) icon = '📈'; if(v > 10000) icon = '🔥'; if(v > 50000) icon = '👁️';
 
         const meta = match.is_live ? `${icon} ${kFormatter(v)}` : `HD`;
+        const linkId = match.streams[0]?.id;
         col3 = `<div class="meta-top">${meta}</div>
-                <button class="btn-watch" onclick="openPlayer('${match.id}', '${match.streams[0]?.id}', '${match.title.replace(/'/g,"")}')">WATCH</button>`;
+                <button class="btn-watch" onclick="openPlayer('${match.id}', '${linkId}', '${match.title.replace(/'/g,"")}')">WATCH</button>`;
     } else {
-        // Countdown
         col3 = `<div class="meta-top"><span class="countdown" data-time="${match.start_time}">--:--</span></div>
                 <button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button>`;
     }
 
-    div.innerHTML = `
-        <div class="col-time">${col1}</div>
-        <div class="col-info">${col2}</div>
-        <div class="col-meta">${col3}</div>
-    `;
+    div.innerHTML = `<div class="col-time">${col1}</div><div class="col-info">${col2}</div><div class="col-meta">${col3}</div>`;
     return div;
 }
 
-// ==============================================
-// UTILITIES
-// ==============================================
+// Utils
 function kFormatter(num) {
     return Math.abs(num) > 999 ? Math.sign(num)*((Math.abs(num)/1000).toFixed(1)) + 'k' : Math.sign(num)*Math.abs(num);
 }
-
 function getIcon(sport) {
     const map = { "NBA":"🏀", "NFL":"🏈", "UFC":"🥊", "Soccer":"⚽", "MLB":"⚾", "F1":"🏎️", "Tennis":"🎾", "Boxing":"🥊" };
     return map[sport] || "🏆";
 }
-
 function startCountdowns() {
     setInterval(() => {
         document.querySelectorAll('.countdown').forEach(el => {
@@ -227,53 +206,36 @@ function startCountdowns() {
         });
     }, 60000);
 }
-
 function toggleNotify(btn) {
-    if(btn.innerText.includes("Notify")) {
-        btn.innerText = "✅ Set"; btn.classList.add('set');
-    } else {
-        btn.innerText = "🔔 Notify"; btn.classList.remove('set');
-    }
+    if(btn.innerText.includes("Notify")) { btn.innerText = "✅ Set"; btn.classList.add('set'); } 
+    else { btn.innerText = "🔔 Notify"; btn.classList.remove('set'); }
 }
-
-// Player Logic
 function openPlayer(mid, sid, title) {
     const modal = document.getElementById('vModal');
     const ctr = document.getElementById('vContainer');
     document.getElementById('vmTitle').innerText = title;
-    
-    // Decode Base64
     let url = "";
     try { url = atob(sid); } catch(e){}
-    
     ctr.innerHTML = `<iframe src="${url}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
     modal.style.display = 'flex';
 }
-
 function closeStream() {
     document.getElementById('vModal').style.display = 'none';
     document.getElementById('vContainer').innerHTML = '';
 }
-
-// Search
 function handleSearch(term) {
     const clean = term.toLowerCase();
     document.getElementById('searchClear').style.display = clean ? 'flex' : 'none';
-    
     document.querySelectorAll('.match-row').forEach(row => {
         const txt = row.dataset.search;
         row.style.display = txt.includes(clean) ? 'grid' : 'none';
     });
-    
-    // Hide empty sections
     document.querySelectorAll('.sport-section').forEach(sec => {
         const vis = sec.querySelectorAll('.match-row[style="display: grid;"]').length;
         sec.style.display = vis > 0 ? 'block' : 'none';
     });
 }
 function clearSearch() { document.getElementById('match-search').value = ''; handleSearch(''); }
-
-// Social Sharing
 function shareSite(platform) {
     const url = encodeURIComponent(window.location.origin);
     const text = encodeURIComponent(`Watch Live Sports Free on ${CFG.siteName}!`);
@@ -282,9 +244,6 @@ function shareSite(platform) {
     if(platform === 'telegram') link = `https://t.me/share/url?url=${url}&text=${text}`;
     if(link) window.open(link, '_blank');
 }
-
 function copyLink() {
-    navigator.clipboard.writeText(window.location.origin).then(() => {
-        alert("Link copied to clipboard!");
-    });
+    navigator.clipboard.writeText(window.location.origin).then(() => { alert("Link copied to clipboard!"); });
 }
