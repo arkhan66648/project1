@@ -14,9 +14,9 @@
     ]
   },
   "theme": {
-    "brand_primary": "#0056d2",
-    "brand_dark": "#003c96",
-    "accent_gold": "#00c2cb",
+    "brand_primary": "#d00000",
+    "brand_dark": "#8a0000",
+    "accent_gold": "#ffd700",
     "status_green": "#00e676",
     "bg_body": "#050505",
     "hero_gradient_start": "#1a0505",
@@ -24,7 +24,7 @@
     "footer_bg": "#000000",
     "font_family": "system-ui",
     "title_color_1": "#ffffff",
-    "title_color_2": "#0056d2",
+    "title_color_2": "#d00000",
     "title_italic": true
   },
   "api_keys": {
