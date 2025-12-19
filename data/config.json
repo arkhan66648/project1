@@ -47,26 +47,8 @@
     "discord": "77k",
     "reddit": "333k"
   },
-  "hero_categories": [
-    {
-      "title": "ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ NBA",
-      "folder": "nba"
-    },
-    {
-      "title": "ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ½ Soccer",
-      "folder": "soccer"
-    },
-    {
-      "title": "Ã¢ÂÂ¾ MLB",
-      "folder": "mlb"
-    }
-  ],
-  "header_menu": [
-    {
-      "title": "FAQs",
-      "url": "https://crackstreams.help/#faqs"
-    }
-  ],
+  "hero_categories": [],
+  "header_menu": [],
   "pages": [
     {
       "slug": "home",
