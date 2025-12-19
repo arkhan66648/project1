@@ -9,8 +9,8 @@
     "custom_meta": "",
     "footer_keywords": [
       "crackstreams",
-      "    methstreams",
-      "    sportsurge"
+      "     methstreams",
+      "     sportsurge"
     ]
   },
   "theme": {
@@ -49,7 +49,7 @@
   },
   "hero_categories": [
     {
-      "title": "🏀 NBA",
+      "title": "ð NBA",
       "url": "/nba/",
       "highlight": false
     }
@@ -65,7 +65,8 @@
       "assigned_category": "",
       "hero_text": "Hero Meta",
       "meta_title": "Test Meta",
-      "meta_desc": "Dest Dessss"
+      "meta_desc": "Dest Dessss",
+      "schemas": {}
     },
     {
       "slug": "nfl",
