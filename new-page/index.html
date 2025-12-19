@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title></title>
+    <meta name="description" content="">
+    <meta name="theme-color" content="#d00000">
+    <link rel="canonical" href="https://crackstreams.help/">
+    <link rel="icon" href="">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="">
+    <meta property="og:description" content="">
+    <meta property="og:image" content="assets/logo.png">
+    <meta property="og:url" content="https://crackstreams.help/">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="assets/logo.png">
+
+    <!-- ANALYTICS & VERIFICATION -->
+    
+    
+
+    <!-- STATIC SCHEMA -->
+    <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "WebSite", "name": "crackstreams.help", "url": "https://crackstreams.help"}]</script>
+    <!-- DYNAMIC SCHEMA (Live Badge) -->
+    <script id="dynamic-schema" type="application/ld+json"></script>
+    
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        :root {
+            /* Variables injected by Python from Admin Config */
+            --brand-primary: #d00000;
+            --brand-dark: #8a0000;
+            --status-green: #00e676;
+            --accent-gold: #ffd700;
+            --bg-body: #050505;
+            --hero-gradient: #1a0505;
+            --trend-gradient: #140000;
+            --footer-bg: #000000;
+            --font-main: system-ui;
+            --title-c1: #ffffff;
+            --title-c2: #d00000;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR (Desktop Socials) -->
+    <div class="desktop-social">
+        <div class="ds-item" onclick="shareSite('telegram')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.52-1.4.51-.46-.01-1.35-.26-2.01-.48-.81-.27-1.44-.4-1.38-.85.03-.24.37-.49 1.02-.75 4-.174 6.67-2.9 8.04-3.52 3.83-1.74 4.62-2.05 5.15-2.06.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.13-.02.24z"/></svg><span class="stat-val">44k</span></div>
+        <div class="ds-item" onclick="shareSite('twitter')"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span class="stat-val">4k</span></div>
+        <div class="ds-item" onclick="copyLink()"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="stat-val">Copy</span></div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <div class="header-container">
+            <a href="../" class="logo-link">
+                <img src="../assets/logo.png" alt="crackstreams.help" class="logo-img">
+                <div class="logo-text">Stream<span>East</span></div>
+            </a>
+            <nav class="nav-links">
+                
+            </nav>
+            <button class="hamburger" onclick="toggleMenu()">☰</button>
+        </div>
+    </header>
+
+    <div class="mobile-menu" id="mobileMenu"></div>
+
+    <!-- HERO SECTION -->
+    <div class="hero">
+        <div class="sys-status"><div class="dot"></div> System Status: Online</div>
+        <h1>New Page</h1>
+        <p class="entity-intro"></p>
+        
+        <!-- HERO PILLS (Category Menu) -->
+        <div class="cat-scroll">
+            
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <!-- SEARCH BOX -->
+        <div class="search-wrapper" style="display:none">
+            <input type="text" id="match-search" class="search-input" placeholder="Search team or match...">
+            <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+        </div>
+
+        <!-- SEARCH WARNING (Hidden) -->
+        <div id="searchMsgBox" style="display:none;" class="search-msg-box">
+             <h3>Looking for <span id="searchTermDisplay"></span>?</h3>
+             <p>crackstreams.help is the #1 authorized alternative.</p>
+        </div>
+
+        <div class="schedule-container" style="display:none">
+            
+            <!-- 1. TRENDING SECTION -->
+            <div class="sec-head">
+                <div class="sec-title"><div class="live-dot"></div> Trending Live</div>
+                <div class="sec-right-live" id="onlineCount">● Loading...</div>
+            </div>
+            
+            <div id="live-matches-container" class="match-list">
+                <!-- Injected via JS -->
+            </div>
+            
+            <div class="show-more-container">
+                <button class="btn-show-more" id="btnShowMore" style="display:none">Show More Matches ▼</button>
+            </div>
+
+            <!-- 2. WILDCARD SECTION (Injected via JS if active) -->
+            <div id="wildcard-wrapper"></div>
+
+            <!-- 3. UPCOMING CATEGORIES -->
+            <div id="upcoming-wrapper"></div>
+        </div>
+
+        <!-- SEO ARTICLE -->
+        <div class="seo-box" id="article">
+            
+        </div>
+
+        <!-- FOOTER LEAGUE MENU -->
+        <div class="footer-leagues" style="display:none"> <!-- Hide on static pages -->
+            <div class="f-title">TOP LEAGUES</div>
+            <div class="f-links-grid">
+                
+            </div>
+        </div>
+
+        <!-- OUR NETWORK (Popular Searches) -->
+        <div class="partners">
+            <div class="f-title">OUR NETWORK</div>
+            {{FOOTER_KEYWORDS}}
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-static-links">
+            
+        </div>
+        <div class="copyright">
+            &copy; 2025 crackstreams.help. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- MOBILE STICKY SOCIAL -->
+    <div class="mobile-social">
+        <div class="ms-item" onclick="shareSite('telegram')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.52-1.4.51-.46-.01-1.35-.26-2.01-.48-.81-.27-1.44-.4-1.38-.85.03-.24.37-.49 1.02-.75 4-.174 6.67-2.9 8.04-3.52 3.83-1.74 4.62-2.05 5.15-2.06.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.13-.02.24z"/></svg><span class="ms-count">44k</span></div>
+        <div class="ms-item" onclick="shareSite('twitter')"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span class="ms-count">4k</span></div>
+        <div class="ms-item" onclick="copyLink()"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="ms-count">Copy</span></div>
+    </div>
+
+    <!-- PLAYER POPUP -->
+    <div class="video-modal" id="vModal">
+        <div class="vm-head">
+            <span class="vm-title" id="vmTitle">Live Stream</span>
+            <button class="vm-close" onclick="closeStream()">Close ✕</button>
+        </div>
+        <div id="vContainer"></div>
+    </div>
+
+    <script src="../assets/js/main.js"></script>
+    <script>
+        // JS Config injected by Python
+        window.SITE_CONFIG = {"pageType": "static", "isHome": false, "category": "", "wildcard": {"category": "", "id": "", "fallback": ""}, "siteName": "crackstreams.help"};
+        
+        function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
+        
+        // Internal Search Trick
+        const urlParams = new URLSearchParams(window.location.search);
+        const q = urlParams.get('q');
+        if(q) {
+            document.getElementById('searchMsgBox').style.display = 'block';
+            document.getElementById('searchTermDisplay').innerText = q.toUpperCase();
+        }
+    </script>
+</body>
+</html>
