@@ -20,6 +20,7 @@
             <nav>
                 <button class="nav-btn active" onclick="switchTab('general')">⚙️ General & SEO</button>
                 <button class="nav-btn" onclick="switchTab('targeting')">🎯 Target & Wildcard</button>
+                <button class="nav-btn" onclick="switchTab('priorities')">📊 Sport Priorities</button>
                 <button class="nav-btn" onclick="switchTab('appearance')">🎨 Appearance</button>
                 <button class="nav-btn" onclick="switchTab('pages')">📄 Pages & Content</button>
                 <button class="nav-btn" onclick="switchTab('menus')">🔗 Menus</button>
@@ -74,12 +75,13 @@
                             <option value="USA">🇺🇸 USA</option>
                             <option value="UK">🇬🇧 UK</option>
                         </select>
-                        <label>Timezone</label>
+                        <label>Timezone (Output)</label>
                         <select id="tgtTimezone">
-                            <option value="US/Eastern">US Eastern</option>
-                            <option value="US/Central">US Central</option>
+                            <option value="US/Eastern">US Eastern (New York)</option>
+                            <option value="US/Central">US Central (Chicago)</option>
+                            <option value="US/Pacific">US Pacific (LA)</option>
                             <option value="Europe/London">UK (London)</option>
-                            <option value="Asia/Dhaka">Bangladesh</option>
+                            <option value="Asia/Dhaka">Bangladesh (Dhaka)</option>
                         </select>
                     </div>
                     <div class="card">
@@ -91,7 +93,37 @@
                 </div>
             </section>
 
-            <!-- TAB 3: APPEARANCE -->
+            <!-- TAB 3: PRIORITIES (NEW) -->
+            <section id="tab-priorities" class="tab-content">
+                <div class="header-box"><h1>Sport Priority & Sorting</h1></div>
+                <div class="card">
+                    <h3>Homepage Section Order</h3>
+                    <p style="color:#aaa; font-size:0.9rem; margin-bottom:15px;">Higher number = Shows higher on the page. Use this to reorder sections.</p>
+                    
+                    <div class="grid-2">
+                        <div>
+                            <label>Quick Presets</label>
+                            <div style="display:flex; gap:10px;">
+                                <button class="btn-small" onclick="applyPriority('USA')">Load USA Defaults</button>
+                                <button class="btn-small" onclick="applyPriority('UK')">Load UK Defaults</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label>Add Sport Category</label>
+                            <div style="display:flex; gap:10px;">
+                                <input type="text" id="newSportName" placeholder="e.g. Cricket">
+                                <button class="btn-small" onclick="addPriorityRow()">Add</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="priorityListContainer" style="margin-top:20px; display:flex; flex-direction:column; gap:10px;">
+                        <!-- JS will inject rows here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: APPEARANCE -->
             <section id="tab-appearance" class="tab-content">
                 <div class="header-box"><h1>Theme</h1></div>
                 <div class="grid-2">
@@ -130,7 +162,7 @@
                 </div>
             </section>
 
-            <!-- TAB 4: PAGES (FIXED & REDESIGNED) -->
+            <!-- TAB 5: PAGES -->
             <section id="tab-pages" class="tab-content">
                 <div class="header-box">
                     <h1>Page Manager</h1>
@@ -187,7 +219,7 @@
                             </div>
                         </div>
 
-                        <!-- 3. Static Schemas (Restored) -->
+                        <!-- 3. Static Schemas -->
                         <div class="editor-block schemas">
                             <h4>Static Schemas</h4>
                             
@@ -212,7 +244,7 @@
                 </div>
             </section>
 
-            <!-- TAB 5: MENUS (FIXED BUTTONS) -->
+            <!-- TAB 6: MENUS -->
             <section id="tab-menus" class="tab-content">
                 <div class="header-box"><h1>Menus</h1></div>
                 <div class="grid-2">
@@ -241,7 +273,7 @@
                 </div>
             </section>
 
-            <!-- TAB 6: SOCIAL -->
+            <!-- TAB 7: SOCIAL -->
             <section id="tab-social" class="tab-content">
                 <div class="header-box"><h1>Socials</h1></div>
                 <div class="grid-2">
