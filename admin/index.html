@@ -4,30 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StreamCMS Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Using Inter and System UI to match StreamEast modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="cms-container">
-        <aside class="sidebar">
+    <div class="cms-container" id="mainContainer">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
             <div class="logo-area">
-                <h2>⚡ StreamCMS</h2>
+                <div class="logo-flex">
+                    <h2 id="logoText">⚡ StreamCMS</h2>
+                    <button id="sidebarToggle" class="icon-btn">◀</button>
+                </div>
             </div>
             <nav>
-                <button class="nav-btn active" onclick="switchTab('general')">⚙️ General & SEO</button>
-                <button class="nav-btn" onclick="switchTab('appearance')">🎨 Appearance</button>
-                <button class="nav-btn" onclick="switchTab('pages')">📄 Pages & Content</button>
-                <button class="nav-btn" onclick="switchTab('menus')">🔗 Menus</button>
-                <button class="nav-btn" onclick="switchTab('social')">📊 Social Stats</button>
+                <button class="nav-btn active" onclick="switchTab('general')" title="General Settings">
+                    <span class="icon">⚙️</span> <span class="lbl">General & SEO</span>
+                </button>
+                <button class="nav-btn" onclick="switchTab('targeting')" title="Targeting & Wildcard">
+                    <span class="icon">🎯</span> <span class="lbl">Targeting & Wildcard</span>
+                </button>
+                <button class="nav-btn" onclick="switchTab('appearance')" title="Appearance">
+                    <span class="icon">🎨</span> <span class="lbl">Appearance</span>
+                </button>
+                <button class="nav-btn" onclick="switchTab('pages')" title="Pages & Content">
+                    <span class="icon">📄</span> <span class="lbl">Pages & Content</span>
+                </button>
+                <button class="nav-btn" onclick="switchTab('menus')" title="Menus">
+                    <span class="icon">🔗</span> <span class="lbl">Menus</span>
+                </button>
+                <button class="nav-btn" onclick="switchTab('social')" title="Social Stats">
+                    <span class="icon">📊</span> <span class="lbl">Social Stats</span>
+                </button>
             </nav>
             <div class="sidebar-footer">
-                <button id="saveBtn" class="save-btn">💾 Save All Changes</button>
+                <button id="saveBtn" class="save-btn" title="Save All Changes">
+                    <span class="icon">💾</span> <span class="lbl">Save Changes</span>
+                </button>
                 <p id="statusMsg" class="status-ready">System Ready</p>
             </div>
         </aside>
 
+        <!-- MAIN CONTENT -->
         <main class="content-area">
 
             <!-- TAB 1: GENERAL & SEO -->
@@ -37,12 +58,12 @@
                     <div class="card">
                         <h3>Site Identity</h3>
                         <div class="grid-2">
-                            <div><label>Title Part 1</label><input type="text" id="titleP1" placeholder="Stream"></div>
-                            <div><label>Title Part 2</label><input type="text" id="titleP2" placeholder="East"></div>
+                            <div><label>Title Part 1 (White)</label><input type="text" id="titleP1" placeholder="Stream"></div>
+                            <div><label>Title Part 2 (Colored)</label><input type="text" id="titleP2" placeholder="East"></div>
                         </div>
                         <label>Domain Name</label><input type="text" id="siteDomain" placeholder="streameast.app">
                         <label>Logo URL (JPG/PNG)</label><input type="text" id="logoUrl">
-                        <label>Favicon URL (PNG Recommended)</label><input type="text" id="faviconUrl">
+                        <label>Favicon URL (PNG)</label><input type="text" id="faviconUrl">
                     </div>
                     <div class="card">
                         <h3>Tracking & Verification</h3>
@@ -57,15 +78,74 @@
                     </div>
                 </div>
                 <div class="card full-width">
-                    <h3>API Sources</h3>
+                    <h3>API Sources (Redundancy System)</h3>
                     <div class="grid-2">
-                        <div><label>Streamed.PK API</label><input type="text" id="apiStreamed"></div>
-                        <div><label>TopEmbed API</label><input type="text" id="apiTopembed"></div>
+                        <div><label>Primary Source (Streamed.PK)</label><input type="text" id="apiStreamed"></div>
+                        <div><label>Backup Source (TopEmbed)</label><input type="text" id="apiTopembed"></div>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 2: APPEARANCE -->
+            <!-- TAB 2: TARGETING & WILDCARD (NEW) -->
+            <section id="tab-targeting" class="tab-content">
+                <div class="header-box"><h1>Targeting & Wildcard Strategy</h1></div>
+                
+                <div class="grid-2">
+                    <!-- TARGETING CARD -->
+                    <div class="card">
+                        <h3>🌍 Geo-Targeting</h3>
+                        <p style="font-size:0.8rem; color:#888; margin-bottom:15px;">
+                            Controls SEO Language (en-US/en-GB), Timezone, and Priority Sorting.
+                        </p>
+                        
+                        <label>Target Country</label>
+                        <select id="tgtCountry">
+                            <option value="USA">🇺🇸 United States (USA)</option>
+                            <option value="UK">🇬🇧 United Kingdom (UK)</option>
+                        </select>
+
+                        <label>Timezone (For Backend 12h Format)</label>
+                        <select id="tgtTimezone">
+                            <option value="US/Eastern">🇺🇸 Eastern Time (ET)</option>
+                            <option value="US/Pacific">🇺🇸 Pacific Time (PT)</option>
+                            <option value="US/Central">🇺🇸 Central Time (CT)</option>
+                            <option value="Europe/London">🇬🇧 London (GMT/BST)</option>
+                            <option value="Asia/Dhaka">🇧🇩 Dhaka (BST)</option>
+                        </select>
+
+                        <div style="margin-top:20px; padding:10px; border:1px solid #333; border-radius:6px;">
+                            <label>Priority Score Strategy</label>
+                            <p style="font-size:0.8rem; color:#aaa;">
+                                Current Mode: <strong id="currentStrategy">Default</strong>. 
+                                <br>Click save to apply country specific sorting to the backend engine.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- WILDCARD CARD -->
+                    <div class="card">
+                        <h3>🃏 Wildcard Configuration</h3>
+                        <p style="font-size:0.8rem; color:#888; margin-bottom:15px;">
+                            Turns Homepage into a pillar page for this category. Shows FULL schedule.
+                        </p>
+
+                        <label>Main Category (Wildcard)</label>
+                        <select id="wcCategory">
+                            <option value="">None (Standard Home)</option>
+                            <!-- JS will populate categories here -->
+                        </select>
+
+                        <label>Section ID (For Hero Menu Linking)</label>
+                        <input type="text" id="wcId" placeholder="e.g. nfl-live">
+                        <small style="display:block; color:#666; margin-top:-5px; margin-bottom:10px;">Link to this using #nfl-live in menus.</small>
+
+                        <label>Fallback Entity Text (If No Matches)</label>
+                        <textarea id="wcFallback" rows="4" placeholder="Example: Watch free NFL live streams here..."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: APPEARANCE -->
             <section id="tab-appearance" class="tab-content">
                 <div class="header-box">
                     <h1>Theme & Design</h1>
@@ -80,7 +160,7 @@
                 
                 <div class="grid-2">
                     <div class="card">
-                        <h3>Colors</h3>
+                        <h3>Brand Colors</h3>
                         <label>Primary Brand Color</label>
                         <div class="color-group"><input type="color" id="colPrimary"><input type="text" id="txtPrimary"></div>
                         
@@ -92,47 +172,62 @@
                         
                         <label>System Status (Green)</label>
                         <div class="color-group"><input type="color" id="colStatus"><input type="text" id="txtStatus"></div>
-
-                        <label>Page Background</label>
-                        <div class="color-group"><input type="color" id="colBg"><input type="text" id="txtBg"></div>
                     </div>
 
                     <div class="card">
-                        <h3>Typography</h3>
-                        <label>Font Family</label>
-                        <select id="fontFamily">
-                            <option value="system-ui">System UI (Fastest)</option>
-                            <option value="'Inter', sans-serif">Inter (Modern)</option>
-                            <option value="'Roboto', sans-serif">Roboto</option>
-                            <option value="'Oswald', sans-serif">Oswald (Sports)</option>
-                        </select>
+                        <h3>Backgrounds & Gradients (New)</h3>
+                        <label>Page Background</label>
+                        <div class="color-group"><input type="color" id="colBg"><input type="text" id="txtBg"></div>
 
-                        <div class="grid-2" style="margin-top:15px;">
-                            <div>
-                                <label>Title Color P1</label>
-                                <div class="color-group"><input type="color" id="colT1"><input type="text" id="txtT1"></div>
-                            </div>
-                            <div>
-                                <label>Title Color P2</label>
-                                <div class="color-group"><input type="color" id="colT2"><input type="text" id="txtT2"></div>
-                            </div>
+                        <label>Hero Gradient Start (Center)</label>
+                        <div class="color-group"><input type="color" id="colHeroStart"><input type="text" id="txtHeroStart"></div>
+                        
+                        <label>Trending Row Gradient Start</label>
+                        <div class="color-group"><input type="color" id="colTrendStart"><input type="text" id="txtTrendStart"></div>
+
+                        <label>Footer Background</label>
+                        <div class="color-group"><input type="color" id="colFooter"><input type="text" id="txtFooter"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Typography & Preview</h3>
+                    <div class="grid-2">
+                        <div>
+                            <label>Font Family</label>
+                            <select id="fontFamily">
+                                <option value="system-ui">System UI (Fastest)</option>
+                                <option value="'Inter', sans-serif">Inter (Modern)</option>
+                                <option value="'Roboto', sans-serif">Roboto</option>
+                                <option value="'Oswald', sans-serif">Oswald (Sports)</option>
+                            </select>
                         </div>
-
-                        <div style="margin-top:15px;">
-                            <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                        <div>
+                             <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-top:28px;">
                                 <input type="checkbox" id="titleItalic"> 
                                 <span>Italic Site Title</span>
                             </label>
                         </div>
-                        
-                        <div class="preview-box">
-                            <span id="fontPreview">StreamEast</span>
+                    </div>
+
+                    <div class="grid-2" style="margin-top:15px;">
+                        <div>
+                            <label>Title Color P1</label>
+                            <div class="color-group"><input type="color" id="colT1"><input type="text" id="txtT1"></div>
                         </div>
+                        <div>
+                            <label>Title Color P2</label>
+                            <div class="color-group"><input type="color" id="colT2"><input type="text" id="txtT2"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-box">
+                        <span id="fontPreview">StreamEast</span>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 3: PAGES MANAGER -->
+            <!-- TAB 4: PAGES MANAGER -->
             <section id="tab-pages" class="tab-content">
                 <div class="header-box">
                     <h1>Page Manager</h1>
@@ -140,12 +235,8 @@
                 </div>
                 
                 <div class="pages-layout">
-                    <!-- Left: List -->
-                    <div class="pages-list" id="pagesList">
-                        <!-- Items injected by JS -->
-                    </div>
+                    <div class="pages-list" id="pagesList"></div>
 
-                    <!-- Right: Editor -->
                     <div class="page-editor" id="pageEditor" style="display:none;">
                         <div class="editor-header">
                             <h3 id="editHeading">Editing: Home</h3>
@@ -155,56 +246,59 @@
                             </div>
                         </div>
 
-                        <div class="grid-2">
-                            <div>
-                                <label>Slug (URL path)</label>
-                                <input type="text" id="pSlug" placeholder="e.g. nfl">
-                            </div>
-                            <div>
-                                <label>Page Type</label>
-                                <select id="pType">
-                                    <option value="schedule">Schedule/Category (Has Matches)</option>
-                                    <option value="static">Static Page (Text Only)</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="grid-2">
-                            <div><label>H1 Title</label><input type="text" id="pH1"></div>
-                            <div><label>Hero Text (Below H1)</label><input type="text" id="pHero"></div>
-                        </div>
-
-                        <div class="grid-2">
-                            <div><label>Meta Title</label><input type="text" id="pMetaTitle"></div>
-                            <div><label>Meta Description</label><textarea id="pMetaDesc" rows="2"></textarea></div>
-                        </div>
-
+                        <!-- TinyMCE Moved to Top -->
                         <label>Page Content (Article)</label>
                         <textarea id="tinymce-editor"></textarea>
+                        
+                        <div class="settings-box" style="margin-top:20px; padding:15px; border:1px solid #333; background:#111;">
+                            <h4>Page Settings</h4>
+                            <div class="grid-2">
+                                <div>
+                                    <label>Slug (URL path)</label>
+                                    <input type="text" id="pSlug" placeholder="e.g. nfl">
+                                </div>
+                                <div>
+                                    <label>Page Type</label>
+                                    <select id="pType">
+                                        <option value="schedule">Schedule/Category</option>
+                                        <option value="static">Static Page (Text Only)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid-2">
+                                <div><label>H1 Title</label><input type="text" id="pH1"></div>
+                                <div><label>Hero Text</label><input type="text" id="pHero"></div>
+                            </div>
+                            <div class="grid-2">
+                                <div><label>Meta Title</label><input type="text" id="pMetaTitle"></div>
+                                <div><label>Meta Description</label><textarea id="pMetaDesc" rows="2"></textarea></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 4: MENUS -->
+            <!-- TAB 5: MENUS -->
             <section id="tab-menus" class="tab-content">
+                <div class="header-box"><h1>Menu Manager</h1></div>
+                <p style="color:#888; margin-bottom:20px;">
+                    Manage your 4 menu sections here. (Updated logic coming in Step 2).
+                </p>
                 <div class="grid-2">
                     <div class="card">
-                        <h3>Hero Categories (Folder Generator)</h3>
-                        <p style="font-size:0.8rem; color:#888;">Creates folders like /nba/ and adds button to Hero.</p>
+                        <h3>Hero Categories (Pills)</h3>
                         <div id="hero-container"></div>
-                        <button class="btn-add" onclick="addHeroUI()">+ Add Category</button>
+                        <button class="btn-add" onclick="addHeroUI()">+ Add Item</button>
                     </div>
-
                     <div class="card">
-                        <h3>Header Menu (Right Side)</h3>
-                        <p style="font-size:0.8rem; color:#888;">Static links like FAQs, Contacts.</p>
+                        <h3>Header Menu</h3>
                         <div id="header-container"></div>
                         <button class="btn-add" onclick="addHeaderUI()">+ Add Link</button>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 5: SOCIALS -->
+            <!-- TAB 6: SOCIAL -->
             <section id="tab-social" class="tab-content">
                 <div class="header-box"><h1>Social Counters</h1></div>
                 <div class="grid-2">
