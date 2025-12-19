@@ -6,7 +6,7 @@ import base64
 import sys
 import hashlib
 from datetime import datetime
-import pytz
+from zoneinfo import ZoneInfo
 
 # ==========================================
 # 1. CONFIGURATION & CONSTANTS
@@ -99,7 +99,28 @@ def get_running_time(start_ms):
 
 def format_time_12h(ts_ms, timezone_str):
     try:
-        dt = datetime.fromtimestamp(ts_ms / 1000, pytz.timezone(timezone_str))
+        # Use ZoneInfo instead of pytz.timezone
+        dt = datetime.fromtimestamp(ts_ms / 1000, ZoneInfo(timezone_str))
+        
+        # Example: "7:30 PM ET"
+        tz_abbr = dt.strftime('%Z')
+        # Simplify common zones
+        if timezone_str == 'US/Eastern': tz_abbr = 'ET'
+        if timezone_str == 'US/Pacific': tz_abbr = 'PT'
+        if timezone_str == 'Europe/London': tz_abbr = 'UK'
+        
+        return dt.strftime(f'%I:%M %p {tz_abbr}').lstrip('0')
+    except Exception as e:
+        print(f"Time Error: {e}")
+        return ""
+
+def format_date_compact(ts_ms, timezone_str):
+    try:
+        # Use ZoneInfo instead of pytz.timezone
+        dt = datetime.fromtimestamp(ts_ms / 1000, ZoneInfo(timezone_str))
+        return dt.strftime('%b %d')
+    except:
+        return ""
         # Example: "7:30 PM ET"
         tz_abbr = dt.strftime('%Z')
         # Simplify common zones
