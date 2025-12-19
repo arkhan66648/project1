@@ -6,7 +6,12 @@ import base64
 import sys
 import hashlib
 from datetime import datetime
-from zoneinfo import ZoneInfo
+try:
+    # Python 3.9+ built-in timezone handling
+    from zoneinfo import ZoneInfo
+except ImportError:
+    # Fallback if somehow using older python (unlikely on GitHub Actions 3.9)
+    from datetime import timezone as ZoneInfo
 
 # ==========================================
 # 1. CONFIGURATION & CONSTANTS
@@ -99,7 +104,7 @@ def get_running_time(start_ms):
 
 def format_time_12h(ts_ms, timezone_str):
     try:
-        # Use ZoneInfo instead of pytz.timezone
+        # Use built-in ZoneInfo
         dt = datetime.fromtimestamp(ts_ms / 1000, ZoneInfo(timezone_str))
         
         # Example: "7:30 PM ET"
@@ -111,30 +116,16 @@ def format_time_12h(ts_ms, timezone_str):
         
         return dt.strftime(f'%I:%M %p {tz_abbr}').lstrip('0')
     except Exception as e:
-        print(f"Time Error: {e}")
-        return ""
+        # Fallback to UTC if timezone fails
+        try:
+            dt = datetime.utcfromtimestamp(ts_ms / 1000)
+            return dt.strftime('%I:%M %p UTC').lstrip('0')
+        except:
+            return ""
 
 def format_date_compact(ts_ms, timezone_str):
     try:
-        # Use ZoneInfo instead of pytz.timezone
         dt = datetime.fromtimestamp(ts_ms / 1000, ZoneInfo(timezone_str))
-        return dt.strftime('%b %d')
-    except:
-        return ""
-        # Example: "7:30 PM ET"
-        tz_abbr = dt.strftime('%Z')
-        # Simplify common zones
-        if timezone_str == 'US/Eastern': tz_abbr = 'ET'
-        if timezone_str == 'US/Pacific': tz_abbr = 'PT'
-        if timezone_str == 'Europe/London': tz_abbr = 'UK'
-        
-        return dt.strftime(f'%I:%M %p {tz_abbr}').lstrip('0')
-    except:
-        return ""
-
-def format_date_compact(ts_ms, timezone_str):
-    try:
-        dt = datetime.fromtimestamp(ts_ms / 1000, pytz.timezone(timezone_str))
         return dt.strftime('%b %d')
     except:
         return ""
