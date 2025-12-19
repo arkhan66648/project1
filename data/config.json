@@ -9,8 +9,8 @@
     "custom_meta": "",
     "footer_keywords": [
       "crackstreams",
-      "     methstreams",
-      "     sportsurge"
+      "      methstreams",
+      "      sportsurge"
     ]
   },
   "theme": {
@@ -89,5 +89,17 @@
     "category": "",
     "id": "",
     "fallback": ""
+  },
+  "sport_priorities": {
+    "NFL": 100,
+    "NBA": 95,
+    "UFC": 90,
+    "MLB": 85,
+    "NHL": 80,
+    "NCAA Football": 78,
+    "Soccer": 60,
+    "F1": 50,
+    "Boxing": 70,
+    "Tennis": 40
   }
 }
