@@ -9,8 +9,8 @@
     "custom_meta": "",
     "footer_keywords": [
       "crackstreams",
-      " methstreams",
-      " sportsurge"
+      "  methstreams",
+      "  sportsurge"
     ]
   },
   "theme": {
@@ -47,13 +47,7 @@
     "discord": "77k",
     "reddit": "333k"
   },
-  "hero_categories": [
-    {
-      "title": "NFL",
-      "url": "/nfl/",
-      "highlight": false
-    }
-  ],
+  "hero_categories": [],
   "header_menu": [],
   "pages": [
     {
