@@ -9,8 +9,13 @@ const CATEGORIES = [
     "NCAA Football", "NCAA Basketball"
 ];
 
+// Priorities Constants
+const DEFAULT_PRIORITY_USA = { "NFL": 100, "NBA": 95, "UFC": 90, "MLB": 85, "NHL": 80, "NCAA Football": 78, "Soccer": 60, "F1": 50, "Boxing": 70, "Tennis": 40 };
+const DEFAULT_PRIORITY_UK = { "Soccer": 100, "Boxing": 95, "F1": 90, "Tennis": 85, "Cricket": 80, "NFL": 70, "NBA": 60, "UFC": 75, "Rugby": 70 };
+
 let configData = {
     pages: [], site_settings: {}, theme: {}, targeting: {}, wildcard: {},
+    sport_priorities: {}, // Holds the sort order
     social_stats: {}, api_keys: {}, header_menu: [], hero_categories: [],
     footer_league_menu: [], footer_static_menu: []
 };
@@ -60,7 +65,7 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 5. Input Listeners (Fixing New Page Input Bug)
+    // 5. Input Listeners
     ['pSlug', 'pH1', 'pType'].forEach(id => {
         document.getElementById(id).addEventListener('input', () => {
             if(activePageIndex > -1) {
@@ -68,7 +73,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 if(id === 'pSlug' && p.slug !== 'home') p.slug = document.getElementById(id).value;
                 if(id === 'pH1') p.h1 = document.getElementById(id).value;
                 if(id === 'pType') p.type = document.getElementById(id).value;
-                renderPageList(); // Refresh list to reflect changes immediately
+                renderPageList(); 
             }
         });
     });
@@ -116,6 +121,7 @@ function ensureStructure() {
     if(!configData.footer_static_menu) configData.footer_static_menu = [];
     if(!configData.targeting) configData.targeting = { country: 'USA', timezone: 'US/Eastern' };
     if(!configData.wildcard) configData.wildcard = { category: '', id: '', fallback: '' };
+    if(!configData.sport_priorities) configData.sport_priorities = DEFAULT_PRIORITY_USA;
 }
 
 function populateUI() {
@@ -138,7 +144,6 @@ function populateUI() {
     setColor('colPrimary', 'txtPrimary', t.brand_primary);
     setColor('colDark', 'txtDark', t.brand_dark);
     setColor('colGold', 'txtGold', t.accent_gold);
-    setColor('colStatus', 'txtStatus', t.status_green);
     setColor('colBg', 'txtBg', t.bg_body);
     setColor('colHeroStart', 'txtHeroStart', t.hero_gradient_start);
     setColor('colTrendStart', 'txtTrendStart', t.trend_gradient_start);
@@ -155,11 +160,61 @@ function populateUI() {
 
     renderPageList();
     renderAllMenus();
+    renderPriorities(); // New Priority Renderer
     updatePreview();
 }
 
 // ==========================================
-// PAGE MANAGER (Improved)
+// PRIORITY MANAGER (NEW)
+// ==========================================
+function renderPriorities() {
+    const container = document.getElementById('priorityListContainer');
+    container.innerHTML = '';
+    
+    // Sort by value (High to Low)
+    const sorted = Object.entries(configData.sport_priorities).sort((a,b) => b[1] - a[1]);
+
+    sorted.forEach(([sport, score]) => {
+        const div = document.createElement('div');
+        div.className = 'menu-item-row';
+        div.innerHTML = `
+            <strong style="width:150px;">${sport}</strong>
+            <input type="number" value="${score}" onchange="updatePriority('${sport}', this.value)" style="width:80px; margin:0; background:#0f172a; border:1px solid #334155; color:white; padding:5px; border-radius:4px;">
+            <button class="btn-x" onclick="deletePriority('${sport}')">×</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+window.updatePriority = function(sport, val) {
+    configData.sport_priorities[sport] = parseInt(val);
+    // We don't re-render entire list here to prevent input focus loss
+};
+
+window.deletePriority = function(sport) {
+    delete configData.sport_priorities[sport];
+    renderPriorities();
+};
+
+window.addPriorityRow = function() {
+    const name = getVal('newSportName');
+    if(name) {
+        configData.sport_priorities[name] = 50; 
+        setVal('newSportName', '');
+        renderPriorities();
+    }
+};
+
+window.applyPriority = function(region) {
+    if(!confirm('This will overwrite current priorities with ' + region + ' defaults. Continue?')) return;
+    if(region === 'USA') configData.sport_priorities = {...DEFAULT_PRIORITY_USA};
+    if(region === 'UK') configData.sport_priorities = {...DEFAULT_PRIORITY_UK};
+    renderPriorities();
+};
+
+
+// ==========================================
+// PAGE MANAGER
 // ==========================================
 function renderPageList() {
     const list = document.getElementById('pagesList');
@@ -215,7 +270,6 @@ window.createNewPage = function() {
     loadPage(configData.pages.length - 1);
 };
 
-// CRITICAL: Deletes folder from GitHub
 window.deleteCurrentPage = async function() {
     if(activePageIndex === -1) return;
     const p = configData.pages[activePageIndex];
@@ -224,7 +278,6 @@ window.deleteCurrentPage = async function() {
     if(!confirm(`Delete /${p.slug}? This will delete the folder from GitHub immediately.`)) return;
 
     const token = localStorage.getItem('gh_token');
-    // Try to delete file
     const path = `${p.slug}/index.html`;
     try {
         const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}?ref=${BRANCH}`, {
@@ -393,7 +446,6 @@ document.getElementById('saveBtn').onclick = async () => {
     configData.theme.brand_primary = getVal('colPrimary');
     configData.theme.brand_dark = getVal('colDark');
     configData.theme.accent_gold = getVal('colGold');
-    configData.theme.status_green = getVal('colStatus');
     configData.theme.bg_body = getVal('colBg');
     configData.theme.hero_gradient_start = getVal('colHeroStart');
     configData.theme.trend_gradient_start = getVal('colTrendStart');
@@ -411,17 +463,29 @@ document.getElementById('saveBtn').onclick = async () => {
     configData.api_keys.streamed_url = getVal('apiStreamed');
     configData.api_keys.topembed_url = getVal('apiTopembed');
 
+    // Trigger GitHub Action event to rebuild site immediately
     const token = localStorage.getItem('gh_token');
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(configData, null, 2))));
     
     try {
+        // 1. Save Config File
         await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
             method: 'PUT',
             headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: "Update Config", content: content, sha: currentSha, branch: BRANCH })
         });
-        document.getElementById('statusMsg').textContent = "✅ Saved!";
-        alert("Configuration saved! Your changes will be live shortly.");
+
+        // 2. Trigger Action (Wait 1s to ensure file committed)
+        setTimeout(async () => {
+            await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`, {
+                method: 'POST',
+                headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' },
+                body: JSON.stringify({ event_type: "trigger-update" })
+            });
+        }, 1500);
+
+        document.getElementById('statusMsg').textContent = "✅ Saved & Build Triggered!";
+        alert("Configuration saved! Site is rebuilding (takes ~1-2 mins).");
     } catch(e) { alert("Error: " + e.message); }
     btn.disabled = false;
 };
@@ -444,10 +508,3 @@ window.updatePreview = function() {
     prev.innerHTML = `<span style="color:${getVal('colT1')}">${getVal('titleP1') || 'Stream'}</span><span style="color:${getVal('colT2')}">${getVal('titleP2') || 'East'}</span>`;
     prev.style.fontStyle = document.getElementById('titleItalic').checked ? 'italic' : 'normal';
 };
-function applyTheme(name) {
-    const t = THEMES[name]; if(!t) return;
-    setColor('colPrimary', 'txtPrimary', t.primary); setColor('colDark', 'txtDark', t.dark);
-    setColor('colGold', 'txtGold', t.accent); setColor('colStatus', 'txtStatus', t.status);
-    setColor('colBg', 'txtBg', t.bg); setColor('colT1', 'txtT1', t.t1); setColor('colT2', 'txtT2', t.t2);
-    updatePreview();
-}
