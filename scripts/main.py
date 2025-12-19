@@ -92,7 +92,7 @@ def generate_team_ui(title):
 
 def get_running_time(start_ms):
     # Backend calculation for "34'" or "HT"
-    diff_ mins = (NOW_MS - start_ms) // 60000
+    diff_mins = (NOW_MS - start_ms) // 60000
     if diff_mins < 0: return "" # Not started
     if diff_mins > 150: return "FT"
     return f"{diff_mins}'"
