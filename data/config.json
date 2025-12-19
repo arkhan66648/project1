@@ -55,13 +55,6 @@
       "type": "schedule",
       "title": "Home",
       "content": ""
-    },
-    {
-      "slug": "new-page",
-      "type": "static",
-      "h1": "New Page",
-      "content": "<p>Hello World</p>",
-      "schemas": {}
     }
   ],
   "footer_league_menu": [],
