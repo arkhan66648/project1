@@ -12,8 +12,14 @@
 
     <!-- Open Graph -->
     <meta property="og:title" content="{{META_TITLE}}">
+    <meta property="og:description" content="{{META_DESC}}">
     <meta property="og:image" content="{{LOGO_URL}}">
     <meta property="og:url" content="https://{{DOMAIN}}/">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="{{LOGO_URL}}">
 
     <!-- ANALYTICS & VERIFICATION -->
     {{CUSTOM_META}}
@@ -24,199 +30,38 @@
     <!-- DYNAMIC SCHEMA (Live Badge) -->
     <script id="dynamic-schema" type="application/ld+json"></script>
     
+    <link rel="stylesheet" href="assets/css/style.css">
     <style>
         :root {
+            /* Variables injected by Python from Admin Config */
             --brand-primary: {{BRAND_PRIMARY}};
             --brand-dark: {{BRAND_DARK}};
             --status-green: {{STATUS}};
             --accent-gold: {{ACCENT}};
             --bg-body: {{BG_BODY}};
-            --bg-glass: rgba(20, 20, 20, 0.95);
-            --border: #222;
-            --text-main: #ffffff;
-            --text-muted: #999;
+            --hero-gradient: {{HERO_GRADIENT}};
+            --trend-gradient: {{TREND_GRADIENT}};
+            --footer-bg: {{FOOTER_BG}};
             --font-main: {{FONT_FAMILY}};
             --title-c1: {{TITLE_C1}};
             --title-c2: {{TITLE_C2}};
-            --radius: 8px;
         }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: var(--font-main); background: var(--bg-body); color: var(--text-main); font-size: 14px; padding-bottom: 70px; line-height: 1.5; }
-        a { text-decoration: none; color: inherit; transition: 0.2s; }
-        button { cursor: pointer; border: none; font-family: inherit; }
-        ul { list-style: none; padding: 0; margin: 0; }
-
-        /* HEADER */
-        header { background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); height: 60px; width: 100%; position: fixed; top: 0; z-index: 100; }
-        .header-container { max-width: 1100px; margin: 0 auto; height: 100%; padding: 0 15px; display: flex; align-items: center; justify-content: space-between; }
-        
-        .logo-link { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-        .logo-img { height: 35px; width: 35px; border-radius: 6px; object-fit: cover; box-shadow: 0 0 10px rgba(255,255,255,0.1); }
-        .logo-text { font-size: 1.4rem; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; line-height: 1; color: var(--title-c1); font-style: italic; }
-        .logo-text span { color: var(--title-c2); }
-
-        .nav-links { display: none; gap: 20px; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #aaa; }
-        .nav-links a:hover { color: white; }
-        .hamburger { display: block; font-size: 1.4rem; color: white; background: none; }
-        
-        /* MOBILE MENU */
-        .mobile-menu { position: fixed; top: 60px; left: 0; width: 100%; background: #0f0f0f; border-bottom: 1px solid var(--border); display: none; flex-direction: column; z-index: 99; }
-        .mobile-menu.active { display: flex; }
-        .mobile-menu a { padding: 15px 20px; border-bottom: 1px solid #1f1f1f; font-weight: 600; color: #ddd; }
-        @media (min-width: 900px) { .nav-links { display: flex; } .hamburger { display: none; } }
-
-        /* HERO SECTION */
-        .hero { padding: 90px 15px 20px 15px; text-align: center; background: radial-gradient(circle at top, #111 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); }
-        .sys-status { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 230, 118, 0.08); border: 1px solid rgba(0, 230, 118, 0.2); padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; font-size: 0.75rem; font-weight: 700; color: var(--status-green); }
-        .dot { width: 6px; height: 6px; background: var(--status-green); border-radius: 50%; box-shadow: 0 0 8px var(--status-green); animation: pulse 2s infinite; }
-        h1 { margin: 0 0 15px 0; font-size: 2rem; line-height: 1.1; color: white; font-weight: 800; letter-spacing: -0.5px; }
-        h1 span { color: var(--brand-primary); }
-        .entity-intro { color: #999; font-size: 0.95rem; line-height: 1.6; text-align: center; max-width: 800px; margin: 0 auto 20px auto; padding: 0 10px; }
-
-        /* HERO PILLS */
-        .cat-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 5px; justify-content: flex-start; scrollbar-width: none; max-width: 100%; margin: 0 auto; }
-        .cat-scroll::-webkit-scrollbar { display: none; }
-        .cat-pill { background: #151515; border: 1px solid var(--border); padding: 10px 20px; border-radius: 50px; font-weight: 700; font-size: 0.85rem; white-space: nowrap; color: #ccc; flex-shrink: 0; }
-        .cat-pill:hover, .cat-pill.active { border-color: var(--brand-primary); color: white; background: rgba(255,255,255,0.05); }
-        @media (min-width: 1000px) { .cat-scroll { justify-content: center; } }
-
-        /* SEARCH BOX (New Design) */
-        .search-wrapper { max-width: 600px; margin: 20px auto 0 auto; position: relative; display: {{DISPLAY_SEARCH}}; }
-        .search-input { width: 100%; padding: 14px 45px 14px 20px; background: #151515; border: 1px solid #333; border-radius: 50px; color: white; outline: none; transition: 0.3s; font-size: 1rem; }
-        .search-input:focus { border-color: var(--brand-primary); box-shadow: 0 0 15px rgba(0,0,0,0.5); }
-        .search-clear { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: #333; color: #aaa; border-radius: 50%; width: 22px; height: 22px; display: none; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; }
-        .search-clear:hover { background: var(--brand-primary); color: white; }
-
-        /* SOCIAL BARS (Sticky Logic) */
-        .desktop-social { position: fixed; left: 0; top: 50%; transform: translateY(-50%); display: none; flex-direction: column; z-index: 90; background: rgba(10,10,10,0.9); border: 1px solid var(--border); border-left: 0; border-radius: 0 10px 10px 0; overflow: hidden; }
-        .ds-item { padding: 12px 10px; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s; border-bottom: 1px solid #222; width: 60px; }
-        .ds-item:last-child { border-bottom: none; }
-        .ds-item:hover { background: var(--brand-primary); }
-        .ds-item svg { width: 20px; height: 20px; fill: #ddd; }
-        .ds-item:hover svg { fill: white; }
-        .stat-val { font-size: 0.6rem; font-weight: 700; margin-top: 4px; color: #aaa; }
-        .ds-item:hover .stat-val { color: white; }
-        @media (min-width: 1000px) { .desktop-social { display: flex; } }
-
-        /* MATCH TABLES */
-        .container { max-width: 1000px; margin: 0 auto; padding: 20px 15px; }
-        .schedule-container { display: {{DISPLAY_MATCHES}}; }
-        
-        .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 35px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #222; }
-        .sec-title { font-size: 1.2rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: -0.5px; }
-        .live-dot { width: 8px; height: 8px; background: var(--brand-primary); border-radius: 50%; box-shadow: 0 0 10px var(--brand-primary); }
-        .sec-right-link { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
-        .sec-right-link:hover { color: var(--brand-primary); }
-
-        /* MATCH ROW (Advanced Grid) */
-        .match-row { 
-            display: grid; 
-            grid-template-columns: 60px 1fr 70px 80px; /* Wider team column */
-            align-items: center; 
-            gap: 15px; 
-            background: var(--bg-glass); 
-            border: 1px solid var(--border); 
-            border-radius: var(--radius); 
-            padding: 15px; 
-            margin-bottom: 10px; 
-            transition: 0.2s; 
-            position: relative;
-        }
-        .match-row:hover { border-color: #444; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        
-        /* Live Style */
-        .match-row.live { border-left: 4px solid var(--brand-primary); background: linear-gradient(90deg, rgba(200,0,0,0.08) 0%, rgba(20,20,20,0.95) 100%); }
-
-        /* Columns */
-        .col-time { text-align: center; display: flex; flex-direction: column; justify-content: center; }
-        .time-main { font-size: 0.9rem; font-weight: 700; color: white; }
-        .time-sub { font-size: 0.7rem; color: #888; margin-top: 2px; }
-        .live-txt { color: var(--brand-primary); font-weight: 900; animation: blink 1.5s infinite; font-size: 0.75rem; display: block; }
-
-        .col-info { display: flex; flex-direction: column; gap: 4px; overflow: hidden; justify-content: center; }
-        .league-tag { font-size: 0.7rem; color: #777; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .team-name { font-size: 0.95rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px; }
-        
-        /* Team Circle UI */
-        .t-circle { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #fff; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-
-        .col-meta { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
-        .meta-top { font-size: 0.75rem; font-weight: 700; color: var(--accent-gold); white-space: nowrap; display: flex; align-items: center; gap: 4px; }
-        .meta-bot { font-size: 0.7rem; color: #aaa; background: #222; padding: 2px 6px; border-radius: 4px; margin-top: 3px; font-weight: 600; }
-        
-        /* Countdown Style */
-        .countdown { color: #fff; font-family: monospace; letter-spacing: -0.5px; font-size: 0.8rem; background: #333; padding: 2px 6px; border-radius: 4px; }
-
-        .col-action { display: flex; justify-content: flex-end; }
-        .btn-watch { background: var(--brand-primary); color: white; font-size: 0.75rem; font-weight: 800; padding: 10px 0; border-radius: 4px; width: 100%; text-transform: uppercase; letter-spacing: 0.5px; }
-        .btn-watch:hover { background: var(--brand-dark); transform: scale(1.02); }
-        .btn-notify { background: transparent; border: 1px solid #333; color: #888; transition: 0.2s; }
-        .btn-notify:hover { border-color: #666; color: #ccc; }
-        .btn-notify.set { border-color: var(--status-green); color: var(--status-green); }
-
-        @media (min-width: 768px) { 
-            .match-row { grid-template-columns: 80px 1fr 100px 120px; padding: 15px 25px; gap: 25px; } 
-            .team-name { font-size: 1.1rem; } 
-            .btn-watch { font-size: 0.85rem; } 
-        }
-
-        /* SHOW MORE BUTTON */
-        .show-more-container { text-align: center; margin-top: 20px; }
-        .btn-show-more { background: #151515; border: 1px solid #333; color: #ccc; padding: 12px 30px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
-        .btn-show-more:hover { background: #222; color: white; border-color: #555; }
-
-        /* SEO ARTICLE */
-        .seo-box { background: #0a0a0a; border: 1px solid var(--border); padding: 30px; border-radius: 12px; margin-top: 50px; }
-        .seo-box h1, .seo-box h2 { color: white; font-size: 1.4rem; margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px; margin-bottom: 15px; }
-        .seo-box h3 { color: #ddd; font-size: 1.1rem; margin: 20px 0 10px 0; }
-        .seo-box p { color: #888; font-size: 0.95rem; line-height: 1.7; margin-bottom: 15px; }
-
-        /* PARTNERS */
-        .partners { margin-top: 30px; text-align: center; border-top: 1px solid var(--border); padding-top: 25px; }
-        .p-tag { display: inline-block; font-size: 0.8rem; color: #555; border: 1px solid #222; padding: 6px 14px; border-radius: 20px; margin: 5px; cursor: pointer; transition: 0.2s; }
-        .p-tag:hover { border-color: var(--brand-primary); color: white; background: rgba(255,255,255,0.05); }
-
-        footer { text-align: center; padding: 40px 20px; color: #444; font-size: 0.8rem; margin-bottom: 60px; border-top: 1px solid #111; margin-top: 40px; }
-        
-        /* MOBILE STICKY SOCIALS */
-        .mobile-social { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: rgba(10,10,10,0.98); backdrop-filter: blur(10px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 9999; }
-        .ms-item { display: flex; flex-direction: column; align-items: center; width: 25%; cursor: pointer; }
-        .ms-item svg { width: 22px; height: 22px; fill: #888; transition: 0.2s; }
-        .ms-count { font-size: 0.65rem; color: var(--brand-primary); font-weight: 700; background: #1a1a1a; padding: 2px 8px; border-radius: 10px; margin-top: 4px; }
-        .ms-item:active svg { transform: scale(0.9); fill: white; }
-        @media (min-width: 1000px) { .mobile-social { display: none; } }
-
-        /* POPUPS */
-        .search-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .sp-content { background: #111; padding: 40px; border-radius: 12px; border: 1px solid var(--brand-primary); text-align: center; max-width: 90%; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
-        .sp-loader { border: 3px solid #222; border-top: 3px solid var(--brand-primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 0.8s infinite; margin: 20px auto; }
-
-        .video-modal { position: fixed; inset: 0; background: black; z-index: 3000; display: none; flex-direction: column; }
-        .vm-head { padding: 12px 20px; background: #111; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
-        .vm-title { color: #fff; font-weight: 600; font-size: 0.9rem; }
-        .vm-close { color: white; font-weight: 700; padding: 6px 16px; background: var(--brand-primary); border-radius: 4px; font-size: 0.8rem; }
-        .vm-close:hover { background: var(--brand-dark); }
-
-        @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- SOCIAL SIDEBAR (Desktop) -->
+    <!-- SIDEBAR (Desktop Socials) -->
     <div class="desktop-social">
-        <div class="ds-item"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.52-1.4.51-.46-.01-1.35-.26-2.01-.48-.81-.27-1.44-.4-1.38-.85.03-.24.37-.49 1.02-.75 4-.174 6.67-2.9 8.04-3.52 3.83-1.74 4.62-2.05 5.15-2.06.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.13-.02.24z"/></svg><span class="stat-val">{{SOC_TELEGRAM}}</span></div>
-        <div class="ds-item"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span class="stat-val">{{SOC_TWITTER}}</span></div>
-        <div class="ds-item"><svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg><span class="stat-val">{{SOC_DISCORD}}</span></div>
-        <div class="ds-item"><svg viewBox="0 0 24 24"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg><span class="stat-val">{{SOC_REDDIT}}</span></div>
+        <div class="ds-item" onclick="shareSite('telegram')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.52-1.4.51-.46-.01-1.35-.26-2.01-.48-.81-.27-1.44-.4-1.38-.85.03-.24.37-.49 1.02-.75 4-.174 6.67-2.9 8.04-3.52 3.83-1.74 4.62-2.05 5.15-2.06.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.13-.02.24z"/></svg><span class="stat-val">{{SOC_TELEGRAM}}</span></div>
+        <div class="ds-item" onclick="shareSite('twitter')"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span class="stat-val">{{SOC_TWITTER}}</span></div>
+        <div class="ds-item" onclick="copyLink()"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="stat-val">Copy</span></div>
     </div>
 
+    <!-- HEADER -->
     <header>
         <div class="header-container">
             <a href="/" class="logo-link">
-                <img src="{{LOGO_URL}}" alt="{{SITE_NAME}}" width="35" height="35" class="logo-img">
+                <img src="{{LOGO_URL}}" alt="{{SITE_NAME}}" class="logo-img">
                 <div class="logo-text">{{TITLE_P1}}<span>{{TITLE_P2}}</span></div>
             </a>
             <nav class="nav-links">
@@ -228,10 +73,13 @@
 
     <div class="mobile-menu" id="mobileMenu">{{HEADER_MENU}}</div>
 
+    <!-- HERO SECTION -->
     <div class="hero">
         <div class="sys-status"><div class="dot"></div> System Status: Online</div>
         <h1>{{H1}}</h1>
         <p class="entity-intro">{{HERO_TEXT}}</p>
+        
+        <!-- HERO PILLS (Category Menu) -->
         <div class="cat-scroll">
             {{HERO_PILLS}}
         </div>
@@ -240,33 +88,37 @@
     <div class="container">
         
         <!-- SEARCH BOX -->
-        <div class="search-wrapper">
-            <input type="text" id="match-search" class="search-input" placeholder="Search by a team or match..">
+        <div class="search-wrapper" style="display:{{DISPLAY_SEARCH}}">
+            <input type="text" id="match-search" class="search-input" placeholder="Search team or match...">
             <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
         </div>
 
         <!-- SEARCH WARNING (Hidden) -->
-        <div id="searchMsgBox" style="display:none; margin-top:20px; background:#1a1a1a; border:1px solid var(--brand-primary); padding:15px; border-radius:8px; text-align:center;">
-             <h3 style="margin:0 0 5px 0; color:white;">Looking for <span id="searchTermDisplay" style="color:var(--brand-primary)"></span>?</h3>
-             <p style="margin:0; color:#aaa; font-size:0.85rem;">{{SITE_NAME}} is the #1 authorized alternative.</p>
+        <div id="searchMsgBox" style="display:none;" class="search-msg-box">
+             <h3>Looking for <span id="searchTermDisplay"></span>?</h3>
+             <p>{{SITE_NAME}} is the #1 authorized alternative.</p>
         </div>
 
-        <div class="schedule-container">
-            <!-- TRENDING -->
+        <div class="schedule-container" style="display:{{DISPLAY_MATCHES}}">
+            
+            <!-- 1. TRENDING SECTION -->
             <div class="sec-head">
                 <div class="sec-title"><div class="live-dot"></div> Trending Live</div>
-                <div class="sec-right-link" id="onlineCount">● Live</div>
+                <div class="sec-right-live" id="onlineCount">● Loading...</div>
             </div>
             
             <div id="live-matches-container" class="match-list">
-                <div style="padding:30px; text-align:center; color:#666;">Loading live streams...</div>
+                <!-- Injected via JS -->
             </div>
             
             <div class="show-more-container">
-                <button class="btn-show-more" id="btnShowMore" style="display:none" onclick="showAllTrending()">Show Matches ▼</button>
+                <button class="btn-show-more" id="btnShowMore" style="display:none">Show More Matches ▼</button>
             </div>
 
-            <!-- UPCOMING -->
+            <!-- 2. WILDCARD SECTION (Injected via JS if active) -->
+            <div id="wildcard-wrapper"></div>
+
+            <!-- 3. UPCOMING CATEGORIES -->
             <div id="upcoming-wrapper"></div>
         </div>
 
@@ -275,53 +127,61 @@
             {{ARTICLE_CONTENT}}
         </div>
 
-        <!-- PARTNERS -->
+        <!-- FOOTER LEAGUE MENU -->
+        <div class="footer-leagues" style="display:{{DISPLAY_MATCHES}}"> <!-- Hide on static pages -->
+            <div class="f-title">TOP LEAGUES</div>
+            <div class="f-links-grid">
+                {{FOOTER_LEAGUE_MENU}}
+            </div>
+        </div>
+
+        <!-- OUR NETWORK (Popular Searches) -->
         <div class="partners">
-            <div style="font-size:0.7rem; font-weight:700; color:#444; margin-bottom:10px;">POPULAR SEARCHES</div>
+            <div class="f-title">OUR NETWORK</div>
             {{FOOTER_KEYWORDS}}
         </div>
     </div>
 
-    <footer>&copy; 2025 {{SITE_NAME}}. All rights reserved.</footer>
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-static-links">
+            {{FOOTER_STATIC_MENU}}
+        </div>
+        <div class="copyright">
+            &copy; 2025 {{SITE_NAME}}. All rights reserved.
+        </div>
+    </footer>
 
     <!-- MOBILE STICKY SOCIAL -->
     <div class="mobile-social">
-        <div class="ms-item"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.52-1.4.51-.46-.01-1.35-.26-2.01-.48-.81-.27-1.44-.4-1.38-.85.03-.24.37-.49 1.02-.75 4-.174 6.67-2.9 8.04-3.52 3.83-1.74 4.62-2.05 5.15-2.06.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.13-.02.24z"/></svg><span class="ms-count">{{SOC_TELEGRAM}}</span></div>
-        <div class="ms-item"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span class="ms-count">{{SOC_TWITTER}}</span></div>
-        <div class="ms-item"><svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg><span class="ms-count">{{SOC_DISCORD}}</span></div>
-        <div class="ms-item"><svg viewBox="0 0 24 24"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg><span class="ms-count">{{SOC_REDDIT}}</span></div>
+        <div class="ms-item" onclick="shareSite('telegram')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.52-1.4.51-.46-.01-1.35-.26-2.01-.48-.81-.27-1.44-.4-1.38-.85.03-.24.37-.49 1.02-.75 4-.174 6.67-2.9 8.04-3.52 3.83-1.74 4.62-2.05 5.15-2.06.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.13-.02.24z"/></svg><span class="ms-count">{{SOC_TELEGRAM}}</span></div>
+        <div class="ms-item" onclick="shareSite('twitter')"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span class="ms-count">{{SOC_TWITTER}}</span></div>
+        <div class="ms-item" onclick="copyLink()"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="ms-count">Copy</span></div>
     </div>
 
-    <!-- POPUPS -->
-    <div class="search-popup" id="keywordPopup">
-        <div class="sp-content">
-            <h3>Searching for "<span id="kp-term" style="color:var(--brand-primary)"></span>"...</h3>
-            <div class="sp-loader"></div>
-            <p>Found best alternative: <strong>{{SITE_NAME}}</strong></p>
-        </div>
-    </div>
-
+    <!-- PLAYER POPUP -->
     <div class="video-modal" id="vModal">
         <div class="vm-head">
             <span class="vm-title" id="vmTitle">Live Stream</span>
             <button class="vm-close" onclick="closeStream()">Close ✕</button>
         </div>
-        <div id="vContainer" style="flex:1; background:black; display:flex; align-items:center; justify-content:center;"></div>
+        <div id="vContainer"></div>
     </div>
 
     <script src="assets/js/main.js"></script>
     <script>
+        // JS Config injected by Python
+        //JS_CONFIG_HERE
+        
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
-        // Internal Partner Search Logic
+        
+        // Internal Search Trick
         const urlParams = new URLSearchParams(window.location.search);
         const q = urlParams.get('q');
         if(q) {
             document.getElementById('searchMsgBox').style.display = 'block';
             document.getElementById('searchTermDisplay').innerText = q.toUpperCase();
         }
-        
-        // JS Configuration (Injected by Python)
-        //JS_CONFIG_HERE
     </script>
 </body>
 </html>
