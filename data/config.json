@@ -9,8 +9,8 @@
     "custom_meta": "",
     "footer_keywords": [
       "crackstreams",
-      "  methstreams",
-      "  sportsurge"
+      "   methstreams",
+      "   sportsurge"
     ]
   },
   "theme": {
@@ -70,6 +70,17 @@
       "assigned_category": "NFL",
       "hero_text": "fvdfgdgd",
       "meta_title": "",
+      "meta_desc": ""
+    },
+    {
+      "slug": "nba",
+      "h1": "New NBA Page",
+      "type": "schedule",
+      "content": "<p>drgdgdgdrg</p>",
+      "schemas": {},
+      "assigned_category": "NBA",
+      "hero_text": "Hero text",
+      "meta_title": "Meta titlr",
       "meta_desc": ""
     }
   ],
