@@ -9,15 +9,15 @@
     "custom_meta": "",
     "footer_keywords": [
       "crackstreams",
-      "   methstreams",
-      "   sportsurge"
+      "    methstreams",
+      "    sportsurge"
     ]
   },
   "theme": {
     "brand_primary": "#d00000",
     "brand_dark": "#8a0000",
     "accent_gold": "#ffd700",
-    "status_green": "#00e676",
+    "status_green": "",
     "bg_body": "#050505",
     "hero_gradient_start": "#1a0505",
     "trend_gradient_start": "#140000",
@@ -62,14 +62,15 @@
       "meta_desc": "Dest Dessss"
     },
     {
-      "slug": "nba",
-      "h1": "Streameast NBA",
+      "slug": "nfl",
+      "h1": "NFL Test",
       "type": "schedule",
       "content": "",
-      "assigned_category": "NBA",
-      "hero_text": "Heraaaa",
-      "meta_title": "Heeeeee",
-      "meta_desc": "Dessssss"
+      "schemas": {},
+      "assigned_category": "NFL",
+      "hero_text": "fvdfgdgd",
+      "meta_title": "",
+      "meta_desc": ""
     }
   ],
   "footer_league_menu": [],
