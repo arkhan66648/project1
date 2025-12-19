@@ -67,8 +67,8 @@
   "footer_league_menu": [],
   "footer_static_menu": [],
   "targeting": {
-    "country": "UK",
-    "timezone": "US/Eastern"
+    "country": "USA",
+    "timezone": "Asia/Dhaka"
   },
   "wildcard": {
     "category": "",
