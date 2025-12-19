@@ -183,104 +183,53 @@
                 </div>
             </section>
 
-            <!-- TAB 4: PAGES MANAGER (REDESIGNED FOR STEP 2) -->
-            <section id="tab-pages" class="tab-content">
-                <div class="header-box">
-                    <h1>Page Manager</h1>
-                    <button class="btn-primary" onclick="createNewPage()">+ Create New Page</button>
+            <!-- TAB 4: PAGES MANAGER -->
+<section id="tab-pages" class="tab-content">
+    <div class="header-box">
+        <h1>Page Manager</h1>
+        <!-- New Page Button is now inside the list column for better UX -->
+    </div>
+    
+    <div class="pages-layout">
+        <!-- LEFT: List -->
+        <div class="pages-list">
+            <div class="list-scroll" id="pagesList">
+                <!-- Items injected here -->
+            </div>
+            <button class="btn-new" onclick="createNewPage()">+ New Page</button>
+        </div>
+
+        <!-- RIGHT: Editor -->
+        <div class="page-editor" id="pageEditor" style="display:none;">
+            <div class="editor-toolbar">
+                <h3 id="editHeading" style="margin:0;">Editing</h3>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-danger" id="btnDeletePage" onclick="deleteCurrentPage()">Delete Page</button>
+                    <button class="btn-primary" onclick="saveCurrentPageLocal()">✔ Save Changes</button>
                 </div>
-                
-                <div class="pages-layout">
-                    <!-- Left: List -->
-                    <div class="pages-list" id="pagesList"></div>
+            </div>
 
-                    <!-- Right: Editor -->
-                    <div class="page-editor" id="pageEditor" style="display:none;">
-                        <div class="editor-header">
-                            <h3 id="editHeading">Editing: Home</h3>
-                            <div>
-                                <button class="btn-danger" id="btnDeletePage" onclick="deleteCurrentPage()">Delete</button>
-                                <button class="btn-primary" onclick="saveCurrentPageLocal()">✔ Done</button>
-                            </div>
-                        </div>
+            <label>Slug (URL)</label>
+            <input type="text" id="pSlug">
 
-                        <!-- 1. CONTENT (Top Priority) -->
-                        <div class="section-block">
-                            <label class="section-label">Page Content & SEO Article</label>
-                            <textarea id="tinymce-editor"></textarea>
-                        </div>
-                        
-                        <!-- 2. MAIN SETTINGS -->
-                        <div class="settings-box">
-                            <h4>Page Settings</h4>
-                            <div class="grid-2">
-                                <div>
-                                    <label>Slug (URL path)</label>
-                                    <input type="text" id="pSlug" placeholder="e.g. nfl">
-                                </div>
-                                <div>
-                                    <label>Page Type</label>
-                                    <select id="pType">
-                                        <option value="schedule">Schedule/Category</option>
-                                        <option value="static">Static Page</option>
-                                    </select>
-                                </div>
-                            </div>
+            <div class="grid-2">
+                <div><label>Type</label><select id="pType"><option value="static">Static</option><option value="schedule">Schedule</option></select></div>
+                <div><label>Category</label><select id="pCategoryAssign"><option value="">None</option></select></div>
+            </div>
 
-                            <!-- New: Category Assignment -->
-                            <div class="grid-2">
-                                <div>
-                                    <label>Assigned Category (For Schedule Logic)</label>
-                                    <select id="pCategoryAssign">
-                                        <option value="">None (Generic Schedule)</option>
-                                        <!-- Populated via JS -->
-                                    </select>
-                                </div>
-                                <div>
-                                    <label>H1 Title</label>
-                                    <input type="text" id="pH1">
-                                </div>
-                            </div>
+            <label>H1 Title</label> <input type="text" id="pH1">
+            <label>Hero Text</label> <input type="text" id="pHero">
 
-                            <label>Hero Intro Text</label>
-                            <input type="text" id="pHero">
+            <label>Content</label>
+            <textarea id="tinymce-editor"></textarea>
 
-                            <div class="grid-2">
-                                <div><label>Meta Title</label><input type="text" id="pMetaTitle"></div>
-                                <div><label>Meta Description</label><textarea id="pMetaDesc" rows="3"></textarea></div>
-                            </div>
-                        </div>
-
-                        <!-- 3. STATIC SCHEMAS (New Feature) -->
-                        <div class="settings-box">
-                            <h4>Static Schema Generator</h4>
-                            
-                            <!-- Org Schema -->
-                            <div class="schema-item">
-                                <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-bottom:10px;">
-                                    <input type="checkbox" id="schOrgEnable"> <strong>Enable Organization Schema</strong>
-                                </label>
-                                <div id="schOrgBox" class="schema-inputs hidden">
-                                    <input type="text" id="schOrgName" placeholder="Organization Name">
-                                    <input type="text" id="schOrgLogo" placeholder="Logo URL">
-                                    <input type="text" id="schOrgSocials" placeholder="Social Profiles (comma separated)">
-                                </div>
-                            </div>
-
-                            <!-- FAQ Schema -->
-                            <div class="schema-item">
-                                <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-bottom:10px;">
-                                    <input type="checkbox" id="schFaqEnable"> <strong>Enable FAQ Schema</strong>
-                                </label>
-                                <div id="schFaqBox" class="schema-inputs hidden">
-                                    <div id="faqContainer"></div>
-                                    <button class="btn-add-small" onclick="addFaqItem()">+ Add Question</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            <div class="grid-2" style="margin-top:20px;">
+                <div><label>Meta Title</label><input type="text" id="pMetaTitle"></div>
+                <div><label>Meta Description</label><textarea id="pMetaDesc" rows="3"></textarea></div>
+            </div>
+        </div>
+    </div>
+</section>
 
             <!-- TAB 5: MENUS (REDESIGNED FOR STEP 2) -->
             <section id="tab-menus" class="tab-content">
