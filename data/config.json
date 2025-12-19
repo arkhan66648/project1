@@ -60,7 +60,7 @@
       "slug": "new-page",
       "type": "static",
       "h1": "New Page",
-      "content": "",
+      "content": "<p>Hello World</p>",
       "schemas": {}
     }
   ],
