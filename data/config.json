@@ -54,7 +54,12 @@
       "slug": "home",
       "type": "schedule",
       "title": "Home",
-      "content": ""
+      "content": "",
+      "h1": "Streameast Live sport",
+      "assigned_category": "",
+      "hero_text": "Hero Meta",
+      "meta_title": "Test Meta",
+      "meta_desc": "Dest Dessss"
     }
   ],
   "footer_league_menu": [],
