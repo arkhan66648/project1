@@ -14,14 +14,14 @@
     ]
   },
   "theme": {
-    "brand_primary": "#d00000",
-    "brand_dark": "#8a0000",
-    "accent_gold": "#ffd700",
+    "brand_primary": "#0056d2",
+    "brand_dark": "#003c96",
+    "accent_gold": "#00c2cb",
     "status_green": "#00e676",
     "bg_body": "#050505",
     "font_family": "system-ui",
     "title_color_1": "#ffffff",
-    "title_color_2": "#d00000",
+    "title_color_2": "#0056d2",
     "title_italic": true
   },
   "api_keys": {
@@ -46,15 +46,15 @@
   },
   "hero_categories": [
     {
-      "title": "ÃÂ°ÃÂÃÂÃÂ NBA",
+      "title": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ NBA",
       "folder": "nba"
     },
     {
-      "title": "ÃÂ¢ÃÂÃÂ½ Soccer",
+      "title": "ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ½ Soccer",
       "folder": "soccer"
     },
     {
-      "title": "⚾ MLB",
+      "title": "â¾ MLB",
       "folder": "mlb"
     }
   ],
