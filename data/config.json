@@ -60,6 +60,16 @@
       "hero_text": "Hero Meta",
       "meta_title": "Test Meta",
       "meta_desc": "Dest Dessss"
+    },
+    {
+      "slug": "nba",
+      "h1": "Streameast NBA",
+      "type": "schedule",
+      "content": "",
+      "assigned_category": "NBA",
+      "hero_text": "Heraaaa",
+      "meta_title": "Heeeeee",
+      "meta_desc": "Dessssss"
     }
   ],
   "footer_league_menu": [],
