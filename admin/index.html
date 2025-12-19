@@ -10,155 +10,106 @@
 </head>
 <body>
 
-    <div class="cms-container" id="mainContainer">
-        <!-- SIDEBAR (Same as Step 1) -->
+    <div class="cms-container">
+        <!-- SIDEBAR -->
         <aside class="sidebar" id="sidebar">
             <div class="logo-area">
-                <div class="logo-flex">
-                    <h2 id="logoText">⚡ StreamCMS</h2>
-                    <button id="sidebarToggle" class="icon-btn">◀</button>
-                </div>
+                <h2>⚡ StreamCMS</h2>
+                <button id="sidebarToggle" class="icon-btn">◀</button>
             </div>
             <nav>
-                <button class="nav-btn active" onclick="switchTab('general')" title="General Settings">
-                    <span class="icon">⚙️</span> <span class="lbl">General & SEO</span>
-                </button>
-                <button class="nav-btn" onclick="switchTab('targeting')" title="Targeting & Wildcard">
-                    <span class="icon">🎯</span> <span class="lbl">Targeting & Wildcard</span>
-                </button>
-                <button class="nav-btn" onclick="switchTab('appearance')" title="Appearance">
-                    <span class="icon">🎨</span> <span class="lbl">Appearance</span>
-                </button>
-                <button class="nav-btn" onclick="switchTab('pages')" title="Pages & Content">
-                    <span class="icon">📄</span> <span class="lbl">Pages & Content</span>
-                </button>
-                <button class="nav-btn" onclick="switchTab('menus')" title="Menus">
-                    <span class="icon">🔗</span> <span class="lbl">Menus</span>
-                </button>
-                <button class="nav-btn" onclick="switchTab('social')" title="Social Stats">
-                    <span class="icon">📊</span> <span class="lbl">Social Stats</span>
-                </button>
+                <button class="nav-btn active" onclick="switchTab('general')">⚙️ General & SEO</button>
+                <button class="nav-btn" onclick="switchTab('targeting')">🎯 Target & Wildcard</button>
+                <button class="nav-btn" onclick="switchTab('appearance')">🎨 Appearance</button>
+                <button class="nav-btn" onclick="switchTab('pages')">📄 Pages & Content</button>
+                <button class="nav-btn" onclick="switchTab('menus')">🔗 Menus</button>
+                <button class="nav-btn" onclick="switchTab('social')">📊 Social Stats</button>
             </nav>
             <div class="sidebar-footer">
-                <button id="saveBtn" class="save-btn" title="Save All Changes">
-                    <span class="icon">💾</span> <span class="lbl">Save Changes</span>
-                </button>
-                <p id="statusMsg" class="status-ready">System Ready</p>
+                <button id="saveBtn" class="save-btn">💾 Save All Changes</button>
+                <p id="statusMsg">System Ready</p>
             </div>
         </aside>
 
-        <!-- MAIN CONTENT -->
         <main class="content-area">
 
-            <!-- TAB 1: GENERAL & SEO (From Step 1) -->
+            <!-- TAB 1: GENERAL -->
             <section id="tab-general" class="tab-content active">
                 <div class="header-box"><h1>General Settings</h1></div>
                 <div class="grid-2">
                     <div class="card">
                         <h3>Site Identity</h3>
                         <div class="grid-2">
-                            <div><label>Title Part 1 (White)</label><input type="text" id="titleP1" placeholder="Stream"></div>
-                            <div><label>Title Part 2 (Colored)</label><input type="text" id="titleP2" placeholder="East"></div>
+                            <div><label>Title P1</label><input type="text" id="titleP1"></div>
+                            <div><label>Title P2</label><input type="text" id="titleP2"></div>
                         </div>
-                        <label>Domain Name</label><input type="text" id="siteDomain" placeholder="streameast.app">
-                        <label>Logo URL (JPG/PNG)</label><input type="text" id="logoUrl">
-                        <label>Favicon URL (PNG)</label><input type="text" id="faviconUrl">
+                        <label>Domain</label><input type="text" id="siteDomain">
+                        <label>Logo URL</label><input type="text" id="logoUrl">
+                        <label>Favicon URL</label><input type="text" id="faviconUrl">
                     </div>
                     <div class="card">
-                        <h3>Tracking & Verification</h3>
-                        <label>Google Analytics ID (G-XXXX)</label>
-                        <input type="text" id="gaId" placeholder="Leave empty to disable">
-                        <label>Custom Meta Tags (HTML)</label>
-                        <textarea id="customMeta" placeholder='<meta name="google-site-verification" ...>' rows="4"></textarea>
-                        <label>Footer Related Keywords</label>
-                        <textarea id="footerKw" rows="3"></textarea>
-                    </div>
-                </div>
-                <div class="card full-width">
-                    <h3>API Sources (Redundancy System)</h3>
-                    <div class="grid-2">
-                        <div><label>Primary Source (Streamed.PK)</label><input type="text" id="apiStreamed"></div>
-                        <div><label>Backup Source (TopEmbed)</label><input type="text" id="apiTopembed"></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 2: TARGETING & WILDCARD (From Step 1) -->
-            <section id="tab-targeting" class="tab-content">
-                <div class="header-box"><h1>Targeting & Wildcard Strategy</h1></div>
-                <div class="grid-2">
-                    <div class="card">
-                        <h3>🌍 Geo-Targeting</h3>
-                        <label>Target Country</label>
-                        <select id="tgtCountry">
-                            <option value="USA">🇺🇸 United States (USA)</option>
-                            <option value="UK">🇬🇧 United Kingdom (UK)</option>
-                        </select>
-                        <label>Timezone (For Backend 12h Format)</label>
-                        <select id="tgtTimezone">
-                            <option value="US/Eastern">🇺🇸 Eastern Time (ET)</option>
-                            <option value="US/Pacific">🇺🇸 Pacific Time (PT)</option>
-                            <option value="US/Central">🇺🇸 Central Time (CT)</option>
-                            <option value="Europe/London">🇬🇧 London (GMT/BST)</option>
-                            <option value="Asia/Dhaka">🇧🇩 Dhaka (BST)</option>
-                        </select>
-                        <div style="margin-top:20px; padding:10px; border:1px solid #333; border-radius:6px;">
-                            <label>Priority Score Strategy</label>
-                            <p style="font-size:0.8rem; color:#aaa;">Current Mode: <strong id="currentStrategy">Default</strong></p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h3>🃏 Wildcard Configuration</h3>
-                        <label>Main Category (Wildcard)</label>
-                        <select id="wcCategory">
-                            <option value="">None (Standard Home)</option>
-                        </select>
-                        <label>Section ID (For Hero Menu Linking)</label>
-                        <input type="text" id="wcId" placeholder="e.g. nfl-live">
-                        <label>Fallback Entity Text</label>
-                        <textarea id="wcFallback" rows="4"></textarea>
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 3: APPEARANCE (From Step 1) -->
-            <section id="tab-appearance" class="tab-content">
-                <div class="header-box">
-                    <h1>Theme & Design</h1>
-                    <div class="theme-presets">
-                        <span>Presets:</span>
-                        <button class="t-btn t-red" onclick="applyTheme('red')"></button>
-                        <button class="t-btn t-blue" onclick="applyTheme('blue')"></button>
-                        <button class="t-btn t-green" onclick="applyTheme('green')"></button>
-                        <button class="t-btn t-purple" onclick="applyTheme('purple')"></button>
-                    </div>
-                </div>
-                <div class="grid-2">
-                    <div class="card">
-                        <h3>Brand Colors</h3>
-                        <label>Primary Brand Color</label>
-                        <div class="color-group"><input type="color" id="colPrimary"><input type="text" id="txtPrimary"></div>
-                        <label>Darker Shade (Hover)</label>
-                        <div class="color-group"><input type="color" id="colDark"><input type="text" id="txtDark"></div>
-                        <label>Accent Gold</label>
-                        <div class="color-group"><input type="color" id="colGold"><input type="text" id="txtGold"></div>
-                        <label>System Status (Green)</label>
-                        <div class="color-group"><input type="color" id="colStatus"><input type="text" id="txtStatus"></div>
-                    </div>
-                    <div class="card">
-                        <h3>Backgrounds & Gradients</h3>
-                        <label>Page Background</label>
-                        <div class="color-group"><input type="color" id="colBg"><input type="text" id="txtBg"></div>
-                        <label>Hero Gradient Start</label>
-                        <div class="color-group"><input type="color" id="colHeroStart"><input type="text" id="txtHeroStart"></div>
-                        <label>Trending Row Gradient Start</label>
-                        <div class="color-group"><input type="color" id="colTrendStart"><input type="text" id="txtTrendStart"></div>
-                        <label>Footer Background</label>
-                        <div class="color-group"><input type="color" id="colFooter"><input type="text" id="txtFooter"></div>
+                        <h3>Tracking</h3>
+                        <label>GA ID</label><input type="text" id="gaId">
+                        <label>Meta Tags</label><textarea id="customMeta" rows="4"></textarea>
+                        <label>Footer Keywords</label><textarea id="footerKw" rows="3"></textarea>
                     </div>
                 </div>
                 <div class="card">
-                    <h3>Typography</h3>
+                    <h3>API Keys</h3>
+                    <div class="grid-2">
+                        <div><label>Streamed.PK</label><input type="text" id="apiStreamed"></div>
+                        <div><label>TopEmbed</label><input type="text" id="apiTopembed"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: TARGETING -->
+            <section id="tab-targeting" class="tab-content">
+                <div class="header-box"><h1>Targeting & Wildcard</h1></div>
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Geo-Targeting</h3>
+                        <label>Target Country</label>
+                        <select id="tgtCountry">
+                            <option value="USA">🇺🇸 USA</option>
+                            <option value="UK">🇬🇧 UK</option>
+                        </select>
+                        <label>Timezone</label>
+                        <select id="tgtTimezone">
+                            <option value="US/Eastern">US Eastern</option>
+                            <option value="US/Central">US Central</option>
+                            <option value="Europe/London">UK (London)</option>
+                            <option value="Asia/Dhaka">Bangladesh</option>
+                        </select>
+                    </div>
+                    <div class="card">
+                        <h3>Wildcard (Homepage Pillar)</h3>
+                        <label>Category</label><select id="wcCategory"><option value="">None</option></select>
+                        <label>Section ID</label><input type="text" id="wcId">
+                        <label>Fallback Text</label><textarea id="wcFallback" rows="2"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: APPEARANCE -->
+            <section id="tab-appearance" class="tab-content">
+                <div class="header-box"><h1>Theme</h1></div>
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Colors</h3>
+                        <label>Brand Primary</label><div class="color-group"><input type="color" id="colPrimary"><input type="text" id="txtPrimary"></div>
+                        <label>Brand Dark</label><div class="color-group"><input type="color" id="colDark"><input type="text" id="txtDark"></div>
+                        <label>Accent</label><div class="color-group"><input type="color" id="colGold"><input type="text" id="txtGold"></div>
+                    </div>
+                    <div class="card">
+                        <h3>Gradients & Backgrounds</h3>
+                        <label>Body Bg</label><div class="color-group"><input type="color" id="colBg"><input type="text" id="txtBg"></div>
+                        <label>Hero Gradient</label><div class="color-group"><input type="color" id="colHeroStart"><input type="text" id="txtHeroStart"></div>
+                        <label>Trend Gradient</label><div class="color-group"><input type="color" id="colTrendStart"><input type="text" id="txtTrendStart"></div>
+                        <label>Footer Bg</label><div class="color-group"><input type="color" id="colFooter"><input type="text" id="txtFooter"></div>
+                    </div>
+                </div>
+                <div class="card">
                     <div class="grid-2">
                         <div>
                             <label>Font Family</label>
@@ -170,117 +121,134 @@
                             </select>
                         </div>
                         <div>
-                             <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-top:28px;">
-                                <input type="checkbox" id="titleItalic"> <span>Italic Site Title</span>
-                            </label>
+                            <label>Title Color 1</label><div class="color-group"><input type="color" id="colT1"><input type="text" id="txtT1"></div>
+                            <label>Title Color 2</label><div class="color-group"><input type="color" id="colT2"><input type="text" id="txtT2"></div>
                         </div>
                     </div>
-                    <div class="grid-2" style="margin-top:15px;">
-                        <div><label>Title Color P1</label><div class="color-group"><input type="color" id="colT1"><input type="text" id="txtT1"></div></div>
-                        <div><label>Title Color P2</label><div class="color-group"><input type="color" id="colT2"><input type="text" id="txtT2"></div></div>
-                    </div>
-                    <div class="preview-box"><span id="fontPreview">StreamEast</span></div>
+                    <label><input type="checkbox" id="titleItalic"> Italic Title</label>
+                    <div class="preview-box" id="fontPreview">StreamEast</div>
                 </div>
             </section>
 
-            <!-- TAB 4: PAGES MANAGER -->
-<section id="tab-pages" class="tab-content">
-    <div class="header-box">
-        <h1>Page Manager</h1>
-        <!-- New Page Button is now inside the list column for better UX -->
-    </div>
-    
-    <div class="pages-layout">
-        <!-- LEFT: List -->
-        <div class="pages-list">
-            <div class="list-scroll" id="pagesList">
-                <!-- Items injected here -->
-            </div>
-            <button class="btn-new" onclick="createNewPage()">+ New Page</button>
-        </div>
-
-        <!-- RIGHT: Editor -->
-        <div class="page-editor" id="pageEditor" style="display:none;">
-            <div class="editor-toolbar">
-                <h3 id="editHeading" style="margin:0;">Editing</h3>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn-danger" id="btnDeletePage" onclick="deleteCurrentPage()">Delete Page</button>
-                    <button class="btn-primary" onclick="saveCurrentPageLocal()">✔ Save Changes</button>
+            <!-- TAB 4: PAGES (FIXED & REDESIGNED) -->
+            <section id="tab-pages" class="tab-content">
+                <div class="header-box">
+                    <h1>Page Manager</h1>
                 </div>
-            </div>
-
-            <label>Slug (URL)</label>
-            <input type="text" id="pSlug">
-
-            <div class="grid-2">
-                <div><label>Type</label><select id="pType"><option value="static">Static</option><option value="schedule">Schedule</option></select></div>
-                <div><label>Category</label><select id="pCategoryAssign"><option value="">None</option></select></div>
-            </div>
-
-            <label>H1 Title</label> <input type="text" id="pH1">
-            <label>Hero Text</label> <input type="text" id="pHero">
-
-            <label>Content</label>
-            <textarea id="tinymce-editor"></textarea>
-
-            <div class="grid-2" style="margin-top:20px;">
-                <div><label>Meta Title</label><input type="text" id="pMetaTitle"></div>
-                <div><label>Meta Description</label><textarea id="pMetaDesc" rows="3"></textarea></div>
-            </div>
-        </div>
-    </div>
-</section>
-
-            <!-- TAB 5: MENUS (REDESIGNED FOR STEP 2) -->
-            <section id="tab-menus" class="tab-content">
-                <div class="header-box"><h1>Menu Manager</h1></div>
                 
-                <!-- 4 SECTIONS GRID -->
-                <div class="grid-2">
-                    <!-- 1. HEADER MENU -->
-                    <div class="card">
-                        <h3>Header Menu (Right)</h3>
-                        <div class="menu-list" id="menu-header"></div>
-                        <button class="btn-add" onclick="openMenuModal('header')">+ Add Item</button>
+                <div class="pages-layout">
+                    <!-- Left: List -->
+                    <div class="pages-sidebar">
+                        <div id="pagesList" class="list-container"></div>
+                        <button class="btn-new" onclick="createNewPage()">+ Create Page</button>
                     </div>
 
-                    <!-- 2. HERO CATEGORIES -->
+                    <!-- Right: Editor -->
+                    <div class="page-editor" id="pageEditor" style="display:none;">
+                        <div class="editor-top">
+                            <h3 id="editHeading">Editing</h3>
+                            <div class="actions">
+                                <button class="btn-danger" id="btnDeletePage" onclick="deleteCurrentPage()">Delete Page</button>
+                                <button class="btn-primary" onclick="saveCurrentPageLocal()">✔ Save Changes</button>
+                            </div>
+                        </div>
+
+                        <!-- 1. Content (TinyMCE) -->
+                        <div class="editor-block main">
+                            <label>Article Content (Entity Stacking)</label>
+                            <textarea id="tinymce-editor"></textarea>
+                        </div>
+
+                        <!-- 2. Settings -->
+                        <div class="editor-block settings">
+                            <h4>Page Configuration</h4>
+                            <div class="grid-2">
+                                <div><label>Slug (URL)</label><input type="text" id="pSlug"></div>
+                                <div>
+                                    <label>Page Type</label>
+                                    <select id="pType">
+                                        <option value="schedule">Schedule / Category</option>
+                                        <option value="static">Static Page</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid-2">
+                                <div>
+                                    <label>Assign Category (For Schedule)</label>
+                                    <select id="pCategoryAssign"><option value="">None</option></select>
+                                </div>
+                                <div><label>H1 Title</label><input type="text" id="pH1"></div>
+                            </div>
+                            <label>Hero Text</label><input type="text" id="pHero">
+                            
+                            <div class="grid-2">
+                                <div><label>Meta Title</label><input type="text" id="pMetaTitle"></div>
+                                <div><label>Meta Description</label><textarea id="pMetaDesc" rows="3"></textarea></div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Static Schemas (Restored) -->
+                        <div class="editor-block schemas">
+                            <h4>Static Schemas</h4>
+                            
+                            <label class="toggle-label">
+                                <input type="checkbox" id="schOrgEnable"> Enable Organization Schema
+                            </label>
+                            <div id="schOrgBox" class="hidden-box">
+                                <input type="text" id="schOrgName" placeholder="Org Name">
+                                <input type="text" id="schOrgLogo" placeholder="Logo URL">
+                                <input type="text" id="schOrgSocials" placeholder="Socials (comma separated)">
+                            </div>
+
+                            <label class="toggle-label">
+                                <input type="checkbox" id="schFaqEnable"> Enable FAQ Schema
+                            </label>
+                            <div id="schFaqBox" class="hidden-box">
+                                <div id="faqContainer"></div>
+                                <button class="btn-small" onclick="addFaqItem()">+ Add Question</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: MENUS (FIXED BUTTONS) -->
+            <section id="tab-menus" class="tab-content">
+                <div class="header-box"><h1>Menus</h1></div>
+                <div class="grid-2">
                     <div class="card">
-                        <h3>Hero Categories (Pills)</h3>
-                        <div class="menu-list" id="menu-hero"></div>
+                        <h3>Header Menu</h3>
+                        <div id="menu-header" class="menu-list"></div>
+                        <button class="btn-add" onclick="openMenuModal('header')">+ Add Item</button>
+                    </div>
+                    <div class="card">
+                        <h3>Hero Categories</h3>
+                        <div id="menu-hero" class="menu-list"></div>
                         <button class="btn-add" onclick="openMenuModal('hero')">+ Add Item</button>
                     </div>
                 </div>
-
                 <div class="grid-2">
-                    <!-- 3. FOOTER LEAGUE MENU -->
                     <div class="card">
-                        <h3>Footer League Menu (Sub-cats)</h3>
-                        <div class="menu-list" id="menu-footer-league"></div>
+                        <h3>Footer Leagues</h3>
+                        <div id="menu-footer_league" class="menu-list"></div>
                         <button class="btn-add" onclick="openMenuModal('footer_league')">+ Add Item</button>
                     </div>
-
-                    <!-- 4. FOOTER STATIC MENU -->
                     <div class="card">
-                        <h3>Footer Static Menu</h3>
-                        <div class="menu-list" id="menu-footer-static"></div>
+                        <h3>Footer Static</h3>
+                        <div id="menu-footer_static" class="menu-list"></div>
                         <button class="btn-add" onclick="openMenuModal('footer_static')">+ Add Item</button>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 6: SOCIAL (From Step 1) -->
+            <!-- TAB 6: SOCIAL -->
             <section id="tab-social" class="tab-content">
-                <div class="header-box"><h1>Social Counters</h1></div>
+                <div class="header-box"><h1>Socials</h1></div>
                 <div class="grid-2">
-                    <div class="card">
-                        <label>Telegram Count</label><input type="text" id="socTelegram">
-                        <label>Twitter/X Count</label><input type="text" id="socTwitter">
-                    </div>
-                    <div class="card">
-                        <label>Discord Count</label><input type="text" id="socDiscord">
-                        <label>Reddit Count</label><input type="text" id="socReddit">
-                    </div>
+                    <div class="card"><label>Telegram</label><input type="text" id="socTelegram"></div>
+                    <div class="card"><label>Twitter</label><input type="text" id="socTwitter"></div>
+                    <div class="card"><label>Discord</label><input type="text" id="socDiscord"></div>
+                    <div class="card"><label>Reddit</label><input type="text" id="socReddit"></div>
                 </div>
             </section>
 
@@ -288,18 +256,18 @@
     </div>
 
     <!-- Auth Modal -->
-    <div id="authModal" class="modal">
+    <div id="authModal" class="modal" style="display:none;">
         <div class="modal-content">
-            <h3>Admin Access</h3>
-            <input type="password" id="ghToken" placeholder="Enter GitHub Token">
-            <button onclick="saveToken()">Login</button>
+            <h3>Login</h3>
+            <input type="password" id="ghToken" placeholder="GitHub Token">
+            <button onclick="saveToken()">Access</button>
         </div>
     </div>
 
-    <!-- Menu Add Modal (New) -->
-    <div id="menuModal" class="modal">
-        <div class="modal-content" style="width: 400px; text-align:left;">
-            <h3 style="margin-top:0; text-align:center;">Add Menu Item</h3>
+    <!-- Menu Modal -->
+    <div id="menuModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3>Add Menu Item</h3>
             <input type="hidden" id="menuTargetSection">
             
             <label>Link Type</label>
@@ -307,25 +275,20 @@
                 <option value="custom">Custom URL</option>
                 <option value="page">Select Page</option>
                 <option value="category">Select Category</option>
-                <option value="wildcard">Wildcard Anchor (Home)</option>
+                <option value="wildcard">Wildcard Section</option>
             </select>
 
-            <label>Title (Emoji Supported 🏀)</label>
-            <input type="text" id="menuTitleItem">
-
-            <label>Destination</label>
-            <!-- Dynamic Input Area -->
-            <div id="menuInputContainer">
-                <input type="text" id="menuUrlItem" placeholder="https://...">
+            <label>Title</label><input type="text" id="menuTitleItem">
+            
+            <div id="menuInputContainer" style="margin-bottom:15px;">
+                <label>URL</label><input type="text" id="menuUrlItem">
             </div>
 
-            <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-top:10px;">
-                <input type="checkbox" id="menuHighlight"> <span style="color:var(--accent);">Highlight Item</span>
-            </label>
+            <label><input type="checkbox" id="menuHighlight"> Highlight</label>
 
-            <div style="margin-top:20px; display:flex; gap:10px;">
-                <button class="btn-danger" style="flex:1" onclick="document.getElementById('menuModal').style.display='none'">Cancel</button>
-                <button class="btn-primary" style="flex:1" onclick="saveMenuItem()">Add</button>
+            <div style="margin-top:15px; display:flex; gap:10px;">
+                <button class="btn-danger" onclick="document.getElementById('menuModal').style.display='none'">Cancel</button>
+                <button class="btn-primary" onclick="saveMenuItem()">Add</button>
             </div>
         </div>
     </div>
