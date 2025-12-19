@@ -19,6 +19,9 @@
     "accent_gold": "#00c2cb",
     "status_green": "#00e676",
     "bg_body": "#050505",
+    "hero_gradient_start": "#1a0505",
+    "trend_gradient_start": "#140000",
+    "footer_bg": "#000000",
     "font_family": "system-ui",
     "title_color_1": "#ffffff",
     "title_color_2": "#0056d2",
@@ -46,15 +49,15 @@
   },
   "hero_categories": [
     {
-      "title": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ NBA",
+      "title": "ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ NBA",
       "folder": "nba"
     },
     {
-      "title": "ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ½ Soccer",
+      "title": "ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ½ Soccer",
       "folder": "soccer"
     },
     {
-      "title": "â¾ MLB",
+      "title": "Ã¢ÂÂ¾ MLB",
       "folder": "mlb"
     }
   ],
@@ -70,16 +73,17 @@
       "type": "schedule",
       "title": "Home",
       "content": ""
-    },
-    {
-      "slug": "testpage",
-      "type": "schedule",
-      "h1": "New Page",
-      "content": "",
-      "title": "New Page",
-      "hero_text": "",
-      "meta_title": "",
-      "meta_desc": ""
     }
-  ]
+  ],
+  "footer_league_menu": [],
+  "footer_static_menu": [],
+  "targeting": {
+    "country": "USA",
+    "timezone": "US/Eastern"
+  },
+  "wildcard": {
+    "category": "",
+    "id": "",
+    "fallback": ""
+  }
 }
