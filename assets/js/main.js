@@ -155,16 +155,19 @@ function createMatchRow(match) {
                 <span class="time-sub">${match.fmt_date}</span>`;
     }
 
-    // Col 2: Teams & League
+    // Col 2: Teams & League (User Requested)
     let col2 = '';
     const teams = match.teams_ui || [];
+    // Always show League name above teams
+    let leagueInfo = `<div class="league-tag">${match.league || match.sport}</div>`;
+    
     if(teams.length > 0) {
         col2 += `<div class="team-name"><span class="t-circle" style="background:${teams[0].color}">${teams[0].letter}</span>${teams[0].name}</div>`;
         if(teams[1]) col2 += `<div class="team-name"><span class="t-circle" style="background:${teams[1].color}">${teams[1].letter}</span>${teams[1].name}</div>`;
     } else {
         col2 = `<div class="team-name">${match.title}</div>`;
     }
-    col2 = `<div class="league-tag">${match.league}</div>` + col2;
+    col2 = leagueInfo + col2;
 
     // Col 3: Meta/Button
     let col3 = '';
@@ -242,6 +245,8 @@ function shareSite(platform) {
     let link = "";
     if(platform === 'twitter') link = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
     if(platform === 'telegram') link = `https://t.me/share/url?url=${url}&text=${text}`;
+    if(platform === 'reddit') link = `https://www.reddit.com/submit?url=${url}&title=${text}`;
+    if(platform === 'discord') link = `https://discord.com/channels/@me`; // Discord sharing is mostly manual copy
     if(link) window.open(link, '_blank');
 }
 function copyLink() {
