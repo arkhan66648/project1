@@ -5,12 +5,14 @@ import os
 import base64
 import sys
 import hashlib
-from datetime import datetime
+import re
+from datetime import datetime, timedelta
+
+# Try to import ZoneInfo for timezone handling (Python 3.9+)
 try:
-    # Python 3.9+ built-in timezone handling
     from zoneinfo import ZoneInfo
 except ImportError:
-    # Fallback if somehow using older python (unlikely on GitHub Actions 3.9)
+    # Fallback for older environments (unlikely on GitHub Actions)
     from datetime import timezone as ZoneInfo
 
 # ==========================================
@@ -21,26 +23,13 @@ NOW_MS = int(time.time() * 1000)
 # Priority Scores (Higher = Top of lists)
 PRIORITY_USA = { 
     "NFL": 100, "NBA": 95, "UFC": 90, "MLB": 85, "NHL": 80, 
+    "NCAA Football": 75, "NCAA Basketball": 70,
     "Soccer": 60, "F1": 50, "Boxing": 70, "Tennis": 40, "Golf": 30 
 }
 
 PRIORITY_UK = { 
     "Soccer": 100, "Boxing": 95, "F1": 90, "Tennis": 85, "Cricket": 80,
     "NFL": 70, "NBA": 60, "UFC": 75, "Rugby": 70, "Golf": 50
-}
-
-# Mapping Keywords to Categories
-LEAGUE_KEYWORDS = {
-    "NFL": ["NFL", "Super Bowl", "American Football"],
-    "NBA": ["NBA", "Basketball", "Playoffs"],
-    "NHL": ["NHL", "Ice Hockey", "Stanley Cup"],
-    "MLB": ["MLB", "Baseball"],
-    "UFC": ["UFC", "MMA", "Fighting", "Fight Night", "Bellator", "PFL"],
-    "F1": ["Formula 1", "F1", "Grand Prix"],
-    "Boxing": ["Boxing", "Fight", "Fury", "Canelo", "Joshua", "Usyk"],
-    "Soccer": ["Soccer", "Premier League", "Champions League", "La Liga", "MLS", "Bundesliga", "Serie A", "Ligue 1", "EPL"],
-    "Golf": ["Golf", "PGA", "Masters"],
-    "Tennis": ["Tennis", "ATP", "WTA", "Open"]
 }
 
 TEAM_COLORS = ["#D00000", "#0056D2", "#008f39", "#7C3AED", "#FFD700", "#ff5722", "#00bcd4", "#e91e63"]
@@ -58,255 +47,332 @@ def obfuscate_link(link):
     if not link: return ""
     return base64.b64encode(link.encode('utf-8')).decode('utf-8')
 
-def get_stable_id(title, start_time_ms):
-    # Robust ID: Hash of Title + StartTime (prevents expiration on JSON updates)
-    raw = f"{title.lower().strip()}_{start_time_ms}"
+def clean_channel_name(raw_url):
+    # Extracts name from http.../channel/ESPN[USA] -> ESPN
+    try:
+        if '[' in raw_url:
+            parts = raw_url.split('/channel/')
+            if len(parts) > 1:
+                name = parts[1].split('[')[0]
+                return name.replace('-', ' ').upper()
+    except: pass
+    return "HD STREAM"
+
+def get_robust_id(title, start_time_ms):
+    # Generates a persistent ID based on Team Names + Date (ignoring exact time)
+    # Split teams
+    separator = ' vs ' if ' vs ' in title else ' - '
+    teams = title.split(separator)
+    
+    # Sort teams alphabetically to handle "A vs B" same as "B vs A"
+    teams.sort()
+    clean_teams = "".join([t.lower().strip() for t in teams])
+    
+    # Date string (YYYY-MM-DD) to group unique match day
+    date_str = datetime.fromtimestamp(start_time_ms / 1000).strftime('%Y%m%d')
+    
+    raw = f"{clean_teams}_{date_str}"
     return hashlib.md5(raw.encode('utf-8')).hexdigest()
 
-def detect_sport_and_league(category, title):
-    text = (str(category) + " " + str(title)).upper()
-    sport = "Other"
-    for sp, keywords in LEAGUE_KEYWORDS.items():
-        for k in keywords:
-            if k.upper() in text:
-                sport = sp
-                break
-        if sport != "Other": break
+def detect_sport_normalized(raw_sport, raw_league):
+    # Logic to fix NCAA/NBA confusion
+    s = raw_sport.upper()
+    l = raw_league.upper()
     
-    league = category if category and category != sport else sport
-    # Normalization
-    if category == "American Football": league = "NFL"
-    if category == "Basketball": league = "NBA"
-    return sport, league
+    if "BASKETBALL" in s:
+        if "COLLEGE" in l or "NCAA" in l: return "NCAA Basketball"
+        if "NBA" in l: return "NBA"
+        return "Basketball"
+        
+    if "FOOTBALL" in s or "AMERICAN FOOTBALL" in s:
+        if "COLLEGE" in l or "NCAA" in l: return "NCAA Football"
+        if "NFL" in l: return "NFL"
+        return "American Football"
+
+    if "HOCKEY" in s: return "NHL" if "NHL" in l else "Ice Hockey"
+    if "BASEBALL" in s: return "MLB" if "MLB" in l else "Baseball"
+    if "SOCCER" in s or "FOOTBALL" in s: return "Soccer"
+    if "FIGHT" in s or "MMA" in s or "UFC" in s: return "UFC"
+    if "BOXING" in s: return "Boxing"
+    if "RACING" in s or "F1" in s: return "F1"
+    
+    return raw_sport.title() # Fallback
 
 def generate_team_ui(title):
     teams = []
-    parts = title.split(' vs ')
-    if len(parts) < 2: parts = title.split(' - ')
-    if len(parts) < 2: parts = [title]
-
-    for name in parts:
-        clean_name = name.strip()
-        if not clean_name: continue
-        letter = clean_name[0].upper()
-        # Consistent color hashing
-        hash_val = int(hashlib.md5(clean_name.encode('utf-8')).hexdigest(), 16)
-        color = TEAM_COLORS[hash_val % len(TEAM_COLORS)]
-        teams.append({"name": clean_name, "letter": letter, "color": color})
+    # Split by common separators
+    parts = re.split(r'\s+vs\.?\s+|\s+-\s+', title)
+    
+    if len(parts) >= 2:
+        for name in parts[:2]: # Take first two
+            clean_name = name.strip()
+            letter = clean_name[0].upper() if clean_name else "X"
+            # Consistent color hashing
+            hash_val = int(hashlib.md5(clean_name.encode('utf-8')).hexdigest(), 16)
+            color = TEAM_COLORS[hash_val % len(TEAM_COLORS)]
+            teams.append({"name": clean_name, "letter": letter, "color": color})
     return teams
 
 def get_running_time(start_ms):
-    # Backend calculation for "34'" or "HT"
+    # Calculate minutes played
     diff_mins = (NOW_MS - start_ms) // 60000
-    if diff_mins < 0: return "" # Not started
-    if diff_mins > 150: return "FT"
+    if diff_mins < 0: return "Pre"
+    if diff_mins > 180: return "FT"
     return f"{diff_mins}'"
 
-def format_time_12h(ts_ms, timezone_str):
+def format_display_time(ts_ms, timezone_str):
     try:
-        # Use built-in ZoneInfo
-        dt = datetime.fromtimestamp(ts_ms / 1000, ZoneInfo(timezone_str))
+        # Use built-in ZoneInfo from admin config
+        tz = ZoneInfo(timezone_str)
+        dt = datetime.fromtimestamp(ts_ms / 1000, tz)
         
-        # Example: "7:30 PM ET"
-        tz_abbr = dt.strftime('%Z')
-        # Simplify common zones
-        if timezone_str == 'US/Eastern': tz_abbr = 'ET'
-        if timezone_str == 'US/Pacific': tz_abbr = 'PT'
-        if timezone_str == 'Europe/London': tz_abbr = 'UK'
-        
-        return dt.strftime(f'%I:%M %p {tz_abbr}').lstrip('0')
-    except Exception as e:
-        # Fallback to UTC if timezone fails
-        try:
-            dt = datetime.utcfromtimestamp(ts_ms / 1000)
-            return dt.strftime('%I:%M %p UTC').lstrip('0')
-        except:
-            return ""
+        # Format: 7:30 PM (No Date)
+        return dt.strftime('%I:%M %p').lstrip('0')
+    except:
+        return "--:--"
 
-def format_date_compact(ts_ms, timezone_str):
+def format_display_date(ts_ms, timezone_str):
     try:
-        dt = datetime.fromtimestamp(ts_ms / 1000, ZoneInfo(timezone_str))
+        tz = ZoneInfo(timezone_str)
+        dt = datetime.fromtimestamp(ts_ms / 1000, tz)
         return dt.strftime('%b %d')
     except:
         return ""
 
 # ==========================================
-# 3. DATA FETCHING & PROCESSING
+# 3. API FETCHING
 # ==========================================
-def fetch_data_redundant(config):
+def fetch_topembed(url):
     matches = []
+    if not url: return matches
     
-    # Source 1: Streamed.pk
-    url1 = config.get('api_keys', {}).get('streamed_url')
-    if url1:
-        try:
-            print("Fetching Streamed.pk...")
-            data = requests.get(url1, timeout=10).json()
-            for m in data:
-                title = m.get('title', 'Unknown')
-                sport, league = detect_sport_and_league(m.get('category', ''), title)
-                start = m.get('date', 0)
+    print(f"Fetching TopEmbed: {url}")
+    try:
+        res = requests.get(url, timeout=15)
+        data = res.json()
+        
+        # Structure: data['events']['2025-12-19'] = [List of events]
+        events_map = data.get('events', {})
+        
+        for date_key, event_list in events_map.items():
+            for ev in event_list:
+                # 1. Time: Convert Seconds -> Milliseconds
+                try:
+                    start_ms = int(ev['unixTimestamp']) * 1000
+                except: continue
+
+                # 2. Names
+                raw_sport = ev.get('sport', 'Other')
+                raw_tourn = ev.get('tournament', '')
+                title = ev.get('match', 'Unknown Match')
                 
-                processed_streams = []
-                for src in m.get('sources', []):
-                    link = src.get('url') or src.get('id') or ""
-                    processed_streams.append({"id": obfuscate_link(str(link)), "source": "s1"})
+                # 3. Categorize
+                sport = detect_sport_normalized(raw_sport, raw_tourn)
+                league = raw_tourn if raw_tourn else sport
+
+                # 4. Streams
+                streams = []
+                # Check for 'channels' array or single 'channel'
+                channels = ev.get('channels', [])
+                if isinstance(channels, list):
+                    for ch in channels:
+                        # TopEmbed structure often: <channel>url</channel> (XML in JSON?)
+                        # Or simple strings based on user provided JSON
+                        if isinstance(ch, str):
+                            link = ch
+                            name = clean_channel_name(link)
+                            streams.append({"id": obfuscate_link(link), "name": name, "source": "te"})
+                        elif isinstance(ch, dict):
+                            link = ch.get('channel', '')
+                            name = clean_channel_name(link)
+                            streams.append({"id": obfuscate_link(link), "name": name, "source": "te"})
 
                 matches.append({
-                    "id": get_stable_id(title, start),
+                    "id": get_robust_id(title, start_ms),
                     "title": title,
                     "sport": sport,
                     "league": league,
-                    "start_time": start,
-                    "viewers": m.get('viewers', 0),
-                    "streams": processed_streams
+                    "start_time": start_ms,
+                    "viewers": 0, # TopEmbed doesn't give viewers
+                    "streams": streams,
+                    "origin": "topembed"
                 })
-        except Exception as e:
-            print(f"⚠️ Primary API Failed: {e}")
-
-    # Source 2: TopEmbed
-    url2 = config.get('api_keys', {}).get('topembed_url')
-    if url2:
-        try:
-            print("Fetching TopEmbed...")
-            data = requests.get(url2, timeout=10).json()
-            for date_key, events in data.get('events', {}).items():
-                for ev in events:
-                    start = int(ev['unix_timestamp']) * 1000
-                    sport, league = detect_sport_and_league(ev.get('sport', ''), ev['match'])
-                    link = ev.get('url', '')
-                    matches.append({
-                        "id": get_stable_id(ev['match'], start),
-                        "title": ev['match'],
-                        "sport": sport,
-                        "league": league,
-                        "start_time": start,
-                        "viewers": 0,
-                        "streams": [{"id": obfuscate_link(str(link)), "source": "s2"}]
-                    })
-        except Exception as e:
-             print(f"⚠️ Backup API Failed: {e}")
-             
+    except Exception as e:
+        print(f"❌ TopEmbed Error: {e}")
+    
     return matches
 
-def merge_and_persist(new_matches):
-    # LIVE SAFETY: Load previous JSON to save live matches if API drops them temporarily
-    final_map = {}
+def fetch_streamed(url):
+    matches = []
+    if not url: return matches
     
-    # 1. Load Old
-    if os.path.exists('data/matches.json'):
-        try:
-            with open('data/matches.json', 'r') as f:
-                old_data = json.load(f)
-                for m in old_data.get('all_matches', []):
-                    # Keep if live/active and not super old (>4h)
-                    if m.get('is_live') or (NOW_MS - m['start_time'] < 14400000):
-                        final_map[m['id']] = m
-        except: pass
+    print(f"Fetching Streamed: {url}")
+    try:
+        res = requests.get(url, timeout=15)
+        data = res.json()
+        
+        for m in data:
+            # Streamed.pk usually provides ms, or ISO strings. Assuming JSON structure provided earlier.
+            try:
+                # If date is int
+                start_ms = int(m.get('date', 0))
+            except:
+                start_ms = NOW_MS + 3600000 # Fallback
 
-    # 2. Merge New (Overwrite old if exists, add new)
-    for m in new_matches:
-        if m['id'] in final_map:
-            # Merge streams
-            existing = final_map[m['id']]
-            existing['streams'] = m['streams'] # Update links
-            if m['viewers'] > 0: existing['viewers'] = m['viewers'] # Update viewers
+            title = m.get('title', 'Unknown')
+            raw_cat = m.get('category', 'Other')
+            sport = detect_sport_normalized(raw_cat, title)
+            league = sport # Streamed usually lacks detailed league info
+            
+            streams = []
+            for src in m.get('sources', []):
+                link = src.get('url') or src.get('id') or ""
+                streams.append({
+                    "id": obfuscate_link(link),
+                    "name": src.get('source', 'Stream'),
+                    "source": "spk"
+                })
+
+            matches.append({
+                "id": get_robust_id(title, start_ms),
+                "title": title,
+                "sport": sport,
+                "league": league,
+                "start_time": start_ms,
+                "viewers": int(m.get('viewers', 0)),
+                "streams": streams,
+                "origin": "streamed"
+            })
+    except Exception as e:
+        print(f"❌ Streamed Error: {e}")
+
+    return matches
+
+# ==========================================
+# 4. PROCESSING & MERGING
+# ==========================================
+def merge_matches(list1, list2):
+    # Master dictionary
+    master = {}
+    
+    # 1. Add List 1 (TopEmbed - Better League Names)
+    for m in list1:
+        master[m['id']] = m
+        
+    # 2. Merge List 2 (Streamed - Better Viewers)
+    for m in list2:
+        mid = m['id']
+        if mid in master:
+            # Merge
+            existing = master[mid]
+            existing['streams'].extend(m['streams'])
+            # Take max viewers
+            if m['viewers'] > existing['viewers']:
+                existing['viewers'] = m['viewers']
+            # Prefer TopEmbed league names, but if 'Other', take Streamed
+            if existing['league'] == 'Other' and m['league'] != 'Other':
+                existing['league'] = m['league']
         else:
-            final_map[m['id']] = m
+            master[mid] = m
+            
+    return list(master.values())
 
-    return list(final_map.values())
-
-def process_matches(matches, config):
+def process_data(matches, config):
     tgt = config.get('targeting', {})
     country = tgt.get('country', 'USA')
     tz_str = tgt.get('timezone', 'US/Eastern')
     
+    # Select Priority Map
+    p_map = PRIORITY_UK if country == 'UK' else PRIORITY_USA
+    
+    # Wildcard Logic
     wc_conf = config.get('wildcard', {})
-    wc_cat = wc_conf.get('category', '')
+    wc_cat = wc_conf.get('category', '').lower()
     
-    priority_map = PRIORITY_UK if country == 'UK' else PRIORITY_USA
-    
-    output = { 
-        "updated": NOW_MS, 
-        "config": {
-            "wildcard": wc_conf,
-            "targeting": tgt
-        },
-        "trending": [], 
-        "wildcard_matches": [], 
-        "categories": {}, 
-        "all_matches": [] # Flat list for JS search
+    output = {
+        "trending": [],
+        "wildcard_matches": [],
+        "categories": {},
+        "all_matches": [] # For search
     }
-
-    # Helper for sorting
-    def get_score(m):
-        base = priority_map.get(m['sport'], 10)
-        return (base * 1000) + m.get('hype_viewers', 0)
+    
+    # Deduplication Set for Wildcard matches (so they don't appear in Upcoming)
+    wildcard_ids = set()
 
     for m in matches:
-        # Time Diff
-        diff = m['start_time'] - NOW_MS
-        is_live = m['start_time'] <= NOW_MS and diff > -10800000 # Live if started & < 3h old
+        # Time Filters: Hide if ended > 3 hours ago
+        if NOW_MS - m['start_time'] > 10800000: continue
         
-        # Hype Engine
-        raw_v = m['viewers']
-        hype = raw_v * 15 if raw_v < 100 else (raw_v * 5 if raw_v > 50000 else raw_v * 10)
-        
-        m['is_live'] = is_live
-        m['hype_viewers'] = int(hype)
-        m['running_time'] = get_running_time(m['start_time']) if is_live else ""
-        m['fmt_time'] = format_time_12h(m['start_time'], tz_str)
-        m['fmt_date'] = format_date_compact(m['start_time'], tz_str)
+        # Formatting
+        m['fmt_time'] = format_display_time(m['start_time'], tz_str)
+        m['fmt_date'] = format_display_date(m['start_time'], tz_str)
         m['teams_ui'] = generate_team_ui(m['title'])
-        m['show_button'] = is_live or (diff < 1800000) # Show button 30m before
         
-        # Trending Logic (Top Priority)
-        if is_live or (0 < diff < 3600000 and m['sport'] in ["NFL", "NBA", "UFC", "Soccer"]):
+        # Live Logic
+        # It's live if Start Time is passed AND not ended (approx 3h)
+        m['is_live'] = (m['start_time'] <= NOW_MS) and (NOW_MS - m['start_time'] < 10800000)
+        m['running_time'] = get_running_time(m['start_time']) if m['is_live'] else ""
+        m['show_button'] = m['is_live'] or (m['start_time'] - NOW_MS < 1800000) # 30 mins before
+        
+        # Viewers Injection (Fake Hype Engine if 0)
+        if m['viewers'] == 0 and m['is_live']:
+            # Fake logic based on priority
+            base = p_map.get(m['sport'], 10)
+            m['viewers'] = base * 12 + int(str(m['start_time'])[-3:]) # Deterministic random
+        
+        # 1. TRENDING (Live or Starts in < 1h, High Priority)
+        score = p_map.get(m['sport'], 0)
+        is_high_pri = score >= 70
+        starts_soon = 0 < (m['start_time'] - NOW_MS) < 3600000
+        
+        if m['is_live'] or (starts_soon and is_high_pri):
             output['trending'].append(m)
-
-        # Wildcard Logic (Full Schedule)
-        is_wildcard = wc_cat and (wc_cat.lower() in [m['sport'].lower(), m['league'].lower()])
-        if is_wildcard and diff > -7200000: # Include recently finished too
+            
+        # 2. WILDCARD (Full Schedule)
+        # Check if match sport/league matches wildcard config
+        if wc_cat and (wc_cat == m['sport'].lower() or wc_cat == m['league'].lower()):
             output['wildcard_matches'].append(m)
-        
-        # Category Logic (Standard)
-        if not is_wildcard:
-            sport = m['sport']
-            if sport not in output['categories']: output['categories'][sport] = []
-            output['categories'][sport].append(m)
+            wildcard_ids.add(m['id'])
+            
+        # 3. CATEGORIES (Upcoming < 24h, Exclude Wildcard)
+        if m['id'] not in wildcard_ids:
+            # Only show upcoming within 24h for standard categories
+            if 0 < (m['start_time'] - NOW_MS) < 86400000:
+                s = m['sport']
+                if s not in output['categories']: output['categories'][s] = []
+                output['categories'][s].append(m)
 
         output['all_matches'].append(m)
 
-    # Sorting
-    output['trending'].sort(key=get_score, reverse=True)
+    # SORTING
+    # Trending: Viewers desc
+    output['trending'].sort(key=lambda x: x.get('viewers', 0), reverse=True)
+    # Wildcard: Date asc
     output['wildcard_matches'].sort(key=lambda x: x['start_time'])
-    
+    # Categories: Date asc
     for s in output['categories']:
         output['categories'][s].sort(key=lambda x: x['start_time'])
 
     return output
 
 # ==========================================
-# 4. HTML GENERATOR (SSG)
+# 5. SITE BUILDER
 # ==========================================
-def generate_menu_html(items, type, config_pages):
+def generate_menu_html(items, type, pages):
     html = ""
     for item in items:
         title = item.get('title', 'Link')
         url = item.get('url', '#')
-        hl = 'style="color:var(--brand-primary)"' if item.get('highlight') else ''
+        hl_style = ' style="color:var(--brand-primary);font-weight:bold;"' if item.get('highlight') else ''
         
-        # Logic for types
-        if type == 'hero':
-            # Hero Pills
-            active = "" # Logic handled in build_html per page
-            html += f'<a href="{url}" class="cat-pill {active}" {hl}>{title}</a>'
-        elif type == 'footer':
-            # Footer Links
-            html += f'<a href="{url}" class="p-tag" {hl}>{title}</a>'
-        else:
-            # Header
-            html += f'<a href="{url}" {hl}>{title}</a>'
+        if type == 'header':
+            html += f'<a href="{url}"{hl_style}>{title}</a>'
+        elif type == 'hero':
+            html += f'<a href="{url}" class="cat-pill"{hl_style}>{title}</a>'
+        elif type == 'footer_l':
+            html += f'<a href="{url}" class="p-tag"{hl_style}>{title}</a>'
+        elif type == 'footer_s':
+            html += f'<a href="{url}"{hl_style}>{title}</a>'
     return html
 
 def build_html(template, config, matches_json, page_conf):
@@ -317,8 +383,8 @@ def build_html(template, config, matches_json, page_conf):
     # 1. Menus
     header_html = generate_menu_html(config.get('header_menu', []), 'header', config.get('pages'))
     hero_html = generate_menu_html(config.get('hero_categories', []), 'hero', config.get('pages'))
-    footer_l_html = generate_menu_html(config.get('footer_league_menu', []), 'footer', config.get('pages'))
-    footer_s_html = generate_menu_html(config.get('footer_static_menu', []), 'footer', config.get('pages'))
+    footer_l_html = generate_menu_html(config.get('footer_league_menu', []), 'footer_l', config.get('pages'))
+    footer_s_html = generate_menu_html(config.get('footer_static_menu', []), 'footer_s', config.get('pages'))
 
     # 2. Replacements
     html = template
@@ -334,18 +400,16 @@ def build_html(template, config, matches_json, page_conf):
     html = html.replace('{{STATUS}}', t.get('status_green', '#00e676'))
     html = html.replace('{{BG_BODY}}', t.get('bg_body', '#050505'))
     html = html.replace('{{FONT_FAMILY}}', t.get('font_family', 'system-ui'))
-    
-    # New Gradient & Footer Colors
     html = html.replace('{{HERO_GRADIENT}}', t.get('hero_gradient_start', '#1a0505'))
     html = html.replace('{{TREND_GRADIENT}}', t.get('trend_gradient_start', '#140000'))
     html = html.replace('{{FOOTER_BG}}', t.get('footer_bg', '#000000'))
+    html = html.replace('{{TITLE_C1}}', t.get('title_color_1', '#ffffff'))
+    html = html.replace('{{TITLE_C2}}', t.get('title_color_2', '#D00000'))
     
     # Site Identity
     html = html.replace('{{TITLE_P1}}', s.get('title_part_1', 'Stream'))
     html = html.replace('{{TITLE_P2}}', s.get('title_part_2', 'East'))
-    html = html.replace('{{TITLE_C1}}', t.get('title_color_1', '#ffffff'))
-    html = html.replace('{{TITLE_C2}}', t.get('title_color_2', '#D00000'))
-    html = html.replace('{{SITE_NAME}}', s.get('domain', 'StreamEast')) # Domain as name fallback
+    html = html.replace('{{SITE_NAME}}', s.get('domain', 'StreamEast'))
     html = html.replace('{{LOGO_URL}}', s.get('logo_url', ''))
     html = html.replace('{{FAVICON}}', s.get('favicon', ''))
     html = html.replace('{{DOMAIN}}', s.get('domain', ''))
@@ -357,37 +421,34 @@ def build_html(template, config, matches_json, page_conf):
     html = html.replace('{{META_DESC}}', page_conf.get('meta_desc', ''))
     html = html.replace('{{ARTICLE_CONTENT}}', page_conf.get('content', ''))
 
-    # Layout Logic (Home vs Category vs Static)
+    # Layout Logic
     p_type = page_conf.get('type', 'static')
     is_home = page_conf.get('slug') == 'home'
     
-    # Menus Injection
     html = html.replace('{{HEADER_MENU}}', header_html)
-    
+    html = html.replace('{{FOOTER_STATIC_MENU}}', footer_s_html)
+    html = html.replace('{{FOOTER_KEYWORDS}}', "") # Not implemented in this step but placeholder exists
+
     if p_type == 'static':
-        html = html.replace('{{HERO_PILLS}}', '') # No Hero pills on static
+        html = html.replace('{{HERO_PILLS}}', '')
         html = html.replace('{{DISPLAY_SEARCH}}', 'none')
         html = html.replace('{{DISPLAY_MATCHES}}', 'none')
-        html = html.replace('{{FOOTER_LEAGUE_MENU}}', '') # No league links
+        html = html.replace('{{FOOTER_LEAGUE_MENU}}', '')
     else:
-        # Schedule or Home
         html = html.replace('{{HERO_PILLS}}', hero_html)
         html = html.replace('{{DISPLAY_SEARCH}}', 'block' if is_home else 'none')
         html = html.replace('{{DISPLAY_MATCHES}}', 'block')
         html = html.replace('{{FOOTER_LEAGUE_MENU}}', footer_l_html)
 
-    html = html.replace('{{FOOTER_STATIC_MENU}}', footer_s_html)
-
     # Analytics & Socials
     html = html.replace('{{GA_CODE}}', f"<script>window.GA_ID='{s.get('ga_id')}';</script>" if s.get('ga_id') else "")
     html = html.replace('{{CUSTOM_META}}', s.get('custom_meta', ''))
-    html = html.replace('{{SOC_TELEGRAM}}', config.get('social_stats', {}).get('telegram', ''))
-    html = html.replace('{{SOC_TWITTER}}', config.get('social_stats', {}).get('twitter', ''))
-    html = html.replace('{{SOC_DISCORD}}', config.get('social_stats', {}).get('discord', ''))
-    html = html.replace('{{SOC_REDDIT}}', config.get('social_stats', {}).get('reddit', ''))
+    soc = config.get('social_stats', {})
+    html = html.replace('{{SOC_TELEGRAM}}', soc.get('telegram', ''))
+    html = html.replace('{{SOC_TWITTER}}', soc.get('twitter', ''))
+    # (Other socials if template has placeholders)
 
-    # JSON Config Injection for JS
-    # This passes the Wildcard ID and Fallback text to Frontend
+    # JS Config
     js_config = {
         "pageType": p_type,
         "isHome": is_home,
@@ -396,93 +457,52 @@ def build_html(template, config, matches_json, page_conf):
         "siteName": s.get('domain')
     }
     html = html.replace('//JS_CONFIG_HERE', f"window.SITE_CONFIG = {json.dumps(js_config)};")
-    
-    # Static Schema
-    schema = []
-    # 1. WebSite
-    schema.append({
-        "@context": "https://schema.org", "@type": "WebSite",
-        "name": s.get('domain'), "url": f"https://{s.get('domain')}"
-    })
-    # 2. Org (If enabled)
-    sch = page_conf.get('schemas', {})
-    if sch.get('organization'):
-        org = sch['organization']
-        schema.append({
-            "@context": "https://schema.org", "@type": "Organization",
-            "name": org.get('name'), "url": f"https://{s.get('domain')}",
-            "logo": org.get('logo'), "sameAs": org.get('socials', '').split(',')
-        })
-    # 3. FAQ
-    if sch.get('faq'):
-        faq_items = []
-        for item in sch['faq'].get('items', []):
-            faq_items.append({
-                "@type": "Question", "name": item['q'],
-                "acceptedAnswer": { "@type": "Answer", "text": item['a'] }
-            })
-        if faq_items:
-            schema.append({
-                "@context": "https://schema.org", "@type": "FAQPage",
-                "mainEntity": faq_items
-            })
+    html = html.replace('{{STATIC_SCHEMA}}', "[]") # Placeholder
 
-    html = html.replace('{{STATIC_SCHEMA}}', json.dumps(schema))
-
-    # Path fix for sub-pages
+    # Path fix
     if not is_home:
         html = html.replace('href="assets', 'href="../assets')
         html = html.replace('src="assets', 'src="../assets')
-        html = html.replace('href="/', 'href="../') 
         html = html.replace('data/matches.json', '../data/matches.json')
-        # Fix root link
-        html = html.replace('href="../"', 'href="../"') 
     
     return html
 
 # ==========================================
-# MAIN EXECUTION
+# MAIN
 # ==========================================
 if __name__ == "__main__":
-    print("--- 🚀 Starting StreamCMS Build ---")
+    print("--- 🚀 Starting Build ---")
     os.makedirs('data', exist_ok=True)
-    
     conf = load_config()
     
-    # 1. Fetch & Process
-    raw_matches = fetch_data_redundant(conf)
-    all_matches = merge_and_persist(raw_matches)
-    final_json = process_matches(all_matches, conf)
+    # 1. Fetch
+    te_data = fetch_topembed(conf.get('api_keys', {}).get('topembed_url'))
+    spk_data = fetch_streamed(conf.get('api_keys', {}).get('streamed_url'))
     
-    # 2. Save JSON
+    # 2. Merge
+    all_data = merge_matches(te_data, spk_data)
+    
+    # 3. Process
+    final_json = process_data(all_data, conf)
+    
     with open('data/matches.json', 'w', encoding='utf-8') as f:
         json.dump(final_json, f)
-    print("✅ data/matches.json updated")
-
-    # 3. Build Pages
-    if not os.path.exists('assets/master_template.html'):
-        print("❌ Error: assets/master_template.html not found.")
-        sys.exit(1)
+    
+    # 4. Build Pages
+    if os.path.exists('assets/master_template.html'):
+        with open('assets/master_template.html', 'r', encoding='utf-8') as f:
+            template = f.read()
         
-    with open('assets/master_template.html', 'r', encoding='utf-8') as f:
-        template = f.read()
-
-    pages = conf.get('pages', [])
-    if not pages:
-        # Default home if empty
-        pages = [{"slug": "home", "type": "schedule", "h1": "Live Sports"}]
-
-    for p in pages:
-        html = build_html(template, conf, final_json, p)
+        pages = conf.get('pages', [])
+        if not pages: pages = [{"slug": "home", "type": "schedule"}]
         
-        if p.get('slug') == 'home':
-            with open('index.html', 'w', encoding='utf-8') as f: f.write(html)
-            print("✅ Built Homepage (index.html)")
-        else:
-            # Folder-based pages
-            slug = p['slug'].strip('/')
-            os.makedirs(slug, exist_ok=True)
-            with open(f"{slug}/index.html", 'w', encoding='utf-8') as f: f.write(html)
-            print(f"✅ Built Page: {slug}/index.html")
-
-    print("--- ✨ Build Complete ---")
+        for p in pages:
+            html = build_html(template, conf, final_json, p)
+            if p.get('slug') == 'home':
+                with open('index.html', 'w', encoding='utf-8') as f: f.write(html)
+            else:
+                slug = p['slug'].strip('/')
+                os.makedirs(slug, exist_ok=True)
+                with open(f"{slug}/index.html", 'w', encoding='utf-8') as f: f.write(html)
+                
+    print("--- ✨ Complete ---")
