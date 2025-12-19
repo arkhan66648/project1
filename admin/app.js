@@ -1,12 +1,17 @@
 // ==========================================
 // CONFIG: UPDATE THESE TWO LINES!
 // ==========================================
-const REPO_OWNER = 'arkhan66648'; // e.g. 'john-doe'
-const REPO_NAME = 'project1';       // e.g. 'stream-site'
+const REPO_OWNER = 'arkhan66648'; 
+const REPO_NAME = 'project1';       
 const FILE_PATH = 'data/config.json';
 const BRANCH = 'main'; 
 
-// THEME PRESETS
+// CATEGORIES FOR WILDCARD DROPDOWN (Matches Python)
+const CATEGORIES = [
+    "NFL", "NBA", "UFC", "MLB", "NHL", "Soccer", "F1", "Boxing", "Golf", "Tennis",
+    "Premier League", "Champions League", "La Liga", "Serie A", "Bundesliga", "Ligue 1"
+];
+
 const THEMES = {
     red: { primary: "#D00000", dark: "#8a0000", accent: "#FFD700", status: "#00e676", bg: "#050505", t1: "#ffffff", t2: "#D00000" },
     blue: { primary: "#0056D2", dark: "#003c96", accent: "#00C2CB", status: "#00e676", bg: "#050505", t1: "#ffffff", t2: "#0056D2" },
@@ -16,21 +21,43 @@ const THEMES = {
 
 let currentSha = null;
 let configData = {
-    pages: [{slug: 'home', type:'schedule', h1:'Home', content:''}],
-    site_settings: {}, theme: {}, social_stats: {}, api_keys: {}, hero_categories: [], header_menu: []
+    pages: [], 
+    site_settings: {}, 
+    theme: {}, 
+    targeting: {}, // New object
+    wildcard: {},  // New object
+    social_stats: {}, 
+    api_keys: {}, 
+    hero_categories: [], 
+    header_menu: []
 };
 let activePageIndex = -1;
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Init Editor
+    // 1. Sidebar Toggle Logic
+    const toggle = document.getElementById('sidebarToggle');
+    toggle.addEventListener('click', () => {
+        document.getElementById('sidebar').classList.toggle('minimized');
+    });
+
+    // 2. Populate Wildcard Dropdown
+    const wcSelect = document.getElementById('wcCategory');
+    CATEGORIES.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.innerText = cat;
+        wcSelect.appendChild(opt);
+    });
+
+    // 3. Init Editor
     if (typeof tinymce !== 'undefined') {
         tinymce.init({
             selector: '#tinymce-editor',
             height: 400,
             skin: "oxide-dark",
             content_css: "dark",
-            plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline | link image media table | align',
+            plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount code',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline | link image media table | align | code',
             setup: (editor) => { editor.on('change', () => { if(activePageIndex > -1) configData.pages[activePageIndex].content = editor.getContent(); }); }
         });
     }
@@ -40,8 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
     else loadConfig();
 
     // Live Font Preview listeners
-    const inputs = ['fontFamily','titleP1','titleP2','colT1','colT2','titleItalic'];
-    inputs.forEach(id => {
+    ['fontFamily','titleP1','titleP2','colT1','colT2','titleItalic'].forEach(id => {
         const el = document.getElementById(id);
         if(el) el.addEventListener('input', updatePreview);
     });
@@ -55,9 +81,6 @@ function updatePreview() {
     if(document.getElementById('titleItalic').checked) prev.style.fontStyle = 'italic'; else prev.style.fontStyle = 'normal';
 }
 
-// ==========================================
-// DATA LOADING (Fixed 404 Handling)
-// ==========================================
 async function loadConfig() {
     const token = localStorage.getItem('gh_token');
     const msg = document.getElementById('statusMsg');
@@ -68,12 +91,10 @@ async function loadConfig() {
             headers: { 'Authorization': `token ${token}` }
         });
 
-        // HANDLE FIRST RUN (File missing)
         if (res.status === 404) {
-            console.log("Config not found. Initializing new config.");
             msg.textContent = "🆕 New Config";
-            currentSha = null; // Important: Null SHA means create new file
-            populateUI(configData); // Load defaults
+            currentSha = null;
+            populateUI(configData); 
             return;
         }
 
@@ -81,19 +102,19 @@ async function loadConfig() {
 
         const data = await res.json();
         currentSha = data.sha;
-        const content = atob(data.content); // Decode Base64
-        configData = JSON.parse(content);
+        configData = JSON.parse(atob(data.content));
         
-        // Ensure pages exist
-        if(!configData.pages) configData.pages = [{slug: 'home', type:'schedule', h1:'Home', content:''}];
-        
+        // Ensure structure exists
+        if(!configData.pages) configData.pages = [];
+        if(!configData.targeting) configData.targeting = { country: 'USA', timezone: 'US/Eastern' };
+        if(!configData.wildcard) configData.wildcard = { category: '', id: '', fallback: '' };
+
         populateUI(configData);
-        msg.textContent = "✅ Loaded";
+        msg.textContent = "✅ Ready";
 
     } catch (err) { 
         console.error(err); 
         msg.textContent = "❌ Load Error";
-        alert("Failed to load. Check Console for details. (Did you set REPO_NAME in app.js?)"); 
     }
 }
 
@@ -102,6 +123,8 @@ function populateUI(data) {
     const t = data.theme || {};
     const soc = data.social_stats || {};
     const api = data.api_keys || {};
+    const tgt = data.targeting || {};
+    const wc = data.wildcard || {};
 
     // General
     setVal('titleP1', s.title_part_1);
@@ -112,18 +135,33 @@ function populateUI(data) {
     setVal('gaId', s.ga_id);
     setVal('customMeta', s.custom_meta);
     setVal('footerKw', (s.footer_keywords || []).join(', '));
-
     setVal('apiStreamed', api.streamed_url);
     setVal('apiTopembed', api.topembed_url);
 
-    // Appearance
+    // Targeting & Wildcard
+    setVal('tgtCountry', tgt.country || 'USA');
+    setVal('tgtTimezone', tgt.timezone || 'US/Eastern');
+    setVal('wcCategory', wc.category);
+    setVal('wcId', wc.id);
+    setVal('wcFallback', wc.fallback);
+    
+    // Update Priority Strategy Text
+    const strategy = tgt.country === 'UK' ? "UK Focused (Soccer/Boxing)" : "USA Focused (NFL/NBA)";
+    document.getElementById('currentStrategy').innerText = strategy;
+
+    // Appearance (Including New Gradients)
     setColor('colPrimary', 'txtPrimary', t.brand_primary || '#D00000');
     setColor('colDark', 'txtDark', t.brand_dark || '#8a0000');
     setColor('colGold', 'txtGold', t.accent_gold || '#FFD700');
     setColor('colStatus', 'txtStatus', t.status_green || '#00e676');
     setColor('colBg', 'txtBg', t.bg_body || '#050505');
-    setVal('fontFamily', t.font_family || 'system-ui');
     
+    // New Color Fields
+    setColor('colHeroStart', 'txtHeroStart', t.hero_gradient_start || '#1a0505');
+    setColor('colTrendStart', 'txtTrendStart', t.trend_gradient_start || '#140000');
+    setColor('colFooter', 'txtFooter', t.footer_bg || '#000000');
+
+    setVal('fontFamily', t.font_family || 'system-ui');
     setColor('colT1', 'txtT1', t.title_color_1 || '#ffffff');
     setColor('colT2', 'txtT2', t.title_color_2 || '#D00000');
     if(document.getElementById('titleItalic')) document.getElementById('titleItalic').checked = t.title_italic || false;
@@ -152,9 +190,7 @@ function populateUI(data) {
     updatePreview();
 }
 
-// ==========================================
-// PAGE MANAGER
-// ==========================================
+// ... (Page Manager Code remains mostly same until Step 2, but ensuring functionality)
 function renderPageList() {
     const list = document.getElementById('pagesList');
     if(!list) return;
@@ -175,7 +211,16 @@ function loadPageToEditor(index) {
     
     document.getElementById('pageEditor').style.display = 'flex';
     document.getElementById('editHeading').innerText = `Editing: ${page.slug}`;
-    document.getElementById('btnDeletePage').style.display = page.slug === 'home' ? 'none' : 'block';
+    
+    // Disable slug edit for home
+    const slugInput = document.getElementById('pSlug');
+    if(page.slug === 'home') {
+        slugInput.disabled = true;
+        document.getElementById('btnDeletePage').style.display = 'none';
+    } else {
+        slugInput.disabled = false;
+        document.getElementById('btnDeletePage').style.display = 'block';
+    }
 
     setVal('pSlug', page.slug);
     setVal('pType', page.type);
@@ -191,7 +236,7 @@ function saveCurrentPageLocal() {
     if(activePageIndex === -1) return;
     const page = configData.pages[activePageIndex];
     
-    page.slug = getVal('pSlug');
+    if(page.slug !== 'home') page.slug = getVal('pSlug');
     page.type = getVal('pType');
     page.h1 = getVal('pH1');
     page.title = getVal('pH1'); 
@@ -201,7 +246,7 @@ function saveCurrentPageLocal() {
     if(tinymce.get('tinymce-editor')) page.content = tinymce.get('tinymce-editor').getContent();
     
     renderPageList();
-    alert("Page updated locally. Remember to click 'Save All Changes'!");
+    alert("Page updated locally. Click 'Save Changes' to push to GitHub.");
 }
 
 function createNewPage() {
@@ -211,6 +256,9 @@ function createNewPage() {
 }
 
 function deleteCurrentPage() {
+    if(activePageIndex === -1) return;
+    if(configData.pages[activePageIndex].slug === 'home') { alert("Cannot delete Home."); return; }
+    
     if(confirm("Delete this page?")) {
         configData.pages.splice(activePageIndex, 1);
         activePageIndex = -1;
@@ -219,16 +267,13 @@ function deleteCurrentPage() {
     }
 }
 
-// ==========================================
-// SAVE TO GITHUB (Fixed New File Logic)
-// ==========================================
 async function saveConfig() {
     const btn = document.getElementById('saveBtn');
     const msg = document.getElementById('statusMsg');
-    btn.textContent = "Saving..."; btn.disabled = true;
+    btn.disabled = true;
     msg.textContent = "⏳ Uploading...";
 
-    // 1. Gather All Data
+    // 1. Gather Data
     configData.site_settings = {
         title_part_1: getVal('titleP1'),
         title_part_2: getVal('titleP2'),
@@ -240,12 +285,26 @@ async function saveConfig() {
         footer_keywords: getVal('footerKw').split(',').map(s=>s.trim())
     };
 
+    configData.targeting = {
+        country: getVal('tgtCountry'),
+        timezone: getVal('tgtTimezone')
+    };
+
+    configData.wildcard = {
+        category: getVal('wcCategory'),
+        id: getVal('wcId'),
+        fallback: getVal('wcFallback')
+    };
+
     configData.theme = {
         brand_primary: getVal('colPrimary'),
         brand_dark: getVal('colDark'),
         accent_gold: getVal('colGold'),
         status_green: getVal('colStatus'),
         bg_body: getVal('colBg'),
+        hero_gradient_start: getVal('colHeroStart'), // New
+        trend_gradient_start: getVal('colTrendStart'), // New
+        footer_bg: getVal('colFooter'), // New
         font_family: getVal('fontFamily'),
         title_color_1: getVal('colT1'),
         title_color_2: getVal('colT2'),
@@ -264,7 +323,7 @@ async function saveConfig() {
         topembed_url: getVal('apiTopembed')
     };
 
-    // Arrays
+    // Arrays (Menus - Simple version for Step 1, will upgrade in Step 2)
     configData.hero_categories = [];
     document.querySelectorAll('.hero-item').forEach(el => {
         configData.hero_categories.push({
@@ -281,7 +340,7 @@ async function saveConfig() {
         });
     });
 
-    // 2. Prepare Payload
+    // 2. Push to GitHub
     const token = localStorage.getItem('gh_token');
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(configData, null, 2))));
     
@@ -290,45 +349,32 @@ async function saveConfig() {
         content: content,
         branch: BRANCH
     };
-    
-    // ONLY include SHA if we are updating (not creating new)
-    if(currentSha) {
-        payload.sha = currentSha;
-    }
+    if(currentSha) payload.sha = currentSha;
 
     try {
         const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
             method: 'PUT',
-            headers: { 
-                'Authorization': `token ${token}`, 
-                'Content-Type': 'application/json' 
-            },
+            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
-        if(!res.ok) {
-            const errData = await res.json();
-            throw new Error(errData.message);
-        }
+        if(!res.ok) throw new Error((await res.json()).message);
 
         const data = await res.json();
         currentSha = data.content.sha;
-        
         msg.textContent = "✅ Saved!";
-        alert("Configuration saved successfully! GitHub Actions will now build your site.");
+        alert("Configuration saved!");
         
     } catch (e) { 
         console.error(e); 
         msg.textContent = "❌ Error";
-        alert("Error saving: " + e.message); 
+        alert("Error: " + e.message); 
     }
     
-    btn.textContent = "💾 Save All Changes"; btn.disabled = false;
+    btn.disabled = false;
 }
 
-// ==========================================
-// UI MANAGERS
-// ==========================================
+// UI Helpers
 function applyTheme(name) {
     const t = THEMES[name];
     if(!t) return;
@@ -346,8 +392,8 @@ function addHeroUI(data = {title:'', folder:''}) {
     const div = document.createElement('div');
     div.className = 'hero-item sitelink-item';
     div.innerHTML = `
-        <input type="text" class="h-title" placeholder="Name (e.g. 🏀 NBA)" value="${data.title}">
-        <input type="text" class="h-folder" placeholder="Folder (e.g. nba)" value="${data.folder}">
+        <input type="text" class="h-title" placeholder="Name" value="${data.title}">
+        <input type="text" class="h-folder" placeholder="Folder" value="${data.folder}">
         <button class="btn-delete" onclick="this.parentElement.remove()">✕</button>`;
     document.getElementById('hero-container').appendChild(div);
 }
@@ -356,7 +402,7 @@ function addHeaderUI(data = {title:'', url:''}) {
     const div = document.createElement('div');
     div.className = 'menu-item sitelink-item';
     div.innerHTML = `
-        <input type="text" class="m-title" placeholder="Link Name" value="${data.title}">
+        <input type="text" class="m-title" placeholder="Name" value="${data.title}">
         <input type="text" class="m-url" placeholder="URL" value="${data.url}">
         <button class="btn-delete" onclick="this.parentElement.remove()">✕</button>`;
     document.getElementById('header-container').appendChild(div);
@@ -366,7 +412,9 @@ function switchTab(id) {
     document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
     document.getElementById(`tab-${id}`).classList.add('active');
-    event.target.classList.add('active');
+    // Find button that calls this
+    const btn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.getAttribute('onclick').includes(id));
+    if(btn) btn.classList.add('active');
 }
 
 function setVal(id, v) { if(document.getElementById(id)) document.getElementById(id).value = v || ""; }
