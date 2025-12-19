@@ -55,6 +55,13 @@
       "type": "schedule",
       "title": "Home",
       "content": ""
+    },
+    {
+      "slug": "new-page",
+      "type": "static",
+      "h1": "New Page",
+      "content": "",
+      "schemas": {}
     }
   ],
   "footer_league_menu": [],
