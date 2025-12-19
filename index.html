@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en-US">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title></title>
     <meta name="description" content="">
-    <meta name="theme-color" content="#0056d2">
+    <meta name="theme-color" content="#d00000">
     <link rel="canonical" href="https://crackstreams.help/">
     <link rel="icon" href="">
 
@@ -34,17 +34,17 @@
     <style>
         :root {
             /* Variables injected by Python from Admin Config */
-            --brand-primary: #0056d2;
-            --brand-dark: #003c96;
+            --brand-primary: #d00000;
+            --brand-dark: #8a0000;
             --status-green: #00e676;
-            --accent-gold: #00c2cb;
+            --accent-gold: #ffd700;
             --bg-body: #050505;
             --hero-gradient: #1a0505;
             --trend-gradient: #140000;
             --footer-bg: #000000;
             --font-main: system-ui;
             --title-c1: #ffffff;
-            --title-c2: #0056d2;
+            --title-c2: #d00000;
         }
     </style>
 </head>
@@ -65,13 +65,13 @@
                 <div class="logo-text">Stream<span>East</span></div>
             </a>
             <nav class="nav-links">
-                <a href="https://crackstreams.help/#faqs" >FAQs</a>
+                
             </nav>
             <button class="hamburger" onclick="toggleMenu()">☰</button>
         </div>
     </header>
 
-    <div class="mobile-menu" id="mobileMenu"><a href="https://crackstreams.help/#faqs" >FAQs</a></div>
+    <div class="mobile-menu" id="mobileMenu"></div>
 
     <!-- HERO SECTION -->
     <div class="hero">
@@ -81,7 +81,7 @@
         
         <!-- HERO PILLS (Category Menu) -->
         <div class="cat-scroll">
-            <a href="#" class="cat-pill " >ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ NBA</a><a href="#" class="cat-pill " >ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ½ Soccer</a><a href="#" class="cat-pill " >â¾ MLB</a>
+            
         </div>
     </div>
 
@@ -171,7 +171,7 @@
     <script src="assets/js/main.js"></script>
     <script>
         // JS Config injected by Python
-        window.SITE_CONFIG = {"pageType": "schedule", "isHome": true, "category": "", "wildcard": {}, "siteName": "crackstreams.help"};
+        window.SITE_CONFIG = {"pageType": "schedule", "isHome": true, "category": "", "wildcard": {"category": "", "id": "", "fallback": ""}, "siteName": "crackstreams.help"};
         
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
         
