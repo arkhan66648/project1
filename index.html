@@ -48,7 +48,6 @@
 
         .mr-status { text-align: center; font-size: 13px; font-weight: 600; }
         .mr-date { font-size: 12px; color: #aaa; }
-        
         .mr-info { display: flex; flex-direction: column; justify-content: center; }
         
         /* CSS LOGO STYLES */
@@ -57,11 +56,10 @@
             width: 24px; height: 24px; border-radius: 50%;
             display: inline-flex; justify-content: center; align-items: center;
             font-size: 12px; font-weight: 800; color: #000;
-            background: #ccc; /* Default */
-            flex-shrink: 0;
+            background: #ccc; flex-shrink: 0;
         }
 
-        .mr-meta { font-size: 12px; color: #888; margin-top: 4px; padding-left: 60px; /* Offset for logos */ }
+        .mr-meta { font-size: 12px; color: #888; margin-top: 4px; padding-left: 60px; }
         
         .mr-viewers { 
             text-align: right; color: #aaa; font-size: 12px; 
@@ -85,9 +83,20 @@
 
         /* Modal */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; z-index: 1000; justify-content: center; align-items: center; }
-        .modal-box { background: #1a1a1a; width: 90%; max-width: 500px; border-radius: 12px; border: 1px solid #333; }
+        .modal-box { background: #1a1a1a; width: 90%; max-width: 500px; border-radius: 12px; border: 1px solid #333; display: flex; flex-direction: column;}
         .modal-head { padding: 15px 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
         .modal-body { padding: 20px; max-height: 60vh; overflow-y: auto; }
+        
+        /* Gated Content Styles */
+        .gated-content { text-align: center; padding: 20px 0; }
+        .gate-btn {
+            background: #222; border: 1px solid var(--accent); color: var(--accent);
+            padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer;
+            border-radius: 6px; margin-top: 15px; transition: 0.2s;
+        }
+        .gate-btn:hover { background: var(--accent); color: #000; }
+        .gate-info { font-size: 13px; color: #aaa; margin-bottom: 10px; }
+
         .stream-item {
             padding: 12px; background: #222; border: 1px solid #333; margin-bottom: 8px; border-radius: 6px;
             cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;
@@ -141,6 +150,9 @@
 <script>
     const API_URL = "https://vercelapi-olive.vercel.app/api/sync-nodes"; 
 
+    // Global variable to store current match streams
+    let currentStreams = []; 
+
     async function loadMatches() {
         const country = document.getElementById('countrySelect').value;
         const container = document.getElementById('matchContainer');
@@ -153,16 +165,26 @@
             if (!res.ok) throw new Error("API Error");
             const data = await res.json();
 
-            // 1. INJECT SEO & SHOW DEBUG
-            if (data.seo) {
-                injectSEO(data.seo);
-            }
+            if (data.seo) injectSEO(data.seo);
 
-            // 2. RENDER UI
             status.textContent = `Online (${data.total})`;
             status.style.color = "#00e5ff";
             
             renderGrid(data.matches);
+
+            // 3. AUTO-OPEN OVERLAY (GATEKEEPER MODE)
+            // This is the SAFE way. 
+            if (window.location.hash) {
+                const targetId = window.location.hash.substring(1);
+                const targetMatch = data.matches.find(m => m.id === targetId);
+                
+                if (targetMatch) {
+                    const streamsJson = encodeURIComponent(JSON.stringify(targetMatch.streams));
+                    const safeTitle = `${targetMatch.team_a} vs ${targetMatch.team_b}`.replace(/'/g, "");
+                    // Pass 'true' for isAutoOpen to enforce Gatekeeper
+                    openStreamModal(targetMatch.id, safeTitle, streamsJson, true); 
+                }
+            }
 
         } catch (e) {
             console.error(e);
@@ -173,27 +195,19 @@
     }
 
     function injectSEO(seo) {
-        // A. Remove old schemas
         document.querySelectorAll('script[type="application/ld+json"]').forEach(e => e.remove());
-
-        // B. Populate Debug Area
         document.getElementById('schemaOutput').textContent = JSON.stringify(seo, null, 2);
-
-        // C. Inject to Head
+        
         const currentDomain = window.location.origin;
 
-        // 1. Live Snippet (Single)
         if (seo.live_broadcast) {
             const script = document.createElement('script');
             script.type = "application/ld+json";
             script.id = "live-match-schema";
-            // Replace placeholder with Current Domain (for the base URL part)
-            // The /#matchID part is already in the JSON from backend
             script.text = JSON.stringify(seo.live_broadcast).replace('https://example.com', currentDomain);
             document.head.appendChild(script);
         }
         
-        // 2. Upcoming List (10 max)
         if (seo.upcoming_list) {
             const script = document.createElement('script');
             script.type = "application/ld+json";
@@ -202,15 +216,10 @@
         }
     }
 
-    // Helper for CSS Logo Color
     function getColorForLetter(letter) {
         if (!letter) return '#ccc';
-        const colors = [
-            '#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FFC300', 
-            '#00E5FF', '#8E44AD', '#E74C3C', '#2ECC71', '#F39C12'
-        ];
-        const code = letter.charCodeAt(0);
-        return colors[code % colors.length];
+        const colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FFC300', '#00E5FF', '#8E44AD', '#E74C3C', '#2ECC71', '#F39C12'];
+        return colors[letter.charCodeAt(0) % colors.length];
     }
 
     function renderGrid(matches) {
@@ -235,20 +244,14 @@
             
             let rows = '';
             groups[sport].forEach(m => {
-                // Status
                 let statusHtml = m.is_live 
                     ? `<div class="live-badge"><div class="live-dot"></div>${m.status_text}</div>` 
                     : `<span style="color:#00e5ff">${m.status_text}</span>`;
 
-                // Viewers
-                const viewerHtml = m.live_viewers > 0 
-                    ? `<span>👥 ${m.live_viewers.toLocaleString()}</span>` 
-                    : '';
-
-                // CSS LOGOS
+                const viewerHtml = m.live_viewers > 0 ? `<span>👥 ${m.live_viewers.toLocaleString()}</span>` : '';
+                
                 const letterA = m.team_a_letter || (m.team_a ? m.team_a.charAt(0) : 'T');
                 const letterB = m.team_b_letter || (m.team_b ? m.team_b.charAt(0) : 'T');
-                
                 const cA = getColorForLetter(letterA);
                 const cB = getColorForLetter(letterB);
                 
@@ -264,7 +267,7 @@
                 const safeTitle = `${m.team_a} vs ${m.team_b}`.replace(/'/g, "");
                 const displayDate = m.formatted_date || "Today";
 
-                // UPDATED: Pass m.id to the onclick function
+                // We pass 'false' for isAutoOpen here because the user manually clicked
                 rows += `
                     <div class="match-row">
                         <div class="mr-status">${statusHtml}</div>
@@ -275,7 +278,7 @@
                         </div>
                         <div class="mr-viewers">${viewerHtml}</div>
                         <div>
-                            <button class="watch-btn" onclick="openStreamModal('${m.id}', '${safeTitle}', '${streamsJson}')">Watch</button>
+                            <button class="watch-btn" onclick="openStreamModal('${m.id}', '${safeTitle}', '${streamsJson}', false)">Watch</button>
                         </div>
                     </div>
                 `;
@@ -292,52 +295,75 @@
         });
     }
 
-    // UPDATED: Added 'id' parameter and window.history.pushState
-    function openStreamModal(id, title, json) {
+    // =================================================================
+    // SAFE MODAL LOGIC (Gatekeeper)
+    // =================================================================
+    function openStreamModal(id, title, json, isAutoOpen) {
         const modal = document.getElementById('streamModal');
         const list = document.getElementById('modalList');
         document.getElementById('modalTitle').textContent = title;
         list.innerHTML = '';
 
-        // Fake URL update for browser address bar
+        // Fake URL update
         if (id) {
             const fakeUrl = `/watch/${id}`;
-            // Use pushState so it doesn't reload the page
             window.history.pushState({path: fakeUrl}, '', fakeUrl);
         }
 
         try {
-            const streams = JSON.parse(decodeURIComponent(json));
-            if(!streams.length) {
-                list.innerHTML = '<div style="padding:20px; text-align:center; color:#666">No streams available yet.</div>';
+            currentStreams = JSON.parse(decodeURIComponent(json));
+            
+            if (isAutoOpen) {
+                // !!! SAFE SEO MODE !!!
+                // Don't show streams yet. Google sees this text.
+                // User must click to load the actual streams.
+                list.innerHTML = `
+                    <div class="gated-content">
+                        <h2 style="margin:0 0 10px 0;">${title}</h2>
+                        <div class="gate-info">Click below to load available servers.</div>
+                        <button class="gate-btn" onclick="revealStreams()">LOAD STREAMS</button>
+                    </div>
+                `;
             } else {
-                streams.forEach(s => {
-                    const el = document.createElement('div');
-                    el.className = 'stream-item';
-                    const viewerBadge = s.viewers ? `<small style="color:#aaa">(${s.viewers} watching)</small>` : '';
-
-                    el.innerHTML = `
-                        <div>
-                            <div style="font-weight:600; color:#fff">${s.source_name}</div>
-                            <div style="font-size:12px; color:#888">Server: ${s.type === 'direct_embed' ? 'Direct' : 'API'} ${viewerBadge}</div>
-                        </div>
-                        <div style="font-size:18px">▶</div>
-                    `;
-                    el.onclick = () => {
-                        alert(`Playing Stream: ${s.source_name}`);
-                    };
-                    list.appendChild(el);
-                });
+                // User manually clicked "Watch" on the list, so we can show streams immediately
+                revealStreams();
             }
+
         } catch(e) { console.error(e); }
 
         modal.style.display = 'flex';
     }
 
-    // UPDATED: Revert URL when closing
+    function revealStreams() {
+        const list = document.getElementById('modalList');
+        list.innerHTML = ''; // Clear the "Gatekeeper" button
+
+        if(!currentStreams.length) {
+            list.innerHTML = '<div style="padding:20px; text-align:center; color:#666">No streams available yet.</div>';
+        } else {
+            currentStreams.forEach(s => {
+                const el = document.createElement('div');
+                el.className = 'stream-item';
+                const viewerBadge = s.viewers ? `<small style="color:#aaa">(${s.viewers} watching)</small>` : '';
+
+                el.innerHTML = `
+                    <div>
+                        <div style="font-weight:600; color:#fff">${s.source_name}</div>
+                        <div style="font-size:12px; color:#888">Server: ${s.type === 'direct_embed' ? 'Direct' : 'API'} ${viewerBadge}</div>
+                    </div>
+                    <div style="font-size:18px">▶</div>
+                `;
+                el.onclick = () => {
+                    alert(`Playing Stream: ${s.source_name}`);
+                    // Here you would replace the modal content with your iframe logic
+                };
+                list.appendChild(el);
+            });
+        }
+    }
+
     function closeModal() { 
         document.getElementById('streamModal').style.display = 'none'; 
-        // Revert to home URL
         window.history.pushState({path: '/'}, '', '/');
     }
     
