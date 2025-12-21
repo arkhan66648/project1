@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>StreamEast - Live Sports</title>
+    <title>StreamEast - None</title>
     <meta name="description" content="">
     <meta name="theme-color" content="#d00000">
     <link rel="canonical" href="https://StreamEast Live/">
-    <link rel="icon" href="">
+    <link rel="icon" href="/assets/streameast-logo-hd.jpg">
 
     <!-- 1. DYNAMIC SCHEMAS -->
     
@@ -49,7 +49,7 @@
         @media (min-width: 900px) { .nav-links { display: flex; } .hamburger { display: none; } }
 
         /* HERO */
-        .hero { padding: 90px 15px 15px 15px; text-align: center; background: radial-gradient(circle at top, var(--hero-grad) 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); display: block; }
+        .hero { padding: 90px 15px 15px 15px; text-align: center; background: radial-gradient(circle at top, var(--hero-grad) 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); display: none; }
         .sys-status { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.2); padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; font-size: 0.75rem; font-weight: 700; color: var(--status-green); }
         .dot { width: 6px; height: 6px; background: var(--status-green); border-radius: 50%; box-shadow: 0 0 8px var(--status-green); animation: pulse 2s infinite; }
         h1 { margin: 0 0 20px 0; font-size: 1.8rem; line-height: 1.2; font-weight: 800; }
@@ -151,7 +151,7 @@
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     </style>
-</head>
+<style>#live-section, #upcoming-container { display: none !important; }</style></head>
 <body>
 
     <header>
@@ -160,19 +160,19 @@
                 <img src="/assets/streameast-logo-hd.jpg" class="logo-img"> <div class="logo-text">Stream<span>East</span></div>
             </a>
             <nav class="nav-links">
-                <a href="#sports">Schedule</a><a href="#features">Features</a>
+                <a href="#" >Schedule</a>
             </nav>
             <button class="hamburger" onclick="toggleMenu()">☰</button>
         </div>
     </header>
 
-    <div class="mobile-menu" id="mobileMenu"><a href="#sports">Schedule</a><a href="#features">Features</a></div>
+    <div class="mobile-menu" id="mobileMenu"><a href="#" >Schedule</a></div>
 
     <div class="hero">
         <div class="sys-status"><div class="dot"></div> System Status: Online</div>
-        <h1>Stream - East</h1>
+        <h1></h1>
         <p class="entity-intro"></p>
-        <div class="cat-scroll"><a href="/nba/" class="cat-pill">🏀 NBA</a><a href="/nfl/" class="cat-pill">🏈 NFL</a><a href="/ufc/" class="cat-pill">🥊 UFC</a></div>
+        <div class="cat-scroll"><a href="#" class="cat-pill">NBA</a><a href="#" class="cat-pill">⚾ MLB</a></div>
     </div>
 
     <div class="container">
@@ -238,7 +238,7 @@
         
         // ADMIN CONFIG INJECTED (Replaces previous simplified JS_PRIORITIES)
         // This comes from the Python build script injecting the JSON
-        const PRIORITIES = {"US": {"NFL": 100, "NBA": 95, "UFC": 90, "MLB": 85, "NHL": 80, "NCAA": 75}, "UK": {"Premier League": 100, "Cricket": 95, "F1": 90, "Rugby": 85, "Darts": 80, "Snooker": 75}}; 
+        const PRIORITIES = {"NFL": 100, "NBA": 95, "UFC": 90, "MLB": 85, "NHL": 80, "NCAA": 75}; 
 
         let allMatches = [];
         let currentMatchData = null;
