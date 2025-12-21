@@ -5,95 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StreamCMS Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- TINYMCE EDITOR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div class="cms-container">
-        <!-- SIDEBAR -->
-        <aside class="sidebar" id="sidebar">
-            <div class="logo-area">
-                <h2>⚡ StreamCMS</h2>
-            </div>
+        <aside class="sidebar">
+            <div class="logo-area"><h2>⚡ StreamCMS</h2></div>
             <nav>
-                <button class="nav-btn active" onclick="switchTab('general')">⚙️ General & SEO</button>
-                <button class="nav-btn" onclick="switchTab('targeting')">🎯 Target & Wildcard</button>
-                <button class="nav-btn" onclick="switchTab('priorities')">📊 Sport Priorities</button>
-                <button class="nav-btn" onclick="switchTab('appearance')">🎨 Appearance</button>
+                <button class="nav-btn active" onclick="switchTab('general')">⚙️ General</button>
+                <button class="nav-btn" onclick="switchTab('content')">📝 Home Content</button>
                 <button class="nav-btn" onclick="switchTab('menus')">🔗 Menus</button>
             </nav>
-            
             <div class="sidebar-footer">
-                <!-- BUILD STATUS INDICATOR -->
-                <div id="buildStatusBox" class="build-box idle">
-                    <div class="status-dot"></div>
-                    <span id="buildStatusText">System Idle</span>
-                </div>
-
-                <button id="saveBtn" class="save-btn">💾 Save & Build Site</button>
-                <p id="lastUpdateMsg" style="font-size:10px; color:#666; margin-top:5px;"></p>
+                <div id="buildStatusBox" class="build-box idle"><div class="status-dot"></div><span id="buildStatusText">Idle</span></div>
+                <button id="saveBtn" class="save-btn">💾 Save & Build</button>
             </div>
         </aside>
 
         <main class="content-area">
-            <!-- [KEEP YOUR EXISTING TABS HERE - NO CHANGES NEEDED TO CONTENT] -->
-            <!-- TAB 1: GENERAL -->
+            <!-- GENERAL -->
             <section id="tab-general" class="tab-content active">
                 <div class="header-box"><h1>General Settings</h1></div>
                 <div class="grid-2">
                     <div class="card">
-                        <h3>Site Identity</h3>
-                        <div class="grid-2">
-                            <div><label>Title P1</label><input type="text" id="titleP1"></div>
-                            <div><label>Title P2</label><input type="text" id="titleP2"></div>
-                        </div>
+                        <label>Title 1</label><input type="text" id="titleP1">
+                        <label>Title 2</label><input type="text" id="titleP2">
                         <label>Domain</label><input type="text" id="siteDomain">
                         <label>Logo URL</label><input type="text" id="logoUrl">
-                        <label>Favicon URL</label><input type="text" id="faviconUrl">
-                    </div>
-                    <div class="card">
-                        <h3>Tracking</h3>
-                        <label>GA ID</label><input type="text" id="gaId">
-                        <label>Meta Tags</label><textarea id="customMeta" rows="4"></textarea>
+                        <label>Brand Color</label><input type="color" id="colPrimary">
                     </div>
                 </div>
             </section>
-            
-            <!-- [INCLUDE OTHER SECTIONS: TARGETING, PRIORITIES, APPEARANCE, MENUS from previous code] -->
-            <!-- Use the exact same HTML structure for tabs as provided before -->
-            
-             <!-- TAB 4: APPEARANCE -->
-            <section id="tab-appearance" class="tab-content">
-                <div class="header-box"><h1>Theme</h1></div>
-                <div class="grid-2">
-                    <div class="card">
-                        <h3>Colors</h3>
-                        <label>Brand Primary</label><div class="color-group"><input type="color" id="colPrimary"><input type="text" id="txtPrimary"></div>
-                        <label>Brand Dark</label><div class="color-group"><input type="color" id="colDark"><input type="text" id="txtDark"></div>
-                        <label>Accent</label><div class="color-group"><input type="color" id="colGold"><input type="text" id="txtGold"></div>
-                    </div>
-                    <div class="card">
-                        <h3>Gradients & Backgrounds</h3>
-                        <label>Body Bg</label><div class="color-group"><input type="color" id="colBg"><input type="text" id="txtBg"></div>
-                        <label>Hero Gradient</label><div class="color-group"><input type="color" id="colHeroStart"><input type="text" id="txtHeroStart"></div>
-                    </div>
+
+            <!-- CONTENT EDITOR (WORDPRESS STYLE) -->
+            <section id="tab-content" class="tab-content">
+                <div class="header-box"><h1>Home Page Content</h1></div>
+                <div class="card" style="background:#fff; padding:0; overflow:hidden;">
+                    <textarea id="pageContentEditor"></textarea>
                 </div>
             </section>
             
+            <!-- MENUS -->
+            <section id="tab-menus" class="tab-content">
+                <div class="header-box"><h1>Menus</h1></div>
+                <!-- ... Same Menu HTML as before ... -->
+                <div class="card"><h3>Items</h3><div id="menu-header"></div></div>
+            </section>
         </main>
     </div>
-
-    <!-- Auth Modal -->
+    
     <div id="authModal" class="modal" style="display:none;">
         <div class="modal-content">
-            <h3>Login</h3>
-            <p>Enter your GitHub Personal Access Token to manage the CMS.</p>
-            <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx">
-            <button class="btn-primary" onclick="saveToken()">Access Admin</button>
+            <h3>Login</h3><input type="password" id="ghToken" placeholder="GitHub Token">
+            <button class="save-btn" onclick="saveToken()">Access</button>
         </div>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>
