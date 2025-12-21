@@ -126,20 +126,6 @@
       "meta_desc": "Best meta"
     },
     {
-      "id": "p_1766331096752",
-      "title": "New Page",
-      "slug": "new-page",
-      "layout": "home",
-      "meta_title": "",
-      "meta_desc": "",
-      "content": "<p>Hello World</p>",
-      "schemas": {
-        "live": true,
-        "upcoming": true,
-        "org": true
-      }
-    },
-    {
       "id": "p_1766332109964",
       "title": "No. #1 NFL Streaming",
       "slug": "nfl",
