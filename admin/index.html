@@ -15,25 +15,29 @@
         <aside class="sidebar" id="sidebar">
             <div class="logo-area">
                 <h2>⚡ StreamCMS</h2>
-                <button id="sidebarToggle" class="icon-btn">◀</button>
             </div>
             <nav>
                 <button class="nav-btn active" onclick="switchTab('general')">⚙️ General & SEO</button>
                 <button class="nav-btn" onclick="switchTab('targeting')">🎯 Target & Wildcard</button>
                 <button class="nav-btn" onclick="switchTab('priorities')">📊 Sport Priorities</button>
                 <button class="nav-btn" onclick="switchTab('appearance')">🎨 Appearance</button>
-                <button class="nav-btn" onclick="switchTab('pages')">📄 Pages & Content</button>
                 <button class="nav-btn" onclick="switchTab('menus')">🔗 Menus</button>
-                <button class="nav-btn" onclick="switchTab('social')">📊 Social Stats</button>
             </nav>
+            
             <div class="sidebar-footer">
-                <button id="saveBtn" class="save-btn">💾 Save All Changes</button>
-                <p id="statusMsg">System Ready</p>
+                <!-- BUILD STATUS INDICATOR -->
+                <div id="buildStatusBox" class="build-box idle">
+                    <div class="status-dot"></div>
+                    <span id="buildStatusText">System Idle</span>
+                </div>
+
+                <button id="saveBtn" class="save-btn">💾 Save & Build Site</button>
+                <p id="lastUpdateMsg" style="font-size:10px; color:#666; margin-top:5px;"></p>
             </div>
         </aside>
 
         <main class="content-area">
-
+            <!-- [KEEP YOUR EXISTING TABS HERE - NO CHANGES NEEDED TO CONTENT] -->
             <!-- TAB 1: GENERAL -->
             <section id="tab-general" class="tab-content active">
                 <div class="header-box"><h1>General Settings</h1></div>
@@ -52,78 +56,14 @@
                         <h3>Tracking</h3>
                         <label>GA ID</label><input type="text" id="gaId">
                         <label>Meta Tags</label><textarea id="customMeta" rows="4"></textarea>
-                        <label>Footer Keywords</label><textarea id="footerKw" rows="3"></textarea>
-                    </div>
-                </div>
-                <div class="card">
-                    <h3>API Keys</h3>
-                    <div class="grid-2">
-                        <div><label>Streamed.PK</label><input type="text" id="apiStreamed"></div>
-                        <div><label>TopEmbed</label><input type="text" id="apiTopembed"></div>
                     </div>
                 </div>
             </section>
-
-            <!-- TAB 2: TARGETING -->
-            <section id="tab-targeting" class="tab-content">
-                <div class="header-box"><h1>Targeting & Wildcard</h1></div>
-                <div class="grid-2">
-                    <div class="card">
-                        <h3>Geo-Targeting</h3>
-                        <label>Target Country</label>
-                        <select id="tgtCountry">
-                            <option value="USA">🇺🇸 USA</option>
-                            <option value="UK">🇬🇧 UK</option>
-                        </select>
-                        <label>Timezone (Output)</label>
-                        <select id="tgtTimezone">
-                            <option value="US/Eastern">US Eastern (New York)</option>
-                            <option value="US/Central">US Central (Chicago)</option>
-                            <option value="US/Pacific">US Pacific (LA)</option>
-                            <option value="Europe/London">UK (London)</option>
-                            <option value="Asia/Dhaka">Bangladesh (Dhaka)</option>
-                        </select>
-                    </div>
-                    <div class="card">
-                        <h3>Wildcard (Homepage Pillar)</h3>
-                        <label>Category</label><select id="wcCategory"><option value="">None</option></select>
-                        <label>Section ID</label><input type="text" id="wcId">
-                        <label>Fallback Text</label><textarea id="wcFallback" rows="2"></textarea>
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 3: PRIORITIES (NEW) -->
-            <section id="tab-priorities" class="tab-content">
-                <div class="header-box"><h1>Sport Priority & Sorting</h1></div>
-                <div class="card">
-                    <h3>Homepage Section Order</h3>
-                    <p style="color:#aaa; font-size:0.9rem; margin-bottom:15px;">Higher number = Shows higher on the page. Use this to reorder sections.</p>
-                    
-                    <div class="grid-2">
-                        <div>
-                            <label>Quick Presets</label>
-                            <div style="display:flex; gap:10px;">
-                                <button class="btn-small" onclick="applyPriority('USA')">Load USA Defaults</button>
-                                <button class="btn-small" onclick="applyPriority('UK')">Load UK Defaults</button>
-                            </div>
-                        </div>
-                        <div>
-                            <label>Add Sport Category</label>
-                            <div style="display:flex; gap:10px;">
-                                <input type="text" id="newSportName" placeholder="e.g. Cricket">
-                                <button class="btn-small" onclick="addPriorityRow()">Add</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="priorityListContainer" style="margin-top:20px; display:flex; flex-direction:column; gap:10px;">
-                        <!-- JS will inject rows here -->
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 4: APPEARANCE -->
+            
+            <!-- [INCLUDE OTHER SECTIONS: TARGETING, PRIORITIES, APPEARANCE, MENUS from previous code] -->
+            <!-- Use the exact same HTML structure for tabs as provided before -->
+            
+             <!-- TAB 4: APPEARANCE -->
             <section id="tab-appearance" class="tab-content">
                 <div class="header-box"><h1>Theme</h1></div>
                 <div class="grid-2">
@@ -137,153 +77,10 @@
                         <h3>Gradients & Backgrounds</h3>
                         <label>Body Bg</label><div class="color-group"><input type="color" id="colBg"><input type="text" id="txtBg"></div>
                         <label>Hero Gradient</label><div class="color-group"><input type="color" id="colHeroStart"><input type="text" id="txtHeroStart"></div>
-                        <label>Trend Gradient</label><div class="color-group"><input type="color" id="colTrendStart"><input type="text" id="txtTrendStart"></div>
-                        <label>Footer Bg</label><div class="color-group"><input type="color" id="colFooter"><input type="text" id="txtFooter"></div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="grid-2">
-                        <div>
-                            <label>Font Family</label>
-                            <select id="fontFamily">
-                                <option value="system-ui">System UI</option>
-                                <option value="'Inter', sans-serif">Inter</option>
-                                <option value="'Roboto', sans-serif">Roboto</option>
-                                <option value="'Oswald', sans-serif">Oswald</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Title Color 1</label><div class="color-group"><input type="color" id="colT1"><input type="text" id="txtT1"></div>
-                            <label>Title Color 2</label><div class="color-group"><input type="color" id="colT2"><input type="text" id="txtT2"></div>
-                        </div>
-                    </div>
-                    <label><input type="checkbox" id="titleItalic"> Italic Title</label>
-                    <div class="preview-box" id="fontPreview">StreamEast</div>
-                </div>
-            </section>
-
-            <!-- TAB 5: PAGES -->
-            <section id="tab-pages" class="tab-content">
-                <div class="header-box">
-                    <h1>Page Manager</h1>
-                </div>
-                
-                <div class="pages-layout">
-                    <!-- Left: List -->
-                    <div class="pages-sidebar">
-                        <div id="pagesList" class="list-container"></div>
-                        <button class="btn-new" onclick="createNewPage()">+ Create Page</button>
-                    </div>
-
-                    <!-- Right: Editor -->
-                    <div class="page-editor" id="pageEditor" style="display:none;">
-                        <div class="editor-top">
-                            <h3 id="editHeading">Editing</h3>
-                            <div class="actions">
-                                <button class="btn-danger" id="btnDeletePage" onclick="deleteCurrentPage()">Delete Page</button>
-                                <button class="btn-primary" onclick="saveCurrentPageLocal()">✔ Save Changes</button>
-                            </div>
-                        </div>
-
-                        <!-- 1. Content (TinyMCE) -->
-                        <div class="editor-block main">
-                            <label>Article Content (Entity Stacking)</label>
-                            <textarea id="tinymce-editor"></textarea>
-                        </div>
-
-                        <!-- 2. Settings -->
-                        <div class="editor-block settings">
-                            <h4>Page Configuration</h4>
-                            <div class="grid-2">
-                                <div><label>Slug (URL)</label><input type="text" id="pSlug"></div>
-                                <div>
-                                    <label>Page Type</label>
-                                    <select id="pType">
-                                        <option value="schedule">Schedule / Category</option>
-                                        <option value="static">Static Page</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="grid-2">
-                                <div>
-                                    <label>Assign Category (For Schedule)</label>
-                                    <select id="pCategoryAssign"><option value="">None</option></select>
-                                </div>
-                                <div><label>H1 Title</label><input type="text" id="pH1"></div>
-                            </div>
-                            <label>Hero Text</label><input type="text" id="pHero">
-                            
-                            <div class="grid-2">
-                                <div><label>Meta Title</label><input type="text" id="pMetaTitle"></div>
-                                <div><label>Meta Description</label><textarea id="pMetaDesc" rows="3"></textarea></div>
-                            </div>
-                        </div>
-
-                        <!-- 3. Static Schemas -->
-                        <div class="editor-block schemas">
-                            <h4>Static Schemas</h4>
-                            
-                            <label class="toggle-label">
-                                <input type="checkbox" id="schOrgEnable"> Enable Organization Schema
-                            </label>
-                            <div id="schOrgBox" class="hidden-box">
-                                <input type="text" id="schOrgName" placeholder="Org Name">
-                                <input type="text" id="schOrgLogo" placeholder="Logo URL">
-                                <input type="text" id="schOrgSocials" placeholder="Socials (comma separated)">
-                            </div>
-
-                            <label class="toggle-label">
-                                <input type="checkbox" id="schFaqEnable"> Enable FAQ Schema
-                            </label>
-                            <div id="schFaqBox" class="hidden-box">
-                                <div id="faqContainer"></div>
-                                <button class="btn-small" onclick="addFaqItem()">+ Add Question</button>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </section>
-
-            <!-- TAB 6: MENUS -->
-            <section id="tab-menus" class="tab-content">
-                <div class="header-box"><h1>Menus</h1></div>
-                <div class="grid-2">
-                    <div class="card">
-                        <h3>Header Menu</h3>
-                        <div id="menu-header" class="menu-list"></div>
-                        <button class="btn-add" onclick="openMenuModal('header')">+ Add Item</button>
-                    </div>
-                    <div class="card">
-                        <h3>Hero Categories</h3>
-                        <div id="menu-hero" class="menu-list"></div>
-                        <button class="btn-add" onclick="openMenuModal('hero')">+ Add Item</button>
-                    </div>
-                </div>
-                <div class="grid-2">
-                    <div class="card">
-                        <h3>Footer Leagues</h3>
-                        <div id="menu-footer_league" class="menu-list"></div>
-                        <button class="btn-add" onclick="openMenuModal('footer_league')">+ Add Item</button>
-                    </div>
-                    <div class="card">
-                        <h3>Footer Static</h3>
-                        <div id="menu-footer_static" class="menu-list"></div>
-                        <button class="btn-add" onclick="openMenuModal('footer_static')">+ Add Item</button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 7: SOCIAL -->
-            <section id="tab-social" class="tab-content">
-                <div class="header-box"><h1>Socials</h1></div>
-                <div class="grid-2">
-                    <div class="card"><label>Telegram</label><input type="text" id="socTelegram"></div>
-                    <div class="card"><label>Twitter</label><input type="text" id="socTwitter"></div>
-                    <div class="card"><label>Discord</label><input type="text" id="socDiscord"></div>
-                    <div class="card"><label>Reddit</label><input type="text" id="socReddit"></div>
-                </div>
-            </section>
-
+            
         </main>
     </div>
 
@@ -291,37 +88,9 @@
     <div id="authModal" class="modal" style="display:none;">
         <div class="modal-content">
             <h3>Login</h3>
-            <input type="password" id="ghToken" placeholder="GitHub Token">
-            <button onclick="saveToken()">Access</button>
-        </div>
-    </div>
-
-    <!-- Menu Modal -->
-    <div id="menuModal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <h3>Add Menu Item</h3>
-            <input type="hidden" id="menuTargetSection">
-            
-            <label>Link Type</label>
-            <select id="menuLinkType" onchange="updateMenuInput()">
-                <option value="custom">Custom URL</option>
-                <option value="page">Select Page</option>
-                <option value="category">Select Category</option>
-                <option value="wildcard">Wildcard Section</option>
-            </select>
-
-            <label>Title</label><input type="text" id="menuTitleItem">
-            
-            <div id="menuInputContainer" style="margin-bottom:15px;">
-                <label>URL</label><input type="text" id="menuUrlItem">
-            </div>
-
-            <label><input type="checkbox" id="menuHighlight"> Highlight</label>
-
-            <div style="margin-top:15px; display:flex; gap:10px;">
-                <button class="btn-danger" onclick="document.getElementById('menuModal').style.display='none'">Cancel</button>
-                <button class="btn-primary" onclick="saveMenuItem()">Add</button>
-            </div>
+            <p>Enter your GitHub Personal Access Token to manage the CMS.</p>
+            <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx">
+            <button class="btn-primary" onclick="saveToken()">Access Admin</button>
         </div>
     </div>
 
