@@ -3,597 +3,374 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamHub Pro | Live Sports</title>
+    <meta name="description" content="Watch high-quality live sports streams.">
     
-    <title>Test Meta</title>
-    <meta name="description" content="Dest Dessss">
-    <meta name="theme-color" content="#d00000">
-    <link rel="canonical" href="https://crackstreams.help/">
-    <link rel="icon" href="">
+    <!-- SEO Schemas will be injected here by JS -->
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="Test Meta">
-    <meta property="og:description" content="Dest Dessss">
-    <meta property="og:image" content="assets/logo.png">
-    <meta property="og:url" content="https://crackstreams.help/">
-    <meta property="og:type" content="website">
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="assets/logo.png">
-
-    <!-- ANALYTICS & VERIFICATION -->
-    
-    
-
-    <!-- STATIC SCHEMA -->
-    <script type="application/ld+json">[]</script>
-    
-    <link rel="stylesheet" href="assets/css/style.css">
     <style>
         :root {
-            /* Variables injected by Python */
-            --brand-primary: #d00000;
-            --brand-dark: #8a0000;
-            --status-green: ;
-            --accent-gold: #ffd700;
-            --bg-body: #050505;
-            --hero-gradient: #1a0505;
-            --trend-gradient: #140000;
-            --footer-bg: #000000;
-            --font-main: system-ui;
-            --title-c1: #ffffff;
-            --title-c2: #ff0000;
+            --bg: #0f0f0f; --card: #1b1b1b; --border: #333;
+            --text: #ffffff; --accent: #00e5ff; --live: #ff2a2a; --hover: #262626;
+        }
+        body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; margin: 0; padding-bottom: 50px; }
+        
+        /* Navbar */
+        header {
+            background: rgba(15,15,15,0.95); border-bottom: 1px solid var(--border);
+            padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px);
+        }
+        .logo { font-size: 22px; font-weight: 800; letter-spacing: -1px; } .logo span { color: var(--accent); }
+        .controls { display: flex; align-items: center; gap: 15px; }
+        select { background: #222; color: #fff; border: 1px solid #444; padding: 5px 10px; border-radius: 4px; }
+
+        /* Container */
+        .container { max-width: 1250px; margin: 30px auto; padding: 0 20px; }
+        
+        .sport-section { margin-bottom: 40px; }
+        .sport-header { 
+            display: flex; align-items: center; gap: 10px; margin-bottom: 15px;
+            border-bottom: 1px solid #333; padding-bottom: 10px;
+        }
+        .sport-name { font-size: 18px; font-weight: 700; color: var(--accent); text-transform: uppercase; }
+        .sport-count { background: #333; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+
+        /* Match Table Layout */
+        .match-row {
+            display: grid; 
+            grid-template-columns: 80px 140px 1fr 100px 80px; 
+            gap: 15px; align-items: center;
+            background: var(--card); border: 1px solid var(--border);
+            margin-bottom: 8px; border-radius: 8px; padding: 12px 20px; transition: 0.2s;
+        }
+        .match-row:hover { transform: translateY(-2px); border-color: #555; background: var(--hover); }
+
+        .mr-status { text-align: center; font-size: 13px; font-weight: 600; }
+        .mr-date { font-size: 12px; color: #aaa; }
+        .mr-info { display: flex; flex-direction: column; justify-content: center; }
+        
+        /* CSS LOGO STYLES */
+        .mr-teams { font-size: 15px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 6px; }
+        .team-logo {
+            width: 24px; height: 24px; border-radius: 50%;
+            display: inline-flex; justify-content: center; align-items: center;
+            font-size: 12px; font-weight: 800; color: #000;
+            background: #ccc; flex-shrink: 0;
+        }
+
+        .mr-meta { font-size: 12px; color: #888; margin-top: 4px; padding-left: 60px; }
+        
+        .mr-viewers { 
+            text-align: right; color: #aaa; font-size: 12px; 
+            display: flex; align-items: center; justify-content: flex-end; gap: 6px;
+        }
+
+        .live-badge { color: var(--live); display: flex; flex-direction: column; align-items: center; line-height: 1.2; }
+        .live-dot { width: 8px; height: 8px; background: var(--live); border-radius: 50%; margin-bottom: 3px; animation: pulse 1.5s infinite; }
+        
+        .watch-btn {
+            background: var(--accent); color: #000; border: none; padding: 8px 16px;
+            border-radius: 4px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 12px; width: 100%;
+        }
+        .watch-btn:hover { filter: brightness(1.1); }
+
+        /* Schema Debug Footer */
+        .schema-debug {
+            margin-top: 50px; padding: 20px; background: #000; border-top: 1px solid #333;
+            font-family: monospace; font-size: 11px; color: #0f0; overflow-x: auto;
+        }
+
+        /* Modal */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; z-index: 1000; justify-content: center; align-items: center; }
+        .modal-box { background: #1a1a1a; width: 90%; max-width: 500px; border-radius: 12px; border: 1px solid #333; display: flex; flex-direction: column;}
+        .modal-head { padding: 15px 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 20px; max-height: 60vh; overflow-y: auto; }
+        
+        /* Gated Content Styles */
+        .gated-content { text-align: center; padding: 20px 0; }
+        .gate-btn {
+            background: #222; border: 1px solid var(--accent); color: var(--accent);
+            padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer;
+            border-radius: 6px; margin-top: 15px; transition: 0.2s;
+        }
+        .gate-btn:hover { background: var(--accent); color: #000; }
+        .gate-info { font-size: 13px; color: #aaa; margin-bottom: 10px; }
+
+        .stream-item {
+            padding: 12px; background: #222; border: 1px solid #333; margin-bottom: 8px; border-radius: 6px;
+            cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;
+        }
+        .stream-item:hover { border-color: var(--accent); background: #2a2a2a; }
+        
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        
+        @media (max-width: 768px) {
+            .match-row { grid-template-columns: 60px 1fr 70px; grid-template-areas: "stat info btn"; gap: 10px; }
+            .mr-date, .mr-viewers { display: none; }
+            .mr-status { grid-area: stat; }
+            .mr-info { grid-area: info; }
+            .mr-meta { padding-left: 0; }
+            .watch-btn { grid-area: btn; padding: 6px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- SIDEBAR (Desktop Socials) -->
-    <div class="desktop-social">
-        <div class="ds-item" onclick="shareSite('telegram')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.52-1.4.51-.46-.01-1.35-.26-2.01-.48-.81-.27-1.44-.4-1.38-.85.03-.24.37-.49 1.02-.75 4-.174 6.67-2.9 8.04-3.52 3.83-1.74 4.62-2.05 5.15-2.06.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.13-.02.24z"/></svg><span class="stat-val">44k</span></div>
-        <div class="ds-item" onclick="shareSite('twitter')"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span class="stat-val">4k</span></div>
-        <div class="ds-item" onclick="shareSite('discord')"><svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg><span class="stat-val">77k</span></div>
-        <div class="ds-item" onclick="shareSite('reddit')"><svg viewBox="0 0 24 24"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg><span class="stat-val">333k</span></div>
-        <div class="ds-item" onclick="copyLink()"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="stat-val">Copy</span></div>
+<header>
+    <div class="logo">STREAM<span>HUB</span></div>
+    <div class="controls">
+        <select id="countrySelect" onchange="loadMatches()">
+            <option value="US">USA Priority</option>
+            <option value="UK">UK Priority</option>
+        </select>
+        <div id="statusText" style="font-size:12px; color:#666">Loading...</div>
     </div>
+</header>
 
-    <!-- HEADER -->
-    <header>
-        <div class="header-container">
-            <a href="/" class="logo-link">
-                <img src="assets/logo.png" alt="crackstreams.help" class="logo-img">
-                <div class="logo-text">Stream<span>East</span></div>
-            </a>
-            <nav class="nav-links">
+<div class="container" id="matchContainer"></div>
+
+<!-- Footer for Schema Debugging -->
+<div class="container">
+    <h4 style="color:#666; margin-bottom:10px;">Backend Schema Output (Debug)</h4>
+    <div id="schemaOutput" class="schema-debug">No schema loaded.</div>
+</div>
+
+<!-- Stream Modal -->
+<div class="modal" id="streamModal">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h3 id="modalTitle" style="margin:0; font-size:16px;">Streams</h3>
+            <span onclick="closeModal()" style="cursor:pointer; font-size:24px;">&times;</span>
+        </div>
+        <div class="modal-body" id="modalList"></div>
+    </div>
+</div>
+
+<script>
+    const API_URL = "https://vercelapi-olive.vercel.app/api/sync-nodes"; 
+
+    // Global variable to store current match streams
+    let currentStreams = []; 
+
+    async function loadMatches() {
+        const country = document.getElementById('countrySelect').value;
+        const container = document.getElementById('matchContainer');
+        const status = document.getElementById('statusText');
+
+        status.textContent = "Syncing...";
+        
+        try {
+            const res = await fetch(`${API_URL}?country=${country.toLowerCase()}`);
+            if (!res.ok) throw new Error("API Error");
+            const data = await res.json();
+
+            if (data.seo) injectSEO(data.seo);
+
+            status.textContent = `Online (${data.total})`;
+            status.style.color = "#00e5ff";
+            
+            renderGrid(data.matches);
+
+            // 3. AUTO-OPEN OVERLAY (GATEKEEPER MODE)
+            // This is the SAFE way. 
+            if (window.location.hash) {
+                const targetId = window.location.hash.substring(1);
+                const targetMatch = data.matches.find(m => m.id === targetId);
                 
-            </nav>
-            <button class="hamburger" onclick="toggleMenu()">☰</button>
-        </div>
-    </header>
+                if (targetMatch) {
+                    const streamsJson = encodeURIComponent(JSON.stringify(targetMatch.streams));
+                    const safeTitle = `${targetMatch.team_a} vs ${targetMatch.team_b}`.replace(/'/g, "");
+                    // Pass 'true' for isAutoOpen to enforce Gatekeeper
+                    openStreamModal(targetMatch.id, safeTitle, streamsJson, true); 
+                }
+            }
 
-    <div class="mobile-menu" id="mobileMenu"></div>
-
-    <!-- HERO SECTION -->
-    <div class="hero">
-        <div class="sys-status"><div class="dot"></div> System Status: Online</div>
-        <h1>Streameast Live sport</h1>
-        <p class="entity-intro">Hero Meta</p>
-        
-        <!-- HERO PILLS -->
-        <div class="cat-scroll">
-            <a href="/nba/" class="cat-pill">Ã°ÂÂÂ NBA</a>
-        </div>
-    </div>
-
-    <div class="container">
-        
-        <!-- SEARCH BOX -->
-        <div class="search-wrapper" style="display:block">
-            <input type="text" id="match-search" class="search-input" placeholder="Search team or match...">
-            <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
-        </div>
-
-        <!-- SEARCH WARNING (Hidden) -->
-        <div id="searchMsgBox" style="display:none;" class="search-msg-box">
-             <h3>Looking for <span id="searchTermDisplay"></span>?</h3>
-             <p>crackstreams.help is the #1 authorized alternative.</p>
-        </div>
-
-        <div class="schedule-container" style="display:block">
-            
-            <!-- 1. TRENDING SECTION -->
-            <div class="sec-head">
-                <div class="sec-title"><div class="live-dot"></div> Trending Live</div>
-                <div class="sec-right-live" id="onlineCount">● Loading...</div>
-            </div>
-            
-            <div id="live-matches-container" class="match-list">
-    <div class="match-row live" data-search="los angeles clippers vs los angeles lakers basketball">
-        <div class="col-time"><span class="live-txt">LIVE</span><span class="time-sub" style="color:#fff">142'</span></div>
-        <div class="col-info"><div class="league-tag">Basketball</div><div class="team-name"><span class="t-circle" style="background:#e91e63">L</span>Los Angeles Clippers</div><div class="team-name"><span class="t-circle" style="background:#e91e63">L</span>Los Angeles Lakers</div></div>
-        <div class="col-meta"><div class="meta-top">⚡ 1500</div><button class="btn-watch" onclick="openPlayer('ad441fe0a384f5f570b46dbb832665f3', 'cHB2LWxvcy1hbmdlbGVzLWxha2Vycy12cy1sYS1jbGlwcGVycw==', 'Los Angeles Clippers vs Los Angeles Lakers')">WATCH</button></div>
-    </div>
-    
-    <div class="match-row live" data-search="san jose sharks vs seattle kraken ice hockey">
-        <div class="col-time"><span class="live-txt">LIVE</span><span class="time-sub" style="color:#fff">172'</span></div>
-        <div class="col-info"><div class="league-tag">Ice Hockey</div><div class="team-name"><span class="t-circle" style="background:#e91e63">S</span>San Jose Sharks</div><div class="team-name"><span class="t-circle" style="background:#00bcd4">S</span>Seattle Kraken</div></div>
-        <div class="col-meta"><div class="meta-top">⚡ 1500</div><button class="btn-watch" onclick="openPlayer('db282db847da347efaa02c1595eebbbc', 'cHB2LXNlYXR0bGUta3Jha2VuLXZzLXNhbi1qb3NlLXNoYXJrcw==', 'San Jose Sharks vs Seattle Kraken')">WATCH</button></div>
-    </div>
-    
-    <div class="match-row live" data-search="calgary flames vs vegas golden knights ice hockey">
-        <div class="col-time"><span class="live-txt">LIVE</span><span class="time-sub" style="color:#fff">172'</span></div>
-        <div class="col-info"><div class="league-tag">Ice Hockey</div><div class="team-name"><span class="t-circle" style="background:#7C3AED">C</span>Calgary Flames</div><div class="team-name"><span class="t-circle" style="background:#e91e63">V</span>Vegas Golden Knights</div></div>
-        <div class="col-meta"><div class="meta-top">⚡ 1500</div><button class="btn-watch" onclick="openPlayer('bd9655372b08df0a3e5ec64a673e68df', 'cHB2LXZlZ2FzLWdvbGRlbi1rbmlnaHRzLXZzLWNhbGdhcnktZmxhbWVz', 'Calgary Flames vs Vegas Golden Knights')">WATCH</button></div>
-    </div>
-    
-    <div class="match-row live" data-search="anaheim ducks vs columbus blue jackets ice hockey">
-        <div class="col-time"><span class="live-txt">LIVE</span><span class="time-sub" style="color:#fff">172'</span></div>
-        <div class="col-info"><div class="league-tag">Ice Hockey</div><div class="team-name"><span class="t-circle" style="background:#ff5722">A</span>Anaheim Ducks</div><div class="team-name"><span class="t-circle" style="background:#e91e63">C</span>Columbus Blue Jackets</div></div>
-        <div class="col-meta"><div class="meta-top">⚡ 1500</div><button class="btn-watch" onclick="openPlayer('6652407e86453179caa1601b40502e21', 'cHB2LWNvbHVtYnVzLWJsdWUtamFja2V0cy12cy1hbmFoZWltLWR1Y2tz', 'Anaheim Ducks vs Columbus Blue Jackets')">WATCH</button></div>
-    </div>
-    
-    <div class="match-row live" data-search="sacramento kings vs portland trail blazers basketball">
-        <div class="col-time"><span class="live-txt">LIVE</span><span class="time-sub" style="color:#fff">172'</span></div>
-        <div class="col-info"><div class="league-tag">Basketball</div><div class="team-name"><span class="t-circle" style="background:#0056D2">S</span>Sacramento Kings</div><div class="team-name"><span class="t-circle" style="background:#7C3AED">P</span>Portland Trail Blazers</div></div>
-        <div class="col-meta"><div class="meta-top">⚡ 1500</div><button class="btn-watch" onclick="openPlayer('85e0ee465cbe6b9f36dc84b58c84ec7b', 'MTg0NjY=', 'Sacramento Kings vs Portland Trail Blazers')">WATCH</button></div>
-    </div>
-    
-    <div class="match-row live" data-search="utah jazz vs orlando magic basketball">
-        <div class="col-time"><span class="live-txt">LIVE</span><span class="time-sub" style="color:#fff">FT</span></div>
-        <div class="col-info"><div class="league-tag">Basketball</div><div class="team-name"><span class="t-circle" style="background:#0056D2">U</span>Utah Jazz</div><div class="team-name"><span class="t-circle" style="background:#D00000">O</span>Orlando Magic</div></div>
-        <div class="col-meta"><div class="meta-top">⚡ 1500</div><button class="btn-watch" onclick="openPlayer('276ebaa071e5643703c98d01ab93ac60', 'MTg0NjU=', 'Utah Jazz vs Orlando Magic')">WATCH</button></div>
-    </div>
-    
-    <div class="match-row live" data-search="japan u18 vs australia u20 american football">
-        <div class="col-time"><span class="live-txt">LIVE</span><span class="time-sub" style="color:#fff">FT</span></div>
-        <div class="col-info"><div class="league-tag">American Football</div><div class="team-name"><span class="t-circle" style="background:#D00000">J</span>Japan U18</div><div class="team-name"><span class="t-circle" style="background:#ff5722">A</span>Australia U20</div></div>
-        <div class="col-meta"><div class="meta-top">⚡ 1500</div><button class="btn-watch" onclick="openPlayer('69aaa99c76e17efc366d8536401a0d98', 'amFwYW4tdTE4LXZzLWF1c3RyYWxpYS11MjAtZm9vdGJhbGwtMTQ5MTcwNQ==', 'Japan U18 vs Australia U20')">WATCH</button></div>
-    </div>
-    
-                <!-- Injected via JS -->
-            </div>
-            
-            <div class="show-more-container">
-                <button class="btn-show-more" id="btnShowMore" style="display:none">Show More Matches ▼</button>
-            </div>
-
-            <!-- 2. WILDCARD SECTION (Injected via JS if active) -->
-            <div id="wildcard-wrapper"></div>
-
-            <!-- 3. UPCOMING CATEGORIES -->
-            <div id="upcoming-wrapper">
-        <div class="sport-section" data-sport="NFL">
-            <div class="sec-head">
-                <div class="sec-title">NFL Schedule</div>
-                <a href="/nfl/" class="sec-right-link">View All ></a>
-            </div>
-            <div class="match-list">
-    <div class="match-row " data-search="nfl redzone 🏈 🏈 🏈 nfl">
-        <div class="col-time"><span class="time-main">11:30 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">NFL</div><div class="team-name"><span class="t-circle" style="background:#e91e63">N</span>NFL RedZone 🏈 🏈 🏈</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766338200000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    </div>
-        </div>
-        
-        <div class="sport-section" data-sport="NBA">
-            <div class="sec-head">
-                <div class="sec-title">NBA Schedule</div>
-                <a href="/nba/" class="sec-right-link">View All ></a>
-            </div>
-            <div class="match-list">
-    <div class="match-row " data-search="nba g league: tba vs tba nba">
-        <div class="col-time"><span class="time-main">12:00 AM</span><span class="time-sub">Dec 22</span></div>
-        <div class="col-info"><div class="league-tag">NBA</div><div class="team-name"><span class="t-circle" style="background:#FFD700">N</span>NBA G League: TBA</div><div class="team-name"><span class="t-circle" style="background:#e91e63">T</span>TBA</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766340000000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="nba g league: tba vs tba nba">
-        <div class="col-time"><span class="time-main">5:30 AM</span><span class="time-sub">Dec 23</span></div>
-        <div class="col-info"><div class="league-tag">NBA</div><div class="team-name"><span class="t-circle" style="background:#FFD700">N</span>NBA G League: TBA</div><div class="team-name"><span class="t-circle" style="background:#e91e63">T</span>TBA</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766446200000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="nba: charlotte hornets vs cleveland cavaliers nba">
-        <div class="col-time"><span class="time-main">6:00 AM</span><span class="time-sub">Dec 23</span></div>
-        <div class="col-info"><div class="league-tag">NBA</div><div class="team-name"><span class="t-circle" style="background:#FFD700">N</span>NBA: Charlotte Hornets</div><div class="team-name"><span class="t-circle" style="background:#D00000">C</span>Cleveland Cavaliers</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766448000000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="nba: indiana pacers vs boston celtics nba">
-        <div class="col-time"><span class="time-main">6:30 AM</span><span class="time-sub">Dec 23</span></div>
-        <div class="col-info"><div class="league-tag">NBA</div><div class="team-name"><span class="t-circle" style="background:#ff5722">N</span>NBA: Indiana Pacers</div><div class="team-name"><span class="t-circle" style="background:#FFD700">B</span>Boston Celtics</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766449800000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    </div>
-        </div>
-        
-        <div class="sport-section" data-sport="UFC">
-            <div class="sec-head">
-                <div class="sec-title">UFC Schedule</div>
-                <a href="/ufc/" class="sec-right-link">View All ></a>
-            </div>
-            <div class="match-list">
-    <div class="match-row " data-search="the ring v: night of the samurai: grand arrival ufc">
-        <div class="col-time"><span class="time-main">6:00 PM</span><span class="time-sub">Dec 23</span></div>
-        <div class="col-info"><div class="league-tag">UFC</div><div class="team-name"><span class="t-circle" style="background:#008f39">T</span>THE RING V: NIGHT OF THE SAMURAI: Grand Arrival</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766491200000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="naoya inoue vs david picasso ufc">
-        <div class="col-time"><span class="time-main">10:00 PM</span><span class="time-sub">Dec 27</span></div>
-        <div class="col-info"><div class="league-tag">UFC</div><div class="team-name"><span class="t-circle" style="background:#D00000">N</span>Naoya Inoue</div><div class="team-name"><span class="t-circle" style="background:#008f39">D</span>David Picasso</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766851200000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="ufc 324: gaethje vs. pimblett ufc">
-        <div class="col-time"><span class="time-main">6:00 AM</span><span class="time-sub">Jan 25</span></div>
-        <div class="col-info"><div class="league-tag">UFC</div><div class="team-name"><span class="t-circle" style="background:#0056D2">U</span>UFC 324: Gaethje</div><div class="team-name"><span class="t-circle" style="background:#0056D2">P</span>Pimblett</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1769299200000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    </div>
-        </div>
-        
-        <div class="sport-section" data-sport="NHL">
-            <div class="sec-head">
-                <div class="sec-title">NHL Schedule</div>
-                <a href="/nhl/" class="sec-right-link">View All ></a>
-            </div>
-            <div class="match-list">
-    <div class="match-row " data-search="nhl: st. louis blues vs tampa bay lightning nhl">
-        <div class="col-time"><span class="time-main">6:00 AM</span><span class="time-sub">Dec 23</span></div>
-        <div class="col-info"><div class="league-tag">NHL</div><div class="team-name"><span class="t-circle" style="background:#D00000">N</span>NHL: St. Louis Blues</div><div class="team-name"><span class="t-circle" style="background:#7C3AED">T</span>Tampa Bay Lightning</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766448000000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="nhl: vancouver canucks vs philadelphia flyers nhl">
-        <div class="col-time"><span class="time-main">6:30 AM</span><span class="time-sub">Dec 23</span></div>
-        <div class="col-info"><div class="league-tag">NHL</div><div class="team-name"><span class="t-circle" style="background:#ff5722">N</span>NHL: Vancouver Canucks</div><div class="team-name"><span class="t-circle" style="background:#008f39">P</span>Philadelphia Flyers</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766449800000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="nhl: seattle kraken vs anaheim ducks nhl">
-        <div class="col-time"><span class="time-main">9:00 AM</span><span class="time-sub">Dec 23</span></div>
-        <div class="col-info"><div class="league-tag">NHL</div><div class="team-name"><span class="t-circle" style="background:#008f39">N</span>NHL: Seattle Kraken</div><div class="team-name"><span class="t-circle" style="background:#ff5722">A</span>Anaheim Ducks</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766458800000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="nhl: columbus blue jackets vs los angeles kings nhl">
-        <div class="col-time"><span class="time-main">9:00 AM</span><span class="time-sub">Dec 23</span></div>
-        <div class="col-info"><div class="league-tag">NHL</div><div class="team-name"><span class="t-circle" style="background:#7C3AED">N</span>NHL: Columbus Blue Jackets</div><div class="team-name"><span class="t-circle" style="background:#0056D2">L</span>Los Angeles Kings</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766458800000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    </div>
-        </div>
-        
-        <div class="sport-section" data-sport="Motor-Sports">
-            <div class="sec-head">
-                <div class="sec-title">Motor-Sports Schedule</div>
-                <a href="/motor-sports/" class="sec-right-link">View All ></a>
-            </div>
-            <div class="match-list">
-    <div class="match-row " data-search="gran turismo world series: fukuoka | nations cup show motor-sports">
-        <div class="col-time"><span class="time-main">12:30 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Motor-Sports</div><div class="team-name"><span class="t-circle" style="background:#e91e63">G</span>Gran Turismo World Series: Fukuoka | Nations Cup Show</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766298600000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    </div>
-        </div>
-        
-        <div class="sport-section" data-sport="Cricket">
-            <div class="sec-head">
-                <div class="sec-title">Cricket Schedule</div>
-                <a href="/cricket/" class="sec-right-link">View All ></a>
-            </div>
-            <div class="match-list">
-    <div class="match-row " data-search="melbourne renegades vs hobart hurricanes cricket">
-        <div class="col-time"><span class="time-main">2:15 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Cricket</div><div class="team-name"><span class="t-circle" style="background:#e91e63">M</span>Melbourne Renegades</div><div class="team-name"><span class="t-circle" style="background:#FFD700">H</span>Hobart Hurricanes</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766304900000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="dubai capitals vs gulf giants cricket">
-        <div class="col-time"><span class="time-main">4:00 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Cricket</div><div class="team-name"><span class="t-circle" style="background:#00bcd4">D</span>Dubai Capitals</div><div class="team-name"><span class="t-circle" style="background:#FFD700">G</span>Gulf Giants</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766311200000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="desert vipers vs mi emirates cricket">
-        <div class="col-time"><span class="time-main">8:30 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Cricket</div><div class="team-name"><span class="t-circle" style="background:#D00000">D</span>Desert Vipers</div><div class="team-name"><span class="t-circle" style="background:#D00000">M</span>MI Emirates</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766327400000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="west indies tour of new zealand: new zealand vs west indies cricket">
-        <div class="col-time"><span class="time-main">4:00 AM</span><span class="time-sub">Dec 22</span></div>
-        <div class="col-info"><div class="league-tag">Cricket</div><div class="team-name"><span class="t-circle" style="background:#008f39">W</span>West Indies tour of New Zealand: New Zealand</div><div class="team-name"><span class="t-circle" style="background:#e91e63">W</span>West Indies</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766354400000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    </div>
-        </div>
-        
-        <div class="sport-section" data-sport="American Football">
-            <div class="sec-head">
-                <div class="sec-title">American Football Schedule</div>
-                <a href="/american-football/" class="sec-right-link">View All ></a>
-            </div>
-            <div class="match-list">
-    <div class="match-row " data-search="a-league women: perth glory fc w vs adelaide united w american football">
-        <div class="col-time"><span class="time-main">3:00 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">American Football</div><div class="team-name"><span class="t-circle" style="background:#0056D2">A</span>A-League Women: Perth Glory FC W</div><div class="team-name"><span class="t-circle" style="background:#0056D2">A</span>Adelaide United W</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766307600000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="felgueiras vs fc porto b american football">
-        <div class="col-time"><span class="time-main">5:00 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">American Football</div><div class="team-name"><span class="t-circle" style="background:#e91e63">F</span>Felgueiras</div><div class="team-name"><span class="t-circle" style="background:#e91e63">F</span>FC Porto B</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766314800000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="utrecht vs psv eindhoven american football">
-        <div class="col-time"><span class="time-main">5:15 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">American Football</div><div class="team-name"><span class="t-circle" style="background:#e91e63">U</span>Utrecht</div><div class="team-name"><span class="t-circle" style="background:#0056D2">P</span>PSV Eindhoven</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766315700000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="alanyaspor vs fatih karagümrük american football">
-        <div class="col-time"><span class="time-main">5:30 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">American Football</div><div class="team-name"><span class="t-circle" style="background:#008f39">A</span>Alanyaspor</div><div class="team-name"><span class="t-circle" style="background:#FFD700">F</span>Fatih Karagümrük</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766316600000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    </div>
-        </div>
-        
-        <div class="sport-section" data-sport="Darts">
-            <div class="sec-head">
-                <div class="sec-title">Darts Schedule</div>
-                <a href="/darts/" class="sec-right-link">View All ></a>
-            </div>
-            <div class="match-list">
-    <div class="match-row " data-search="world championships: day eleven darts">
-        <div class="col-time"><span class="time-main">6:30 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Darts</div><div class="team-name"><span class="t-circle" style="background:#ff5722">W</span>World Championships: Day Eleven</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766320200000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="world darts championship darts">
-        <div class="col-time"><span class="time-main">6:30 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Darts</div><div class="team-name"><span class="t-circle" style="background:#0056D2">W</span>World Darts Championship</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766320200000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="world championships: day twelve darts">
-        <div class="col-time"><span class="time-main">6:30 PM</span><span class="time-sub">Dec 22</span></div>
-        <div class="col-info"><div class="league-tag">Darts</div><div class="team-name"><span class="t-circle" style="background:#ff5722">W</span>World Championships: Day Twelve</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766406600000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="world championships: day thirteen darts">
-        <div class="col-time"><span class="time-main">6:30 PM</span><span class="time-sub">Dec 23</span></div>
-        <div class="col-info"><div class="league-tag">Darts</div><div class="team-name"><span class="t-circle" style="background:#0056D2">W</span>World Championships: Day Thirteen</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766493000000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    </div>
-        </div>
-        
-        <div class="sport-section" data-sport="Other">
-            <div class="sec-head">
-                <div class="sec-title">Other Schedule</div>
-                <a href="/other/" class="sec-right-link">View All ></a>
-            </div>
-            <div class="match-list">
-    <div class="match-row " data-search="snooker scottish open 🎱 other">
-        <div class="col-time"><span class="time-main">7:00 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Other</div><div class="team-name"><span class="t-circle" style="background:#ff5722">S</span>Snooker Scottish Open 🎱</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766322000000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="pnc championship | pga tour other">
-        <div class="col-time"><span class="time-main">10:30 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Other</div><div class="team-name"><span class="t-circle" style="background:#008f39">P</span>PNC Championship | PGA Tour</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766334600000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="horse racing: america's day at the races other">
-        <div class="col-time"><span class="time-main">3:30 AM</span><span class="time-sub">Dec 22</span></div>
-        <div class="col-info"><div class="league-tag">Other</div><div class="team-name"><span class="t-circle" style="background:#ff5722">H</span>Horse Racing: America's Day At the Races</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766352600000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    </div>
-        </div>
-        
-        <div class="sport-section" data-sport="Ice Hockey">
-            <div class="sec-head">
-                <div class="sec-title">Ice Hockey Schedule</div>
-                <a href="/ice-hockey/" class="sec-right-link">View All ></a>
-            </div>
-            <div class="match-list">
-    <div class="match-row " data-search="bremerhaven vs munchen ice hockey">
-        <div class="col-time"><span class="time-main">7:00 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Ice Hockey</div><div class="team-name"><span class="t-circle" style="background:#e91e63">B</span>Bremerhaven</div><div class="team-name"><span class="t-circle" style="background:#00bcd4">M</span>Munchen</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766322000000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="schwenninger vs nurnberg ice tigers ice hockey">
-        <div class="col-time"><span class="time-main">7:00 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Ice Hockey</div><div class="team-name"><span class="t-circle" style="background:#7C3AED">S</span>Schwenninger</div><div class="team-name"><span class="t-circle" style="background:#008f39">N</span>Nurnberg Ice Tigers</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766322000000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="grizzlys wolfsburg vs adler mannheim ice hockey">
-        <div class="col-time"><span class="time-main">7:00 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Ice Hockey</div><div class="team-name"><span class="t-circle" style="background:#0056D2">G</span>Grizzlys Wolfsburg</div><div class="team-name"><span class="t-circle" style="background:#ff5722">A</span>Adler Mannheim</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766322000000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="dresdner eislowen vs erc ingolstadt ice hockey">
-        <div class="col-time"><span class="time-main">9:30 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Ice Hockey</div><div class="team-name"><span class="t-circle" style="background:#ff5722">D</span>Dresdner Eislowen</div><div class="team-name"><span class="t-circle" style="background:#7C3AED">E</span>ERC Ingolstadt</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766331000000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    </div>
-        </div>
-        
-        <div class="sport-section" data-sport="Rugby">
-            <div class="sec-head">
-                <div class="sec-title">Rugby Schedule</div>
-                <a href="/rugby/" class="sec-right-link">View All ></a>
-            </div>
-            <div class="match-list">
-    <div class="match-row " data-search="prem rugby: newcastle falcons vs bath rugby rugby">
-        <div class="col-time"><span class="time-main">9:00 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Rugby</div><div class="team-name"><span class="t-circle" style="background:#7C3AED">P</span>PREM Rugby: Newcastle Falcons</div><div class="team-name"><span class="t-circle" style="background:#D00000">B</span>Bath Rugby</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766329200000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="newcastle red bulls vs bath rugby rugby">
-        <div class="col-time"><span class="time-main">9:00 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Rugby</div><div class="team-name"><span class="t-circle" style="background:#7C3AED">N</span>Newcastle Red Bulls</div><div class="team-name"><span class="t-circle" style="background:#D00000">B</span>Bath Rugby</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766329200000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    </div>
-        </div>
-        
-        <div class="sport-section" data-sport="Basketball">
-            <div class="sec-head">
-                <div class="sec-title">Basketball Schedule</div>
-                <a href="/basketball/" class="sec-right-link">View All ></a>
-            </div>
-            <div class="match-list">
-    <div class="match-row " data-search="manchester basketball vs surrey 89ers basketball">
-        <div class="col-time"><span class="time-main">9:00 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Basketball</div><div class="team-name"><span class="t-circle" style="background:#e91e63">M</span>Manchester Basketball</div><div class="team-name"><span class="t-circle" style="background:#ff5722">S</span>Surrey 89ers</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766329200000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="caledonia gladiators vs london lions basketball">
-        <div class="col-time"><span class="time-main">11:00 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Basketball</div><div class="team-name"><span class="t-circle" style="background:#008f39">C</span>Caledonia Gladiators</div><div class="team-name"><span class="t-circle" style="background:#e91e63">L</span>London Lions</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766336400000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="atlanta hawks vs chicago bulls basketball">
-        <div class="col-time"><span class="time-main">2:30 AM</span><span class="time-sub">Dec 22</span></div>
-        <div class="col-info"><div class="league-tag">Basketball</div><div class="team-name"><span class="t-circle" style="background:#7C3AED">A</span>Atlanta Hawks</div><div class="team-name"><span class="t-circle" style="background:#D00000">C</span>Chicago Bulls</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766349000000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    
-    <div class="match-row " data-search="south bay lakers vs wisconsin herd basketball">
-        <div class="col-time"><span class="time-main">5:00 AM</span><span class="time-sub">Dec 22</span></div>
-        <div class="col-info"><div class="league-tag">Basketball</div><div class="team-name"><span class="t-circle" style="background:#0056D2">S</span>South Bay Lakers</div><div class="team-name"><span class="t-circle" style="background:#D00000">W</span>Wisconsin Herd</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766358000000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    </div>
-        </div>
-        
-        <div class="sport-section" data-sport="Golf">
-            <div class="sec-head">
-                <div class="sec-title">Golf Schedule</div>
-                <a href="/golf/" class="sec-right-link">View All ></a>
-            </div>
-            <div class="match-list">
-    <div class="match-row " data-search="pnc championship: day 2 golf">
-        <div class="col-time"><span class="time-main">11:30 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Golf</div><div class="team-name"><span class="t-circle" style="background:#00bcd4">P</span>PNC Championship: Day 2</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766338200000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    </div>
-        </div>
-        
-        <div class="sport-section" data-sport="NCAA Basketball">
-            <div class="sec-head">
-                <div class="sec-title">NCAA Basketball Schedule</div>
-                <a href="/ncaa-basketball/" class="sec-right-link">View All ></a>
-            </div>
-            <div class="match-list">
-    <div class="match-row " data-search="college park skyhawks vs motor city cruise ncaa basketball">
-        <div class="col-time"><span class="time-main">10:00 PM</span><span class="time-sub">Dec 22</span></div>
-        <div class="col-info"><div class="league-tag">NCAA Basketball</div><div class="team-name"><span class="t-circle" style="background:#00bcd4">C</span>College Park Skyhawks</div><div class="team-name"><span class="t-circle" style="background:#ff5722">M</span>Motor City Cruise</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766419200000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    </div>
-        </div>
-        
-        <div class="sport-section" data-sport="Tennis">
-            <div class="sec-head">
-                <div class="sec-title">Tennis Schedule</div>
-                <a href="/tennis/" class="sec-right-link">View All ></a>
-            </div>
-            <div class="match-list">
-    <div class="match-row " data-search="next gen atp finals: day 5 tennis">
-        <div class="col-time"><span class="time-main">11:00 PM</span><span class="time-sub">Dec 21</span></div>
-        <div class="col-info"><div class="league-tag">Tennis</div><div class="team-name"><span class="t-circle" style="background:#D00000">N</span>Next Gen ATP Finals: Day 5</div></div>
-        <div class="col-meta"><div class="meta-top"><span class="countdown" data-time="1766336400000">--:--</span></div><button class="btn-watch btn-notify" onclick="toggleNotify(this)">🔔 Notify</button></div>
-    </div>
-    </div>
-        </div>
-        </div>
-        </div>
-
-        <!-- SEO ARTICLE -->
-        <div class="seo-box" id="article">
-            
-        </div>
-
-        <!-- FOOTER LEAGUE MENU -->
-        <div class="footer-leagues" style="display:block"> 
-            <div class="f-title">TOP LEAGUES</div>
-            <div class="f-links-grid">
-                
-            </div>
-        </div>
-
-        <!-- OUR NETWORK -->
-        <div class="partners">
-            <div class="f-title">OUR NETWORK</div>
-            <div class="f-links-grid">
-                crackstreams,       methstreams,       sportsurge
-            </div>
-        </div>
-    </div>
-
-    <!-- FOOTER -->
-    <footer>
-        <div class="footer-static-links">
-            
-        </div>
-        <div class="copyright">
-            &copy; 2025 crackstreams.help. All rights reserved.
-        </div>
-    </footer>
-
-    <!-- MOBILE STICKY SOCIAL (Fixed: Hidden on Desktop) -->
-    <div class="mobile-social">
-        <div class="ms-item" onclick="shareSite('telegram')"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.52-1.4.51-.46-.01-1.35-.26-2.01-.48-.81-.27-1.44-.4-1.38-.85.03-.24.37-.49 1.02-.75 4-.174 6.67-2.9 8.04-3.52 3.83-1.74 4.62-2.05 5.15-2.06.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.13-.02.24z"/></svg><span class="ms-count">44k</span></div>
-        <div class="ms-item" onclick="shareSite('twitter')"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span class="ms-count">4k</span></div>
-        <div class="ms-item" onclick="shareSite('discord')"><svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg><span class="ms-count">77k</span></div>
-        <div class="ms-item" onclick="shareSite('reddit')"><svg viewBox="0 0 24 24"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg><span class="ms-count">333k</span></div>
-        <div class="ms-item" onclick="copyLink()"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span class="ms-count">Copy</span></div>
-    </div>
-
-    <!-- PLAYER POPUP -->
-    <div class="video-modal" id="vModal">
-        <div class="vm-head">
-            <span class="vm-title" id="vmTitle">Live Stream</span>
-            <button class="vm-close" onclick="closeStream()">Close ✕</button>
-        </div>
-        <div id="vContainer"></div>
-    </div>
-
-    <script src="assets/js/main.js"></script>
-    <script>
-        // JS Config injected by Python
-        window.SITE_CONFIG = {"siteName": "crackstreams.help", "timezone": "Asia/Dhaka"};
-        
-        function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
-        
-        // Internal Search Trick
-        const urlParams = new URLSearchParams(window.location.search);
-        const q = urlParams.get('q');
-        if(q) {
-            document.getElementById('searchMsgBox').style.display = 'block';
-            document.getElementById('searchTermDisplay').innerText = q.toUpperCase();
+        } catch (e) {
+            console.error(e);
+            container.innerHTML = `<div style="text-align:center; padding:50px; color:#ff4444">Failed to load matches.</div>`;
+            status.textContent = "Offline";
+            status.style.color = "red";
         }
-    </script>
+    }
+
+    function injectSEO(seo) {
+        document.querySelectorAll('script[type="application/ld+json"]').forEach(e => e.remove());
+        document.getElementById('schemaOutput').textContent = JSON.stringify(seo, null, 2);
+        
+        const currentDomain = window.location.origin;
+
+        if (seo.live_broadcast) {
+            const script = document.createElement('script');
+            script.type = "application/ld+json";
+            script.id = "live-match-schema";
+            script.text = JSON.stringify(seo.live_broadcast).replace('https://example.com', currentDomain);
+            document.head.appendChild(script);
+        }
+        
+        if (seo.upcoming_list) {
+            const script = document.createElement('script');
+            script.type = "application/ld+json";
+            script.text = JSON.stringify(seo.upcoming_list).replace('https://example.com', currentDomain);
+            document.head.appendChild(script);
+        }
+    }
+
+    function getColorForLetter(letter) {
+        if (!letter) return '#ccc';
+        const colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FFC300', '#00E5FF', '#8E44AD', '#E74C3C', '#2ECC71', '#F39C12'];
+        return colors[letter.charCodeAt(0) % colors.length];
+    }
+
+    function renderGrid(matches) {
+        const container = document.getElementById('matchContainer');
+        container.innerHTML = "";
+
+        if(matches.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding:50px;">No matches found.</div>`;
+            return;
+        }
+
+        const groups = {};
+        matches.forEach(m => {
+            const s = m.sport.toUpperCase();
+            if(!groups[s]) groups[s] = [];
+            groups[s].push(m);
+        });
+
+        Object.keys(groups).forEach(sport => {
+            const section = document.createElement('div');
+            section.className = 'sport-section';
+            
+            let rows = '';
+            groups[sport].forEach(m => {
+                let statusHtml = m.is_live 
+                    ? `<div class="live-badge"><div class="live-dot"></div>${m.status_text}</div>` 
+                    : `<span style="color:#00e5ff">${m.status_text}</span>`;
+
+                // UPDATED: Simply display the backend-provided string (e.g. "👁️ 5.2k 📈" or "⚡Stable")
+                const viewerHtml = m.live_viewers ? `<span style="font-weight:600;">${m.live_viewers}</span>` : '';
+                
+                const letterA = m.team_a_letter || (m.team_a ? m.team_a.charAt(0) : 'T');
+                const letterB = m.team_b_letter || (m.team_b ? m.team_b.charAt(0) : 'T');
+                const cA = getColorForLetter(letterA);
+                const cB = getColorForLetter(letterB);
+                
+                const teamHTML = `
+                    <div class="mr-teams">
+                        <span class="team-logo" style="background:${cA}">${letterA}</span> ${m.team_a}
+                        <span style="color:#888; font-weight:400; margin:0 5px;">vs</span>
+                        <span class="team-logo" style="background:${cB}">${letterB}</span> ${m.team_b}
+                    </div>
+                `;
+
+                const streamsJson = encodeURIComponent(JSON.stringify(m.streams));
+                const safeTitle = `${m.team_a} vs ${m.team_b}`.replace(/'/g, "");
+                const displayDate = m.formatted_date || "Today";
+
+                rows += `
+                    <div class="match-row">
+                        <div class="mr-status">${statusHtml}</div>
+                        <div class="mr-date">${displayDate}</div>
+                        <div class="mr-info">
+                            ${teamHTML}
+                            <div class="mr-meta">${m.tournament}</div>
+                        </div>
+                        <div class="mr-viewers">${viewerHtml}</div>
+                        <div>
+                            <button class="watch-btn" onclick="openStreamModal('${m.id}', '${safeTitle}', '${streamsJson}', false)">Watch</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            section.innerHTML = `
+                <div class="sport-header">
+                    <span class="sport-name">${sport}</span>
+                    <span class="sport-count">${groups[sport].length}</span>
+                </div>
+                <div>${rows}</div>
+            `;
+            container.appendChild(section);
+        });
+    }
+
+    // =================================================================
+    // SAFE MODAL LOGIC (Gatekeeper)
+    // =================================================================
+    function openStreamModal(id, title, json, isAutoOpen) {
+        const modal = document.getElementById('streamModal');
+        const list = document.getElementById('modalList');
+        document.getElementById('modalTitle').textContent = title;
+        list.innerHTML = '';
+
+        // Fake URL update
+        if (id) {
+            const fakeUrl = `/watch/${id}`;
+            window.history.pushState({path: fakeUrl}, '', fakeUrl);
+        }
+
+        try {
+            currentStreams = JSON.parse(decodeURIComponent(json));
+            
+            if (isAutoOpen) {
+                // !!! SAFE SEO MODE !!!
+                // Don't show streams yet. Google sees this text.
+                // User must click to load the actual streams.
+                list.innerHTML = `
+                    <div class="gated-content">
+                        <h2 style="margin:0 0 10px 0;">${title}</h2>
+                        <div class="gate-info">Click below to load available servers.</div>
+                        <button class="gate-btn" onclick="revealStreams()">LOAD STREAMS</button>
+                    </div>
+                `;
+            } else {
+                // User manually clicked "Watch" on the list, so we can show streams immediately
+                revealStreams();
+            }
+
+        } catch(e) { console.error(e); }
+
+        modal.style.display = 'flex';
+    }
+
+    function revealStreams() {
+        const list = document.getElementById('modalList');
+        list.innerHTML = ''; // Clear the "Gatekeeper" button
+
+        if(!currentStreams.length) {
+            list.innerHTML = '<div style="padding:20px; text-align:center; color:#666">No streams available yet.</div>';
+        } else {
+            currentStreams.forEach(s => {
+                const el = document.createElement('div');
+                el.className = 'stream-item';
+                const viewerBadge = s.viewers ? `<small style="color:#aaa">(${s.viewers} watching)</small>` : '';
+
+                el.innerHTML = `
+                    <div>
+                        <div style="font-weight:600; color:#fff">${s.source_name}</div>
+                        <div style="font-size:12px; color:#888">Server: ${s.type === 'direct_embed' ? 'Direct' : 'API'} ${viewerBadge}</div>
+                    </div>
+                    <div style="font-size:18px">▶</div>
+                `;
+                el.onclick = () => {
+                    alert(`Playing Stream: ${s.source_name}`);
+                    // Here you would replace the modal content with your iframe logic
+                };
+                list.appendChild(el);
+            });
+        }
+    }
+
+    function closeModal() { 
+        document.getElementById('streamModal').style.display = 'none'; 
+        window.history.pushState({path: '/'}, '', '/');
+    }
+    
+    window.onclick = e => { if(e.target.id === 'streamModal') closeModal(); }
+
+    loadMatches();
+</script>
+
 </body>
 </html>
