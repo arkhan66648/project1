@@ -188,7 +188,7 @@
     <script>
         const API_URL = "https://vercelapi-olive.vercel.app/api/sync-nodes";
         const TARGET_COUNTRY = "US"; 
-        const PRIORITIES = {"NFL": 100, "NBA": 95, "UFC": 90, "MLB": 85, "NHL": 80, "NCAA": 75}; 
+        const PRIORITIES = {"NFL": {"score": 100, "isLeague": true, "hasLink": true}, "NBA": {"score": 95, "isLeague": true, "hasLink": true}, "MLB": {"score": 90, "isLeague": true, "hasLink": true}, "NHL": {"score": 85, "isLeague": true, "hasLink": false}, "UFC": {"score": 80, "isLeague": true, "hasLink": false}, "MMA": {"score": 79, "isLeague": true, "hasLink": false}, "College": {"score": 75, "isLeague": true, "hasLink": false}, "NCAA": {"score": 75, "isLeague": true, "hasLink": false}, "MLS": {"score": 70, "isLeague": true, "hasLink": false}, "Premier League": {"score": 60, "isLeague": true, "hasLink": false}, "Boxing": {"score": 50, "isLeague": false, "hasLink": false}, "Tennis": {"score": 40, "isLeague": false, "hasLink": false}}; 
 
         let allMatches = [];
         let currentMatchData = null;
