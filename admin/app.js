@@ -14,11 +14,11 @@ const DEFAULT_PRIORITIES = {
         { name: "NFL", score: 100, isLeague: true, hasLink: true },
         { name: "NBA", score: 95, isLeague: true, hasLink: true },
         { name: "MLB", score: 90, isLeague: true, hasLink: true },
+        { name: "College Football", score: 88, isLeague: true, hasLink: false }, // Updated
+        { name: "College Basketball", score: 87, isLeague: true, hasLink: false }, // Updated
         { name: "NHL", score: 85, isLeague: true, hasLink: false },
         { name: "UFC", score: 80, isLeague: true, hasLink: false },
         { name: "MMA", score: 79, isLeague: false, hasLink: false },
-        { name: "College", score: 75, isLeague: true, hasLink: false }, // Generic College
-        { name: "NCAA", score: 75, isLeague: true, hasLink: false },
         { name: "MLS", score: 70, isLeague: true, hasLink: false },
         { name: "Premier League", score: 60, isLeague: true, hasLink: false },
         { name: "Boxing", score: 50, isLeague: false, hasLink: false },
