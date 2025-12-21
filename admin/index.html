@@ -16,6 +16,7 @@
             <nav>
                 <button class="nav-btn active" onclick="switchTab('general')">⚙️ General</button>
                 <button class="nav-btn" onclick="switchTab('content')">📝 Home Content</button>
+                <button class="nav-btn" onclick="switchTab('priorities')">📊 Priorities</button>
                 <button class="nav-btn" onclick="switchTab('menus')">🔗 Menus</button>
             </nav>
             <div class="sidebar-footer">
@@ -30,38 +31,80 @@
                 <div class="header-box"><h1>General Settings</h1></div>
                 <div class="grid-2">
                     <div class="card">
-                        <label>Title 1</label><input type="text" id="titleP1">
-                        <label>Title 2</label><input type="text" id="titleP2">
-                        <label>Domain</label><input type="text" id="siteDomain">
-                        <label>Logo URL</label><input type="text" id="logoUrl">
-                        <label>Brand Color</label><input type="color" id="colPrimary">
+                        <label>Title Part 1</label><input type="text" id="titleP1" placeholder="Stream">
+                        <label>Title Part 2</label><input type="text" id="titleP2" placeholder="East">
+                        <label>Domain Name</label><input type="text" id="siteDomain" placeholder="StreamEast Live">
+                        <label>Logo URL (Full Path)</label><input type="text" id="logoUrl" placeholder="/assets/streameast-logo-hd.jpg">
+                        <label>Hero Description</label><textarea id="customMeta" rows="3" placeholder="Welcome text..."></textarea>
+                    </div>
+                    <div class="card">
+                        <h3>Theme</h3>
+                        <label>Brand Primary Color</label>
+                        <input type="color" id="colPrimary" style="width:100%; height:50px;">
                     </div>
                 </div>
             </section>
 
-            <!-- CONTENT EDITOR (WORDPRESS STYLE) -->
+            <!-- CONTENT EDITOR -->
             <section id="tab-content" class="tab-content">
-                <div class="header-box"><h1>Home Page Content</h1></div>
+                <div class="header-box"><h1>Home Page SEO Content</h1></div>
                 <div class="card" style="background:#fff; padding:0; overflow:hidden;">
                     <textarea id="pageContentEditor"></textarea>
                 </div>
             </section>
             
+            <!-- PRIORITIES -->
+            <section id="tab-priorities" class="tab-content">
+                <div class="header-box"><h1>Sport Sorting</h1></div>
+                <div class="card">
+                    <div style="display:flex; gap:10px; margin-bottom:15px;">
+                        <input type="text" id="newSportName" placeholder="e.g. Boxing">
+                        <button class="btn-primary" onclick="addPriorityRow()">Add</button>
+                    </div>
+                    <div id="priorityListContainer" class="menu-list"></div>
+                </div>
+            </section>
+
             <!-- MENUS -->
             <section id="tab-menus" class="tab-content">
                 <div class="header-box"><h1>Menus</h1></div>
-                <!-- ... Same Menu HTML as before ... -->
-                <div class="card"><h3>Items</h3><div id="menu-header"></div></div>
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Header Menu</h3>
+                        <div id="menu-header" class="menu-list"></div>
+                        <button class="btn-add" onclick="openMenuModal('header')">+ Add Link</button>
+                    </div>
+                    <div class="card">
+                        <h3>Hero Pills</h3>
+                        <div id="menu-hero" class="menu-list"></div>
+                        <button class="btn-add" onclick="openMenuModal('hero')">+ Add Pill</button>
+                    </div>
+                </div>
             </section>
         </main>
     </div>
     
+    <!-- MODALS -->
     <div id="authModal" class="modal" style="display:none;">
         <div class="modal-content">
             <h3>Login</h3><input type="password" id="ghToken" placeholder="GitHub Token">
             <button class="save-btn" onclick="saveToken()">Access</button>
         </div>
     </div>
+
+    <div id="menuModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3>Add Link</h3>
+            <input type="hidden" id="menuTargetSection">
+            <label>Title</label><input type="text" id="menuTitleItem">
+            <label>URL</label><input type="text" id="menuUrlItem" placeholder="https:// or #id">
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <button class="btn-danger" onclick="document.getElementById('menuModal').style.display='none'">Cancel</button>
+                <button class="btn-primary" onclick="saveMenuItem()">Add</button>
+            </div>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>
