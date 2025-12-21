@@ -10,8 +10,8 @@
     <link rel="canonical" href="{{CANONICAL_URL}}">
     <link rel="icon" href="{{FAVICON}}">
     
-    <!-- 1. SYSTEM FONTS ONLY (Fastest, matches reference) -->
-    <!-- No Google Fonts or External Scripts here -->
+    <!-- 1. SYSTEM FONTS ONLY (Fastest) -->
+    <!-- No external font requests -->
 
     {{SCHEMA_BLOCK}}
 
@@ -27,7 +27,6 @@
             --border: #222;
             --text-main: #ffffff;
             --text-muted: #888;
-            /* CMS Placeholders mapping */
             --cms-hero-grad: {{HERO_GRADIENT}}; 
         }
 
@@ -79,10 +78,10 @@
         .sec-right-link { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; }
         .sec-right-link:hover { color: var(--brand-primary); text-decoration: underline; }
 
-        .match-row { display: grid; grid-template-columns: 45px 1fr 65px 65px; align-items: center; gap: 8px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 6px; padding: 10px 8px; margin-bottom: 8px; position: relative; transition: 0.2s; }
+        .match-row { display: grid; grid-template-columns: 45px 1fr 50px 75px; align-items: center; gap: 8px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 6px; padding: 10px 8px; margin-bottom: 8px; position: relative; transition: 0.2s; }
         .match-row:hover { border-color: #444; transform: translateY(-2px); }
         .match-row.live { border-left: 3px solid var(--brand-primary); background: linear-gradient(90deg, rgba(208,0,0,0.06) 0%, rgba(20,20,20,0.8) 100%); }
-        @media (min-width: 768px) { .match-row { grid-template-columns: 70px 1fr 100px 100px; padding: 15px 20px; gap: 20px; } }
+        @media (min-width: 768px) { .match-row { grid-template-columns: 70px 1fr 100px 110px; padding: 15px 20px; gap: 20px; } }
 
         .col-time { text-align: center; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
         .time-main { font-size: 0.75rem; font-weight: 700; color: white; }
@@ -96,28 +95,46 @@
 
         .col-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; justify-content: center; }
         .meta-top { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); }
-        .meta-bot { font-size: 0.6rem; color: #aaa; border: 1px solid #333; padding: 1px 4px; border-radius: 3px; }
-
+        
         .col-action { margin-left: auto; width: 100%; }
-        .btn-watch { background: var(--brand-primary); color: white; font-size: 0.65rem; font-weight: 800; padding: 8px 10px; border-radius: 4px; width: 100%; text-transform: uppercase; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .btn-watch { background: var(--brand-primary); color: white; font-size: 0.65rem; font-weight: 800; padding: 8px 10px; border-radius: 4px; width: 100%; text-transform: uppercase; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; gap:5px; }
         .btn-watch:hover { background: var(--brand-dark); transform: scale(1.02); }
-        .btn-notify { background: transparent; border: 1px solid #333; color: #888; padding: 6px 0; box-shadow: none; }
+        .hd-badge { background: rgba(0,0,0,0.3); padding: 1px 4px; border-radius: 3px; font-size: 0.55rem; border: 1px solid rgba(255,255,255,0.2); }
+        
+        .btn-notify { background: transparent; border: 1px solid #333; color: #888; padding: 6px 0; box-shadow: none; justify-content: center; }
         .btn-notify.active { border-color: var(--status-green); color: var(--status-green); cursor: default; }
 
         .show-more-btn { display: block; margin: 20px auto; background: #151515; border: 1px solid #333; color: #ccc; padding: 12px 25px; border-radius: 30px; font-weight: 600; font-size: 0.85rem; transition:0.2s; }
         .show-more-btn:hover { border-color: var(--brand-primary); color: #fff; }
 
-        /* FOOTER & SEO */
+        /* SEO & FOOTER LAYOUT */
         .seo-box { background: #0a0a0a; border: 1px solid var(--border); padding: 25px; border-radius: 10px; margin-top: 40px; color: #ccc; }
-        footer { text-align: center; padding: 40px 20px; color: #444; font-size: 0.75rem; border-top: 1px solid #1a1a1a; margin-top: 40px; }
-        .footer-content { display: none; } /* Keeping structure for CMS but hiding if not needed */
         
-        /* POPUPS */
+        /* New Stacked Sections */
+        .section-box { margin-top: 30px; border-top: 1px solid #1a1a1a; padding-top: 20px; }
+        .section-title { font-size: 0.9rem; color: #fff; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; text-align: center; }
+        
+        .pill-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .f-pill { background: #111; border: 1px solid #222; color: #888; padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; }
+        .f-pill:hover { border-color: var(--brand-primary); color: #fff; }
+
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 800px; margin: 0 auto; }
+        .f-tag { font-size: 0.75rem; color: #666; border: 1px solid #222; padding: 4px 10px; border-radius: 20px; }
+        .f-tag:hover { color: var(--brand-primary); border-color: #444; }
+
+        .f-disclaimer { text-align: center; color: #555; font-size: 0.75rem; line-height: 1.6; max-width: 800px; margin: 0 auto; }
+        
+        footer { margin-top: 40px; padding: 40px 20px; background: #080808; border-top: 1px solid #222; text-align: center; }
+        .footer-menu { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+        .f-link { color: #aaa; font-size: 0.85rem; font-weight: 600; }
+        .f-link:hover { color: white; }
+        .copyright { color: #444; font-size: 0.7rem; }
+
+        /* POPUPS & PLAYER MODAL */
         .entity-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         
-        /* PLAYER MODAL STYLES (Clean, hidden by default) */
-        .modal { position: fixed; inset: 0; background: #000; z-index: 2000; display: none; flex-direction: column; }
-        /* Actual layout generated by player.js */
+        /* Modal Container - styles loaded dynamically by player.js */
+        .modal { position: fixed; inset: 0; background: #050505; z-index: 2000; display: none; flex-direction: column; }
 
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
@@ -141,18 +158,49 @@
     </div>
 
     <div class="container">
+        <!-- LIVE MATCHES -->
         <div id="live-section">
             <div class="sec-head"><div class="sec-title"><div class="live-dot"></div> Trending Live</div><div class="sec-right-link" id="live-count">Loading...</div></div>
             <div id="trending-list" class="match-list"></div>
             <button id="show-more-live" class="show-more-btn" style="display:none">Show More Matches ▼</button>
             <div id="hidden-live-list" class="match-list" style="display:none; margin-top:10px;"></div>
         </div>
+        
+        <!-- UPCOMING -->
         <div id="upcoming-container"></div>
+        
+        <!-- ARTICLE -->
         <div class="seo-box">{{ARTICLE_CONTENT}}</div>
+
+        <!-- POPULAR LEAGUES (Stacked) -->
+        <div class="section-box">
+            <div class="section-title">Popular Leagues</div>
+            <div class="pill-grid">{{FOOTER_LEAGUES}}</div>
+        </div>
+
+        <!-- POPULAR SEARCHES (Stacked) -->
+        <div class="section-box">
+            <div class="section-title">Popular Searches</div>
+            <div class="tag-cloud">
+                <a href="#" class="f-tag">NBA Streams</a>
+                <a href="#" class="f-tag">NFL Live</a>
+                <a href="#" class="f-tag">UFC PPV Free</a>
+                <a href="#" class="f-tag">MethStreams</a>
+                <a href="#" class="f-tag">CrackStreams</a>
+                <a href="#" class="f-tag">StreamEast</a>
+                <a href="#" class="f-tag">MLB Network</a>
+            </div>
+        </div>
+
+        <!-- DISCLAIMER (Stacked) -->
+        <div class="section-box">
+             <div class="f-disclaimer">{{FOOTER_DISCLAIMER}}</div>
+        </div>
+
     </div>
 
     <footer>
-        {{FOOTER_DISCLAIMER}}
+        <div class="footer-menu">{{FOOTER_STATIC}}</div>
         <div class="copyright">{{FOOTER_COPYRIGHT}}</div>
     </footer>
 
@@ -162,7 +210,7 @@
         <p style="color:#888;">Checking stream availability...</p>
     </div>
 
-    <!-- PLAYER CONTAINER (Empty initially for speed) -->
+    <!-- PLAYER CONTAINER (Empty initially) -->
     <div id="streamModal" class="modal"></div>
 
     <script>
@@ -173,7 +221,7 @@
 
         let allMatches = [];
         let renderedIds = new Set();
-        window.MATCH_DATA = {}; // Global store
+        window.MATCH_DATA = {}; 
 
         window.addEventListener('DOMContentLoaded', () => {
             loadMatches();
@@ -208,10 +256,10 @@
             });
             renderUpcomingSections(upcomingMatches);
 
-            // CHECK HASH FOR DIRECT LINK / SEO
+            // CHECK HASH FOR DIRECT LINK
             const hashId = window.location.hash.replace('#', '');
             if(hashId && window.MATCH_DATA[hashId]) {
-                // TRUE = Start Locked (Show Info Card only)
+                // TRUE = Start Locked (Show Info Overlay Only)
                 openPlayer(hashId, true);
             }
         }
@@ -274,9 +322,14 @@
             const div = document.createElement('div');
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
+            // TIME COLUMN: Show actual start time for upcoming
             let timeCol;
             if (m.is_live) timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
-            else { const parts = m.formatted_date.split('•'); timeCol = `<span class="time-main">${parts[1] || ''}</span><span class="time-sub">${parts[0]}</span>`; }
+            else { 
+                const parts = m.formatted_date.split('•'); // Assumes format "Date • Time"
+                // parts[1] is time (e.g. 7:00 PM), parts[0] is date
+                timeCol = `<span class="time-main">${parts[1] || ''}</span><span class="time-sub">${parts[0]}</span>`; 
+            }
 
             let teamsHtml = '';
             const tA = m.team_a; const tB = m.team_b;
@@ -287,13 +340,14 @@
 
             const tagText = tagType === 'sport' ? m.sport : (m.tournament || m.league || m.sport);
             
+            // REMOVED HD FROM COL-META, MOVED TO BUTTON
             let metaHtml = '', actionHtml = '';
             if (m.is_live) {
-                metaHtml = `<div class="meta-top">🔥 ${m.live_viewers || 'N/A'}</div><div class="meta-bot">HD</div>`;
-                // CLICKING WATCH HERE = UNLOCKED (false) -> Loads Player Directly
-                actionHtml = `<button class="btn-watch" onclick="openPlayer('${m.id}', false)">WATCH</button>`;
+                metaHtml = `<div class="meta-top">🔥 ${m.live_viewers || 'N/A'}</div>`;
+                // CLICKING WATCH HERE = UNLOCKED (false) -> Loads Player Logic
+                actionHtml = `<button class="btn-watch" onclick="openPlayer('${m.id}', false)">WATCH <span class="hd-badge">HD</span></button>`;
             } else {
-                metaHtml = `<div class="meta-top" style="color:#aaa; font-weight:400;">⏳</div>`;
+                metaHtml = `<div class="meta-top" style="color:#aaa; font-weight:400;">Upcoming</div>`;
                 actionHtml = `<button class="btn-watch btn-notify" onclick="this.innerHTML='✓ SET'; this.classList.add('active');">🔔 NOTIFY</button>`;
             }
 
@@ -301,16 +355,10 @@
             return div;
         }
 
-        // --- PLAYER & MODAL LOGIC (Lazy Loading) ---
+        // --- PLAYER LAZY LOADER ---
         function openPlayer(matchId, startLocked) {
             const m = window.MATCH_DATA[matchId];
             if(!m) return alert("Match expired or not found.");
-
-            // If we are clicking "Watch" (unlocked), we want the URL to update immediately
-            if(!startLocked) {
-                 // Push state happens in player.js usually, but we can do it here too if preferred. 
-                 // We will let player.js handle it to keep logic centralized.
-            }
 
             // Lazy Load Player Script only when needed
             if(window.initPlayer) {
