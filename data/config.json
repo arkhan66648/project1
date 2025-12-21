@@ -4,10 +4,8 @@
     "title_part_2": "East",
     "domain": "StreamEast Live",
     "logo_url": "/assets/streameast-logo-hd.jpg",
-    "favicon": "",
-    "ga_id": "",
     "custom_meta": "The #1 Source for live sports.",
-    "target_country": "US"
+    "target_country": "UK"
   },
   "theme": {
     "brand_primary": "#D00000",
@@ -20,19 +18,51 @@
     "title_color_2": "#D00000"
   },
   "sport_priorities": {
-    "US": { "NFL": 100, "NBA": 95, "UFC": 90, "MLB": 85, "NHL": 80, "NCAA": 75 },
-    "UK": { "Premier League": 100, "Cricket": 95, "F1": 90, "Rugby": 85, "Darts": 80, "Snooker": 75 }
+    "US": {
+      "NFL": 100,
+      "NBA": 95,
+      "UFC": 90,
+      "MLB": 85,
+      "NHL": 80,
+      "NCAA": 75
+    },
+    "UK": {
+      "Premier League": 100,
+      "Cricket": 95,
+      "F1": 90,
+      "Rugby": 85,
+      "Darts": 80,
+      "Snooker": 75
+    }
   },
   "header_menu": [
-    { "title": "Schedule", "url": "#sports" },
-    { "title": "Features", "url": "#features" }
+    {
+      "title": "Schedule",
+      "url": "#sports"
+    },
+    {
+      "title": "Features",
+      "url": "#features"
+    }
   ],
   "hero_categories": [
-    { "title": "🏀 NBA", "url": "/nba/" },
-    { "title": "🏈 NFL", "url": "/nfl/" },
-    { "title": "🥊 UFC", "url": "/ufc/" }
+    {
+      "title": "🏀 NBA",
+      "url": "/nba/"
+    },
+    {
+      "title": "🏈 NFL",
+      "url": "/nfl/"
+    },
+    {
+      "title": "🥊 UFC",
+      "url": "/ufc/"
+    }
   ],
   "pages": [
-    { "slug": "home", "content": "<h2>Welcome</h2>" }
+    {
+      "slug": "home",
+      "content": "<h2>Welcome</h2>"
+    }
   ]
 }
