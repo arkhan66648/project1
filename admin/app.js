@@ -7,8 +7,38 @@ const FILE_PATH = 'data/config.json';
 const BRANCH = 'main'; 
 
 // ==========================================
-// 2. DEMO DATA (New Structure)
+// 2. DEFAULT DATA (Exact match to your Backend)
 // ==========================================
+const DEFAULT_PRIORITIES = {
+    US: [
+        { name: "NFL", score: 100, isLeague: true, hasLink: true },
+        { name: "NBA", score: 95, isLeague: true, hasLink: true },
+        { name: "MLB", score: 90, isLeague: true, hasLink: true },
+        { name: "NHL", score: 85, isLeague: true, hasLink: false },
+        { name: "UFC", score: 80, isLeague: true, hasLink: false },
+        { name: "MMA", score: 79, isLeague: false, hasLink: false },
+        { name: "College", score: 75, isLeague: true, hasLink: false }, // Generic College
+        { name: "NCAA", score: 75, isLeague: true, hasLink: false },
+        { name: "MLS", score: 70, isLeague: true, hasLink: false },
+        { name: "Premier League", score: 60, isLeague: true, hasLink: false },
+        { name: "Boxing", score: 50, isLeague: false, hasLink: false },
+        { name: "Tennis", score: 40, isLeague: false, hasLink: false }
+    ],
+    UK: [
+        { name: "Premier League", score: 100, isLeague: true, hasLink: true },
+        { name: "Champions League", score: 95, isLeague: true, hasLink: true },
+        { name: "Rugby", score: 90, isLeague: false, hasLink: false },
+        { name: "Cricket", score: 85, isLeague: false, hasLink: false },
+        { name: "Snooker", score: 80, isLeague: false, hasLink: false },
+        { name: "Darts", score: 75, isLeague: false, hasLink: false },
+        { name: "F1", score: 70, isLeague: true, hasLink: true },
+        { name: "Championship", score: 60, isLeague: true, hasLink: false },
+        { name: "Boxing", score: 50, isLeague: false, hasLink: false },
+        { name: "Tennis", score: 40, isLeague: false, hasLink: false },
+        { name: "NFL", score: 30, isLeague: true, hasLink: false }
+    ]
+};
+
 const DEMO_CONFIG = {
     site_settings: {
         title_part_1: "Stream", title_part_2: "East", domain: "streameast.to",
@@ -18,25 +48,11 @@ const DEMO_CONFIG = {
         brand_primary: "#D00000", brand_dark: "#8a0000", accent_gold: "#FFD700",
         bg_body: "#050505", hero_gradient_start: "#1a0505", font_family: "system-ui"
     },
-    sport_priorities: { 
-        US: { "NBA": { score: 100, isLeague: true, hasLink: true } },
-        UK: { "Premier League": { score: 100, isLeague: true, hasLink: true } }
-    },
-    menus: {
-        header: [{ title: "Schedule", url: "#" }],
-        hero: [{ title: "NBA", url: "#" }],
-        footer_links: [{ title: "NFL", url: "#" }],
-        footer_static: [{ title: "DMCA", url: "/dmca" }]
-    },
-    entity_stacking: [
-        { keyword: "NBA Streams Free", content: "<p>Watch the best NBA Streams here...</p>" }
-    ],
+    sport_priorities: { US: {}, UK: {} }, // Will be filled by Default logic if empty
+    menus: { header: [], hero: [], footer_links: [], footer_static: [] },
+    entity_stacking: [],
     pages: [
-        { 
-            id: "p_home", title: "Home", slug: "home", layout: "home", 
-            meta_title: "Live Sports", meta_desc: "Watch free sports...", 
-            content: "Welcome...", schemas: { live: true, upcoming: true } 
-        }
+        { id: "p_home", title: "Home", slug: "home", layout: "home", meta_title: "Live Sports", content: "Welcome", schemas: { live: true } }
     ]
 };
 
@@ -55,6 +71,17 @@ window.addEventListener("DOMContentLoaded", () => {
             selector: '#pageContentEditor', height: 400, skin: 'oxide-dark', content_css: 'dark',
             setup: (ed) => { ed.on('change', saveEditorContentToMemory); }
         });
+    }
+    
+    // Add "Reset" Button to Priority Section dynamically if not present
+    const prioHeader = document.querySelector('#tab-priorities .header-box');
+    if(prioHeader && !document.getElementById('resetPrioBtn')) {
+        const btn = document.createElement('button');
+        btn.id = 'resetPrioBtn';
+        btn.className = 'btn-danger';
+        btn.innerText = 'Reset to Defaults';
+        btn.onclick = resetPriorities;
+        prioHeader.appendChild(btn);
     }
 
     const token = localStorage.getItem('gh_token');
@@ -87,10 +114,12 @@ async function verifyAndLoad(token) {
         currentSha = data.sha;
         configData = JSON.parse(decodeURIComponent(escape(atob(data.content))));
         
-        // Data Migration/Safety
-        if(!configData.menus) configData.menus = DEMO_CONFIG.menus;
-        if(!configData.entity_stacking) configData.entity_stacking = [];
+        // --- DATA MIGRATION FIXES ---
         if(!configData.pages) configData.pages = DEMO_CONFIG.pages;
+        // Fix Missing IDs for Pages (Solves "Can't Edit Home" issue)
+        configData.pages.forEach(p => { if(!p.id) p.id = 'p_' + Math.random().toString(36).substr(2, 9); });
+        
+        if(!configData.sport_priorities) configData.sport_priorities = { US: {}, UK: {} };
         
         populateUI();
         startPolling();
@@ -101,16 +130,14 @@ async function verifyAndLoad(token) {
 // 4. UI POPULATION
 // ==========================================
 function populateUI() {
-    // General
-    const s = configData.site_settings;
+    const s = configData.site_settings || {};
     setVal('titleP1', s.title_part_1);
     setVal('titleP2', s.title_part_2);
     setVal('siteDomain', s.domain);
     setVal('logoUrl', s.logo_url);
     setVal('targetCountry', s.target_country || 'US');
 
-    // Appearance
-    const t = configData.theme;
+    const t = configData.theme || {};
     setVal('brandPrimary', t.brand_primary);
     setVal('brandDark', t.brand_dark);
     setVal('accentGold', t.accent_gold);
@@ -118,7 +145,6 @@ function populateUI() {
     setVal('heroGradient', t.hero_gradient_start);
     setVal('fontFamily', t.font_family);
 
-    // Lists
     renderPriorities();
     renderMenus();
     renderEntityStacking();
@@ -126,177 +152,10 @@ function populateUI() {
 }
 
 // ==========================================
-// 5. PAGES SYSTEM (WordPress Style)
-// ==========================================
-function renderPageList() {
-    const tbody = document.querySelector('#pagesTable tbody');
-    tbody.innerHTML = configData.pages.map(p => `
-        <tr>
-            <td><strong>${p.title}</strong></td>
-            <td>/${p.slug}</td>
-            <td>${p.layout}</td>
-            <td>
-                <button class="btn-primary" onclick="editPage('${p.id}')">Edit</button>
-                ${p.slug !== 'home' ? `<button class="btn-danger" onclick="deletePage('${p.id}')">Del</button>` : ''}
-            </td>
-        </tr>
-    `).join('');
-}
-
-window.createNewPage = () => {
-    const id = 'p_' + Date.now();
-    configData.pages.push({
-        id, title: "New Page", slug: "new-page", layout: "page",
-        meta_title: "", meta_desc: "", content: "", schemas: {}
-    });
-    renderPageList();
-    editPage(id);
-};
-
-window.editPage = (id) => {
-    currentEditingPageId = id;
-    const p = configData.pages.find(x => x.id === id);
-    if(!p) return;
-
-    // Show Editor
-    document.getElementById('pageListView').style.display = 'none';
-    document.getElementById('pageEditorView').style.display = 'block';
-    document.getElementById('editorPageTitleDisplay').innerText = `Editing: ${p.title}`;
-
-    // Fill Inputs
-    setVal('pageTitle', p.title);
-    setVal('pageSlug', p.slug);
-    setVal('pageLayout', p.layout);
-    setVal('pageMetaTitle', p.meta_title);
-    setVal('pageMetaDesc', p.meta_desc);
-    
-    // Checkboxes
-    document.getElementById('schemaLive').checked = p.schemas?.live || false;
-    document.getElementById('schemaUpcoming').checked = p.schemas?.upcoming || false;
-    document.getElementById('schemaOrg').checked = p.schemas?.org || false;
-
-    // Content
-    if(tinymce.get('pageContentEditor')) tinymce.get('pageContentEditor').setContent(p.content || '');
-
-    // Slug Lock for Home
-    document.getElementById('pageSlug').disabled = (p.slug === 'home');
-};
-
-window.closePageEditor = () => {
-    saveEditorContentToMemory(); // Ensure latest state is saved
-    document.getElementById('pageEditorView').style.display = 'none';
-    document.getElementById('pageListView').style.display = 'block';
-    renderPageList();
-};
-
-function saveEditorContentToMemory() {
-    if(!currentEditingPageId) return;
-    const p = configData.pages.find(x => x.id === currentEditingPageId);
-    if(!p) return;
-
-    p.title = getVal('pageTitle');
-    p.slug = getVal('pageSlug');
-    p.layout = getVal('pageLayout');
-    p.meta_title = getVal('pageMetaTitle');
-    p.meta_desc = getVal('pageMetaDesc');
-    p.content = tinymce.get('pageContentEditor').getContent();
-    
-    p.schemas = {
-        live: document.getElementById('schemaLive').checked,
-        upcoming: document.getElementById('schemaUpcoming').checked,
-        org: document.getElementById('schemaOrg').checked
-    };
-}
-
-window.deletePage = (id) => {
-    if(confirm("Delete this page?")) {
-        configData.pages = configData.pages.filter(p => p.id !== id);
-        renderPageList();
-    }
-};
-
-// ==========================================
-// 6. MENUS & ENTITIES
-// ==========================================
-function renderMenus() {
-    ['header', 'hero', 'footer_links', 'footer_static'].forEach(sec => {
-        const div = document.getElementById(`menu-${sec}`);
-        div.innerHTML = (configData.menus[sec] || []).map((item, idx) => `
-            <div class="menu-item-row">
-                <div><strong>${item.title}</strong> <small>(${item.url})</small></div>
-                <button class="btn-icon" onclick="deleteMenuItem('${sec}', ${idx})">×</button>
-            </div>
-        `).join('');
-    });
-}
-
-window.openMenuModal = (sec) => {
-    document.getElementById('menuTargetSection').value = sec;
-    setVal('menuTitleItem', ''); setVal('menuUrlItem', '');
-    document.getElementById('menuModal').style.display = 'flex';
-};
-
-window.saveMenuItem = () => {
-    const sec = document.getElementById('menuTargetSection').value;
-    const item = { title: getVal('menuTitleItem'), url: getVal('menuUrlItem') };
-    if(!configData.menus[sec]) configData.menus[sec] = [];
-    configData.menus[sec].push(item);
-    renderMenus();
-    document.getElementById('menuModal').style.display = 'none';
-};
-
-window.deleteMenuItem = (sec, idx) => {
-    configData.menus[sec].splice(idx, 1);
-    renderMenus();
-};
-
-// --- Entity Stacking ---
-function renderEntityStacking() {
-    const list = document.getElementById('entityList');
-    list.innerHTML = configData.entity_stacking.map((e, idx) => `
-        <div class="menu-item-row">
-            <strong>${e.keyword}</strong>
-            <div>
-                <button class="btn-primary" style="font-size:0.7rem;" onclick="openEntityEditor(${idx})">Edit Popup</button>
-                <button class="btn-icon" onclick="deleteEntityRow(${idx})">×</button>
-            </div>
-        </div>
-    `).join('');
-}
-
-window.addEntityRow = () => {
-    const kw = getVal('newEntityKeyword');
-    if(kw) {
-        configData.entity_stacking.push({ keyword: kw, content: `<h3>${kw}</h3><p>Find the best streams for ${kw} on our site.</p>` });
-        setVal('newEntityKeyword', '');
-        renderEntityStacking();
-    }
-};
-
-window.openEntityEditor = (idx) => {
-    const e = configData.entity_stacking[idx];
-    document.getElementById('entityIndex').value = idx;
-    setVal('entityKeywordEdit', e.keyword);
-    setVal('entityContentEdit', e.content);
-    document.getElementById('entityModal').style.display = 'flex';
-};
-
-window.saveEntityContent = () => {
-    const idx = document.getElementById('entityIndex').value;
-    configData.entity_stacking[idx].content = getVal('entityContentEdit');
-    document.getElementById('entityModal').style.display = 'none';
-};
-
-window.deleteEntityRow = (idx) => {
-    configData.entity_stacking.splice(idx, 1);
-    renderEntityStacking();
-};
-
-// ==========================================
-// 7. PRIORITIES (Updated for Step 2)
+// 5. PRIORITIES (With Reset Logic)
 // ==========================================
 function renderPriorities() {
-    const c = getVal('targetCountry');
+    const c = getVal('targetCountry') || 'US';
     const container = document.getElementById('priorityListContainer');
     document.getElementById('prioLabel').innerText = c;
     
@@ -309,7 +168,7 @@ function renderPriorities() {
 
     container.innerHTML = items.map(item => `
         <div class="menu-item-row" style="flex-wrap:wrap;">
-            <strong style="width:140px;">${item.name}</strong>
+            <strong style="width:140px; overflow:hidden;">${item.name}</strong>
             <div style="flex:1; display:flex; gap:10px; align-items:center;">
                 <label style="margin:0; font-size:0.75rem;"><input type="checkbox" ${item.isLeague?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','isLeague',this.checked)"> Is League</label>
                 <label style="margin:0; font-size:0.75rem;"><input type="checkbox" ${item.hasLink?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','hasLink',this.checked)"> Link</label>
@@ -319,6 +178,26 @@ function renderPriorities() {
         </div>
     `).join('');
 }
+
+window.resetPriorities = () => {
+    const c = getVal('targetCountry');
+    if(!confirm(`Reset priorities for ${c} to default settings?`)) return;
+    
+    // Clear current
+    configData.sport_priorities[c] = {};
+    
+    // Load Defaults
+    const defaults = DEFAULT_PRIORITIES[c] || DEFAULT_PRIORITIES['US'];
+    defaults.forEach(item => {
+        configData.sport_priorities[c][item.name] = {
+            score: item.score,
+            isLeague: item.isLeague,
+            hasLink: item.hasLink
+        };
+    });
+    
+    renderPriorities();
+};
 
 window.addPriorityRow = () => {
     const c = getVal('targetCountry');
@@ -341,34 +220,169 @@ window.deletePriority = (c, name) => {
 };
 
 // ==========================================
-// 8. GLOBAL SAVE
+// 6. PAGES SYSTEM
 // ==========================================
-function captureAll() {
-    // Save current editor state if open
-    if(document.getElementById('pageEditorView').style.display === 'block') saveEditorContentToMemory();
-
-    configData.site_settings = {
-        title_part_1: getVal('titleP1'),
-        title_part_2: getVal('titleP2'),
-        domain: getVal('siteDomain'),
-        logo_url: getVal('logoUrl'),
-        target_country: getVal('targetCountry')
-    };
+function renderPageList() {
+    const tbody = document.querySelector('#pagesTable tbody');
+    if(!configData.pages) configData.pages = [];
     
-    configData.theme = {
-        brand_primary: getVal('brandPrimary'),
-        brand_dark: getVal('brandDark'),
-        accent_gold: getVal('accentGold'),
-        bg_body: getVal('bgBody'),
-        hero_gradient_start: getVal('heroGradient'),
-        font_family: getVal('fontFamily')
-    };
+    tbody.innerHTML = configData.pages.map(p => `
+        <tr>
+            <td><strong>${p.title}</strong></td>
+            <td>/${p.slug}</td>
+            <td>${p.layout}</td>
+            <td>
+                <button class="btn-primary" onclick="editPage('${p.id}')">Edit</button>
+                ${p.slug !== 'home' ? `<button class="btn-danger" onclick="deletePage('${p.id}')">Del</button>` : ''}
+            </td>
+        </tr>
+    `).join('');
 }
 
+window.editPage = (id) => {
+    currentEditingPageId = id;
+    const p = configData.pages.find(x => x.id === id);
+    if(!p) return;
+
+    // Show Editor
+    document.getElementById('pageListView').style.display = 'none';
+    document.getElementById('pageEditorView').style.display = 'block';
+    document.getElementById('editorPageTitleDisplay').innerText = `Editing: ${p.title}`;
+
+    setVal('pageTitle', p.title);
+    setVal('pageSlug', p.slug);
+    setVal('pageLayout', p.layout || 'page');
+    setVal('pageMetaTitle', p.meta_title);
+    setVal('pageMetaDesc', p.meta_desc);
+    
+    // Logic: If user can't select schemas, default to object to prevent error
+    if(!p.schemas) p.schemas = {};
+    document.getElementById('schemaLive').checked = !!p.schemas.live;
+    document.getElementById('schemaUpcoming').checked = !!p.schemas.upcoming;
+    document.getElementById('schemaOrg').checked = !!p.schemas.org;
+
+    if(tinymce.get('pageContentEditor')) tinymce.get('pageContentEditor').setContent(p.content || '');
+
+    // Slug Lock for Home
+    document.getElementById('pageSlug').disabled = (p.slug === 'home');
+};
+
+window.saveEditorContentToMemory = () => {
+    if(!currentEditingPageId) return;
+    const p = configData.pages.find(x => x.id === currentEditingPageId);
+    if(!p) return;
+
+    p.title = getVal('pageTitle');
+    p.slug = getVal('pageSlug');
+    p.layout = getVal('pageLayout');
+    p.meta_title = getVal('pageMetaTitle');
+    p.meta_desc = getVal('pageMetaDesc');
+    p.content = tinymce.get('pageContentEditor').getContent();
+    p.schemas = {
+        live: document.getElementById('schemaLive').checked,
+        upcoming: document.getElementById('schemaUpcoming').checked,
+        org: document.getElementById('schemaOrg').checked
+    };
+};
+
+window.closePageEditor = () => {
+    saveEditorContentToMemory();
+    document.getElementById('pageEditorView').style.display = 'none';
+    document.getElementById('pageListView').style.display = 'block';
+    renderPageList();
+};
+
+window.createNewPage = () => {
+    const id = 'p_' + Date.now();
+    configData.pages.push({ id, title: "New Page", slug: "new-page", layout: "page", content: "" });
+    renderPageList();
+    editPage(id);
+};
+
+window.deletePage = (id) => {
+    if(confirm("Delete this page?")) {
+        configData.pages = configData.pages.filter(p => p.id !== id);
+        renderPageList();
+    }
+};
+
+// ==========================================
+// 7. MENUS & ENTITIES
+// ==========================================
+function renderMenus() {
+    ['header', 'hero', 'footer_links', 'footer_static'].forEach(sec => {
+        const div = document.getElementById(`menu-${sec}`);
+        if(div) {
+            div.innerHTML = (configData.menus[sec] || []).map((item, idx) => `
+                <div class="menu-item-row">
+                    <div><strong>${item.title}</strong> <small>(${item.url})</small></div>
+                    <button class="btn-icon" onclick="deleteMenuItem('${sec}', ${idx})">×</button>
+                </div>
+            `).join('');
+        }
+    });
+}
+// ... (Keep existing menu modal logic from Step 2, just ensuring function names match)
+window.openMenuModal = (sec) => { document.getElementById('menuTargetSection').value = sec; setVal('menuTitleItem',''); setVal('menuUrlItem',''); document.getElementById('menuModal').style.display='flex'; };
+window.saveMenuItem = () => { 
+    const sec = document.getElementById('menuTargetSection').value;
+    const item = { title: getVal('menuTitleItem'), url: getVal('menuUrlItem') };
+    if(!configData.menus[sec]) configData.menus[sec] = [];
+    configData.menus[sec].push(item);
+    renderMenus();
+    document.getElementById('menuModal').style.display = 'none';
+};
+window.deleteMenuItem = (sec, idx) => { configData.menus[sec].splice(idx, 1); renderMenus(); };
+
+function renderEntityStacking() {
+    const list = document.getElementById('entityList');
+    if(!configData.entity_stacking) configData.entity_stacking = [];
+    list.innerHTML = configData.entity_stacking.map((e, idx) => `
+        <div class="menu-item-row">
+            <strong>${e.keyword}</strong>
+            <div>
+                <button class="btn-primary" style="font-size:0.7rem;" onclick="openEntityEditor(${idx})">Edit</button>
+                <button class="btn-icon" onclick="deleteEntityRow(${idx})">×</button>
+            </div>
+        </div>
+    `).join('');
+}
+window.addEntityRow = () => {
+    const kw = getVal('newEntityKeyword');
+    if(kw) { configData.entity_stacking.push({ keyword: kw, content: `<h3>${kw}</h3><p>Watch ${kw} live...</p>` }); setVal('newEntityKeyword',''); renderEntityStacking(); }
+};
+window.deleteEntityRow = (idx) => { configData.entity_stacking.splice(idx, 1); renderEntityStacking(); };
+// ... (Keep entity modal logic same as Step 2)
+window.openEntityEditor = (idx) => { 
+    document.getElementById('entityIndex').value = idx; 
+    setVal('entityKeywordEdit', configData.entity_stacking[idx].keyword); 
+    setVal('entityContentEdit', configData.entity_stacking[idx].content); 
+    document.getElementById('entityModal').style.display='flex'; 
+};
+window.saveEntityContent = () => { 
+    const idx = document.getElementById('entityIndex').value; 
+    configData.entity_stacking[idx].content = getVal('entityContentEdit'); 
+    document.getElementById('entityModal').style.display='none'; 
+};
+
+// ==========================================
+// 8. SAVE & UTILS
+// ==========================================
 document.getElementById('saveBtn').onclick = async () => {
     if(isBuilding) return;
-    captureAll();
+    saveEditorContentToMemory(); // Capture page editor if open
     
+    configData.site_settings = {
+        title_part_1: getVal('titleP1'), title_part_2: getVal('titleP2'),
+        domain: getVal('siteDomain'), logo_url: getVal('logoUrl'),
+        target_country: getVal('targetCountry')
+    };
+    configData.theme = {
+        brand_primary: getVal('brandPrimary'), brand_dark: getVal('brandDark'),
+        accent_gold: getVal('accentGold'), bg_body: getVal('bgBody'),
+        hero_gradient_start: getVal('heroGradient'), font_family: getVal('fontFamily')
+    };
+
     document.getElementById('saveBtn').innerText = "Saving...";
     document.getElementById('saveBtn').disabled = true;
 
@@ -381,12 +395,11 @@ document.getElementById('saveBtn').onclick = async () => {
             headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: "CMS Update", content, sha: currentSha, branch: BRANCH })
         });
-
         if(res.ok) {
             const d = await res.json();
             currentSha = d.content.sha;
             startPolling();
-        } else alert("Save failed");
+        } else alert("Save failed. Check console.");
     } catch(e) { alert("Error: " + e.message); }
 };
 
@@ -394,9 +407,7 @@ function startPolling() {
     document.getElementById('saveBtn').innerText = "Building...";
     const iv = setInterval(async () => {
         const token = localStorage.getItem('gh_token');
-        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/runs?per_page=1`, {
-            headers: { 'Authorization': `token ${token}` }
-        });
+        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/runs?per_page=1`, { headers: { 'Authorization': `token ${token}` } });
         const d = await res.json();
         const run = d.workflow_runs[0];
         
@@ -414,13 +425,13 @@ function startPolling() {
     }, 5000);
 }
 
-// Utils
-function setVal(id, v) { if(document.getElementById(id)) document.getElementById(id).value = v || ""; }
-function getVal(id) { return document.getElementById(id)?.value || ""; }
-window.updatePreview = () => {}; // Can add real-time CSS var updates here
+// Tabs
 window.switchTab = (id) => {
     document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
     document.getElementById(`tab-${id}`).classList.add('active');
     event.currentTarget.classList.add('active');
 };
+function setVal(id, v) { if(document.getElementById(id)) document.getElementById(id).value = v || ""; }
+function getVal(id) { return document.getElementById(id)?.value || ""; }
+window.updatePreview = () => {};
