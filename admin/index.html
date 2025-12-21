@@ -48,13 +48,12 @@
                         <h3>Assets & Logos</h3>
                         <label>Logo URL</label><input type="text" id="logoUrl" placeholder="/images/logo.png">
                         <label>Favicon URL</label><input type="text" id="faviconUrl" placeholder="/images/favicon.ico">
-                        <p class="desc">Enter the path to your image (e.g. https://... or /images/...)</p>
                     </div>
                 </div>
                 <div class="card">
                     <h3>Footer Settings</h3>
                     <label>Copyright Text</label>
-                    <input type="text" id="footerCopyright" placeholder="© 2025 MySite. All rights reserved.">
+                    <input type="text" id="footerCopyright" placeholder="© 2025 StreamEast. All rights reserved.">
                     <label>Footer Disclaimer</label>
                     <textarea id="footerDisclaimer" rows="3" placeholder="We do not host any content..."></textarea>
                 </div>
@@ -84,11 +83,10 @@
                             <label>Meta Title</label><input type="text" id="pageMetaTitle">
                             <label>Meta Description</label><textarea id="pageMetaDesc" rows="2"></textarea>
                             <label>Meta Keywords (Comma separated)</label><input type="text" id="pageMetaKeywords">
-                            <label>Canonical URL (Leave empty for default)</label><input type="text" id="pageCanonical">
+                            <label>Canonical URL</label><input type="text" id="pageCanonical">
                             <div class="checkbox-group">
-                                <label><input type="checkbox" id="schemaLive"> Live Schema</label>
-                                <label><input type="checkbox" id="schemaUpcoming"> Upcoming Schema</label>
-                                <label><input type="checkbox" id="schemaOrg"> Org Schema</label>
+                                <label><input type="checkbox" id="schemaOrg"> Static Org Schema</label>
+                                <!-- Dynamic Schemas are handled by Frontend JS automatically -->
                             </div>
                         </div>
                     </div>
@@ -118,7 +116,7 @@
                 <div class="grid-2">
                     <div class="card"><h3>Header</h3><div id="menu-header" class="menu-list"></div><button class="btn-add" onclick="openMenuModal('header')">+ Link</button></div>
                     <div class="card"><h3>Hero Pills</h3><div id="menu-hero" class="menu-list"></div><button class="btn-add" onclick="openMenuModal('hero')">+ Link</button></div>
-                    <div class="card"><h3>Footer Leagues (New)</h3><div id="menu-footer_leagues" class="menu-list"></div><button class="btn-add" onclick="openMenuModal('footer_leagues')">+ Link</button></div>
+                    <div class="card"><h3>Footer Leagues</h3><div id="menu-footer_leagues" class="menu-list"></div><button class="btn-add" onclick="openMenuModal('footer_leagues')">+ Link</button></div>
                     <div class="card"><h3>Footer Static</h3><div id="menu-footer_static" class="menu-list"></div><button class="btn-add" onclick="openMenuModal('footer_static')">+ Link</button></div>
                 </div>
             </section>
