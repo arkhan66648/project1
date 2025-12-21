@@ -37,9 +37,8 @@
   },
   "hero_categories": [
     {
-      "title": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ NBA",
-      "url": "/nba/",
-      "highlight": false
+      "title": "🏀 NBA",
+      "url": "/#nba"
     }
   ],
   "header_menu": [],
