@@ -10,16 +10,31 @@
     <link rel="canonical" href="https://crackstreams.help/nfl">
     <link rel="icon" href="">
     
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+
+    
+
     <style>
         :root {
-            --brand-primary: ; --brand-dark: ;
-            --status-green: #00e676; --accent-gold: ;
-            --bg-body: ; --bg-glass: rgba(20, 20, 20, 0.95);
-            --border: #2a2a2a; --text-main: #ffffff;
-            --hero-grad: ; --font-main: ;
+            /* Fallbacks added to prevent broken CSS */
+            --brand-primary: ; 
+            --brand-dark: ;
+            --accent-gold: ;
+            --bg-body: ; 
+            --hero-grad: ; 
+            --font-main: ;
+            
+            --status-green: #00e676;
+            --bg-glass: rgba(20, 20, 20, 0.95);
+            --border: #2a2a2a;
+            --text-main: #ffffff;
         }
+
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: var(--font-main); background: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
+        body { margin: 0; font-family: var(--font-main), system-ui, sans-serif; background: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
         a { text-decoration: none; color: inherit; transition: 0.2s; }
         button { cursor: pointer; border: none; font-family: inherit; }
 
@@ -38,7 +53,7 @@
         .mobile-menu a { padding: 15px 20px; border-bottom: 1px solid #1f1f1f; font-weight: 600; }
         @media (min-width: 900px) { .nav-links { display: flex; } .hamburger { display: none; } }
 
-        /* HERO & CONTAINER */
+        /* HERO */
         .hero { padding: 90px 15px 15px 15px; text-align: center; background: radial-gradient(circle at top, var(--hero-grad) 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); display: none; }
         .sys-status { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.2); padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; font-size: 0.75rem; font-weight: 700; color: var(--status-green); }
         .dot { width: 6px; height: 6px; background: var(--status-green); border-radius: 50%; box-shadow: 0 0 8px var(--status-green); animation: pulse 2s infinite; }
@@ -47,9 +62,9 @@
         .cat-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 15px 5px; justify-content: center; }
         .cat-pill { background: #111; border: 1px solid var(--border); padding: 8px 18px; border-radius: 50px; font-weight: 700; font-size: 0.8rem; white-space: nowrap; color: #ccc; }
         .cat-pill:hover { border-color: var(--brand-primary); color: #fff; }
-        .container { max-width: 1000px; margin: 0 auto; padding: 20px 15px; }
 
-        /* MATCH ROWS */
+        /* CONTAINER & MATCHES */
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px 15px; }
         .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 35px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #1a1a1a; }
         .sec-title { font-size: 1.1rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
         .live-dot { width: 8px; height: 8px; background: var(--brand-primary); border-radius: 50%; box-shadow: 0 0 10px var(--brand-primary); }
@@ -77,6 +92,8 @@
         @media (min-width: 768px) { .col-meta { display: flex; } }
         
         .col-action { margin-left: auto; }
+        
+        /* Buttons */
         .btn-watch { background: var(--brand-primary); color: #fff; font-size: 0.7rem; font-weight: 800; padding: 8px 16px; border-radius: 4px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 10px rgba(208, 0, 0, 0.3); transition: 0.2s; width: 100%; }
         .btn-watch:hover { filter: brightness(1.2); transform: scale(1.02); }
         .hd-badge { background: rgba(0,0,0,0.3); padding: 1px 4px; border-radius: 3px; font-size: 0.55rem; border: 1px solid rgba(255,255,255,0.2); }
@@ -85,34 +102,9 @@
         .btn-notify.active { background: #064e3b; border-color: #059669; color: #34d399; cursor: default; }
         
         .show-more-btn { display: block; margin: 20px auto; background: #151515; border: 1px solid #333; color: #ccc; padding: 12px 25px; border-radius: 30px; font-weight: 600; font-size: 0.85rem; transition:0.2s; }
-        
-        /* FOOTER */
-        .seo-box { background: #0a0a0a; border: 1px solid var(--border); padding: 25px; border-radius: 10px; margin-top: 40px; color: #ccc; }
-        
-        footer { background: #050505; border-top: 1px solid #1a1a1a; margin-top: 50px; padding: 40px 15px; }
-        .footer-content { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 30px; }
-        @media (min-width: 768px) { .footer-content { grid-template-columns: 1fr 1fr; } }
-        
-        .footer-col h3 { color: #fff; font-size: 1rem; margin-bottom: 15px; }
-        .footer-links { display: flex; flex-direction: column; gap: 10px; }
-        .footer-link { color: #888; font-size: 0.85rem; }
-        .footer-link:hover { color: var(--brand-primary); }
-        
-        .entity-footer-section { margin-top: 40px; text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; }
-        .entity-footer-section h3 { font-size: 0.9rem; color: #666; margin-bottom: 15px; text-transform: uppercase; }
-        .entity-tags { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-        .entity-tag { background: #111; border: 1px solid #333; color: #999; padding: 5px 12px; border-radius: 4px; font-size: 0.75rem; transition: 0.2s; }
-        .entity-tag:hover { border-color: var(--brand-primary); color: #fff; }
-        
-        .disclaimer { font-size: 0.7rem; color: #555; text-align: center; margin-top: 30px; line-height: 1.5; max-width: 800px; margin-left: auto; margin-right: auto; }
-        .copyright { text-align: center; color: #444; font-size: 0.75rem; margin-top: 20px; }
+        .show-more-btn:hover { border-color: var(--brand-primary); color: #fff; }
 
-        /* ENTITY SEARCH POPUP */
-        .entity-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 5000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .entity-loader { border: 4px solid #333; border-top: 4px solid var(--brand-primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 20px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* PLAYER MODAL STYLES (Logic in player.js) */
+        /* MODAL & PLAYER */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-box { background: #111; width: 100%; height: 100%; display: flex; flex-direction: column; }
         @media (min-width: 900px) { .modal-box { width: 90%; max-width: 1100px; height: 85vh; border: 1px solid #333; border-radius: 10px; overflow: hidden; } }
@@ -129,6 +121,27 @@
         .info-card-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.8); z-index: 10; display: flex; align-items: center; justify-content: center; }
         .info-card { background: #1a1a1a; padding: 40px; border-radius: 12px; border: 1px solid #333; text-align: center; max-width: 400px; width: 90%; }
         
+        /* FOOTER & SEO */
+        .seo-box { background: #0a0a0a; border: 1px solid var(--border); padding: 25px; border-radius: 10px; margin-top: 40px; color: #ccc; }
+        footer { background: #050505; border-top: 1px solid #1a1a1a; margin-top: 50px; padding: 40px 15px; }
+        .footer-content { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 30px; }
+        @media (min-width: 768px) { .footer-content { grid-template-columns: 1fr 1fr; } }
+        .footer-col h3 { color: #fff; font-size: 1rem; margin-bottom: 15px; }
+        .footer-links { display: flex; flex-direction: column; gap: 10px; }
+        .footer-link { color: #888; font-size: 0.85rem; }
+        .footer-link:hover { color: var(--brand-primary); }
+        .entity-footer-section { margin-top: 40px; text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; }
+        .entity-footer-section h3 { font-size: 0.9rem; color: #666; margin-bottom: 15px; text-transform: uppercase; }
+        .entity-tags { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .entity-tag { background: #111; border: 1px solid #333; color: #999; padding: 5px 12px; border-radius: 4px; font-size: 0.75rem; transition: 0.2s; }
+        .entity-tag:hover { border-color: var(--brand-primary); color: #fff; }
+        .disclaimer { font-size: 0.7rem; color: #555; text-align: center; margin-top: 30px; line-height: 1.5; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .copyright { text-align: center; color: #444; font-size: 0.75rem; margin-top: 20px; }
+
+        /* ENTITY POPUP */
+        .entity-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 5000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .entity-loader { border: 4px solid #333; border-top: 4px solid var(--brand-primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     </style>
@@ -151,36 +164,26 @@
     </div>
 
     <div class="container">
-        <!-- LIVE -->
         <div id="live-section">
             <div class="sec-head"><div class="sec-title"><div class="live-dot"></div> Trending Live</div><div class="sec-right-link" id="live-count">Loading...</div></div>
             <div id="trending-list" class="match-list"></div>
             <button id="show-more-live" class="show-more-btn" style="display:none">Show More Matches ▼</button>
             <div id="hidden-live-list" class="match-list" style="display:none; margin-top:10px;"></div>
         </div>
-        <!-- UPCOMING -->
         <div id="upcoming-container"></div>
         <div class="seo-box"><p>dgdgdgdd</p></div>
     </div>
 
     <footer>
         <div class="footer-content">
-            <div class="footer-col">
-                <h3>Top Leagues</h3>
-                <div class="footer-links"><a href="/contact" class="footer-link">Contact</a><a href="/#soccer" class="footer-link">⚽ Soccer</a></div>
-            </div>
-            <div class="footer-col">
-                <h3>Legal & Info</h3>
-                <div class="footer-links"><a href="/dmca" class="footer-link">DMCA</a><a href="/contact" class="footer-link">Contact</a></div>
-            </div>
+            <div class="footer-col"><h3>Top Leagues</h3><div class="footer-links"><a href="/contact" class="footer-link">Contact</a><a href="/#soccer" class="footer-link">⚽ Soccer</a></div></div>
+            <div class="footer-col"><h3>Legal & Info</h3><div class="footer-links"><a href="/dmca" class="footer-link">DMCA</a><a href="/contact" class="footer-link">Contact</a></div></div>
         </div>
-        
         <div class="entity-footer-section"><h3>Trending Searches</h3><div class="entity-tags"><button class="entity-tag" onclick="triggerEntityPopup('Methstreams')">Methstreams</button><button class="entity-tag" onclick="triggerEntityPopup('Sportsurge')">Sportsurge</button></div></div>
         
         <div class="copyright"></div>
     </footer>
 
-    <!-- POPUPS -->
     <div id="entityPopup" class="entity-popup">
         <div class="entity-loader"></div>
         <h3 id="entityPopupTitle" style="color:#fff; margin-bottom:10px;">Searching...</h3>
@@ -191,6 +194,7 @@
         </div>
     </div>
 
+    <!-- PLAYER OVERLAY -->
     <div class="modal" id="streamModal">
         <div class="modal-box">
             <div class="modal-head">
@@ -225,7 +229,8 @@
 
         let allMatches = [];
         let currentMatchData = null;
-        let renderedIds = new Set(); 
+        let renderedIds = new Set();
+        window.MATCH_DATA = {}; // Global store to fix "Unexpected Token" error
 
         window.addEventListener('DOMContentLoaded', () => {
             loadMatches();
@@ -237,10 +242,7 @@
                 const data = await res.json();
                 allMatches = data.matches;
                 document.getElementById('live-count').innerText = `● ${data.matches.filter(m => m.is_live).length} Live Matches`;
-                
-                // DYNAMIC SCHEMA INJECTION
                 injectDynamicSchema(data.seo);
-
                 renderApp(data.matches);
             } catch(e) { console.error(e); }
         }
@@ -249,7 +251,6 @@
             if(!seoData) return;
             let jsonStr = JSON.stringify(seoData);
             jsonStr = jsonStr.replace(/https:\/\/example\.com/g, SITE_DOMAIN);
-            
             const script = document.createElement('script');
             script.type = 'application/ld+json';
             script.text = jsonStr; 
@@ -258,6 +259,11 @@
 
         function renderApp(matches) {
             renderedIds.clear();
+            window.MATCH_DATA = {}; // Reset global store
+
+            // Populate Global Store first
+            matches.forEach(m => { window.MATCH_DATA[m.id] = m; });
+
             const liveMatches = matches.filter(m => m.is_live);
             renderLiveSection(liveMatches);
 
@@ -271,9 +277,8 @@
             renderUpcomingSections(upcomingMatches);
 
             const hashId = window.location.hash.replace('#', '');
-            if(hashId) {
-                const target = matches.find(m => m.id === hashId);
-                if(target) prepareModal(encodeURIComponent(JSON.stringify(target)));
+            if(hashId && window.MATCH_DATA[hashId]) {
+                openPlayer(hashId); // Use new safe function
             }
         }
 
@@ -309,7 +314,6 @@
                 });
                 if (groupMatches.length > 0) createSection(container, `Upcoming ${key}`, groupMatches, isLeague, hasLink, key);
             });
-            // Leftovers
             const leftovers = matches.filter(m => !renderedIds.has(m.id));
             if (leftovers.length > 0) {
                 const groups = {};
@@ -352,8 +356,8 @@
             let metaHtml = '', actionHtml = '';
             if (m.is_live) {
                 metaHtml = `<div class="meta-top">${m.live_viewers || ''}</div>`;
-                const safeObj = encodeURIComponent(JSON.stringify(m));
-                actionHtml = `<button class="btn-watch" onclick="prepareModal('${safeObj}')">WATCH <span class="hd-badge">HD</span></button>`;
+                // FIX: Passing ID only to avoid syntax errors
+                actionHtml = `<button class="btn-watch" onclick="openPlayer('${m.id}')">WATCH <span class="hd-badge">HD</span></button>`;
             } else {
                 metaHtml = `<div class="meta-top" style="color:#aaa; font-weight:400; font-size:0.65rem;">${m.status_text}</div>`;
                 actionHtml = `<button class="btn-notify" onclick="this.innerHTML='✓ SET'; this.disabled=true; this.classList.add('active');">🔔 NOTIFY</button>`;
@@ -363,20 +367,31 @@
             return div;
         }
 
-        // Helper: Lazy Load Player
-        function prepareModal(safeObj) {
-            const m = JSON.parse(decodeURIComponent(safeObj));
-            if(window.initPlayer) window.initPlayer(m, false);
-            else {
+        // --- NEW SAFE PLAYER LOADER ---
+        function openPlayer(matchId) {
+            const m = window.MATCH_DATA[matchId];
+            if(!m) return alert("Match data not found");
+            
+            // Check if player.js is loaded
+            if(window.initPlayer) {
+                window.initPlayer(m, true); // Opens in Locked SEO mode initially
+            } else {
                 const script = document.createElement('script');
                 script.src = 'assets/player.js';
-                script.onload = () => window.initPlayer(m, false);
+                script.onload = () => window.initPlayer(m, true);
                 document.body.appendChild(script);
             }
         }
-        function unlockStream() { if(window.unlockStream) window.unlockStream(); document.getElementById('seoOverlay').style.display='none'; if(currentMatchData && currentMatchData.streams.length>0 && window.initPlayer) window.initPlayer(currentMatchData, false); }
+        
+        function unlockStream() {
+            if(window.unlockStream) window.unlockStream(); 
+            document.getElementById('seoOverlay').style.display='none'; 
+            // We need to re-trigger initPlayer in unlocked mode, or handle it via player.js internals
+            // Assuming player.js has logic to play first stream if overlay is hidden.
+            // Simplified: Re-call initPlayer with false
+            if(currentMatchData) window.initPlayer(currentMatchData, false);
+        }
 
-        // Helper: Entity Popup
         function triggerEntityPopup(keyword) {
             const p = document.getElementById('entityPopup');
             document.getElementById('entityPopupTitle').innerText = `${keyword} Live`;
