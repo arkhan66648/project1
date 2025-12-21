@@ -1,6 +1,9 @@
 // assets/player.js
 
 window.initPlayer = function(matchData, isLocked) {
+    // Update global current match for unlockStream reference
+    window.currentMatchData = matchData; 
+
     const modal = document.getElementById('streamModal');
     const title = document.getElementById('playerTitle');
     const list = document.getElementById('streamList');
@@ -14,8 +17,8 @@ window.initPlayer = function(matchData, isLocked) {
     modal.style.display = 'flex';
 
     // 2. Set Title
-    title.innerText = matchData.team_b 
-        ? `${matchData.team_a} vs ${matchData.team_b}` 
+    title.innerHTML = matchData.team_b 
+        ? `${matchData.team_a} <span style="color:#888; font-size:0.8em;">VS</span> ${matchData.team_b}` 
         : matchData.team_a;
 
     // 3. Populate Server List
@@ -63,7 +66,7 @@ function loadIframeStream(stream, btnElement) {
     let url = stream.url;
     if(stream.encrypted_data) { 
         try { 
-            // Simple Base64 decode fallback as per your backend structure
+            // Simple Base64 decode fallback
             url = window.atob(stream.encrypted_data.split(':')[1]); 
         } catch(e){ console.warn("Decode error", e); } 
     }
@@ -89,6 +92,5 @@ window.closeStreamModal = function() {
     document.getElementById('streamModal').style.display = 'none';
     const f = document.querySelector('#iframeBox iframe');
     if(f) f.remove();
-    // Revert URL to home
     history.pushState({}, "", "/");
 };
