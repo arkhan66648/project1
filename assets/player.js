@@ -53,6 +53,7 @@ window.initPlayer = function(matchData, isLocked) {
         if(matchData.streams.length > 0) {
             loadIframeStream(matchData.streams[0], list.children[0]);
         }
+        // Update URL safely
         history.pushState({}, "", `/watch/${matchData.id}`);
     }
 };
@@ -90,7 +91,7 @@ function loadIframeStream(stream, btnElement) {
     if(old) old.remove();
 
     if(!url) {
-        box.innerHTML += '<div style="color:red;padding:20px;">Stream Unavailable (Error 404)</div>';
+        box.innerHTML += '<div style="color:red;padding:20px;">Stream Unavailable</div>';
         return;
     }
 
@@ -109,5 +110,6 @@ window.closeStreamModal = function() {
     document.getElementById('streamModal').style.display = 'none';
     const f = document.querySelector('#iframeBox iframe');
     if(f) f.remove();
+    // Revert URL to home
     history.pushState({}, "", "/");
 };
