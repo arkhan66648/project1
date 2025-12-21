@@ -212,12 +212,12 @@
     ],
     "hero": [
       {
-        "title": "NBA",
+        "title": "⚾ MLB",
         "url": "#"
       },
       {
-        "title": "⚾ MLB",
-        "url": "#"
+        "title": "🏀 NBA",
+        "url": "/nba"
       }
     ],
     "footer_links": [
