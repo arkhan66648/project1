@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StreamCMS Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <!-- TINYMCE EDITOR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -14,9 +13,9 @@
         <aside class="sidebar">
             <div class="logo-area"><h2>⚡ StreamCMS</h2></div>
             <nav>
-                <button class="nav-btn active" onclick="switchTab('general')">⚙️ General</button>
-                <button class="nav-btn" onclick="switchTab('content')">📝 Home Content</button>
+                <button class="nav-btn active" onclick="switchTab('general')">⚙️ General & SEO</button>
                 <button class="nav-btn" onclick="switchTab('priorities')">📊 Priorities</button>
+                <button class="nav-btn" onclick="switchTab('content')">📝 Home Content</button>
                 <button class="nav-btn" onclick="switchTab('menus')">🔗 Menus</button>
             </nav>
             <div class="sidebar-footer">
@@ -26,37 +25,41 @@
         </aside>
 
         <main class="content-area">
-            <!-- GENERAL -->
+            
+            <!-- GENERAL SETTINGS -->
             <section id="tab-general" class="tab-content active">
-                <div class="header-box"><h1>General Settings</h1></div>
+                <div class="header-box"><h1>General & SEO</h1></div>
                 <div class="grid-2">
                     <div class="card">
-                        <label>Title Part 1</label><input type="text" id="titleP1" placeholder="Stream">
-                        <label>Title Part 2</label><input type="text" id="titleP2" placeholder="East">
-                        <label>Domain Name</label><input type="text" id="siteDomain" placeholder="StreamEast Live">
-                        <label>Logo URL (Full Path)</label><input type="text" id="logoUrl" placeholder="/assets/streameast-logo-hd.jpg">
-                        <label>Hero Description</label><textarea id="customMeta" rows="3" placeholder="Welcome text..."></textarea>
+                        <h3>Target Audience (SEO)</h3>
+                        <p style="color:#888; font-size:12px; margin-bottom:10px;">This determines the default sort order and API data fetched on the live site.</p>
+                        <select id="targetCountry" onchange="renderPriorities()">
+                            <option value="US">🇺🇸 USA Priority</option>
+                            <option value="UK">🇬🇧 UK Priority</option>
+                        </select>
                     </div>
                     <div class="card">
-                        <h3>Theme</h3>
-                        <label>Brand Primary Color</label>
-                        <input type="color" id="colPrimary" style="width:100%; height:50px;">
+                        <h3>Site Identity</h3>
+                        <div class="grid-2">
+                            <div><label>Title P1</label><input type="text" id="titleP1"></div>
+                            <div><label>Title P2</label><input type="text" id="titleP2"></div>
+                        </div>
+                        <label>Domain Name</label><input type="text" id="siteDomain">
                     </div>
+                </div>
+                <div class="card">
+                    <label>Logo URL</label><input type="text" id="logoUrl">
+                    <label>Hero Description</label><textarea id="customMeta" rows="2"></textarea>
                 </div>
             </section>
 
-            <!-- CONTENT EDITOR -->
-            <section id="tab-content" class="tab-content">
-                <div class="header-box"><h1>Home Page SEO Content</h1></div>
-                <div class="card" style="background:#fff; padding:0; overflow:hidden;">
-                    <textarea id="pageContentEditor"></textarea>
-                </div>
-            </section>
-            
             <!-- PRIORITIES -->
             <section id="tab-priorities" class="tab-content">
                 <div class="header-box"><h1>Sport Sorting</h1></div>
                 <div class="card">
+                    <h3>Priority for: <span id="prioLabel" style="color:var(--accent)">US</span></h3>
+                    <p style="color:#888; font-size:13px; margin-bottom:15px;">Higher numbers appear higher on the homepage.</p>
+                    
                     <div style="display:flex; gap:10px; margin-bottom:15px;">
                         <input type="text" id="newSportName" placeholder="e.g. Boxing">
                         <button class="btn-primary" onclick="addPriorityRow()">Add</button>
@@ -65,45 +68,26 @@
                 </div>
             </section>
 
+            <!-- CONTENT -->
+            <section id="tab-content" class="tab-content">
+                <div class="header-box"><h1>Home Page Content</h1></div>
+                <div class="card" style="background:#fff; padding:0;"><textarea id="pageContentEditor"></textarea></div>
+            </section>
+
             <!-- MENUS -->
             <section id="tab-menus" class="tab-content">
                 <div class="header-box"><h1>Menus</h1></div>
                 <div class="grid-2">
-                    <div class="card">
-                        <h3>Header Menu</h3>
-                        <div id="menu-header" class="menu-list"></div>
-                        <button class="btn-add" onclick="openMenuModal('header')">+ Add Link</button>
-                    </div>
-                    <div class="card">
-                        <h3>Hero Pills</h3>
-                        <div id="menu-hero" class="menu-list"></div>
-                        <button class="btn-add" onclick="openMenuModal('hero')">+ Add Pill</button>
-                    </div>
+                    <div class="card"><h3>Header</h3><div id="menu-header" class="menu-list"></div><button class="btn-add" onclick="openMenuModal('header')">+ Link</button></div>
+                    <div class="card"><h3>Hero Pills</h3><div id="menu-hero" class="menu-list"></div><button class="btn-add" onclick="openMenuModal('hero')">+ Pill</button></div>
                 </div>
             </section>
         </main>
     </div>
-    
-    <!-- MODALS -->
-    <div id="authModal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <h3>Login</h3><input type="password" id="ghToken" placeholder="GitHub Token">
-            <button class="save-btn" onclick="saveToken()">Access</button>
-        </div>
-    </div>
 
-    <div id="menuModal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <h3>Add Link</h3>
-            <input type="hidden" id="menuTargetSection">
-            <label>Title</label><input type="text" id="menuTitleItem">
-            <label>URL</label><input type="text" id="menuUrlItem" placeholder="https:// or #id">
-            <div style="display:flex; gap:10px; margin-top:15px;">
-                <button class="btn-danger" onclick="document.getElementById('menuModal').style.display='none'">Cancel</button>
-                <button class="btn-primary" onclick="saveMenuItem()">Add</button>
-            </div>
-        </div>
-    </div>
+    <!-- MODALS (Auth/Menu) -->
+    <div id="authModal" class="modal" style="display:none;"><div class="modal-content"><h3>Login</h3><input type="password" id="ghToken" placeholder="GitHub Token"><button class="save-btn" onclick="saveToken()">Access</button></div></div>
+    <div id="menuModal" class="modal" style="display:none;"><div class="modal-content"><h3>Add</h3><input type="hidden" id="menuTargetSection"><label>Title</label><input type="text" id="menuTitleItem"><label>URL</label><input type="text" id="menuUrlItem"><div style="display:flex; gap:10px; margin-top:10px;"><button class="btn-danger" onclick="document.getElementById('menuModal').style.display='none'">Cancel</button><button class="btn-primary" onclick="saveMenuItem()">Add</button></div></div></div>
 
     <script src="app.js"></script>
 </body>
