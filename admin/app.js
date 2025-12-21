@@ -7,15 +7,15 @@ const FILE_PATH = 'data/config.json';
 const BRANCH = 'main'; 
 
 // ==========================================
-// 2. DEFAULT DATA (Exact match to your Backend)
+// 2. DEFAULT DATA
 // ==========================================
 const DEFAULT_PRIORITIES = {
     US: [
         { name: "NFL", score: 100, isLeague: true, hasLink: true },
         { name: "NBA", score: 95, isLeague: true, hasLink: true },
         { name: "MLB", score: 90, isLeague: true, hasLink: true },
-        { name: "College Football", score: 88, isLeague: true, hasLink: false }, // Updated
-        { name: "College Basketball", score: 87, isLeague: true, hasLink: false }, // Updated
+        { name: "College Football", score: 88, isLeague: true, hasLink: false },
+        { name: "College Basketball", score: 87, isLeague: true, hasLink: false },
         { name: "NHL", score: 85, isLeague: true, hasLink: false },
         { name: "UFC", score: 80, isLeague: true, hasLink: false },
         { name: "MMA", score: 79, isLeague: false, hasLink: false },
@@ -48,11 +48,11 @@ const DEMO_CONFIG = {
         brand_primary: "#D00000", brand_dark: "#8a0000", accent_gold: "#FFD700",
         bg_body: "#050505", hero_gradient_start: "#1a0505", font_family: "system-ui"
     },
-    sport_priorities: { US: {}, UK: {} }, // Will be filled by Default logic if empty
-    menus: { header: [], hero: [], footer_links: [], footer_static: [] },
+    sport_priorities: { US: {}, UK: {} }, 
+    menus: { header: [], hero: [], footer_leagues: [], footer_static: [] },
     entity_stacking: [],
     pages: [
-        { id: "p_home", title: "Home", slug: "home", layout: "home", meta_title: "Live Sports", content: "Welcome", schemas: { live: true } }
+        { id: "p_home", title: "Home", slug: "home", layout: "home", meta_title: "Live Sports", content: "Welcome", schemas: { org: true } }
     ]
 };
 
@@ -65,7 +65,6 @@ let isBuilding = false;
 // 3. INITIALIZATION
 // ==========================================
 window.addEventListener("DOMContentLoaded", () => {
-    // Init TinyMCE
     if(typeof tinymce !== 'undefined') {
         tinymce.init({
             selector: '#pageContentEditor', height: 400, skin: 'oxide-dark', content_css: 'dark',
@@ -116,10 +115,9 @@ async function verifyAndLoad(token) {
         
         // --- DATA MIGRATION FIXES ---
         if(!configData.pages) configData.pages = DEMO_CONFIG.pages;
-        // Fix Missing IDs for Pages (Solves "Can't Edit Home" issue)
         configData.pages.forEach(p => { if(!p.id) p.id = 'p_' + Math.random().toString(36).substr(2, 9); });
-        
         if(!configData.sport_priorities) configData.sport_priorities = { US: {}, UK: {} };
+        if(!configData.menus.footer_leagues) configData.menus.footer_leagues = [];
         
         populateUI();
         startPolling();
@@ -135,9 +133,9 @@ function populateUI() {
     setVal('titleP2', s.title_part_2);
     setVal('siteDomain', s.domain);
     setVal('logoUrl', s.logo_url);
-    setVal('faviconUrl', s.favicon_url); // NEW
-    setVal('footerCopyright', s.footer_copyright); // NEW
-    setVal('footerDisclaimer', s.footer_disclaimer); // NEW
+    setVal('faviconUrl', s.favicon_url);
+    setVal('footerCopyright', s.footer_copyright);
+    setVal('footerDisclaimer', s.footer_disclaimer);
     setVal('targetCountry', s.target_country || 'US');
 
     const t = configData.theme || {};
@@ -185,20 +183,11 @@ function renderPriorities() {
 window.resetPriorities = () => {
     const c = getVal('targetCountry');
     if(!confirm(`Reset priorities for ${c} to default settings?`)) return;
-    
-    // Clear current
     configData.sport_priorities[c] = {};
-    
-    // Load Defaults
     const defaults = DEFAULT_PRIORITIES[c] || DEFAULT_PRIORITIES['US'];
     defaults.forEach(item => {
-        configData.sport_priorities[c][item.name] = {
-            score: item.score,
-            isLeague: item.isLeague,
-            hasLink: item.hasLink
-        };
+        configData.sport_priorities[c][item.name] = { score: item.score, isLeague: item.isLeague, hasLink: item.hasLink };
     });
-    
     renderPriorities();
 };
 
@@ -247,7 +236,6 @@ window.editPage = (id) => {
     const p = configData.pages.find(x => x.id === id);
     if(!p) return;
 
-    // Show Editor
     document.getElementById('pageListView').style.display = 'none';
     document.getElementById('pageEditorView').style.display = 'block';
     document.getElementById('editorPageTitleDisplay').innerText = `Editing: ${p.title}`;
@@ -257,18 +245,13 @@ window.editPage = (id) => {
     setVal('pageLayout', p.layout || 'page');
     setVal('pageMetaTitle', p.meta_title);
     setVal('pageMetaDesc', p.meta_desc);
-    setVal('pageMetaKeywords', p.meta_keywords); // NEW
-    setVal('pageCanonical', p.canonical_url); // NEW
+    setVal('pageMetaKeywords', p.meta_keywords); 
+    setVal('pageCanonical', p.canonical_url); 
     
-    // Logic: If user can't select schemas, default to object to prevent error
     if(!p.schemas) p.schemas = {};
-    document.getElementById('schemaLive').checked = !!p.schemas.live;
-    document.getElementById('schemaUpcoming').checked = !!p.schemas.upcoming;
     document.getElementById('schemaOrg').checked = !!p.schemas.org;
 
     if(tinymce.get('pageContentEditor')) tinymce.get('pageContentEditor').setContent(p.content || '');
-
-    // Slug Lock for Home
     document.getElementById('pageSlug').disabled = (p.slug === 'home');
 };
 
@@ -282,12 +265,10 @@ window.saveEditorContentToMemory = () => {
     p.layout = getVal('pageLayout');
     p.meta_title = getVal('pageMetaTitle');
     p.meta_desc = getVal('pageMetaDesc');
-    p.meta_keywords = getVal('pageMetaKeywords'); // NEW
-    p.canonical_url = getVal('pageCanonical'); // NEW
+    p.meta_keywords = getVal('pageMetaKeywords');
+    p.canonical_url = getVal('pageCanonical');
     p.content = tinymce.get('pageContentEditor').getContent();
     p.schemas = {
-        live: document.getElementById('schemaLive').checked,
-        upcoming: document.getElementById('schemaUpcoming').checked,
         org: document.getElementById('schemaOrg').checked
     };
 };
@@ -317,7 +298,7 @@ window.deletePage = (id) => {
 // 7. MENUS & ENTITIES
 // ==========================================
 function renderMenus() {
-    ['header', 'hero', 'footer_links', 'footer_static'].forEach(sec => {
+    ['header', 'hero', 'footer_leagues', 'footer_static'].forEach(sec => {
         const div = document.getElementById(`menu-${sec}`);
         if(div) {
             div.innerHTML = (configData.menus[sec] || []).map((item, idx) => `
@@ -329,7 +310,6 @@ function renderMenus() {
         }
     });
 }
-// ... (Keep existing menu modal logic from Step 2, just ensuring function names match)
 window.openMenuModal = (sec) => { document.getElementById('menuTargetSection').value = sec; setVal('menuTitleItem',''); setVal('menuUrlItem',''); document.getElementById('menuModal').style.display='flex'; };
 window.saveMenuItem = () => { 
     const sec = document.getElementById('menuTargetSection').value;
@@ -348,7 +328,6 @@ function renderEntityStacking() {
         <div class="menu-item-row">
             <strong>${e.keyword}</strong>
             <div>
-                <button class="btn-primary" style="font-size:0.7rem;" onclick="openEntityEditor(${idx})">Edit</button>
                 <button class="btn-icon" onclick="deleteEntityRow(${idx})">×</button>
             </div>
         </div>
@@ -356,21 +335,9 @@ function renderEntityStacking() {
 }
 window.addEntityRow = () => {
     const kw = getVal('newEntityKeyword');
-    if(kw) { configData.entity_stacking.push({ keyword: kw, content: `<h3>${kw}</h3><p>Watch ${kw} live...</p>` }); setVal('newEntityKeyword',''); renderEntityStacking(); }
+    if(kw) { configData.entity_stacking.push({ keyword: kw }); setVal('newEntityKeyword',''); renderEntityStacking(); }
 };
 window.deleteEntityRow = (idx) => { configData.entity_stacking.splice(idx, 1); renderEntityStacking(); };
-// ... (Keep entity modal logic same as Step 2)
-window.openEntityEditor = (idx) => { 
-    document.getElementById('entityIndex').value = idx; 
-    setVal('entityKeywordEdit', configData.entity_stacking[idx].keyword); 
-    setVal('entityContentEdit', configData.entity_stacking[idx].content); 
-    document.getElementById('entityModal').style.display='flex'; 
-};
-window.saveEntityContent = () => { 
-    const idx = document.getElementById('entityIndex').value; 
-    configData.entity_stacking[idx].content = getVal('entityContentEdit'); 
-    document.getElementById('entityModal').style.display='none'; 
-};
 
 // ==========================================
 // 8. SAVE & UTILS
@@ -382,8 +349,8 @@ document.getElementById('saveBtn').onclick = async () => {
     configData.site_settings = {
         title_part_1: getVal('titleP1'), title_part_2: getVal('titleP2'),
         domain: getVal('siteDomain'), logo_url: getVal('logoUrl'),
-        favicon_url: getVal('faviconUrl'), // NEW
-        footer_copyright: getVal('footerCopyright'), // NEW
+        favicon_url: getVal('faviconUrl'),
+        footer_copyright: getVal('footerCopyright'),
         footer_disclaimer: getVal('footerDisclaimer'),
         target_country: getVal('targetCountry')
     };
