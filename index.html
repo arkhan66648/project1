@@ -220,7 +220,6 @@
         const SITE_DOMAIN = "https://crackstreams.help";
 
         let allMatches = [];
-        let renderedIds = new Set();
         window.MATCH_DATA = {}; 
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -239,27 +238,21 @@
         }
 
         function renderApp(matches) {
-            renderedIds.clear();
             window.MATCH_DATA = {};
-            
             matches.forEach(m => window.MATCH_DATA[m.id] = m);
 
+            // 1. Separate Live vs Upcoming
             const liveMatches = matches.filter(m => m.is_live);
-            renderLiveSection(liveMatches);
-
             const now = Date.now();
             const oneDay = 24 * 60 * 60 * 1000;
-            const upcomingMatches = matches.filter(m => {
-                if (m.is_live) return false;
-                if (renderedIds.has(m.id)) return false;
-                return (m.startTimeUnix - now) < oneDay;
-            });
-            renderUpcomingSections(upcomingMatches);
+            const upcomingMatches = matches.filter(m => !m.is_live && (m.startTimeUnix - now) < oneDay);
 
-            // CHECK HASH FOR DIRECT LINK
+            renderLiveSection(liveMatches);
+            renderUpcomingGrouped(upcomingMatches);
+
+            // 2. Direct Link Handling
             const hashId = window.location.hash.replace('#', '');
             if(hashId && window.MATCH_DATA[hashId]) {
-                // TRUE = Start Locked (Show Info Overlay Only)
                 openPlayer(hashId, true);
             }
         }
@@ -271,63 +264,87 @@
             topList.innerHTML = ''; hiddenList.innerHTML = ''; btn.style.display='none';
             if (matches.length === 0) { topList.innerHTML = '<div style="text-align:center; padding:30px; color:#444;">No live matches currently.</div>'; return; }
             
-            matches.slice(0, 5).forEach(m => { topList.appendChild(createMatchRow(m, 'tournament')); renderedIds.add(m.id); });
+            matches.slice(0, 5).forEach(m => topList.appendChild(createMatchRow(m, 'league')));
             if (matches.length > 5) {
-                matches.slice(5).forEach(m => { hiddenList.appendChild(createMatchRow(m, 'tournament')); renderedIds.add(m.id); });
+                matches.slice(5).forEach(m => hiddenList.appendChild(createMatchRow(m, 'league')));
                 btn.style.display = 'block'; btn.innerText = `Show ${matches.length - 5} More Matches ▼`;
                 btn.onclick = () => { hiddenList.style.display='block'; btn.style.display='none'; };
             }
         }
 
-        function renderUpcomingSections(matches) {
+        function renderUpcomingGrouped(matches) {
             const container = document.getElementById('upcoming-container');
             container.innerHTML = '';
-            const prioKeys = Object.keys(PRIORITIES).sort((a,b) => PRIORITIES[b].score - PRIORITIES[a].score);
-            
-            prioKeys.forEach(key => {
-                const config = PRIORITIES[key];
-                const isLeague = config.isLeague || false;
-                const hasLink = config.hasLink || false;
-                const groupMatches = matches.filter(m => {
-                    if (renderedIds.has(m.id)) return false;
-                    const targetText = isLeague ? (m.league || m.tournament || "") : (m.sport || "");
-                    if (targetText.toLowerCase().includes(key.toLowerCase())) { renderedIds.add(m.id); return true; }
-                    return false;
-                });
-                if (groupMatches.length > 0) createSection(container, `Upcoming ${key}`, groupMatches, isLeague, hasLink, key);
+
+            // 1. Group by "Best Available Category"
+            const groups = {};
+            matches.forEach(m => {
+                // Use League first (e.g. "NFL"), fallback to Sport (e.g. "Tennis")
+                const category = m.league || m.sport || "General";
+                if (!groups[category]) groups[category] = [];
+                groups[category].push(m);
             });
-            const leftovers = matches.filter(m => !renderedIds.has(m.id));
-            if (leftovers.length > 0) {
-                const groups = {};
-                leftovers.forEach(m => { const s = m.sport || "General"; if(!groups[s]) groups[s] = []; groups[s].push(m); });
-                Object.keys(groups).forEach(sport => createSection(container, `Upcoming ${sport}`, groups[sport], false, false, sport));
-            }
+
+            // 2. Identify Groups vs Priority List
+            const groupKeys = Object.keys(groups);
+            const sortedGroups = groupKeys.map(catName => {
+                // Find matching priority config
+                // We check if the Priority Name is inside the Category Name (e.g. "NFL" is in "NFL")
+                const prioKey = Object.keys(PRIORITIES).find(k => catName.toLowerCase().includes(k.toLowerCase()));
+                
+                const score = prioKey ? PRIORITIES[prioKey].score : 0; // Default 0 if not popular
+                const config = prioKey ? PRIORITIES[prioKey] : { isLeague: false, hasLink: false };
+                
+                return {
+                    name: catName,
+                    score: score,
+                    matches: groups[catName],
+                    isLeague: config.isLeague,
+                    hasLink: config.hasLink,
+                    iconKey: prioKey || catName // Used for getting the emoji
+                };
+            });
+
+            // 3. Sort Groups by Score (High to Low)
+            sortedGroups.sort((a, b) => b.score - a.score);
+
+            // 4. Render
+            sortedGroups.forEach(group => {
+                // Sort matches inside group by time
+                group.matches.sort((a,b) => a.startTimeUnix - b.startTimeUnix);
+                createSection(container, group.name, group.matches, group.isLeague, group.hasLink, group.iconKey);
+            });
         }
 
         function createSection(container, title, matches, isLeague, hasLink, iconKey) {
             const section = document.createElement('div');
+            
             let linkHtml = '';
+            // Only show link if Admin says hasLink=true AND we have a valid slug logic
             if (hasLink) {
                 const slug = iconKey.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
+                // Note: The python script builds static pages. This link assumes a page exists.
                 linkHtml = `<a href="/${slug}/" class="sec-right-link">View All ></a>`;
             }
+
             section.innerHTML = `<div class="sec-head"><div class="sec-title">${getSportIcon(iconKey)} ${title}</div>${linkHtml}</div>`;
+            
             const list = document.createElement('div');
-            matches.sort((a,b) => a.startTimeUnix - b.startTimeUnix).forEach(m => list.appendChild(createMatchRow(m, isLeague ? 'sport' : 'tournament')));
+            // For inside rows, if we are in an "NFL" section, showing "NFL" tag is redundant. Show Team names prominently.
+            matches.forEach(m => list.appendChild(createMatchRow(m, 'time')));
+            
             section.appendChild(list);
             container.appendChild(section);
         }
 
-        function createMatchRow(m, tagType) {
+        function createMatchRow(m, displayMode) {
             const div = document.createElement('div');
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
-            // TIME COLUMN: Show actual start time for upcoming
             let timeCol;
             if (m.is_live) timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
             else { 
-                const parts = m.formatted_date.split('•'); // Assumes format "Date • Time"
-                // parts[1] is time (e.g. 7:00 PM), parts[0] is date
+                const parts = m.formatted_date.split('•'); 
                 timeCol = `<span class="time-main">${parts[1] || ''}</span><span class="time-sub">${parts[0]}</span>`; 
             }
 
@@ -338,13 +355,12 @@
                 <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tA}</div>
                 <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_b_letter||'T')}">${m.team_b_letter||'T'}</span> ${tB}</div>`;
 
-            const tagText = tagType === 'sport' ? m.sport : (m.tournament || m.league || m.sport);
-            
-            // REMOVED HD FROM COL-META, MOVED TO BUTTON
+            // If we are in a grouped section, the tag is less important, but useful for generic lists
+            const tagText = m.league || m.sport; 
+
             let metaHtml = '', actionHtml = '';
             if (m.is_live) {
                 metaHtml = `<div class="meta-top">🔥 ${m.live_viewers || 'N/A'}</div>`;
-                // CLICKING WATCH HERE = UNLOCKED (false) -> Loads Player Logic
                 actionHtml = `<button class="btn-watch" onclick="openPlayer('${m.id}', false)">WATCH <span class="hd-badge">HD</span></button>`;
             } else {
                 metaHtml = `<div class="meta-top" style="color:#aaa; font-weight:400;">Upcoming</div>`;
@@ -355,12 +371,9 @@
             return div;
         }
 
-        // --- PLAYER LAZY LOADER ---
         function openPlayer(matchId, startLocked) {
             const m = window.MATCH_DATA[matchId];
             if(!m) return alert("Match expired or not found.");
-
-            // Lazy Load Player Script only when needed
             if(window.initPlayer) {
                 window.initPlayer(m, startLocked);
             } else {
@@ -371,9 +384,8 @@
             }
         }
         
-        // Helper functions
         function injectDynamicSchema(seoData) { if(!seoData) return; let jsonStr = JSON.stringify(seoData).replace(/https:\/\/example\.com/g, SITE_DOMAIN); const script = document.createElement('script'); script.type = 'application/ld+json'; script.text = jsonStr; document.head.appendChild(script); }
-        function getSportIcon(n) { n=(n||"").toLowerCase(); if(n.includes('soccer')||n.includes('premier')) return '⚽'; if(n.includes('basket')||n.includes('nba')) return '🏀'; if(n.includes('football')||n.includes('nfl')) return '🏈'; if(n.includes('baseball')||n.includes('mlb')) return '⚾'; if(n.includes('ufc')||n.includes('mma')) return '🥊'; if(n.includes('hockey')) return '🏒'; if(n.includes('f1')) return '🏎️'; return '🏆'; }
+        function getSportIcon(n) { n=(n||"").toLowerCase(); if(n.includes('soccer')||n.includes('premier')||n.includes('league')) return '⚽'; if(n.includes('basket')||n.includes('nba')) return '🏀'; if(n.includes('football')||n.includes('nfl')) return '🏈'; if(n.includes('baseball')||n.includes('mlb')) return '⚾'; if(n.includes('ufc')||n.includes('mma')||n.includes('boxing')) return '🥊'; if(n.includes('hockey')||n.includes('nhl')) return '🏒'; if(n.includes('f1')||n.includes('motor')) return '🏎️'; if(n.includes('cricket')||n.includes('ashes')) return '🏏'; return '🏆'; }
         function getColor(char) { const c = ['#e53935','#d81b60','#8e24aa','#5e35b1','#3949ab','#1e88e5','#039be5','#00897b','#43a047','#7cb342','#c0ca33','#fdd835','#fb8c00']; return c[char.charCodeAt(0) % c.length]; }
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
     </script>
