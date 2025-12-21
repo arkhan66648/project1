@@ -2,107 +2,37 @@
   "site_settings": {
     "title_part_1": "Stream",
     "title_part_2": "East",
-    "domain": "crackstreams.help",
-    "logo_url": "assets/logo.png",
+    "domain": "StreamEast Live",
+    "logo_url": "/assets/streameast-logo-hd.jpg",
     "favicon": "",
     "ga_id": "",
-    "custom_meta": ""
+    "custom_meta": "The #1 Source for live sports.",
+    "target_country": "US"
   },
   "theme": {
-    "brand_primary": "#d00000",
-    "brand_dark": "",
-    "accent_gold": "",
-    "bg_body": "",
-    "hero_gradient_start": ""
-  },
-  "api_keys": {
-    "streamed_url": "https://streamed.pk/api/matches/all",
-    "topembed_url": "https://topembed.pw/api.php?format=json"
-  },
-  "site_links": [
-    {
-      "id": 1700000000,
-      "title": "NFL",
-      "slug": "nfl",
-      "priority": 1,
-      "meta_title": "Watch NFL Live Streams Free",
-      "meta_desc": "Full schedule of NFL games live in HD."
-    }
-  ],
-  "social_stats": {
-    "telegram": "44k",
-    "twitter": "4k",
-    "discord": "77k",
-    "reddit": "333k"
-  },
-  "hero_categories": [
-    {
-      "title": "🏀 NBA",
-      "url": "/#nba"
-    },
-    {
-      "title": "⚾ MLB",
-      "url": "/#mlb"
-    }
-  ],
-  "header_menu": [],
-  "pages": [
-    {
-      "slug": "home",
-      "type": "schedule",
-      "title": "Home",
-      "content": "",
-      "h1": "Streameast Live sport",
-      "assigned_category": "",
-      "hero_text": "Hero Meta",
-      "meta_title": "Test Meta",
-      "meta_desc": "Dest Dessss",
-      "schemas": {}
-    },
-    {
-      "slug": "nfl",
-      "h1": "NFL Test",
-      "type": "schedule",
-      "content": "",
-      "schemas": {},
-      "assigned_category": "NFL",
-      "hero_text": "fvdfgdgd",
-      "meta_title": "",
-      "meta_desc": ""
-    },
-    {
-      "slug": "nba",
-      "h1": "New NBA Page",
-      "type": "schedule",
-      "content": "<p>drgdgdgdrg</p>",
-      "schemas": {},
-      "assigned_category": "NBA",
-      "hero_text": "Hero text",
-      "meta_title": "Meta titlr",
-      "meta_desc": ""
-    }
-  ],
-  "footer_league_menu": [],
-  "footer_static_menu": [],
-  "targeting": {
-    "country": "USA",
-    "timezone": "Asia/Dhaka"
-  },
-  "wildcard": {
-    "category": "",
-    "id": "",
-    "fallback": ""
+    "brand_primary": "#D00000",
+    "brand_dark": "#8a0000",
+    "accent_gold": "#FFD700",
+    "bg_body": "#050505",
+    "hero_gradient_start": "#1a0505",
+    "font_family": "system-ui",
+    "title_color_1": "#ffffff",
+    "title_color_2": "#D00000"
   },
   "sport_priorities": {
-    "NFL": 100,
-    "NBA": 95,
-    "UFC": 90,
-    "MLB": 85,
-    "NHL": 80,
-    "NCAA Football": 78,
-    "Soccer": 60,
-    "F1": 50,
-    "Boxing": 70,
-    "Tennis": 40
-  }
+    "US": { "NFL": 100, "NBA": 95, "UFC": 90, "MLB": 85, "NHL": 80, "NCAA": 75 },
+    "UK": { "Premier League": 100, "Cricket": 95, "F1": 90, "Rugby": 85, "Darts": 80, "Snooker": 75 }
+  },
+  "header_menu": [
+    { "title": "Schedule", "url": "#sports" },
+    { "title": "Features", "url": "#features" }
+  ],
+  "hero_categories": [
+    { "title": "🏀 NBA", "url": "/nba/" },
+    { "title": "🏈 NFL", "url": "/nfl/" },
+    { "title": "🥊 UFC", "url": "/ufc/" }
+  ],
+  "pages": [
+    { "slug": "home", "content": "<h2>Welcome</h2>" }
+  ]
 }
