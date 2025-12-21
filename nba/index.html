@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Best site</title>
-    <meta name="description" content="Best meta">
+    <title>Watch NBA Live Free - StreamEast Live</title>
+    <meta name="description" content="The best source for NBA live streams. Watch high quality NBA matches free.">
     <meta name="theme-color" content="#d00000">
     <link rel="canonical" href="https://StreamEast Live/">
     <link rel="icon" href="/assets/streameast-logo-hd.jpg">
@@ -125,8 +125,8 @@
 
     <div class="hero">
         <div class="sys-status"><div class="dot"></div> System Status: Online</div>
-        <h1>No. #1 Streaming Website</h1>
-        <p class="entity-intro">Best meta</p>
+        <h1>NBA Live Streams</h1>
+        <p class="entity-intro">The best source for NBA live streams. Watch high quality NBA matches free.</p>
         <div class="cat-scroll"><a href="#" class="cat-pill">NBA</a><a href="#" class="cat-pill">⚾ MLB</a></div>
     </div>
 
@@ -144,7 +144,7 @@
 
         <!-- UPCOMING SECTIONS -->
         <div id="upcoming-container"></div>
-        <div class="seo-box"><h2>Welcome boss</h2><div class="entity-bar" style="margin-top:20px; text-align:center;"><span style="color:#666; font-size:0.8rem; margin-right:10px;">Trending:</span><button onclick="openEntityPopup(0)" style="background:none; color:#888; border:1px solid #333; border-radius:4px; padding:4px 10px; font-size:0.75rem; margin:0 4px;">Methstreams</button></div>
+        <div class="seo-box"><h2>NBA Schedule</h2><p>Check below for the latest upcoming NBA matches.</p><div class="entity-bar" style="margin-top:20px; text-align:center;"><span style="color:#666; font-size:0.8rem; margin-right:10px;">Trending:</span><button onclick="openEntityPopup(0)" style="background:none; color:#888; border:1px solid #333; border-radius:4px; padding:4px 10px; font-size:0.75rem; margin:0 4px;">Methstreams</button></div>
     <script>
         const ENTITY_DATA = ["<h3>Methstreams</h3><p>Watch Methstreams live...</p>"];
         function openEntityPopup(idx) {
@@ -194,7 +194,7 @@
     <script>
         const API_URL = "https://vercelapi-olive.vercel.app/api/sync-nodes";
         const TARGET_COUNTRY = "US"; 
-        const PRIORITIES = {"NFL": {"score": 100, "isLeague": true, "hasLink": true}, "NBA": {"score": 95, "isLeague": true, "hasLink": true}, "MLB": {"score": 90, "isLeague": true, "hasLink": true}, "NHL": {"score": 85, "isLeague": true, "hasLink": false}, "UFC": {"score": 80, "isLeague": true, "hasLink": false}, "MMA": {"score": 79, "isLeague": true, "hasLink": false}, "College": {"score": 75, "isLeague": true, "hasLink": false}, "NCAA": {"score": 75, "isLeague": true, "hasLink": false}, "MLS": {"score": 70, "isLeague": true, "hasLink": false}, "Premier League": {"score": 60, "isLeague": true, "hasLink": false}, "Boxing": {"score": 50, "isLeague": false, "hasLink": false}, "Tennis": {"score": 40, "isLeague": false, "hasLink": false}}; 
+        const PRIORITIES = {"NBA": {"score": 95, "isLeague": true, "hasLink": true}}; 
 
         let allMatches = [];
         let currentMatchData = null;
@@ -496,5 +496,12 @@
         }
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
     </script>
-</body>
+
+        <script>
+            window.addEventListener('DOMContentLoaded', () => {
+                const liveSec = document.getElementById('live-section');
+                if(liveSec) liveSec.style.display = 'none';
+            });
+        </script>
+        </body>
 </html>

@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFL Bite</title>
-    <meta name="description" content="tfdhgdfgd">
+    <title>Watch NFL Live Free - StreamEast Live</title>
+    <meta name="description" content="The best source for NFL live streams. Watch high quality NFL matches free.">
     <meta name="theme-color" content="#d00000">
     <link rel="canonical" href="https://StreamEast Live/">
     <link rel="icon" href="/assets/streameast-logo-hd.jpg">
-    
+    <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Organization", "name": "StreamEast", "url": "https://StreamEast Live", "logo": "/assets/streameast-logo-hd.jpg"}]</script>
     <style>
         :root {
             --brand-primary: #d00000; --brand-dark: #8a0000;
@@ -38,7 +38,7 @@
         @media (min-width: 900px) { .nav-links { display: flex; } .hamburger { display: none; } }
 
         /* HERO */
-        .hero { padding: 90px 15px 15px 15px; text-align: center; background: radial-gradient(circle at top, var(--hero-grad) 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); display: none; }
+        .hero { padding: 90px 15px 15px 15px; text-align: center; background: radial-gradient(circle at top, var(--hero-grad) 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); display: block; }
         .sys-status { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.2); padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; font-size: 0.75rem; font-weight: 700; color: var(--status-green); }
         .dot { width: 6px; height: 6px; background: var(--status-green); border-radius: 50%; box-shadow: 0 0 8px var(--status-green); animation: pulse 2s infinite; }
         h1 { margin: 0 0 20px 0; font-size: 1.8rem; line-height: 1.2; font-weight: 800; }
@@ -112,7 +112,7 @@
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     </style>
-<style>#live-section, #upcoming-container { display: none !important; }</style></head>
+</head>
 <body>
     <header>
         <div class="header-container">
@@ -125,8 +125,8 @@
 
     <div class="hero">
         <div class="sys-status"><div class="dot"></div> System Status: Online</div>
-        <h1>No. #1 NFL Streaming</h1>
-        <p class="entity-intro">tfdhgdfgd</p>
+        <h1>NFL Live Streams</h1>
+        <p class="entity-intro">The best source for NFL live streams. Watch high quality NFL matches free.</p>
         <div class="cat-scroll"><a href="#" class="cat-pill">NBA</a><a href="#" class="cat-pill">⚾ MLB</a></div>
     </div>
 
@@ -144,7 +144,7 @@
 
         <!-- UPCOMING SECTIONS -->
         <div id="upcoming-container"></div>
-        <div class="seo-box"><p>dgdgdgdd</p><div class="entity-bar" style="margin-top:20px; text-align:center;"><span style="color:#666; font-size:0.8rem; margin-right:10px;">Trending:</span><button onclick="openEntityPopup(0)" style="background:none; color:#888; border:1px solid #333; border-radius:4px; padding:4px 10px; font-size:0.75rem; margin:0 4px;">Methstreams</button></div>
+        <div class="seo-box"><h2>NFL Schedule</h2><p>Check below for the latest upcoming NFL matches.</p><div class="entity-bar" style="margin-top:20px; text-align:center;"><span style="color:#666; font-size:0.8rem; margin-right:10px;">Trending:</span><button onclick="openEntityPopup(0)" style="background:none; color:#888; border:1px solid #333; border-radius:4px; padding:4px 10px; font-size:0.75rem; margin:0 4px;">Methstreams</button></div>
     <script>
         const ENTITY_DATA = ["<h3>Methstreams</h3><p>Watch Methstreams live...</p>"];
         function openEntityPopup(idx) {
@@ -193,8 +193,8 @@
 
     <script>
         const API_URL = "https://vercelapi-olive.vercel.app/api/sync-nodes";
-        const TARGET_COUNTRY = "UK"; 
-        const PRIORITIES = {"Premier League": {"score": 100, "isLeague": true, "hasLink": false}, "Champions League": {"score": 95, "isLeague": true, "hasLink": false}, "Rugby": {"score": 90, "isLeague": false, "hasLink": false}, "Cricket": {"score": 85, "isLeague": false, "hasLink": false}, "Snooker": {"score": 80, "isLeague": false, "hasLink": false}, "Darts": {"score": 75, "isLeague": false, "hasLink": false}, "F1": {"score": 70, "isLeague": true, "hasLink": false}, "Championship": {"score": 60, "isLeague": true, "hasLink": false}, "Boxing": {"score": 50, "isLeague": false, "hasLink": false}, "Tennis": {"score": 40, "isLeague": false, "hasLink": false}, "NFL": {"score": 30, "isLeague": true, "hasLink": false}}; 
+        const TARGET_COUNTRY = "US"; 
+        const PRIORITIES = {"NFL": {"score": 100, "isLeague": true, "hasLink": true}}; 
 
         let allMatches = [];
         let currentMatchData = null;
@@ -496,5 +496,12 @@
         }
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
     </script>
-</body>
+
+        <script>
+            window.addEventListener('DOMContentLoaded', () => {
+                const liveSec = document.getElementById('live-section');
+                if(liveSec) liveSec.style.display = 'none';
+            });
+        </script>
+        </body>
 </html>
