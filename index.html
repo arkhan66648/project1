@@ -10,26 +10,24 @@
     <link rel="canonical" href="https://streameast.com">
     <link rel="icon" href="">
     
-    <!-- 1. FONTS (Fixes Font Issue) -->
+    <!-- 1. FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;800&display=swap" rel="stylesheet">
 
-    <!-- 2. CRYPTO LIBRARY (Fixes Stream Decryption) -->
+    <!-- 2. CRYPTO LIBRARY -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
 
     <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Organization", "name": "StreamEast", "url": "https://crackstreams.help", "logo": "/assets/streameast-logo-hd.jpg"}]</script>
 
     <style>
         :root {
-            /* Fallbacks added */
             --brand-primary: ; 
             --brand-dark: ;
             --accent-gold: ;
             --bg-body: ; 
             --hero-grad: ; 
             --font-main: ;
-            
             --status-green: #00e676;
             --bg-glass: rgba(20, 20, 20, 0.95);
             --border: #2a2a2a;
@@ -123,6 +121,11 @@
         .disclaimer { font-size: 0.7rem; color: #555; text-align: center; margin-top: 30px; line-height: 1.5; max-width: 800px; margin-left: auto; margin-right: auto; }
         .copyright { text-align: center; color: #444; font-size: 0.75rem; margin-top: 20px; }
 
+        /* ENTITY POPUP */
+        .entity-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 5000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .entity-loader { border: 4px solid #333; border-top: 4px solid var(--brand-primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         /* PLAYER MODAL */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-box { background: #111; width: 100%; height: 100%; display: flex; flex-direction: column; }
@@ -138,13 +141,10 @@
         .stream-btn.active { background: rgba(208, 0, 0, 0.1); }
         .sig-hd { background: var(--brand-primary); color: #fff; font-size: 0.6rem; padding: 2px 4px; border-radius: 3px; font-weight: bold; }
         
+        /* SEO OVERLAY (Inside Player) */
         .info-card-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.8); z-index: 10; display: flex; align-items: center; justify-content: center; }
         .info-card { background: #1a1a1a; padding: 40px; border-radius: 12px; border: 1px solid #333; text-align: center; max-width: 400px; width: 90%; }
-
-        /* ENTITY POPUP */
-        .entity-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 5000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .entity-loader { border: 4px solid #333; border-top: 4px solid var(--brand-primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 20px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     </style>
@@ -187,7 +187,6 @@
         <div class="copyright"></div>
     </footer>
 
-    <!-- POPUPS -->
     <div id="entityPopup" class="entity-popup">
         <div class="entity-loader"></div>
         <h3 id="entityPopupTitle" style="color:#fff; margin-bottom:10px;">Searching...</h3>
@@ -234,7 +233,7 @@
         let allMatches = [];
         let currentMatchData = null;
         let renderedIds = new Set();
-        window.MATCH_DATA = {}; // Global store for matches
+        window.MATCH_DATA = {}; // Global store used by player.js
 
         window.addEventListener('DOMContentLoaded', () => {
             loadMatches();
@@ -282,7 +281,8 @@
 
             const hashId = window.location.hash.replace('#', '');
             if(hashId && window.MATCH_DATA[hashId]) {
-                openPlayer(hashId); 
+                // HASH (SEO) -> Start Locked (true)
+                openPlayer(hashId, true);
             }
         }
 
@@ -360,8 +360,8 @@
             let metaHtml = '', actionHtml = '';
             if (m.is_live) {
                 metaHtml = `<div class="meta-top">${m.live_viewers || ''}</div>`;
-                // SAFE: Only pass ID
-                actionHtml = `<button class="btn-watch" onclick="openPlayer('${m.id}')">WATCH <span class="hd-badge">HD</span></button>`;
+                // USER CLICK -> Start Unlocked (false)
+                actionHtml = `<button class="btn-watch" onclick="openPlayer('${m.id}', false)">WATCH <span class="hd-badge">HD</span></button>`;
             } else {
                 metaHtml = `<div class="meta-top" style="color:#aaa; font-weight:400; font-size:0.65rem;">${m.status_text}</div>`;
                 actionHtml = `<button class="btn-notify" onclick="this.innerHTML='✓ SET'; this.disabled=true; this.classList.add('active');">🔔 NOTIFY</button>`;
@@ -372,25 +372,28 @@
         }
 
         // --- PLAYER FUNCTIONS ---
-        function openPlayer(matchId) {
+        function openPlayer(matchId, startLocked = false) {
             const m = window.MATCH_DATA[matchId];
             if(!m) return alert("Match data not found. Please refresh.");
             
             // Lazy Load Player Logic
             if(window.initPlayer) {
-                window.initPlayer(m, true);
+                window.initPlayer(m, startLocked);
             } else {
                 const script = document.createElement('script');
                 script.src = 'assets/player.js';
-                script.onload = () => window.initPlayer(m, true);
+                script.onload = () => window.initPlayer(m, startLocked);
                 document.body.appendChild(script);
             }
         }
         
         function unlockStream() {
-            if(window.unlockStream) window.unlockStream();
+            // Unhide logic is actually handled by calling initPlayer(match, false)
+            // But we must also ensure overlay is hidden immediately
             document.getElementById('seoOverlay').style.display='none';
-            if(window.currentMatchData && window.initPlayer) window.initPlayer(window.currentMatchData, false);
+            if(window.currentMatchData && window.initPlayer) {
+                window.initPlayer(window.currentMatchData, false); // Switch to Unlocked Mode
+            }
         }
 
         function triggerEntityPopup(keyword) {
