@@ -135,6 +135,9 @@ function populateUI() {
     setVal('titleP2', s.title_part_2);
     setVal('siteDomain', s.domain);
     setVal('logoUrl', s.logo_url);
+    setVal('faviconUrl', s.favicon_url); // NEW
+    setVal('footerCopyright', s.footer_copyright); // NEW
+    setVal('footerDisclaimer', s.footer_disclaimer); // NEW
     setVal('targetCountry', s.target_country || 'US');
 
     const t = configData.theme || {};
@@ -254,6 +257,8 @@ window.editPage = (id) => {
     setVal('pageLayout', p.layout || 'page');
     setVal('pageMetaTitle', p.meta_title);
     setVal('pageMetaDesc', p.meta_desc);
+    setVal('pageMetaKeywords', p.meta_keywords); // NEW
+    setVal('pageCanonical', p.canonical_url); // NEW
     
     // Logic: If user can't select schemas, default to object to prevent error
     if(!p.schemas) p.schemas = {};
@@ -277,6 +282,8 @@ window.saveEditorContentToMemory = () => {
     p.layout = getVal('pageLayout');
     p.meta_title = getVal('pageMetaTitle');
     p.meta_desc = getVal('pageMetaDesc');
+    p.meta_keywords = getVal('pageMetaKeywords'); // NEW
+    p.canonical_url = getVal('pageCanonical'); // NEW
     p.content = tinymce.get('pageContentEditor').getContent();
     p.schemas = {
         live: document.getElementById('schemaLive').checked,
@@ -375,6 +382,9 @@ document.getElementById('saveBtn').onclick = async () => {
     configData.site_settings = {
         title_part_1: getVal('titleP1'), title_part_2: getVal('titleP2'),
         domain: getVal('siteDomain'), logo_url: getVal('logoUrl'),
+        favicon_url: getVal('faviconUrl'), // NEW
+        footer_copyright: getVal('footerCopyright'), // NEW
+        footer_disclaimer: getVal('footerDisclaimer'),
         target_country: getVal('targetCountry')
     };
     configData.theme = {
