@@ -4,18 +4,15 @@
     "title_part_2": "East",
     "domain": "StreamEast Live",
     "logo_url": "/assets/streameast-logo-hd.jpg",
-    "custom_meta": "The #1 Source for live sports.",
     "target_country": "US"
   },
   "theme": {
-    "brand_primary": "#D00000",
+    "brand_primary": "#d00000",
     "brand_dark": "#8a0000",
-    "accent_gold": "#FFD700",
+    "accent_gold": "#ffd700",
     "bg_body": "#050505",
     "hero_gradient_start": "#1a0505",
-    "font_family": "system-ui",
-    "title_color_1": "#ffffff",
-    "title_color_2": "#D00000"
+    "font_family": ""
   },
   "sport_priorities": {
     "US": {
@@ -64,5 +61,32 @@
       "slug": "home",
       "content": "<h2>Welcome</h2>"
     }
-  ]
+  ],
+  "menus": {
+    "header": [
+      {
+        "title": "Schedule",
+        "url": "#"
+      }
+    ],
+    "hero": [
+      {
+        "title": "NBA",
+        "url": "#"
+      }
+    ],
+    "footer_links": [
+      {
+        "title": "NFL",
+        "url": "#"
+      }
+    ],
+    "footer_static": [
+      {
+        "title": "DMCA",
+        "url": "/dmca"
+      }
+    ]
+  },
+  "entity_stacking": []
 }
