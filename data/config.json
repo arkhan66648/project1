@@ -247,6 +247,10 @@
       {
         "title": "Contact",
         "url": "/contact"
+      },
+      {
+        "title": "⚽ Soccer",
+        "url": "/#soccer"
       }
     ]
   },
@@ -254,6 +258,9 @@
     {
       "keyword": "Methstreams",
       "content": "<h3>Methstreams</h3><p>Watch Methstreams live...</p>"
+    },
+    {
+      "keyword": "Sportsurge"
     }
   ]
 }
