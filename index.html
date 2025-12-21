@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Best site</title>
     <meta name="description" content="Best meta">
-    {{META_KEYWORDS}}
+    <meta name="keywords" content="gfchbcg,gdgd,gfhfg">
     <meta name="theme-color" content="">
-    <link rel="canonical" href="{{CANONICAL_URL}}">
-    <link rel="icon" href="/assets/streameast-logo-hd.jpg">
+    <link rel="canonical" href="https://streameast.com">
+    <link rel="icon" href="">
     <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Organization", "name": "StreamEast", "url": "https://crackstreams.help", "logo": "/assets/streameast-logo-hd.jpg"}]</script>
     <style>
         :root {
@@ -160,39 +160,24 @@
         </div>
         <!-- UPCOMING -->
         <div id="upcoming-container"></div>
-        <div class="seo-box"><h2>Welcome boss</h2><div class="entity-bar" style="margin-top:20px; text-align:center;"><span style="color:#666; font-size:0.8rem; margin-right:10px;">Trending:</span><button onclick="openEntityPopup(0)" style="background:none; color:#888; border:1px solid #333; border-radius:4px; padding:4px 10px; font-size:0.75rem; margin:0 4px;">Methstreams</button></div>
-    <script>
-        const ENTITY_DATA = ["<h3>Methstreams</h3><p>Watch Methstreams live...</p>"];
-        function openEntityPopup(idx) {
-            const content = ENTITY_DATA[idx];
-            const modal = document.createElement('div');
-            modal.style.cssText = "position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; display:flex; justify-content:center; align-items:center; padding:20px;";
-            modal.innerHTML = `<div style="background:#111; border:1px solid #444; padding:30px; border-radius:8px; max-width:500px; width:100%; color:#fff; position:relative;">
-                <button onclick="this.closest('div').parentElement.remove()" style="position:absolute; top:10px; right:10px; background:none; color:#fff; font-size:20px;">&times;</button>
-                ${content}
-                <div style="margin-top:20px; text-align:center;"><a href="/" style="background:#D00000; color:#fff; padding:10px 20px; border-radius:4px; text-decoration:none; font-weight:bold;">Go to Homepage</a></div>
-            </div>`;
-            document.body.appendChild(modal);
-        }
-    </script>
-    </div>
+        <div class="seo-box"><h2>Welcome boss</h2></div>
     </div>
 
     <footer>
         <div class="footer-content">
             <div class="footer-col">
                 <h3>Top Leagues</h3>
-                <div class="footer-links">{{FOOTER_LEAGUES}}</div>
+                <div class="footer-links"><a href="/contact" class="footer-link">Contact</a></div>
             </div>
             <div class="footer-col">
                 <h3>Legal & Info</h3>
-                <div class="footer-links">{{FOOTER_STATIC}}</div>
+                <div class="footer-links"><a href="/dmca" class="footer-link">DMCA</a><a href="/contact" class="footer-link">Contact</a></div>
             </div>
         </div>
         
-        {{ENTITY_SECTION}}
-        {{FOOTER_DISCLAIMER}}
-        <div class="copyright">{{FOOTER_COPYRIGHT}}</div>
+        <div class="entity-footer-section"><h3>Trending Searches</h3><div class="entity-tags"><button class="entity-tag" onclick="triggerEntityPopup('Methstreams')">Methstreams</button></div></div>
+        
+        <div class="copyright"></div>
     </footer>
 
     <!-- POPUPS -->
