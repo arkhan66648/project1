@@ -156,54 +156,57 @@
         }
 
         /* --- MATCH TABLES --- */
-        .container { max-width: 1000px; margin: 0 auto; padding: 20px 15px; }
+        .container { max-width: 1250px; margin: 0 auto; padding: 20px 15px; }
 
-        .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 30px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #1a1a1a; }
-        .sec-title { font-size: 1.1rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
-        .live-dot { width: 8px; height: 8px; background: var(--brand-primary); border-radius: 50%; box-shadow: 0 0 10px var(--brand-primary); }
-        .sec-right-link { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; }
-        .sec-right-link:hover { color: var(--brand-primary); text-decoration: underline; }
+        .sport-section { margin-bottom: 40px; }
+        .sec-head { 
+            display: flex; align-items: center; gap: 10px; margin-bottom: 15px;
+            border-bottom: 1px solid #333; padding-bottom: 10px;
+        }
+        .sec-title { font-size: 18px; font-weight: 700; color: var(--brand-primary); text-transform: uppercase; }
+        .sport-count { background: #333; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
 
         .match-row {
             display: grid;
-            grid-template-columns: 40px 1fr 65px 60px; 
-            align-items: center; gap: 8px;
+            grid-template-columns: 80px 140px 1fr 100px 80px; 
+            align-items: center; gap: 15px;
             background: var(--bg-glass); border: 1px solid var(--border);
-            border-radius: 6px; padding: 10px 8px; margin-bottom: 8px;
+            border-radius: 8px; padding: 12px 20px; margin-bottom: 8px;
             position: relative; transition: 0.2s;
         }
-        .match-row:hover { border-color: #444; transform: translateY(-2px); }
-        .match-row.live { 
-            border-left: 3px solid var(--brand-primary); 
-            background: linear-gradient(90deg, rgba(208,0,0,0.06) 0%, rgba(20,20,20,0.8) 100%); 
+        .match-row:hover { border-color: #555; transform: translateY(-2px); background: #262626; }
+        
+        .mr-status { text-align: center; font-size: 13px; font-weight: 600; }
+        .mr-date { font-size: 12px; color: #aaa; }
+        .mr-info { display: flex; flex-direction: column; justify-content: center; }
+
+        .mr-teams { font-size: 15px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 6px; }
+        .team-logo {
+            width: 24px; height: 24px; border-radius: 50%;
+            display: inline-flex; justify-content: center; align-items: center;
+            font-size: 12px; font-weight: 800; color: #000;
+            background: #ccc; flex-shrink: 0;
         }
 
-        .col-time { text-align: center; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
-        .time-main { font-size: 0.75rem; font-weight: 700; color: white; }
-        .time-sub { font-size: 0.6rem; color: #888; }
-        .live-txt { color: var(--brand-primary); font-weight: 900; animation: blink 1.5s infinite; font-size: 0.65rem; }
+        .mr-meta { font-size: 12px; color: #888; margin-top: 4px; padding-left: 60px; }
+        .mr-viewers { text-align: right; color: #aaa; font-size: 12px; font-weight: 600; }
 
-        .col-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; justify-content: center; }
-        .league-tag { font-size: 0.6rem; color: #666; font-weight: 700; text-transform: uppercase; }
-        .team-name { font-size: 0.85rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display:flex; align-items:center; gap:5px; }
+        .live-badge { color: var(--brand-primary); display: flex; flex-direction: column; align-items: center; line-height: 1.2; font-weight: 800; }
+        .live-dot { width: 8px; height: 8px; background: var(--brand-primary); border-radius: 50%; margin-bottom: 3px; animation: pulse 1.5s infinite; }
 
-        .col-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; justify-content: center; }
-        .meta-top { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); display: flex; align-items: center; gap: 4px; }
-        .meta-bot { font-size: 0.6rem; color: #aaa; border: 1px solid #333; padding: 1px 4px; border-radius: 3px; }
-
-        .col-action { display: flex; justify-content: flex-end; }
-        .btn-watch {
-            background: var(--brand-primary); color: white; 
-            font-size: 0.65rem; font-weight: 800; padding: 8px 10px; 
-            border-radius: 4px; width: 100%; text-transform: uppercase;
+        .watch-btn {
+            background: var(--brand-primary); color: #000; border: none; padding: 8px 16px;
+            border-radius: 4px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 12px; width: 100%;
         }
-        .btn-watch:hover { background: var(--brand-dark); }
+        .watch-btn:hover { filter: brightness(1.1); }
 
-        @media (min-width: 768px) {
-            .match-row { grid-template-columns: 70px 1fr 100px 100px; padding: 15px 20px; gap: 20px; }
-            .team-name { font-size: 1rem; }
-            .btn-watch { font-size: 0.8rem; padding: 10px 0; }
-            .col-meta { gap: 5px; }
+        @media (max-width: 768px) {
+            .match-row { grid-template-columns: 60px 1fr 70px; grid-template-areas: "stat info btn"; gap: 10px; }
+            .mr-date, .mr-viewers { display: none; }
+            .mr-status { grid-area: stat; }
+            .mr-info { grid-area: info; }
+            .mr-meta { padding-left: 0; }
+            .watch-btn { grid-area: btn; padding: 6px; }
         }
 
         /* --- SEO CONTENT (Injected) --- */
@@ -221,14 +224,28 @@
         .p-tag { display: inline-block; font-size: 0.75rem; color: #555; border: 1px solid #222; padding: 6px 12px; border-radius: 20px; margin: 4px; }
         footer { text-align: center; padding: 40px 20px; color: #444; font-size: 0.75rem; margin-bottom: 50px; }
         
-        .video-modal { position: fixed; inset: 0; background: black; z-index: 2000; display: none; flex-direction: column; }
-        .vm-head { padding: 10px; background: #111; display: flex; justify-content: flex-end; }
-        .vm-close { color: white; font-weight: 700; padding: 5px 15px; background: #333; border-radius: 4px; }
+        /* Modal */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; z-index: 1000; justify-content: center; align-items: center; }
+        .modal-box { background: #1a1a1a; width: 90%; max-width: 500px; border-radius: 12px; border: 1px solid #333; display: flex; flex-direction: column;}
+        .modal-head { padding: 15px 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 20px; max-height: 60vh; overflow-y: auto; }
         
-        @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
+        .gated-content { text-align: center; padding: 20px 0; }
+        .gate-btn {
+            background: #222; border: 1px solid var(--brand-primary); color: var(--brand-primary);
+            padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer;
+            border-radius: 6px; margin-top: 15px; transition: 0.2s;
+        }
+        .gate-btn:hover { background: var(--brand-primary); color: #000; }
+        .gate-info { font-size: 13px; color: #aaa; margin-bottom: 10px; }
+
+        .stream-item {
+            padding: 12px; background: #222; border: 1px solid #333; margin-bottom: 8px; border-radius: 6px;
+            cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;
+        }
+        .stream-item:hover { border-color: var(--brand-primary); background: #2a2a2a; }
         
-        /* Team Logo Circle */
-        .t-logo { width:18px; height:18px; border-radius:50%; background:#333; display:inline-flex; align-items:center; justify-content:center; font-size:9px; color:#fff; font-weight:bold; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -277,12 +294,15 @@
         </div>
 
         <!-- CONTROL BAR -->
-        <div style="margin-bottom:20px; display:flex; justify-content:space-between;">
-             <div class="sec-title" style="font-size:14px;"><div class="live-dot"></div> Live Schedule</div>
-             <select id="countrySelect" onchange="loadMatches()" style="background:#222; color:#fff; border:1px solid #333; padding:5px; border-radius:4px;">
-                <option value="US">USA</option>
-                <option value="UK">UK</option>
-             </select>
+        <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+             <div class="sec-title" style="font-size:14px; margin:0;"><div class="live-dot"></div> Live Schedule</div>
+             <div>
+                <select id="countrySelect" onchange="loadMatches()" style="background:#222; color:#fff; border:1px solid #333; padding:5px; border-radius:4px;">
+                    <option value="US">USA Priority</option>
+                    <option value="UK">UK Priority</option>
+                </select>
+                <span id="statusText" style="font-size:12px; color:#666; margin-left:10px;">Loading...</span>
+             </div>
         </div>
 
         <!-- ================= DYNAMIC CONTENT LOADED HERE ================= -->
@@ -301,14 +321,19 @@
         &copy; 2025 crackstreams.help. All rights reserved.<br>
     </footer>
 
-    <!-- STREAM MODAL -->
-    <div class="video-modal" id="vModal">
-        <div class="vm-head"><button class="vm-close" onclick="closeModal()">Close ✕</button></div>
-        <div id="vContainer" style="flex:1; background:black; display:flex; align-items:center; justify-content:center;"></div>
+    <!-- STREAM MODAL (GATEKEEPER) -->
+    <div class="modal" id="streamModal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3 id="modalTitle" style="margin:0; font-size:16px;">Streams</h3>
+                <span onclick="closeModal()" style="cursor:pointer; font-size:24px;">&times;</span>
+            </div>
+            <div class="modal-body" id="modalList"></div>
+        </div>
     </div>
 
     <script>
-        // --- VERCEL BACKEND LOGIC ---
+        // --- VERCEL BACKEND LOGIC (Exact match from your demo) ---
         const API_URL = "https://vercelapi-olive.vercel.app/api/sync-nodes";
         // Python Injects Priorities here for sorting
         const PRIORITIES = {"NFL": 100, "NBA": 95, "UFC": 90, "MLB": 85, "NHL": 80, "NCAA Football": 78, "Soccer": 60, "F1": 50, "Boxing": 70, "Tennis": 40}; 
@@ -327,102 +352,208 @@
         async function loadMatches() {
             const country = document.getElementById('countrySelect').value;
             const container = document.getElementById('matchContainer');
+            const status = document.getElementById('statusText');
+
+            status.textContent = "Syncing...";
+            
             try {
                 const res = await fetch(`${API_URL}?country=${country.toLowerCase()}`);
+                if (!res.ok) throw new Error("API Error");
                 const data = await res.json();
                 
                 // Inject Schema
-                if(data.seo) document.getElementById('dynamic-schema').text = JSON.stringify(data.seo.live_broadcast || {});
+                if(data.seo) injectSEO(data.seo);
                 
-                renderMatches(data.matches);
+                status.textContent = `Online (${data.total})`;
+                status.style.color = "#d00000";
 
-            } catch(e) { container.innerHTML = '<div style="text-align:center; padding:50px">No matches available</div>'; }
+                renderGrid(data.matches);
+
+                // AUTO-OPEN OVERLAY (GATEKEEPER MODE)
+                if (window.location.hash) {
+                    const targetId = window.location.hash.substring(1);
+                    const targetMatch = data.matches.find(m => m.id === targetId);
+                    
+                    if (targetMatch) {
+                        const streamsJson = encodeURIComponent(JSON.stringify(targetMatch.streams));
+                        const safeTitle = `${targetMatch.team_a} vs ${targetMatch.team_b}`.replace(/'/g, "");
+                        openStreamModal(targetMatch.id, safeTitle, streamsJson, true); 
+                    }
+                }
+
+            } catch(e) { 
+                console.error(e);
+                container.innerHTML = '<div style="text-align:center; padding:50px; color:#ff4444">Failed to load matches.</div>'; 
+                status.textContent = "Offline";
+                status.style.color = "red";
+            }
         }
 
-        function renderMatches(matches) {
-            const container = document.getElementById('matchContainer');
-            container.innerHTML = '';
+        function injectSEO(seo) {
+            document.querySelectorAll('script[type="application/ld+json"]').forEach(e => {
+                 if (e.id !== 'dynamic-schema') e.remove(); // Keep python schema if any
+            });
             
-            // Group and Sort
+            const currentDomain = window.location.origin;
+
+            if (seo.live_broadcast) {
+                const script = document.createElement('script');
+                script.type = "application/ld+json";
+                script.text = JSON.stringify(seo.live_broadcast).replace('https://example.com', currentDomain);
+                document.head.appendChild(script);
+            }
+        }
+
+        function getColorForLetter(letter) {
+            if (!letter) return '#ccc';
+            const colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FFC300', '#00E5FF', '#8E44AD', '#E74C3C', '#2ECC71', '#F39C12'];
+            return colors[letter.charCodeAt(0) % colors.length];
+        }
+
+        function renderGrid(matches) {
+            const container = document.getElementById('matchContainer');
+            container.innerHTML = "";
+
+            if(matches.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:50px;">No matches found.</div>`;
+                return;
+            }
+
             const groups = {};
-            matches.forEach(m => { if(!groups[m.sport]) groups[m.sport] = []; groups[m.sport].push(m); });
+            matches.forEach(m => {
+                const s = m.sport.toUpperCase();
+                if(!groups[s]) groups[s] = [];
+                groups[s].push(m);
+            });
+            
+            // SORT BY PRIORITY (Using Python injected priorities)
             const sortedSports = Object.keys(groups).sort((a,b) => (PRIORITIES[b]||50) - (PRIORITIES[a]||50));
 
             sortedSports.forEach(sport => {
-                const header = document.createElement('div');
-                header.className = 'sec-head';
-                header.innerHTML = `<div class="sec-title">${sport}</div>`;
-                container.appendChild(header);
-
+                const section = document.createElement('div');
+                section.className = 'sport-section';
+                
+                let rows = '';
                 groups[sport].forEach(m => {
-                    const el = document.createElement('div');
-                    el.className = m.is_live ? 'match-row live' : 'match-row';
-                    const safeStreams = encodeURIComponent(JSON.stringify(m.streams));
+                    let statusHtml = m.is_live 
+                        ? `<div class="live-badge"><div class="live-dot"></div>${m.status_text}</div>` 
+                        : `<span style="color:#d00000">${m.status_text}</span>`;
+
+                    const viewerHtml = m.live_viewers ? `<span style="font-weight:600;">${m.live_viewers}</span>` : '';
                     
-                    const timeHTML = m.is_live 
-                        ? `<span class="live-txt">LIVE</span>` 
-                        : `<span class="time-main">${m.formatted_time}</span>`;
-
-                    const logoA = `<span class="t-logo" style="background:${getColor(m.team_a)}">${m.team_a.charAt(0)}</span>`;
-                    const logoB = `<span class="t-logo" style="background:${getColor(m.team_b)}">${m.team_b.charAt(0)}</span>`;
-
-                    el.innerHTML = `
-                        <div class="col-time">${timeHTML}</div>
-                        <div class="col-info">
-                            <div class="league-tag">${m.league}</div>
-                            <div class="team-name">${logoA} ${m.team_a}</div>
-                            <div class="team-name">${logoB} ${m.team_b}</div>
-                        </div>
-                        <div class="col-meta"><div class="meta-top">${m.live_viewers ? '🔥 '+m.live_viewers : 'HD'}</div></div>
-                        <div class="col-action">
-                            <button class="btn-watch" onclick="openStreams('${safeStreams}')">WATCH</button>
+                    const letterA = m.team_a_letter || (m.team_a ? m.team_a.charAt(0) : 'T');
+                    const letterB = m.team_b_letter || (m.team_b ? m.team_b.charAt(0) : 'T');
+                    const cA = getColorForLetter(letterA);
+                    const cB = getColorForLetter(letterB);
+                    
+                    const teamHTML = `
+                        <div class="mr-teams">
+                            <span class="team-logo" style="background:${cA}">${letterA}</span> ${m.team_a}
+                            <span style="color:#888; font-weight:400; margin:0 5px;">vs</span>
+                            <span class="team-logo" style="background:${cB}">${letterB}</span> ${m.team_b}
                         </div>
                     `;
-                    container.appendChild(el);
+
+                    const streamsJson = encodeURIComponent(JSON.stringify(m.streams));
+                    const safeTitle = `${m.team_a} vs ${m.team_b}`.replace(/'/g, "");
+                    const displayDate = m.formatted_date || "Today";
+
+                    rows += `
+                        <div class="match-row">
+                            <div class="mr-status">${statusHtml}</div>
+                            <div class="mr-date">${displayDate}</div>
+                            <div class="mr-info">
+                                ${teamHTML}
+                                <div class="mr-meta">${m.tournament}</div>
+                            </div>
+                            <div class="mr-viewers">${viewerHtml}</div>
+                            <div>
+                                <button class="watch-btn" onclick="openStreamModal('${m.id}', '${safeTitle}', '${streamsJson}', false)">Watch</button>
+                            </div>
+                        </div>
+                    `;
                 });
+
+                section.innerHTML = `
+                    <div class="sec-head">
+                        <span class="sec-title">${sport}</span>
+                        <span class="sport-count">${groups[sport].length}</span>
+                    </div>
+                    <div>${rows}</div>
+                `;
+                container.appendChild(section);
             });
         }
 
-        function getColor(name) {
-            const colors = ['#D00000', '#0056D2', '#008f39', '#7C3AED', '#FFD700', '#ff5722'];
-            return colors[name.charCodeAt(0) % colors.length];
-        }
+        // =================================================================
+        // SAFE MODAL LOGIC (Gatekeeper)
+        // =================================================================
+        function openStreamModal(id, title, json, isAutoOpen) {
+            const modal = document.getElementById('streamModal');
+            const list = document.getElementById('modalList');
+            document.getElementById('modalTitle').textContent = title;
+            list.innerHTML = '';
 
-        function openStreams(json) {
-            const streams = JSON.parse(decodeURIComponent(json));
-            const modal = document.getElementById('vModal');
-            const ctr = document.getElementById('vContainer');
-            ctr.innerHTML = '';
-            
-            // Simple List of buttons for streams
-            const list = document.createElement('div');
-            list.style.textAlign = 'center';
-            
-            if(!streams.length) list.innerHTML = '<span style="color:#fff">No streams found</span>';
-            
-            streams.forEach(s => {
-                const btn = document.createElement('button');
-                btn.className = 'btn-watch';
-                btn.style.margin = '10px';
-                btn.style.fontSize = '14px';
-                btn.innerText = `Play ${s.source_name}`;
-                btn.onclick = () => {
-                     // If direct embed, show iframe. If link, open new tab.
-                     if(s.url.includes('http')) window.open(s.url, '_blank');
-                     else ctr.innerHTML = `<iframe src="${s.url}" style="width:100%;height:100%;border:0" allow="autoplay;fullscreen"></iframe>`;
-                };
-                list.appendChild(btn);
-            });
-            
-            if(ctr.innerHTML === '') ctr.appendChild(list);
+            // Fake URL update
+            if (id) {
+                const fakeUrl = `/watch/${id}`;
+                window.history.pushState({path: fakeUrl}, '', fakeUrl);
+            }
+
+            try {
+                currentStreams = JSON.parse(decodeURIComponent(json));
+                
+                if (isAutoOpen) {
+                    // SAFE SEO MODE (Gatekeeper)
+                    list.innerHTML = `
+                        <div class="gated-content">
+                            <h2 style="margin:0 0 10px 0;">${title}</h2>
+                            <div class="gate-info">Click below to load available servers.</div>
+                            <button class="gate-btn" onclick="revealStreams()">LOAD STREAMS</button>
+                        </div>
+                    `;
+                } else {
+                    revealStreams();
+                }
+
+            } catch(e) { console.error(e); }
+
             modal.style.display = 'flex';
         }
 
-        function closeModal() {
-            document.getElementById('vModal').style.display = 'none';
-            document.getElementById('vContainer').innerHTML = '';
+        function revealStreams() {
+            const list = document.getElementById('modalList');
+            list.innerHTML = ''; 
+
+            if(!currentStreams.length) {
+                list.innerHTML = '<div style="padding:20px; text-align:center; color:#666">No streams available yet.</div>';
+            } else {
+                currentStreams.forEach(s => {
+                    const el = document.createElement('div');
+                    el.className = 'stream-item';
+                    const viewerBadge = s.viewers ? `<small style="color:#aaa">(${s.viewers} watching)</small>` : '';
+
+                    el.innerHTML = `
+                        <div>
+                            <div style="font-weight:600; color:#fff">${s.source_name}</div>
+                            <div style="font-size:12px; color:#888">Server: ${s.type === 'direct_embed' ? 'Direct' : 'API'} ${viewerBadge}</div>
+                        </div>
+                        <div style="font-size:18px">▶</div>
+                    `;
+                    el.onclick = () => {
+                        window.open(s.url, '_blank');
+                    };
+                    list.appendChild(el);
+                });
+            }
+        }
+
+        function closeModal() { 
+            document.getElementById('streamModal').style.display = 'none'; 
+            window.history.pushState({path: '/'}, '', '/');
         }
         
+        window.onclick = e => { if(e.target.id === 'streamModal') closeModal(); }
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
     </script>
 </body>
