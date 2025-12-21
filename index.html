@@ -138,7 +138,22 @@
 
         <!-- UPCOMING SECTIONS -->
         <div id="upcoming-container"></div>
-        <div class="seo-box"><h2>Welcome boss</h2></div>
+        <div class="seo-box"><h2>Welcome boss</h2><div class="entity-bar" style="margin-top:20px; text-align:center;"><span style="color:#666; font-size:0.8rem; margin-right:10px;">Trending:</span><button onclick="openEntityPopup(0)" style="background:none; color:#888; border:1px solid #333; border-radius:4px; padding:4px 10px; font-size:0.75rem; margin:0 4px;">Methstreams</button></div>
+    <script>
+        const ENTITY_DATA = ["<h3>Methstreams</h3><p>Watch Methstreams live...</p>"];
+        function openEntityPopup(idx) {
+            const content = ENTITY_DATA[idx];
+            const modal = document.createElement('div');
+            modal.style.cssText = "position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; display:flex; justify-content:center; align-items:center; padding:20px;";
+            modal.innerHTML = `<div style="background:#111; border:1px solid #444; padding:30px; border-radius:8px; max-width:500px; width:100%; color:#fff; position:relative;">
+                <button onclick="this.closest('div').parentElement.remove()" style="position:absolute; top:10px; right:10px; background:none; color:#fff; font-size:20px;">&times;</button>
+                ${content}
+                <div style="margin-top:20px; text-align:center;"><a href="/" style="background:#D00000; color:#fff; padding:10px 20px; border-radius:4px; text-decoration:none; font-weight:bold;">Go to Homepage</a></div>
+            </div>`;
+            document.body.appendChild(modal);
+        }
+    </script>
+    </div>
     </div>
 
     <footer>&copy; 2025 StreamEast Live. All rights reserved. <br> <a href="#">DMCA</a> • <a href="#">Privacy</a></footer>
