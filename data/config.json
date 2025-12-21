@@ -59,7 +59,17 @@
   "pages": [
     {
       "slug": "home",
-      "content": "<h2>Welcome</h2>"
+      "content": "<h2>Welcome boss</h2>",
+      "id": "p_oktg8q1t8",
+      "schemas": {
+        "live": true,
+        "upcoming": true,
+        "org": true
+      },
+      "title": "No. #1 Streaming Website",
+      "layout": "page",
+      "meta_title": "Best site",
+      "meta_desc": "Best meta"
     },
     {
       "id": "p_1766331096752",
