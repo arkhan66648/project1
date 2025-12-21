@@ -78,12 +78,61 @@
       }
     },
     "UK": {
-      "Premier League": 100,
-      "Cricket": 95,
-      "F1": 90,
-      "Rugby": 85,
-      "Darts": 80,
-      "Snooker": 75
+      "Premier League": {
+        "score": 100,
+        "isLeague": true,
+        "hasLink": false
+      },
+      "Champions League": {
+        "score": 95,
+        "isLeague": true,
+        "hasLink": false
+      },
+      "Rugby": {
+        "score": 90,
+        "isLeague": false,
+        "hasLink": false
+      },
+      "Cricket": {
+        "score": 85,
+        "isLeague": false,
+        "hasLink": false
+      },
+      "Snooker": {
+        "score": 80,
+        "isLeague": false,
+        "hasLink": false
+      },
+      "Darts": {
+        "score": 75,
+        "isLeague": false,
+        "hasLink": false
+      },
+      "F1": {
+        "score": 70,
+        "isLeague": true,
+        "hasLink": false
+      },
+      "Championship": {
+        "score": 60,
+        "isLeague": true,
+        "hasLink": false
+      },
+      "Boxing": {
+        "score": 50,
+        "isLeague": false,
+        "hasLink": false
+      },
+      "Tennis": {
+        "score": 40,
+        "isLeague": false,
+        "hasLink": false
+      },
+      "NFL": {
+        "score": 30,
+        "isLeague": true,
+        "hasLink": false
+      }
     }
   },
   "header_menu": [
