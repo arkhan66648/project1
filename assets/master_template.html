@@ -6,145 +6,119 @@
     <title>{{META_TITLE}}</title>
     <meta name="description" content="{{META_DESC}}">
     {{META_KEYWORDS}}
-    <meta name="theme-color" content="{{BRAND_PRIMARY}}">
+    <meta name="theme-color" content="#050505">
     <link rel="canonical" href="{{CANONICAL_URL}}">
     <link rel="icon" href="{{FAVICON}}">
     
-    <!-- 1. FONTS -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-
-    <!-- 2. CRYPTO LIBRARY -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    <!-- 1. SYSTEM FONTS ONLY (Fastest, matches reference) -->
+    <!-- No Google Fonts or External Scripts here -->
 
     {{SCHEMA_BLOCK}}
 
     <style>
+        /* --- REFERENCE COLORS & VARIABLES --- */
         :root {
-            --brand-primary: {{BRAND_PRIMARY}}; 
-            --brand-dark: {{BRAND_DARK}};
-            --accent-gold: {{ACCENT_GOLD}};
-            --bg-body: {{BG_BODY}}; 
-            --hero-grad: {{HERO_GRADIENT}}; 
-            --font-main: {{FONT_FAMILY}};
+            --brand-primary: #D00000;
+            --brand-dark: #8a0000;
             --status-green: #00e676;
-            --bg-glass: rgba(20, 20, 20, 0.95);
-            --border: #2a2a2a;
+            --accent-gold: #FFD700;
+            --bg-body: #050505;
+            --bg-glass: rgba(18, 18, 18, 0.85);
+            --border: #222;
             --text-main: #ffffff;
+            --text-muted: #888;
+            /* CMS Placeholders mapping */
+            --cms-hero-grad: {{HERO_GRADIENT}}; 
         }
 
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: var(--font-main), system-ui, sans-serif; background: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
+        /* --- GLOBAL RESET --- */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            margin: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif; 
+            background: var(--bg-body); 
+            color: var(--text-main); 
+            font-size: 14px; 
+            overflow-x: hidden; 
+        }
         a { text-decoration: none; color: inherit; transition: 0.2s; }
         button { cursor: pointer; border: none; font-family: inherit; }
 
         /* HEADER */
-        header { background: rgba(5,5,5,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); height: 60px; width: 100%; position: fixed; top: 0; z-index: 100; }
+        header { background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); height: 60px; width: 100%; position: fixed; top: 0; z-index: 100; }
         .header-container { max-width: 1100px; margin: 0 auto; height: 100%; padding: 0 15px; display: flex; align-items: center; justify-content: space-between; }
         .logo-link { display: flex; align-items: center; gap: 10px; }
-        .logo-img { height: 35px; border-radius: 6px; }
-        .logo-text { font-size: 1.4rem; font-weight: 900; font-style: italic; letter-spacing: -1px; text-transform: uppercase; }
+        .logo-img { height: 35px; width: 35px; border-radius: 6px; object-fit: cover; box-shadow: 0 0 10px rgba(208,0,0,0.3); }
+        .logo-text { font-size: 1.4rem; font-weight: 900; font-style: italic; letter-spacing: -1px; text-transform: uppercase; line-height: 1; }
         .logo-text span { color: var(--brand-primary); }
         .nav-links { display: none; gap: 20px; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #aaa; }
-        .nav-links a:hover { color: #fff; }
-        .hamburger { display: block; font-size: 1.4rem; color: #fff; background: none; }
+        .nav-links a:hover { color: white; }
+        .hamburger { display: block; font-size: 1.4rem; color: white; background: none; }
+        
         .mobile-menu { position: fixed; top: 60px; left: 0; width: 100%; background: #0f0f0f; border-bottom: 1px solid var(--border); display: none; flex-direction: column; z-index: 99; }
         .mobile-menu.active { display: flex; }
         .mobile-menu a { padding: 15px 20px; border-bottom: 1px solid #1f1f1f; font-weight: 600; }
         @media (min-width: 900px) { .nav-links { display: flex; } .hamburger { display: none; } }
 
-        /* HERO & CONTAINER */
-        .hero { padding: 90px 15px 15px 15px; text-align: center; background: radial-gradient(circle at top, var(--hero-grad) 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); display: {{DISPLAY_HERO}}; }
-        .sys-status { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.2); padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; font-size: 0.75rem; font-weight: 700; color: var(--status-green); }
+        /* HERO */
+        .hero { padding: 90px 15px 15px 15px; text-align: center; background: radial-gradient(circle at top, #1a0505 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); display: {{DISPLAY_HERO}}; }
+        .sys-status { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 230, 118, 0.08); border: 1px solid rgba(0, 230, 118, 0.2); padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; font-size: 0.75rem; font-weight: 700; color: var(--status-green); }
         .dot { width: 6px; height: 6px; background: var(--status-green); border-radius: 50%; box-shadow: 0 0 8px var(--status-green); animation: pulse 2s infinite; }
-        h1 { margin: 0 0 20px 0; font-size: 1.8rem; line-height: 1.2; font-weight: 800; }
-        .entity-intro { color: #999; font-size: 0.9rem; max-width: 800px; margin: 0 auto; line-height: 1.5; }
-        .cat-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 15px 5px; justify-content: center; }
+        h1 { margin: 0 0 20px 0; font-size: 1.8rem; line-height: 1.2; color: white; font-weight: 800; }
+        .entity-intro { color: #999; font-size: 0.9rem; line-height: 1.5; max-width: 800px; margin: 0 auto; }
+        .cat-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 10px 5px; justify-content: center; scrollbar-width: none; }
         .cat-pill { background: #111; border: 1px solid var(--border); padding: 8px 18px; border-radius: 50px; font-weight: 700; font-size: 0.8rem; white-space: nowrap; color: #ccc; }
-        .cat-pill:hover { border-color: var(--brand-primary); color: #fff; }
+        .cat-pill:hover, .cat-pill.active { border-color: var(--brand-primary); color: white; background: rgba(208,0,0,0.1); }
+        
         .container { max-width: 1000px; margin: 0 auto; padding: 20px 15px; }
 
         /* MATCH ROWS */
-        .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 35px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #1a1a1a; }
-        .sec-title { font-size: 1.1rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
+        .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 30px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #1a1a1a; }
+        .sec-title { font-size: 1.1rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
         .live-dot { width: 8px; height: 8px; background: var(--brand-primary); border-radius: 50%; box-shadow: 0 0 10px var(--brand-primary); }
-        .sec-right-link { font-size: 0.75rem; font-weight: 700; color: #888; cursor: pointer; display: flex; align-items: center; gap: 4px;}
-        .sec-right-link:hover { color: var(--brand-primary); }
-        
-        .match-row { display: grid; grid-template-columns: 50px 1fr 70px; align-items: center; gap: 10px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 8px; transition: 0.2s; position: relative; overflow: hidden; }
-        .match-row:hover { border-color: #444; transform: translateY(-2px); background: #1a1a1a; }
-        .match-row.live { border-left: 3px solid var(--brand-primary); background: linear-gradient(90deg, rgba(208,0,0,0.06) 0%, rgba(20,20,20,0.8) 100%); }
-        @media (min-width: 768px) { .match-row { grid-template-columns: 80px 1fr 100px 110px; padding: 15px 20px; gap: 20px; } }
+        .sec-right-link { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; }
+        .sec-right-link:hover { color: var(--brand-primary); text-decoration: underline; }
 
-        .col-time { text-align: center; display: flex; flex-direction: column; justify-content: center; gap: 3px; }
-        .time-main { font-size: 0.8rem; font-weight: 700; color: #fff; }
-        .time-sub { font-size: 0.65rem; color: #888; }
-        .live-txt { color: var(--brand-primary); font-weight: 900; animation: blink 1.5s infinite; font-size: 0.65rem; letter-spacing: 0.5px; }
-        
-        .teams-wrapper { display: flex; flex-direction: column; gap: 4px; }
-        .league-tag { font-size: 0.65rem; color: var(--accent-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .team-name { font-size: 0.95rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px; }
-        .t-logo { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); flex-shrink: 0; }
-        
-        .col-meta { display: none; flex-direction: column; align-items: flex-end; gap: 3px; justify-content: center; }
-        .meta-top { font-size: 0.7rem; font-weight: 700; color: var(--status-green); }
+        .match-row { display: grid; grid-template-columns: 45px 1fr 65px 65px; align-items: center; gap: 8px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 6px; padding: 10px 8px; margin-bottom: 8px; position: relative; transition: 0.2s; }
+        .match-row:hover { border-color: #444; transform: translateY(-2px); }
+        .match-row.live { border-left: 3px solid var(--brand-primary); background: linear-gradient(90deg, rgba(208,0,0,0.06) 0%, rgba(20,20,20,0.8) 100%); }
+        @media (min-width: 768px) { .match-row { grid-template-columns: 70px 1fr 100px 100px; padding: 15px 20px; gap: 20px; } }
+
+        .col-time { text-align: center; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+        .time-main { font-size: 0.75rem; font-weight: 700; color: white; }
+        .time-sub { font-size: 0.6rem; color: #888; }
+        .live-txt { color: var(--brand-primary); font-weight: 900; animation: blink 1.5s infinite; font-size: 0.65rem; }
+
+        .teams-wrapper { display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
+        .league-tag { font-size: 0.6rem; color: #666; font-weight: 700; text-transform: uppercase; }
+        .team-name { font-size: 0.9rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
+        .t-logo { width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); flex-shrink: 0; }
+
+        .col-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; justify-content: center; }
+        .meta-top { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); }
         .meta-bot { font-size: 0.6rem; color: #aaa; border: 1px solid #333; padding: 1px 4px; border-radius: 3px; }
-        @media (min-width: 768px) { .col-meta { display: flex; } }
-        
-        .col-action { margin-left: auto; }
-        .btn-watch { background: var(--brand-primary); color: #fff; font-size: 0.7rem; font-weight: 800; padding: 8px 16px; border-radius: 4px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 10px rgba(208, 0, 0, 0.3); transition: 0.2s; width: 100%; }
-        .btn-watch:hover { filter: brightness(1.2); transform: scale(1.02); }
-        .hd-badge { background: rgba(0,0,0,0.3); padding: 1px 4px; border-radius: 3px; font-size: 0.55rem; border: 1px solid rgba(255,255,255,0.2); }
-        
-        .btn-notify { background: #1a1a1a; border: 1px solid #333; color: #aaa; font-size: 0.7rem; font-weight: 800; padding: 8px 16px; border-radius: 4px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; transition: 0.2s; }
-        .btn-notify:hover { border-color: #666; color: #fff; }
-        .btn-notify.active { background: #064e3b; border-color: #059669; color: #34d399; cursor: default; }
-        
+
+        .col-action { margin-left: auto; width: 100%; }
+        .btn-watch { background: var(--brand-primary); color: white; font-size: 0.65rem; font-weight: 800; padding: 8px 10px; border-radius: 4px; width: 100%; text-transform: uppercase; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .btn-watch:hover { background: var(--brand-dark); transform: scale(1.02); }
+        .btn-notify { background: transparent; border: 1px solid #333; color: #888; padding: 6px 0; box-shadow: none; }
+        .btn-notify.active { border-color: var(--status-green); color: var(--status-green); cursor: default; }
+
         .show-more-btn { display: block; margin: 20px auto; background: #151515; border: 1px solid #333; color: #ccc; padding: 12px 25px; border-radius: 30px; font-weight: 600; font-size: 0.85rem; transition:0.2s; }
         .show-more-btn:hover { border-color: var(--brand-primary); color: #fff; }
 
-        /* FOOTER */
+        /* FOOTER & SEO */
         .seo-box { background: #0a0a0a; border: 1px solid var(--border); padding: 25px; border-radius: 10px; margin-top: 40px; color: #ccc; }
-        footer { background: #050505; border-top: 1px solid #1a1a1a; margin-top: 50px; padding: 40px 15px; }
-        .footer-content { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 30px; }
-        @media (min-width: 768px) { .footer-content { grid-template-columns: 1fr 1fr; } }
-        .footer-col h3 { color: #fff; font-size: 1rem; margin-bottom: 15px; }
-        .footer-links { display: flex; flex-direction: column; gap: 10px; }
-        .footer-link { color: #888; font-size: 0.85rem; }
-        .footer-link:hover { color: var(--brand-primary); }
-        .entity-footer-section { margin-top: 40px; text-align: center; border-top: 1px solid #1a1a1a; padding-top: 30px; }
-        .entity-footer-section h3 { font-size: 0.9rem; color: #666; margin-bottom: 15px; text-transform: uppercase; }
-        .entity-tags { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-        .entity-tag { background: #111; border: 1px solid #333; color: #999; padding: 5px 12px; border-radius: 4px; font-size: 0.75rem; transition: 0.2s; }
-        .entity-tag:hover { border-color: var(--brand-primary); color: #fff; }
-        .disclaimer { font-size: 0.7rem; color: #555; text-align: center; margin-top: 30px; line-height: 1.5; max-width: 800px; margin-left: auto; margin-right: auto; }
-        .copyright { text-align: center; color: #444; font-size: 0.75rem; margin-top: 20px; }
+        footer { text-align: center; padding: 40px 20px; color: #444; font-size: 0.75rem; border-top: 1px solid #1a1a1a; margin-top: 40px; }
+        .footer-content { display: none; } /* Keeping structure for CMS but hiding if not needed */
+        
+        /* POPUPS */
+        .entity-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        
+        /* PLAYER MODAL STYLES (Clean, hidden by default) */
+        .modal { position: fixed; inset: 0; background: #000; z-index: 2000; display: none; flex-direction: column; }
+        /* Actual layout generated by player.js */
 
-        /* ENTITY POPUP */
-        .entity-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 5000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .entity-loader { border: 4px solid #333; border-top: 4px solid var(--brand-primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 20px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* PLAYER MODAL */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-box { background: #111; width: 100%; height: 100%; display: flex; flex-direction: column; }
-        @media (min-width: 900px) { .modal-box { width: 90%; max-width: 1100px; height: 85vh; border: 1px solid #333; border-radius: 10px; overflow: hidden; } }
-        .modal-head { padding: 15px 20px; background: #0a0a0a; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
-        .player-layout { display: flex; flex-direction: column; height: 100%; }
-        .iframe-container { position: relative; width: 100%; background: #000; flex-grow: 1; display: flex; align-items: center; justify-content: center; }
-        .stream-list-area { background: #0e0e0e; border-top: 1px solid #222; padding: 15px; overflow-y: auto; max-height: 200px; flex-shrink: 0; }
-        @media (min-width: 900px) { .player-layout { flex-direction: row; } .stream-list-area { width: 300px; border-top: none; border-left: 1px solid #222; max-height: none; } }
-        
-        .stream-btn { display: flex; align-items: center; gap: 10px; width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 12px; margin-bottom: 8px; color: #ddd; border-radius: 6px; font-size: 0.85rem; font-weight: 600; text-align: left; transition: 0.2s; }
-        .stream-btn:hover, .stream-btn.active { background: #222; border-color: var(--brand-primary); color: #fff; }
-        .stream-btn.active { background: rgba(208, 0, 0, 0.1); }
-        .sig-hd { background: var(--brand-primary); color: #fff; font-size: 0.6rem; padding: 2px 4px; border-radius: 3px; font-weight: bold; }
-        
-        /* SEO OVERLAY (Inside Player) */
-        .info-card-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.8); z-index: 10; display: flex; align-items: center; justify-content: center; }
-        .info-card { background: #1a1a1a; padding: 40px; border-radius: 12px; border: 1px solid #333; text-align: center; max-width: 400px; width: 90%; }
-        
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     </style>
@@ -178,51 +152,18 @@
     </div>
 
     <footer>
-        <div class="footer-content">
-            <div class="footer-col"><h3>Top Leagues</h3><div class="footer-links">{{FOOTER_LEAGUES}}</div></div>
-            <div class="footer-col"><h3>Legal & Info</h3><div class="footer-links">{{FOOTER_STATIC}}</div></div>
-        </div>
-        {{ENTITY_SECTION}}
         {{FOOTER_DISCLAIMER}}
         <div class="copyright">{{FOOTER_COPYRIGHT}}</div>
     </footer>
 
+    <!-- Entity Popup (CMS Feature) -->
     <div id="entityPopup" class="entity-popup">
-        <div class="entity-loader"></div>
         <h3 id="entityPopupTitle" style="color:#fff; margin-bottom:10px;">Searching...</h3>
-        <p style="color:#888; font-size:0.9rem;">Checking live stream availability...</p>
-        <div id="entityPopupResult" style="display:none; margin-top:20px;">
-            <p style="color:var(--status-green); font-weight:bold;">✔ Best Alternative Found: {{DOMAIN}}</p>
-            <p style="color:#666; font-size:0.8rem;">Redirecting to official stream...</p>
-        </div>
+        <p style="color:#888;">Checking stream availability...</p>
     </div>
 
-    <!-- PLAYER OVERLAY -->
-    <div class="modal" id="streamModal">
-        <div class="modal-box">
-            <div class="modal-head">
-                <div style="font-weight:700; color:#fff;" id="playerTitle">Loading...</div>
-                <button onclick="closeStreamModal()" style="background:none; color:#fff; font-size:24px;">&times;</button>
-            </div>
-            <div class="player-layout">
-                <div class="iframe-container" id="iframeBox">
-                    <div style="color:#666; padding:20px;">Select a stream source.</div>
-                    <div id="seoOverlay" class="info-card-overlay" style="display:none;">
-                        <div class="info-card">
-                            <h3 style="margin:0; color:#888;">WATCH MATCH</h3>
-                            <div style="font-size:1.5rem; font-weight:900; margin:15px 0; color:#fff;" id="seoVsText"></div>
-                            <div style="color:var(--accent-gold); font-weight:700; margin-bottom:25px;" id="seoTimeText"></div>
-                            <button class="btn-watch" onclick="unlockStream()" style="font-size:1.1rem; padding:15px;">▶ WATCH NOW <span class="hd-badge">HD</span></button>
-                        </div>
-                    </div>
-                </div>
-                <div class="stream-list-area">
-                    <div style="font-size:0.75rem; font-weight:700; color:#666; margin-bottom:10px; text-transform:uppercase;">Select Source</div>
-                    <div id="streamList"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- PLAYER CONTAINER (Empty initially for speed) -->
+    <div id="streamModal" class="modal"></div>
 
     <script>
         const API_URL = "https://vercelapi-olive.vercel.app/api/sync-nodes";
@@ -231,9 +172,8 @@
         const SITE_DOMAIN = "https://{{DOMAIN}}";
 
         let allMatches = [];
-        let currentMatchData = null;
         let renderedIds = new Set();
-        window.MATCH_DATA = {}; // Global store used by player.js
+        window.MATCH_DATA = {}; // Global store
 
         window.addEventListener('DOMContentLoaded', () => {
             loadMatches();
@@ -250,21 +190,10 @@
             } catch(e) { console.error(e); }
         }
 
-        function injectDynamicSchema(seoData) {
-            if(!seoData) return;
-            let jsonStr = JSON.stringify(seoData);
-            jsonStr = jsonStr.replace(/https:\/\/example\.com/g, SITE_DOMAIN);
-            const script = document.createElement('script');
-            script.type = 'application/ld+json';
-            script.text = jsonStr; 
-            document.head.appendChild(script);
-        }
-
         function renderApp(matches) {
             renderedIds.clear();
             window.MATCH_DATA = {};
             
-            // Populate Global Store
             matches.forEach(m => window.MATCH_DATA[m.id] = m);
 
             const liveMatches = matches.filter(m => m.is_live);
@@ -279,9 +208,10 @@
             });
             renderUpcomingSections(upcomingMatches);
 
+            // CHECK HASH FOR DIRECT LINK / SEO
             const hashId = window.location.hash.replace('#', '');
             if(hashId && window.MATCH_DATA[hashId]) {
-                // HASH (SEO) -> Start Locked (true)
+                // TRUE = Start Locked (Show Info Card only)
                 openPlayer(hashId, true);
             }
         }
@@ -291,7 +221,7 @@
             const hiddenList = document.getElementById('hidden-live-list');
             const btn = document.getElementById('show-more-live');
             topList.innerHTML = ''; hiddenList.innerHTML = ''; btn.style.display='none';
-            if (matches.length === 0) { topList.innerHTML = '<div style="text-align:center; padding:30px; color:#444;">No live matches.</div>'; return; }
+            if (matches.length === 0) { topList.innerHTML = '<div style="text-align:center; padding:30px; color:#444;">No live matches currently.</div>'; return; }
             
             matches.slice(0, 5).forEach(m => { topList.appendChild(createMatchRow(m, 'tournament')); renderedIds.add(m.id); });
             if (matches.length > 5) {
@@ -328,7 +258,6 @@
 
         function createSection(container, title, matches, isLeague, hasLink, iconKey) {
             const section = document.createElement('div');
-            section.className = 'sport-section';
             let linkHtml = '';
             if (hasLink) {
                 const slug = iconKey.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
@@ -346,37 +275,44 @@
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
             let timeCol;
-            if (m.is_live) timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text}</span>`;
+            if (m.is_live) timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
             else { const parts = m.formatted_date.split('•'); timeCol = `<span class="time-main">${parts[1] || ''}</span><span class="time-sub">${parts[0]}</span>`; }
 
             let teamsHtml = '';
-            if (!m.team_b) teamsHtml = `<div class="team-name" style="font-size:1.1rem;"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${m.team_a}</div>`;
+            const tA = m.team_a; const tB = m.team_b;
+            if (!tB) teamsHtml = `<div class="team-name" style="font-size:1rem;"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tA}</div>`;
             else teamsHtml = `
-                <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${m.team_a}</div>
-                <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_b_letter||'T')}">${m.team_b_letter||'T'}</span> ${m.team_b}</div>`;
+                <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tA}</div>
+                <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_b_letter||'T')}">${m.team_b_letter||'T'}</span> ${tB}</div>`;
 
             const tagText = tagType === 'sport' ? m.sport : (m.tournament || m.league || m.sport);
             
             let metaHtml = '', actionHtml = '';
             if (m.is_live) {
-                metaHtml = `<div class="meta-top">${m.live_viewers || ''}</div>`;
-                // USER CLICK -> Start Unlocked (false)
-                actionHtml = `<button class="btn-watch" onclick="openPlayer('${m.id}', false)">WATCH <span class="hd-badge">HD</span></button>`;
+                metaHtml = `<div class="meta-top">🔥 ${m.live_viewers || 'N/A'}</div><div class="meta-bot">HD</div>`;
+                // CLICKING WATCH HERE = UNLOCKED (false) -> Loads Player Directly
+                actionHtml = `<button class="btn-watch" onclick="openPlayer('${m.id}', false)">WATCH</button>`;
             } else {
-                metaHtml = `<div class="meta-top" style="color:#aaa; font-weight:400; font-size:0.65rem;">${m.status_text}</div>`;
-                actionHtml = `<button class="btn-notify" onclick="this.innerHTML='✓ SET'; this.disabled=true; this.classList.add('active');">🔔 NOTIFY</button>`;
+                metaHtml = `<div class="meta-top" style="color:#aaa; font-weight:400;">⏳</div>`;
+                actionHtml = `<button class="btn-watch btn-notify" onclick="this.innerHTML='✓ SET'; this.classList.add('active');">🔔 NOTIFY</button>`;
             }
 
             div.innerHTML = `<div class="col-time">${timeCol}</div><div class="teams-wrapper"><div class="league-tag">${tagText}</div>${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${actionHtml}</div>`;
             return div;
         }
 
-        // --- PLAYER FUNCTIONS ---
-        function openPlayer(matchId, startLocked = false) {
+        // --- PLAYER & MODAL LOGIC (Lazy Loading) ---
+        function openPlayer(matchId, startLocked) {
             const m = window.MATCH_DATA[matchId];
-            if(!m) return alert("Match data not found. Please refresh.");
-            
-            // Lazy Load Player Logic
+            if(!m) return alert("Match expired or not found.");
+
+            // If we are clicking "Watch" (unlocked), we want the URL to update immediately
+            if(!startLocked) {
+                 // Push state happens in player.js usually, but we can do it here too if preferred. 
+                 // We will let player.js handle it to keep logic centralized.
+            }
+
+            // Lazy Load Player Script only when needed
             if(window.initPlayer) {
                 window.initPlayer(m, startLocked);
             } else {
@@ -387,23 +323,8 @@
             }
         }
         
-        function unlockStream() {
-            // Unhide logic is actually handled by calling initPlayer(match, false)
-            // But we must also ensure overlay is hidden immediately
-            document.getElementById('seoOverlay').style.display='none';
-            if(window.currentMatchData && window.initPlayer) {
-                window.initPlayer(window.currentMatchData, false); // Switch to Unlocked Mode
-            }
-        }
-
-        function triggerEntityPopup(keyword) {
-            const p = document.getElementById('entityPopup');
-            document.getElementById('entityPopupTitle').innerText = `${keyword} Live`;
-            p.style.display = 'flex';
-            setTimeout(() => { document.getElementById('entityPopupResult').style.display='block'; }, 1500);
-            setTimeout(() => { window.location.href = '/'; }, 3000);
-        }
-
+        // Helper functions
+        function injectDynamicSchema(seoData) { if(!seoData) return; let jsonStr = JSON.stringify(seoData).replace(/https:\/\/example\.com/g, SITE_DOMAIN); const script = document.createElement('script'); script.type = 'application/ld+json'; script.text = jsonStr; document.head.appendChild(script); }
         function getSportIcon(n) { n=(n||"").toLowerCase(); if(n.includes('soccer')||n.includes('premier')) return '⚽'; if(n.includes('basket')||n.includes('nba')) return '🏀'; if(n.includes('football')||n.includes('nfl')) return '🏈'; if(n.includes('baseball')||n.includes('mlb')) return '⚾'; if(n.includes('ufc')||n.includes('mma')) return '🥊'; if(n.includes('hockey')) return '🏒'; if(n.includes('f1')) return '🏎️'; return '🏆'; }
         function getColor(char) { const c = ['#e53935','#d81b60','#8e24aa','#5e35b1','#3949ab','#1e88e5','#039be5','#00897b','#43a047','#7cb342','#c0ca33','#fdd835','#fb8c00']; return c[char.charCodeAt(0) % c.length]; }
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
