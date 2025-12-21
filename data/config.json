@@ -213,6 +213,10 @@
       {
         "title": "Schedule",
         "url": "#"
+      },
+      {
+        "title": "FAQs",
+        "url": "/#faqs"
       }
     ],
     "hero": [
@@ -235,6 +239,16 @@
       {
         "title": "DMCA",
         "url": "/dmca"
+      },
+      {
+        "title": "Contact",
+        "url": "/contact"
+      }
+    ],
+    "footer_leagues": [
+      {
+        "title": "Contact",
+        "url": "/contact"
       }
     ]
   },
