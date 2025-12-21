@@ -60,6 +60,20 @@
     {
       "slug": "home",
       "content": "<h2>Welcome</h2>"
+    },
+    {
+      "id": "p_1766331096752",
+      "title": "New Page",
+      "slug": "new-page",
+      "layout": "home",
+      "meta_title": "",
+      "meta_desc": "",
+      "content": "<p>Hello World</p>",
+      "schemas": {
+        "live": true,
+        "upcoming": true,
+        "org": true
+      }
     }
   ],
   "menus": {
