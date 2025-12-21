@@ -7,7 +7,7 @@ const BRANCH = 'main';
 const DEMO_CONFIG = {
     site_settings: {
         title_part_1: "Stream", title_part_2: "East", domain: "StreamEast Live",
-        logo_url: "https://streameastlive.cc/assets/streameast-logo-hd.jpg",
+        logo_url: "",
         custom_meta: "Welcome to the official StreamEast. Watch NBA, NFL, UFC free.",
         ga_id: ""
     },
@@ -47,7 +47,6 @@ window.addEventListener("DOMContentLoaded", () => {
             toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter | bullist numlist | link code',
             setup: (editor) => {
                 editor.on('change', () => {
-                    // Update the active page content in configData
                     const homePage = configData.pages.find(p => p.slug === 'home');
                     if(homePage) homePage.content = editor.getContent();
                 });
@@ -62,10 +61,7 @@ window.addEventListener("DOMContentLoaded", () => {
         startPolling();
     }
     
-    // Live Preview
-    ['titleP1','titleP2','colPrimary'].forEach(id => {
-        document.getElementById(id)?.addEventListener('input', updatePreview);
-    });
+    setupInputs();
 });
 
 async function loadConfig() {
@@ -165,10 +161,6 @@ document.getElementById('saveBtn').onclick = async () => {
     }
 };
 
-// ... [Keep existing Polling, Menu, Priority, and Util functions from previous response] ...
-// (I am omitting the repetitive utility functions like startPolling, renderPriorities, etc. 
-//  Use the ones from the previous FULL Admin/App.js response, they work perfectly with this.)
-
 function startPolling() {
     if(pollingInterval) clearInterval(pollingInterval);
     checkBuildStatus();
@@ -216,7 +208,7 @@ function updateStatus(state, text) {
 function setVal(id, v) { if(document.getElementById(id)) document.getElementById(id).value = v || ""; }
 function getVal(id) { return document.getElementById(id)?.value || ""; }
 function setColor(id, v) { setVal(id, v); }
-function updatePreview() { /* Optional preview logic */ }
+function setupInputs() { /* Listeners */ }
 
 function switchTab(id) {
     document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
@@ -225,5 +217,72 @@ function switchTab(id) {
     event.currentTarget.classList.add('active');
 }
 function saveToken() { localStorage.setItem('gh_token', document.getElementById('ghToken').value); location.reload(); }
-function renderPriorities() { /* ... Same as before ... */ }
-function renderMenus() { /* ... Same as before ... */ }
+
+// --- Priorities ---
+function renderPriorities() {
+    const container = document.getElementById('priorityListContainer');
+    if(!container) return;
+    container.innerHTML = '';
+    const sorted = Object.entries(configData.sport_priorities || {}).sort((a,b) => b[1] - a[1]);
+    
+    sorted.forEach(([sport, score]) => {
+        const div = document.createElement('div');
+        div.className = 'menu-item-row';
+        div.innerHTML = `
+            <strong>${sport}</strong>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <input type="number" value="${score}" onchange="updatePriority('${sport}', this.value)" style="width:70px; margin:0;">
+                <button class="btn-x" onclick="deletePriority('${sport}')">×</button>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+window.updatePriority = (sport, val) => { configData.sport_priorities[sport] = parseInt(val); };
+window.deletePriority = (sport) => { delete configData.sport_priorities[sport]; renderPriorities(); };
+window.addPriorityRow = () => {
+    const name = getVal('newSportName');
+    if(name) {
+        if(!configData.sport_priorities) configData.sport_priorities = {};
+        configData.sport_priorities[name] = 50;
+        setVal('newSportName', '');
+        renderPriorities();
+    }
+};
+
+// --- Menus ---
+function renderMenus() {
+    renderMenuSection('header', configData.header_menu);
+    renderMenuSection('hero', configData.hero_categories);
+}
+function renderMenuSection(id, items) {
+    const cont = document.getElementById(`menu-${id}`);
+    if(!cont) return;
+    cont.innerHTML = (items || []).map((item, idx) => `
+        <div class="menu-item-row">
+            <div><strong>${item.title}</strong><br><small>${item.url}</small></div>
+            <button class="btn-x" onclick="deleteMenuItem('${id}', ${idx})">×</button>
+        </div>
+    `).join('');
+}
+window.openMenuModal = (sec) => {
+    document.getElementById('menuTargetSection').value = sec;
+    setVal('menuTitleItem', ''); setVal('menuUrlItem', '');
+    document.getElementById('menuModal').style.display = 'flex';
+}
+window.saveMenuItem = () => {
+    const sec = document.getElementById('menuTargetSection').value;
+    const item = { title: getVal('menuTitleItem'), url: getVal('menuUrlItem') };
+    if(!item.title || !item.url) return;
+    
+    if(sec === 'header') configData.header_menu.push(item);
+    if(sec === 'hero') configData.hero_categories.push(item);
+    
+    renderMenus();
+    document.getElementById('menuModal').style.display = 'none';
+}
+window.deleteMenuItem = (sec, idx) => {
+    if(sec === 'header') configData.header_menu.splice(idx, 1);
+    if(sec === 'hero') configData.hero_categories.splice(idx, 1);
+    renderMenus();
+}
