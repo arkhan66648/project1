@@ -1,0 +1,35 @@
+name: Build Static Site
+
+on:
+  push:
+    paths:
+      - 'data/config.json'          # Trigger when Admin updates config
+      - 'scripts/build_site.py'     # Trigger if script changes
+      - 'assets/master_template.html' # Trigger if template changes
+  workflow_dispatch:                # Allow manual button click in GitHub Actions tab
+
+jobs:
+  build_html:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write              # Permission to commit index.html back
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Run Build Script
+        run: python scripts/build_site.py
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "CMS Bot"
+          git config --global user.email "bot@noreply.github.com"
+          git add index.html
+          # Only commit if there are changes
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-Build: Static HTML Updated" && git push)
