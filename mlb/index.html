@@ -49,7 +49,7 @@
         .cat-pill:hover { border-color: var(--brand-primary); color: #fff; }
         .container { max-width: 1000px; margin: 0 auto; padding: 20px 15px; }
 
-        /* MATCH ROWS & SECTIONS */
+        /* MATCH ROWS */
         .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 35px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #1a1a1a; }
         .sec-title { font-size: 1.1rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
         .live-dot { width: 8px; height: 8px; background: var(--brand-primary); border-radius: 50%; box-shadow: 0 0 10px var(--brand-primary); }
@@ -86,7 +86,7 @@
         
         .show-more-btn { display: block; margin: 20px auto; background: #151515; border: 1px solid #333; color: #ccc; padding: 12px 25px; border-radius: 30px; font-weight: 600; font-size: 0.85rem; transition:0.2s; }
         
-        /* FOOTER & ENTITY */
+        /* FOOTER */
         .seo-box { background: #0a0a0a; border: 1px solid var(--border); padding: 25px; border-radius: 10px; margin-top: 40px; color: #ccc; }
         
         footer { background: #050505; border-top: 1px solid #1a1a1a; margin-top: 50px; padding: 40px 15px; }
@@ -112,7 +112,7 @@
         .entity-loader { border: 4px solid #333; border-top: 4px solid var(--brand-primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* PLAYER MODAL STYLES (Basic layout, logic in player.js) */
+        /* PLAYER MODAL STYLES (Logic in player.js) */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-box { background: #111; width: 100%; height: 100%; display: flex; flex-direction: column; }
         @media (min-width: 900px) { .modal-box { width: 90%; max-width: 1100px; height: 85vh; border: 1px solid #333; border-radius: 10px; overflow: hidden; } }
@@ -262,13 +262,12 @@
 
         function injectDynamicSchema(seoData) {
             if(!seoData) return;
-            // Stringify and replace example.com with actual domain
             let jsonStr = JSON.stringify(seoData);
             jsonStr = jsonStr.replace(/https:\/\/example\.com/g, SITE_DOMAIN);
             
             const script = document.createElement('script');
             script.type = 'application/ld+json';
-            script.text = jsonStr; // Inject the JSON-LD object (which contains both live_broadcast and upcoming_list)
+            script.text = jsonStr; 
             document.head.appendChild(script);
         }
 
@@ -292,8 +291,6 @@
                 if(target) prepareModal(encodeURIComponent(JSON.stringify(target)));
             }
         }
-
-        // ... (Render Logic same as Step 3, just updated createMatchRow calls to prepareModal)
 
         function renderLiveSection(matches) {
             const topList = document.getElementById('trending-list');
@@ -386,14 +383,13 @@
             const m = JSON.parse(decodeURIComponent(safeObj));
             if(window.initPlayer) window.initPlayer(m, false);
             else {
-                // Dynamically load player.js
                 const script = document.createElement('script');
                 script.src = 'assets/player.js';
                 script.onload = () => window.initPlayer(m, false);
                 document.body.appendChild(script);
             }
         }
-        function unlockStream() { if(window.unlockStream) window.unlockStream(); /* Handled in player.js logic usually, or bind here if needed */ document.getElementById('seoOverlay').style.display='none'; if(currentMatchData && currentMatchData.streams.length>0 && window.initPlayer) window.initPlayer(currentMatchData, false); }
+        function unlockStream() { if(window.unlockStream) window.unlockStream(); document.getElementById('seoOverlay').style.display='none'; if(currentMatchData && currentMatchData.streams.length>0 && window.initPlayer) window.initPlayer(currentMatchData, false); }
 
         // Helper: Entity Popup
         function triggerEntityPopup(keyword) {
