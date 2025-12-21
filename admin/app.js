@@ -7,7 +7,7 @@ const FILE_PATH = 'data/config.json';
 const BRANCH = 'main'; 
 
 // ==========================================
-// 2. DEFAULT DATA
+// 2. DEFAULT DATA (UPDATED FOR NEW BACKEND)
 // ==========================================
 const DEFAULT_PRIORITIES = {
     US: [
@@ -15,27 +15,29 @@ const DEFAULT_PRIORITIES = {
         { name: "NBA", score: 95, isLeague: true, hasLink: true },
         { name: "MLB", score: 90, isLeague: true, hasLink: true },
         { name: "College Football", score: 88, isLeague: true, hasLink: false },
-        { name: "College Basketball", score: 87, isLeague: true, hasLink: false },
+        { name: "NCAA", score: 87, isLeague: true, hasLink: false },
         { name: "NHL", score: 85, isLeague: true, hasLink: false },
         { name: "UFC", score: 80, isLeague: true, hasLink: false },
-        { name: "MMA", score: 79, isLeague: false, hasLink: false },
+        { name: "Premier League", score: 75, isLeague: true, hasLink: false },
         { name: "MLS", score: 70, isLeague: true, hasLink: false },
-        { name: "Premier League", score: 60, isLeague: true, hasLink: false },
+        { name: "Champions League", score: 65, isLeague: true, hasLink: false },
         { name: "Boxing", score: 50, isLeague: false, hasLink: false },
+        { name: "Formula 1", score: 45, isLeague: true, hasLink: false },
         { name: "Tennis", score: 40, isLeague: false, hasLink: false }
     ],
     UK: [
         { name: "Premier League", score: 100, isLeague: true, hasLink: true },
         { name: "Champions League", score: 95, isLeague: true, hasLink: true },
-        { name: "Rugby", score: 90, isLeague: false, hasLink: false },
-        { name: "Cricket", score: 85, isLeague: false, hasLink: false },
-        { name: "Snooker", score: 80, isLeague: false, hasLink: false },
-        { name: "Darts", score: 75, isLeague: false, hasLink: false },
-        { name: "F1", score: 70, isLeague: true, hasLink: true },
-        { name: "Championship", score: 60, isLeague: true, hasLink: false },
+        { name: "Championship", score: 90, isLeague: true, hasLink: false },
+        { name: "The Ashes", score: 85, isLeague: true, hasLink: false },
+        { name: "Cricket", score: 80, isLeague: false, hasLink: false },
+        { name: "Rugby", score: 75, isLeague: false, hasLink: false },
+        { name: "Snooker", score: 70, isLeague: false, hasLink: false },
+        { name: "Darts", score: 65, isLeague: false, hasLink: false },
+        { name: "F1", score: 60, isLeague: true, hasLink: true },
+        { name: "Formula 1", score: 60, isLeague: true, hasLink: true },
         { name: "Boxing", score: 50, isLeague: false, hasLink: false },
-        { name: "Tennis", score: 40, isLeague: false, hasLink: false },
-        { name: "NFL", score: 30, isLeague: true, hasLink: false }
+        { name: "NFL", score: 40, isLeague: true, hasLink: false }
     ]
 };
 
