@@ -228,29 +228,64 @@ function renderPriorities() {
     if (!configData.sport_priorities[country]) configData.sport_priorities[country] = {};
 
     container.innerHTML = '';
-    const sorted = Object.entries(configData.sport_priorities[country]).sort((a,b) => b[1] - a[1]);
     
-    sorted.forEach(([sport, score]) => {
+    // Sort by score (descending)
+    const items = Object.entries(configData.sport_priorities[country])
+        .map(([name, data]) => {
+            // Support legacy format (just number) or new object format
+            if (typeof data === 'number') return { name, score: data, isLeague: false, hasLink: false };
+            return { name, ...data };
+        })
+        .sort((a,b) => b.score - a.score);
+    
+    items.forEach(item => {
         const div = document.createElement('div');
         div.className = 'menu-item-row';
+        div.style.flexWrap = "wrap";
         div.innerHTML = `
-            <strong>${sport}</strong>
-            <div style="display:flex; gap:10px; align-items:center;">
-                <input type="number" value="${score}" onchange="updatePriority('${country}', '${sport}', this.value)" style="width:60px;margin:0;">
-                <button class="btn-x" onclick="deletePriority('${country}', '${sport}')">×</button>
+            <strong style="width:150px; overflow:hidden;">${item.name}</strong>
+            <div style="display:flex; gap:15px; align-items:center; flex:1;">
+                <label style="margin:0; font-size:0.8rem; display:flex; align-items:center; gap:5px;">
+                    <input type="checkbox" ${item.isLeague ? 'checked' : ''} 
+                           onchange="updatePriorityMeta('${country}', '${item.name}', 'isLeague', this.checked)">
+                    Is League?
+                </label>
+                <label style="margin:0; font-size:0.8rem; display:flex; align-items:center; gap:5px;">
+                    <input type="checkbox" ${item.hasLink ? 'checked' : ''} 
+                           onchange="updatePriorityMeta('${country}', '${item.name}', 'hasLink', this.checked)">
+                    Add Link?
+                </label>
+                <input type="number" value="${item.score}" 
+                       onchange="updatePriorityMeta('${country}', '${item.name}', 'score', this.value)" 
+                       style="width:70px;margin:0;">
+                <button class="btn-x" onclick="deletePriority('${country}', '${item.name}')">×</button>
             </div>
         `;
         container.appendChild(div);
     });
 }
 
-window.updatePriority = (c, s, v) => { configData.sport_priorities[c][s] = parseInt(v); };
+// Unified Update Function
+window.updatePriorityMeta = (c, name, key, val) => { 
+    // Ensure object structure exists
+    let current = configData.sport_priorities[c][name];
+    if (typeof current === 'number') current = { score: current, isLeague: false, hasLink: false };
+    
+    if (key === 'score') current.score = parseInt(val);
+    else current[key] = val; // boolean
+
+    configData.sport_priorities[c][name] = current;
+    // Don't re-render instantly to avoid losing focus, or do if strictly needed
+};
+
 window.deletePriority = (c, s) => { delete configData.sport_priorities[c][s]; renderPriorities(); };
+
 window.addPriorityRow = () => {
     const c = getVal('targetCountry');
     const name = getVal('newSportName');
     if(name) {
-        configData.sport_priorities[c][name] = 50;
+        // Default new item
+        configData.sport_priorities[c][name] = { score: 50, isLeague: false, hasLink: false };
         setVal('newSportName', '');
         renderPriorities();
     }
