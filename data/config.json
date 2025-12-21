@@ -12,7 +12,7 @@
     "accent_gold": "#ffd700",
     "bg_body": "#050505",
     "hero_gradient_start": "#1a0505",
-    "font_family": ""
+    "font_family": "system-ui, sans-serif"
   },
   "sport_priorities": {
     "US": {
