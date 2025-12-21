@@ -1,8 +1,12 @@
 // ==========================================
-// 1. CONFIGURATION (EDIT THIS!)
+// 1. CONFIGURATION (YOU MUST EDIT THIS)
 // ==========================================
-const REPO_OWNER = 'arkhan66648'; // <--- CHANGE TO YOUR GITHUB USERNAME
-const REPO_NAME = 'project1';     // <--- CHANGE TO YOUR REPO NAME
+// Your GitHub Username (e.g., 'john-doe')
+const REPO_OWNER = 'arkhan66648'; 
+
+// Your Repository Name (e.g., 'sports-site')
+const REPO_NAME = 'project1';     
+
 const FILE_PATH = 'data/config.json';
 const BRANCH = 'main'; 
 
@@ -74,13 +78,15 @@ window.addEventListener("DOMContentLoaded", () => {
 
 function showLoginModal() {
     document.getElementById('authModal').style.display = 'flex';
+    // Clear any existing value
+    document.getElementById('ghToken').value = ''; 
     document.getElementById('ghToken').focus();
 }
 
 // CALLED BY LOGIN BUTTON
 window.saveToken = async () => {
     const token = document.getElementById('ghToken').value.trim();
-    if(!token) return alert("Please enter a token");
+    if(!token) return alert("Please enter a GitHub Token");
     
     const btn = document.querySelector('#authModal .save-btn');
     const originalText = btn.innerText;
@@ -88,10 +94,10 @@ window.saveToken = async () => {
     btn.disabled = true;
 
     try {
-        // Test connection to the REPO
+        // FIXED: Using 'token' prefix instead of 'Bearer' for maximum compatibility
         const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, {
             headers: { 
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `token ${token}`,
                 'Accept': 'application/vnd.github.v3+json'
             }
         });
@@ -101,14 +107,15 @@ window.saveToken = async () => {
             document.getElementById('authModal').style.display = 'none';
             verifyAndLoad(token);
         } else if (res.status === 404) {
-            alert(`Token valid, but Repo "${REPO_OWNER}/${REPO_NAME}" not found. Check constants in app.js.`);
+            alert(`Error 404: Repository "${REPO_OWNER}/${REPO_NAME}" not found.\n\nDid you update REPO_OWNER in admin/app.js?`);
         } else if (res.status === 401) {
-            alert("Invalid Token. Please check permissions.");
+            alert("Error 401: Invalid Token. Check your permissions.");
         } else {
-            alert(`Error: ${res.statusText}`);
+            alert(`Connection Error (${res.status}): ${res.statusText}`);
         }
     } catch(e) {
-        alert("Connection Error: " + e.message);
+        console.error(e);
+        alert("Network Error: Check console for details.");
     }
 
     btn.innerText = originalText;
@@ -119,18 +126,18 @@ window.saveToken = async () => {
 async function verifyAndLoad(token) {
     try {
         const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?ref=${BRANCH}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'Authorization': `token ${token}` }
         });
 
         if (res.status === 401) {
-            // Token expired or revoked
             localStorage.removeItem('gh_token');
             showLoginModal();
             return;
         }
 
+        // Handle missing config (First run)
         if (res.status === 404) {
-            console.warn("Config not found. Initializing Demo.");
+            console.warn("Config not found. Initializing Demo Data.");
             configData = JSON.parse(JSON.stringify(DEMO_CONFIG));
             populateUI();
             return;
@@ -138,15 +145,22 @@ async function verifyAndLoad(token) {
 
         const data = await res.json();
         currentSha = data.sha;
-        const decoded = decodeURIComponent(escape(atob(data.content))); // Robust UTF-8 decoding
-        configData = JSON.parse(decoded);
+        
+        // Robust Decoding
+        try {
+            const decoded = decodeURIComponent(escape(atob(data.content)));
+            configData = JSON.parse(decoded);
+        } catch(err) {
+            console.error("JSON Parse Error", err);
+            configData = JSON.parse(JSON.stringify(DEMO_CONFIG)); // Fallback
+        }
         
         populateUI();
-        startPolling(); // Start watching build status
+        startPolling(); 
 
     } catch (e) {
         console.error("Critical Load Error", e);
-        alert("Failed to load config. See console.");
+        // Don't alert here to avoid loop, just log
     }
 }
 
@@ -167,8 +181,6 @@ function populateUI() {
     setVal('logoUrl', s.logo_url);
     setVal('customMeta', s.custom_meta);
     setVal('targetCountry', s.target_country || 'US');
-
-    if(document.getElementById('colPrimary')) document.getElementById('colPrimary').value = t.brand_primary || '#D00000';
 
     // Content Editor
     const home = configData.pages?.find(p => p.slug === 'home');
@@ -192,12 +204,14 @@ function captureAllInputs() {
         target_country: country
     };
     
-    configData.theme = {
-        ...(configData.theme || {}),
-        brand_primary: getVal('colPrimary')
-    };
-    
-    // Pages captured via TinyMCE event
+    // Capture Page Content
+    if(tinymce.get('pageContentEditor')) {
+        const content = tinymce.get('pageContentEditor').getContent();
+        if(!configData.pages) configData.pages = [];
+        let p = configData.pages.find(x => x.slug === 'home');
+        if(!p) { p = { slug: 'home' }; configData.pages.push(p); }
+        p.content = content;
+    }
 }
 
 // ==========================================
@@ -208,11 +222,9 @@ function renderPriorities() {
     const container = document.getElementById('priorityListContainer');
     if(!container) return;
     
-    // Update Label
     const lbl = document.getElementById('prioLabel');
     if(lbl) lbl.innerText = country;
 
-    // Safety Init
     if (!configData.sport_priorities[country]) configData.sport_priorities[country] = {};
 
     container.innerHTML = '';
@@ -292,7 +304,6 @@ document.getElementById('saveBtn').onclick = async () => {
     document.getElementById('saveBtn').disabled = true;
     captureAllInputs();
 
-    // UTF-8 Safe Encoding
     const jsonStr = JSON.stringify(configData, null, 2);
     const content = btoa(unescape(encodeURIComponent(jsonStr)));
     
@@ -300,7 +311,7 @@ document.getElementById('saveBtn').onclick = async () => {
         const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
             method: 'PUT',
             headers: { 
-                'Authorization': `Bearer ${token}`, 
+                'Authorization': `token ${token}`, 
                 'Content-Type': 'application/json' 
             },
             body: JSON.stringify({ 
@@ -314,7 +325,7 @@ document.getElementById('saveBtn').onclick = async () => {
         if(res.ok) {
             const data = await res.json();
             currentSha = data.content.sha;
-            startPolling(); // Start watching the Actions tab
+            startPolling(); 
         } else {
             const err = await res.json();
             throw new Error(err.message || "Save failed");
@@ -329,14 +340,14 @@ document.getElementById('saveBtn').onclick = async () => {
 function startPolling() {
     if(pollingInterval) clearInterval(pollingInterval);
     checkBuildStatus();
-    pollingInterval = setInterval(checkBuildStatus, 5000); // Check every 5s
+    pollingInterval = setInterval(checkBuildStatus, 5000); 
 }
 
 async function checkBuildStatus() {
     const token = localStorage.getItem('gh_token');
     try {
         const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/runs?per_page=1`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'Authorization': `token ${token}` }
         });
         const data = await res.json();
         
@@ -377,7 +388,7 @@ function updateStatus(state, text) {
 }
 function setVal(id, v) { if(document.getElementById(id)) document.getElementById(id).value = v || ""; }
 function getVal(id) { return document.getElementById(id)?.value || ""; }
-function setupInputs() { /* Add any extra listeners here */ }
+function setupInputs() { /* Listeners */ }
 
 window.switchTab = (id) => {
     document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
