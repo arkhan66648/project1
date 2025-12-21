@@ -1,8 +1,9 @@
 // assets/player.js
 
+const SECRET_KEY = "12345678901234567890123456789012"; // Match your backend key
+
 window.initPlayer = function(matchData, isLocked) {
-    // Update global current match for unlockStream reference
-    window.currentMatchData = matchData; 
+    window.currentMatchData = matchData; // Store for unlock usage
 
     const modal = document.getElementById('streamModal');
     const title = document.getElementById('playerTitle');
@@ -52,29 +53,46 @@ window.initPlayer = function(matchData, isLocked) {
         if(matchData.streams.length > 0) {
             loadIframeStream(matchData.streams[0], list.children[0]);
         }
-        // Update URL safely
         history.pushState({}, "", `/watch/${matchData.id}`);
     }
 };
 
 function loadIframeStream(stream, btnElement) {
-    // UI Updates
     document.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
     if(btnElement) btnElement.classList.add('active');
     
-    // Decode Logic
     let url = stream.url;
-    if(stream.encrypted_data) { 
-        try { 
-            // Simple Base64 decode fallback
-            url = window.atob(stream.encrypted_data.split(':')[1]); 
-        } catch(e){ console.warn("Decode error", e); } 
+
+    // AES DECRYPTION LOGIC
+    if(stream.encrypted_data && !url) { 
+        try {
+            const parts = stream.encrypted_data.split(':');
+            if(parts.length === 2) {
+                const iv = CryptoJS.enc.Hex.parse(parts[0]);
+                const ciphertext = CryptoJS.enc.Hex.parse(parts[1]);
+                const key = CryptoJS.enc.Utf8.parse(SECRET_KEY);
+
+                const decrypted = CryptoJS.AES.decrypt(
+                    { ciphertext: ciphertext },
+                    key,
+                    { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
+                );
+                
+                url = decrypted.toString(CryptoJS.enc.Utf8);
+            }
+        } catch(e) {
+            console.error("Decryption failed", e);
+        }
     }
 
-    // Embed Iframe
     const box = document.getElementById('iframeBox');
     const old = box.querySelector('iframe');
     if(old) old.remove();
+
+    if(!url) {
+        box.innerHTML += '<div style="color:red;padding:20px;">Stream Unavailable (Error 404)</div>';
+        return;
+    }
 
     const frame = document.createElement('iframe');
     frame.setAttribute('allow', 'autoplay; fullscreen; encrypted-media; picture-in-picture');
@@ -87,7 +105,6 @@ function loadIframeStream(stream, btnElement) {
     box.appendChild(frame);
 }
 
-// Global Close Function
 window.closeStreamModal = function() {
     document.getElementById('streamModal').style.display = 'none';
     const f = document.querySelector('#iframeBox iframe');
