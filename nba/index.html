@@ -10,16 +10,19 @@
     <link rel="canonical" href="https://crackstreams.help/nba">
     <link rel="icon" href="">
     
-    <!-- Fonts -->
+    <!-- 1. FONTS (Fixes Font Issue) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <!-- 2. CRYPTO LIBRARY (Fixes Stream Decryption) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
 
     
 
     <style>
         :root {
-            /* Fallbacks added to prevent broken CSS */
+            /* Fallbacks added */
             --brand-primary: ; 
             --brand-dark: ;
             --accent-gold: ;
@@ -53,7 +56,7 @@
         .mobile-menu a { padding: 15px 20px; border-bottom: 1px solid #1f1f1f; font-weight: 600; }
         @media (min-width: 900px) { .nav-links { display: flex; } .hamburger { display: none; } }
 
-        /* HERO */
+        /* HERO & CONTAINER */
         .hero { padding: 90px 15px 15px 15px; text-align: center; background: radial-gradient(circle at top, var(--hero-grad) 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); display: none; }
         .sys-status { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.2); padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; font-size: 0.75rem; font-weight: 700; color: var(--status-green); }
         .dot { width: 6px; height: 6px; background: var(--status-green); border-radius: 50%; box-shadow: 0 0 8px var(--status-green); animation: pulse 2s infinite; }
@@ -62,9 +65,9 @@
         .cat-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 15px 5px; justify-content: center; }
         .cat-pill { background: #111; border: 1px solid var(--border); padding: 8px 18px; border-radius: 50px; font-weight: 700; font-size: 0.8rem; white-space: nowrap; color: #ccc; }
         .cat-pill:hover { border-color: var(--brand-primary); color: #fff; }
-
-        /* CONTAINER & MATCHES */
         .container { max-width: 1000px; margin: 0 auto; padding: 20px 15px; }
+
+        /* MATCH ROWS */
         .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 35px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #1a1a1a; }
         .sec-title { font-size: 1.1rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
         .live-dot { width: 8px; height: 8px; background: var(--brand-primary); border-radius: 50%; box-shadow: 0 0 10px var(--brand-primary); }
@@ -92,11 +95,10 @@
         @media (min-width: 768px) { .col-meta { display: flex; } }
         
         .col-action { margin-left: auto; }
-        
-        /* Buttons */
         .btn-watch { background: var(--brand-primary); color: #fff; font-size: 0.7rem; font-weight: 800; padding: 8px 16px; border-radius: 4px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 10px rgba(208, 0, 0, 0.3); transition: 0.2s; width: 100%; }
         .btn-watch:hover { filter: brightness(1.2); transform: scale(1.02); }
         .hd-badge { background: rgba(0,0,0,0.3); padding: 1px 4px; border-radius: 3px; font-size: 0.55rem; border: 1px solid rgba(255,255,255,0.2); }
+        
         .btn-notify { background: #1a1a1a; border: 1px solid #333; color: #aaa; font-size: 0.7rem; font-weight: 800; padding: 8px 16px; border-radius: 4px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; transition: 0.2s; }
         .btn-notify:hover { border-color: #666; color: #fff; }
         .btn-notify.active { background: #064e3b; border-color: #059669; color: #34d399; cursor: default; }
@@ -104,24 +106,7 @@
         .show-more-btn { display: block; margin: 20px auto; background: #151515; border: 1px solid #333; color: #ccc; padding: 12px 25px; border-radius: 30px; font-weight: 600; font-size: 0.85rem; transition:0.2s; }
         .show-more-btn:hover { border-color: var(--brand-primary); color: #fff; }
 
-        /* MODAL & PLAYER */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-box { background: #111; width: 100%; height: 100%; display: flex; flex-direction: column; }
-        @media (min-width: 900px) { .modal-box { width: 90%; max-width: 1100px; height: 85vh; border: 1px solid #333; border-radius: 10px; overflow: hidden; } }
-        .modal-head { padding: 15px 20px; background: #0a0a0a; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
-        .player-layout { display: flex; flex-direction: column; height: 100%; }
-        .iframe-container { position: relative; width: 100%; background: #000; flex-grow: 1; display: flex; align-items: center; justify-content: center; }
-        .stream-list-area { background: #0e0e0e; border-top: 1px solid #222; padding: 15px; overflow-y: auto; max-height: 200px; flex-shrink: 0; }
-        @media (min-width: 900px) { .player-layout { flex-direction: row; } .stream-list-area { width: 300px; border-top: none; border-left: 1px solid #222; max-height: none; } }
-        .stream-btn { display: flex; align-items: center; gap: 10px; width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 12px; margin-bottom: 8px; color: #ddd; border-radius: 6px; font-size: 0.85rem; font-weight: 600; text-align: left; transition: 0.2s; }
-        .stream-btn:hover, .stream-btn.active { background: #222; border-color: var(--brand-primary); color: #fff; }
-        .stream-btn.active { background: rgba(208, 0, 0, 0.1); }
-        .sig-hd { background: var(--brand-primary); color: #fff; font-size: 0.6rem; padding: 2px 4px; border-radius: 3px; font-weight: bold; }
-        
-        .info-card-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.8); z-index: 10; display: flex; align-items: center; justify-content: center; }
-        .info-card { background: #1a1a1a; padding: 40px; border-radius: 12px; border: 1px solid #333; text-align: center; max-width: 400px; width: 90%; }
-        
-        /* FOOTER & SEO */
+        /* FOOTER */
         .seo-box { background: #0a0a0a; border: 1px solid var(--border); padding: 25px; border-radius: 10px; margin-top: 40px; color: #ccc; }
         footer { background: #050505; border-top: 1px solid #1a1a1a; margin-top: 50px; padding: 40px 15px; }
         .footer-content { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 30px; }
@@ -137,6 +122,24 @@
         .entity-tag:hover { border-color: var(--brand-primary); color: #fff; }
         .disclaimer { font-size: 0.7rem; color: #555; text-align: center; margin-top: 30px; line-height: 1.5; max-width: 800px; margin-left: auto; margin-right: auto; }
         .copyright { text-align: center; color: #444; font-size: 0.75rem; margin-top: 20px; }
+
+        /* PLAYER MODAL */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-box { background: #111; width: 100%; height: 100%; display: flex; flex-direction: column; }
+        @media (min-width: 900px) { .modal-box { width: 90%; max-width: 1100px; height: 85vh; border: 1px solid #333; border-radius: 10px; overflow: hidden; } }
+        .modal-head { padding: 15px 20px; background: #0a0a0a; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
+        .player-layout { display: flex; flex-direction: column; height: 100%; }
+        .iframe-container { position: relative; width: 100%; background: #000; flex-grow: 1; display: flex; align-items: center; justify-content: center; }
+        .stream-list-area { background: #0e0e0e; border-top: 1px solid #222; padding: 15px; overflow-y: auto; max-height: 200px; flex-shrink: 0; }
+        @media (min-width: 900px) { .player-layout { flex-direction: row; } .stream-list-area { width: 300px; border-top: none; border-left: 1px solid #222; max-height: none; } }
+        
+        .stream-btn { display: flex; align-items: center; gap: 10px; width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 12px; margin-bottom: 8px; color: #ddd; border-radius: 6px; font-size: 0.85rem; font-weight: 600; text-align: left; transition: 0.2s; }
+        .stream-btn:hover, .stream-btn.active { background: #222; border-color: var(--brand-primary); color: #fff; }
+        .stream-btn.active { background: rgba(208, 0, 0, 0.1); }
+        .sig-hd { background: var(--brand-primary); color: #fff; font-size: 0.6rem; padding: 2px 4px; border-radius: 3px; font-weight: bold; }
+        
+        .info-card-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.8); z-index: 10; display: flex; align-items: center; justify-content: center; }
+        .info-card { background: #1a1a1a; padding: 40px; border-radius: 12px; border: 1px solid #333; text-align: center; max-width: 400px; width: 90%; }
 
         /* ENTITY POPUP */
         .entity-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 5000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
@@ -184,6 +187,7 @@
         <div class="copyright"></div>
     </footer>
 
+    <!-- POPUPS -->
     <div id="entityPopup" class="entity-popup">
         <div class="entity-loader"></div>
         <h3 id="entityPopupTitle" style="color:#fff; margin-bottom:10px;">Searching...</h3>
@@ -230,7 +234,7 @@
         let allMatches = [];
         let currentMatchData = null;
         let renderedIds = new Set();
-        window.MATCH_DATA = {}; // Global store to fix "Unexpected Token" error
+        window.MATCH_DATA = {}; // Global store for matches
 
         window.addEventListener('DOMContentLoaded', () => {
             loadMatches();
@@ -259,10 +263,10 @@
 
         function renderApp(matches) {
             renderedIds.clear();
-            window.MATCH_DATA = {}; // Reset global store
-
-            // Populate Global Store first
-            matches.forEach(m => { window.MATCH_DATA[m.id] = m; });
+            window.MATCH_DATA = {};
+            
+            // Populate Global Store
+            matches.forEach(m => window.MATCH_DATA[m.id] = m);
 
             const liveMatches = matches.filter(m => m.is_live);
             renderLiveSection(liveMatches);
@@ -278,7 +282,7 @@
 
             const hashId = window.location.hash.replace('#', '');
             if(hashId && window.MATCH_DATA[hashId]) {
-                openPlayer(hashId); // Use new safe function
+                openPlayer(hashId); 
             }
         }
 
@@ -356,7 +360,7 @@
             let metaHtml = '', actionHtml = '';
             if (m.is_live) {
                 metaHtml = `<div class="meta-top">${m.live_viewers || ''}</div>`;
-                // FIX: Passing ID only to avoid syntax errors
+                // SAFE: Only pass ID
                 actionHtml = `<button class="btn-watch" onclick="openPlayer('${m.id}')">WATCH <span class="hd-badge">HD</span></button>`;
             } else {
                 metaHtml = `<div class="meta-top" style="color:#aaa; font-weight:400; font-size:0.65rem;">${m.status_text}</div>`;
@@ -367,14 +371,14 @@
             return div;
         }
 
-        // --- NEW SAFE PLAYER LOADER ---
+        // --- PLAYER FUNCTIONS ---
         function openPlayer(matchId) {
             const m = window.MATCH_DATA[matchId];
-            if(!m) return alert("Match data not found");
+            if(!m) return alert("Match data not found. Please refresh.");
             
-            // Check if player.js is loaded
+            // Lazy Load Player Logic
             if(window.initPlayer) {
-                window.initPlayer(m, true); // Opens in Locked SEO mode initially
+                window.initPlayer(m, true);
             } else {
                 const script = document.createElement('script');
                 script.src = 'assets/player.js';
@@ -384,12 +388,9 @@
         }
         
         function unlockStream() {
-            if(window.unlockStream) window.unlockStream(); 
-            document.getElementById('seoOverlay').style.display='none'; 
-            // We need to re-trigger initPlayer in unlocked mode, or handle it via player.js internals
-            // Assuming player.js has logic to play first stream if overlay is hidden.
-            // Simplified: Re-call initPlayer with false
-            if(currentMatchData) window.initPlayer(currentMatchData, false);
+            if(window.unlockStream) window.unlockStream();
+            document.getElementById('seoOverlay').style.display='none';
+            if(window.currentMatchData && window.initPlayer) window.initPlayer(window.currentMatchData, false);
         }
 
         function triggerEntityPopup(keyword) {
