@@ -31,6 +31,16 @@
         "isLeague": true,
         "hasLink": true
       },
+      "College Football": {
+        "score": 88,
+        "isLeague": true,
+        "hasLink": false
+      },
+      "College Basketball": {
+        "score": 87,
+        "isLeague": true,
+        "hasLink": false
+      },
       "NHL": {
         "score": 85,
         "isLeague": true,
@@ -43,17 +53,7 @@
       },
       "MMA": {
         "score": 79,
-        "isLeague": true,
-        "hasLink": false
-      },
-      "College": {
-        "score": 75,
-        "isLeague": true,
-        "hasLink": false
-      },
-      "NCAA": {
-        "score": 75,
-        "isLeague": true,
+        "isLeague": false,
         "hasLink": false
       },
       "MLS": {
