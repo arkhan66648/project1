@@ -6,7 +6,7 @@
     "logo_url": "/assets/streameast-logo-hd.jpg",
     "favicon_url": "",
     "footer_copyright": "",
-    "footer_disclaimer": "",
+    "footer_disclaimer": "Hello world",
     "target_country": "US"
   },
   "theme": {
