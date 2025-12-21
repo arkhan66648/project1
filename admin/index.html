@@ -4,94 +4,255 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StreamCMS Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <!-- TinyMCE for WordPress-style editing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="cms-container">
+        <!-- SIDEBAR -->
         <aside class="sidebar">
             <div class="logo-area"><h2>⚡ StreamCMS</h2></div>
             <nav>
                 <button class="nav-btn active" onclick="switchTab('general')">⚙️ General & SEO</button>
-                <button class="nav-btn" onclick="switchTab('priorities')">📊 Priorities</button>
-                <button class="nav-btn" onclick="switchTab('content')">📝 Home Content</button>
-                <button class="nav-btn" onclick="switchTab('menus')">🔗 Menus</button>
+                <button class="nav-btn" onclick="switchTab('appearance')">🎨 Appearance</button>
+                <button class="nav-btn" onclick="switchTab('pages')">📄 Pages & Content</button>
+                <button class="nav-btn" onclick="switchTab('priorities')">📊 League Sorting</button>
+                <button class="nav-btn" onclick="switchTab('menus')">🔗 Menus (4 Types)</button>
+                <button class="nav-btn" onclick="switchTab('entity')">🚀 Entity Stacking</button>
             </nav>
             <div class="sidebar-footer">
-                <div id="buildStatusBox" class="build-box idle"><div class="status-dot"></div><span id="buildStatusText">Idle</span></div>
-                <button id="saveBtn" class="save-btn">💾 Save & Build</button>
+                <div id="buildStatusBox" class="build-box idle">
+                    <div class="status-dot"></div><span id="buildStatusText">Idle</span>
+                </div>
+                <button id="saveBtn" class="save-btn">💾 Save & Build Site</button>
             </div>
         </aside>
 
+        <!-- MAIN CONTENT -->
         <main class="content-area">
             
-            <!-- GENERAL SETTINGS -->
+            <!-- 1. GENERAL TAB -->
             <section id="tab-general" class="tab-content active">
-                <div class="header-box"><h1>General & SEO</h1></div>
+                <div class="header-box"><h1>General Settings</h1></div>
                 <div class="grid-2">
                     <div class="card">
-                        <h3>Target Audience (SEO)</h3>
-                        <p style="color:#888; font-size:12px; margin-bottom:10px;">This determines the default sort order and API data fetched on the live site.</p>
+                        <h3>Target Country (Crucial)</h3>
+                        <p class="desc">Select the primary audience. The entire build will optimize for this region.</p>
                         <select id="targetCountry" onchange="renderPriorities()">
-                            <option value="US">🇺🇸 USA Priority</option>
-                            <option value="UK">🇬🇧 UK Priority</option>
+                            <option value="US">🇺🇸 USA (North America)</option>
+                            <option value="UK">🇬🇧 UK (Europe)</option>
                         </select>
                     </div>
                     <div class="card">
                         <h3>Site Identity</h3>
                         <div class="grid-2">
-                            <div><label>Title P1</label><input type="text" id="titleP1"></div>
-                            <div><label>Title P2</label><input type="text" id="titleP2"></div>
+                            <div><label>Brand Name Part 1</label><input type="text" id="titleP1" placeholder="Stream"></div>
+                            <div><label>Brand Name Part 2</label><input type="text" id="titleP2" placeholder="East"></div>
                         </div>
-                        <label>Domain Name</label><input type="text" id="siteDomain">
+                        <label>Domain Name</label><input type="text" id="siteDomain" placeholder="example.com">
+                        <label>Logo URL</label><input type="text" id="logoUrl">
                     </div>
-                </div>
-                <div class="card">
-                    <label>Logo URL</label><input type="text" id="logoUrl">
-                    <label>Hero Description</label><textarea id="customMeta" rows="2"></textarea>
                 </div>
             </section>
 
-            <!-- PRIORITIES -->
-            <section id="tab-priorities" class="tab-content">
-                <div class="header-box"><h1>Sport & League Sorting</h1></div>
-                <div class="card">
-                    <h3>Priority for: <span id="prioLabel" style="color:var(--accent)">US</span></h3>
-                    <p style="color:#888; font-size:13px; margin-bottom:15px;">
-                        Add Sports or Leagues here. High priority appears first. <br>
-                        <strong>Type:</strong> Check "Is League?" to group by League (API field: <code>league</code>). Uncheck to group by Sport (API field: <code>sport</code>).<br>
-                        <strong>Link:</strong> Check "Add Link?" to show a "View All >" button (requires page generation in Step 3).
-                    </p>
+            <!-- 2. APPEARANCE TAB -->
+            <section id="tab-appearance" class="tab-content">
+                <div class="header-box"><h1>Visual Customizer</h1></div>
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Brand Colors</h3>
+                        <div class="color-row">
+                            <input type="color" id="brandPrimary" onchange="updatePreview()">
+                            <label>Primary Brand Color (Buttons/Accents)</label>
+                        </div>
+                        <div class="color-row">
+                            <input type="color" id="brandDark" onchange="updatePreview()">
+                            <label>Dark Variant (Hover States)</label>
+                        </div>
+                        <div class="color-row">
+                            <input type="color" id="accentGold" onchange="updatePreview()">
+                            <label>Gold Accent (Leagues/Highlights)</label>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Background & Typography</h3>
+                        <div class="color-row">
+                            <input type="color" id="bgBody" onchange="updatePreview()">
+                            <label>Main Background (Hex)</label>
+                        </div>
+                        <div class="color-row">
+                            <input type="color" id="heroGradient" onchange="updatePreview()">
+                            <label>Hero Gradient Start Color</label>
+                        </div>
+                        <label style="margin-top:15px;">Font Family</label>
+                        <select id="fontFamily">
+                            <option value="system-ui, sans-serif">System UI (Fastest)</option>
+                            <option value="'Inter', sans-serif">Inter (Clean)</option>
+                            <option value="'Roboto', sans-serif">Roboto (Google)</option>
+                            <option value="'Open Sans', sans-serif">Open Sans</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. PAGES TAB (WordPress Style) -->
+            <section id="tab-pages" class="tab-content">
+                <div class="header-box">
+                    <h1>Pages</h1>
+                    <button class="btn-primary" onclick="createNewPage()">+ Add New Page</button>
+                </div>
+                
+                <!-- Page List View -->
+                <div id="pageListView" class="card" style="padding:0; overflow:hidden;">
+                    <table class="data-table" id="pagesTable">
+                        <thead><tr><th>Title</th><th>Slug</th><th>Layout</th><th>Actions</th></tr></thead>
+                        <tbody><!-- JS Populated --></tbody>
+                    </table>
+                </div>
+
+                <!-- Page Editor View (Hidden by default) -->
+                <div id="pageEditorView" style="display:none;">
+                    <div class="editor-toolbar">
+                        <button class="btn-secondary" onclick="closePageEditor()">← Back to List</button>
+                        <h3 id="editorPageTitleDisplay">Editing Page</h3>
+                    </div>
                     
-                    <div style="display:flex; gap:10px; margin-bottom:15px;">
-                        <input type="text" id="newSportName" placeholder="e.g. NBA or Basketball">
+                    <div class="grid-2">
+                        <div class="card">
+                            <label>Page Title (H1)</label><input type="text" id="pageTitle">
+                            <label>URL Slug</label><input type="text" id="pageSlug" placeholder="e.g. dmca">
+                            
+                            <label>Page Layout</label>
+                            <select id="pageLayout">
+                                <option value="home">Home (Matches + Hero)</option>
+                                <option value="league">League Page (Sorted Matches)</option>
+                                <option value="page">Standard Page (Text Only)</option>
+                                <option value="full">Full Width</option>
+                            </select>
+                        </div>
+                        <div class="card">
+                            <h3>SEO & Schema</h3>
+                            <label>Meta Title</label><input type="text" id="pageMetaTitle">
+                            <label>Meta Description</label><textarea id="pageMetaDesc" rows="3"></textarea>
+                            
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" id="schemaLive"> Inject Live Broadcast Schema</label>
+                                <label><input type="checkbox" id="schemaUpcoming"> Inject Upcoming Schedule Schema</label>
+                                <label><input type="checkbox" id="schemaOrg"> Inject Organization Schema</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="padding:0; border:none;">
+                        <div style="background:#1e293b; padding:10px 15px; border-bottom:1px solid #334155; color:white; font-weight:600;">Main Content</div>
+                        <textarea id="pageContentEditor"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. PRIORITIES TAB -->
+            <section id="tab-priorities" class="tab-content">
+                <div class="header-box"><h1>League & Sport Sorting</h1></div>
+                <div class="card">
+                    <h3>Priority List for: <span id="prioLabel" style="color:var(--accent)">US</span></h3>
+                    <p class="desc">
+                        Control homepage order. Check <strong>"Is League"</strong> to sort by specific tournament name (e.g. "NBA").
+                        Check <strong>"Link?"</strong> to add a "View All >" button (requires page generation).
+                    </p>
+                    <div class="input-group">
+                        <input type="text" id="newSportName" placeholder="e.g. NBA">
                         <button class="btn-primary" onclick="addPriorityRow()">Add</button>
                     </div>
                     <div id="priorityListContainer" class="menu-list"></div>
                 </div>
             </section>
 
-            <!-- CONTENT -->
-            <section id="tab-content" class="tab-content">
-                <div class="header-box"><h1>Home Page Content</h1></div>
-                <div class="card" style="background:#fff; padding:0;"><textarea id="pageContentEditor"></textarea></div>
-            </section>
-
-            <!-- MENUS -->
+            <!-- 5. MENUS TAB -->
             <section id="tab-menus" class="tab-content">
-                <div class="header-box"><h1>Menus</h1></div>
+                <div class="header-box"><h1>Menu Management</h1></div>
                 <div class="grid-2">
-                    <div class="card"><h3>Header</h3><div id="menu-header" class="menu-list"></div><button class="btn-add" onclick="openMenuModal('header')">+ Link</button></div>
-                    <div class="card"><h3>Hero Pills</h3><div id="menu-hero" class="menu-list"></div><button class="btn-add" onclick="openMenuModal('hero')">+ Pill</button></div>
+                    <div class="card">
+                        <h3>Header Menu</h3>
+                        <div id="menu-header" class="menu-list"></div>
+                        <button class="btn-add" onclick="openMenuModal('header')">+ Add Link</button>
+                    </div>
+                    <div class="card">
+                        <h3>Hero Pills (Categories)</h3>
+                        <div id="menu-hero" class="menu-list"></div>
+                        <button class="btn-add" onclick="openMenuModal('hero')">+ Add Pill</button>
+                    </div>
+                    <div class="card">
+                        <h3>Footer: Leagues</h3>
+                        <div id="menu-footer_links" class="menu-list"></div>
+                        <button class="btn-add" onclick="openMenuModal('footer_links')">+ Add Link</button>
+                    </div>
+                    <div class="card">
+                        <h3>Footer: Static (Legal)</h3>
+                        <div id="menu-footer_static" class="menu-list"></div>
+                        <button class="btn-add" onclick="openMenuModal('footer_static')">+ Add Link</button>
+                    </div>
                 </div>
             </section>
+
+            <!-- 6. ENTITY STACKING TAB -->
+            <section id="tab-entity" class="tab-content">
+                <div class="header-box"><h1>Entity Stacking Strategy</h1></div>
+                <div class="card">
+                    <h3>Popular Keywords</h3>
+                    <p class="desc">Add high-traffic keywords here. Frontend will render them as interactive tags. Clicking one opens an SEO-optimized popup that funnels users to your homepage.</p>
+                    
+                    <div class="input-group">
+                        <input type="text" id="newEntityKeyword" placeholder="e.g. NBA Streams Free">
+                        <button class="btn-primary" onclick="addEntityRow()">Add Keyword</button>
+                    </div>
+
+                    <div id="entityList" class="menu-list"></div>
+                </div>
+            </section>
+
         </main>
     </div>
 
-    <!-- MODALS (Auth/Menu) -->
-    <div id="authModal" class="modal" style="display:none;"><div class="modal-content"><h3>Login</h3><input type="password" id="ghToken" placeholder="GitHub Token"><button class="save-btn" onclick="saveToken()">Access</button></div></div>
-    <div id="menuModal" class="modal" style="display:none;"><div class="modal-content"><h3>Add</h3><input type="hidden" id="menuTargetSection"><label>Title</label><input type="text" id="menuTitleItem"><label>URL</label><input type="text" id="menuUrlItem"><div style="display:flex; gap:10px; margin-top:10px;"><button class="btn-danger" onclick="document.getElementById('menuModal').style.display='none'">Cancel</button><button class="btn-primary" onclick="saveMenuItem()">Add</button></div></div></div>
+    <!-- MODALS -->
+    <div id="authModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3>Login to GitHub</h3>
+            <p>Enter your Personal Access Token</p>
+            <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx">
+            <button class="save-btn" onclick="saveToken()">Access Admin</button>
+        </div>
+    </div>
+
+    <div id="menuModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3>Add Menu Item</h3>
+            <input type="hidden" id="menuTargetSection">
+            <label>Title</label><input type="text" id="menuTitleItem">
+            <label>URL</label><input type="text" id="menuUrlItem">
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="document.getElementById('menuModal').style.display='none'">Cancel</button>
+                <button class="btn-primary" onclick="saveMenuItem()">Add</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Entity Popup Editor Modal -->
+    <div id="entityModal" class="modal" style="display:none;">
+        <div class="modal-content" style="width:600px;">
+            <h3>Edit Popup Content</h3>
+            <input type="hidden" id="entityIndex">
+            <label>Keyword</label><input type="text" id="entityKeywordEdit" disabled>
+            <label>Popup HTML Content</label>
+            <textarea id="entityContentEdit" rows="6" style="font-family:monospace;"></textarea>
+            <p class="desc">This content appears inside the javascript popup.</p>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="document.getElementById('entityModal').style.display='none'">Cancel</button>
+                <button class="btn-primary" onclick="saveEntityContent()">Save Content</button>
+            </div>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>
