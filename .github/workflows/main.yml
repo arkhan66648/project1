@@ -1,18 +1,18 @@
-name: Build Static Site
+name: Build StreamCMS
 
 on:
   push:
     paths:
-      - 'data/config.json'          # Trigger when Admin updates config
-      - 'scripts/build_site.py'     # Trigger if script changes
-      - 'assets/master_template.html' # Trigger if template changes
-  workflow_dispatch:                # Allow manual button click in GitHub Actions tab
+      - 'data/config.json'          # Trigger on Admin Save
+      - 'scripts/build_site.py'     # Trigger on Script Update
+      - 'assets/master_template.html' # Trigger on Template Update
+  workflow_dispatch:                # Manual Button
 
 jobs:
-  build_html:
+  build_deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write              # Permission to commit index.html back
+      contents: write               # Required to commit generated HTML
 
     steps:
       - name: Checkout Code
@@ -26,10 +26,23 @@ jobs:
       - name: Run Build Script
         run: python scripts/build_site.py
 
-      - name: Commit and Push
+      - name: Commit & Push Generated Site
         run: |
-          git config --global user.name "CMS Bot"
+          git config --global user.name "StreamCMS Bot"
           git config --global user.email "bot@noreply.github.com"
+          
+          # Add the main index
           git add index.html
-          # Only commit if there are changes
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-Build: Static HTML Updated" && git push)
+          
+          # Add generated directories (League pages and Custom Pages)
+          # We add everything, then check status
+          git add league/ || true
+          git add */index.html || true
+          
+          # Check if there are changes before committing to avoid errors
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Auto-Build: Site Updated [Skip CI]"
+            git push
+          fi
