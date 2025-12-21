@@ -4,15 +4,18 @@
     "title_part_2": "East",
     "domain": "crackstreams.help",
     "logo_url": "/assets/streameast-logo-hd.jpg",
+    "favicon_url": "",
+    "footer_copyright": "",
+    "footer_disclaimer": "",
     "target_country": "US"
   },
   "theme": {
-    "brand_primary": "#d00000",
-    "brand_dark": "#8a0000",
-    "accent_gold": "#ffd700",
-    "bg_body": "#050505",
-    "hero_gradient_start": "#1a0505",
-    "font_family": "system-ui, sans-serif"
+    "brand_primary": "",
+    "brand_dark": "",
+    "accent_gold": "",
+    "bg_body": "",
+    "hero_gradient_start": "",
+    "font_family": ""
   },
   "sport_priorities": {
     "US": {
@@ -172,7 +175,9 @@
       "title": "No. #1 Streaming Website",
       "layout": "home",
       "meta_title": "Best site",
-      "meta_desc": "Best meta"
+      "meta_desc": "Best meta",
+      "meta_keywords": "gfchbcg,gdgd,gfhfg",
+      "canonical_url": "https://streameast.com"
     },
     {
       "id": "p_1766332109964",
