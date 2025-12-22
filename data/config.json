@@ -83,7 +83,7 @@
         "score": 10,
         "isLeague": false,
         "hasLink": false,
-        "isHidden": false
+        "isHidden": true
       }
     },
     "UK": {
@@ -293,6 +293,9 @@
     },
     {
       "keyword": "Crackstreams"
+    },
+    {
+      "keyword": "Buffstreams"
     }
   ],
   "social_sharing": {
