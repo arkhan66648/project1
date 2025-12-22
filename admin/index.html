@@ -18,6 +18,7 @@
                 <button class="nav-btn" onclick="switchTab('priorities')">📊 Priorities</button>
                 <button class="nav-btn" onclick="switchTab('menus')">🔗 Menus</button>
                 <button class="nav-btn" onclick="switchTab('entity')">🚀 Trending Search</button>
+                <button class="nav-btn" onclick="switchTab('social')">💬 Social Sharing</button>
             </nav>
             <div class="sidebar-footer">
                 <div id="buildStatusBox" class="build-box idle"><div class="status-dot"></div><span id="buildStatusText">Idle</span></div>
@@ -84,9 +85,12 @@
                             <label>Meta Description</label><textarea id="pageMetaDesc" rows="2"></textarea>
                             <label>Meta Keywords (Comma separated)</label><input type="text" id="pageMetaKeywords">
                             <label>Canonical URL</label><input type="text" id="pageCanonical">
-                            <div class="checkbox-group">
-                                <label><input type="checkbox" id="schemaOrg"> Static Org Schema</label>
-                                <!-- Dynamic Schemas are handled by Frontend JS automatically -->
+                            
+                            <!-- Updated Schema Section -->
+                            <div class="checkbox-group" style="margin-top:15px; display:flex; flex-direction:column; gap:8px;">
+                                <label><input type="checkbox" id="schemaOrg"> Static Org Schema (Organization)</label>
+                                <label><input type="checkbox" id="schemaLive"> Live Badge Schema (EventLive)</label>
+                                <label><input type="checkbox" id="schemaSchedule"> Match Schedule Schema (ItemList)</label>
                             </div>
                         </div>
                     </div>
@@ -98,7 +102,6 @@
             <section id="tab-priorities" class="tab-content">
                 <div class="header-box">
                     <h1>Priorities</h1>
-                    <button class="btn-danger" onclick="resetPriorities()">Reset Defaults</button>
                 </div>
                 <div class="card">
                     <h3>Sorting for: <span id="prioLabel">US</span></h3>
@@ -123,9 +126,9 @@
 
             <!-- ENTITY -->
             <section id="tab-entity" class="tab-content">
-                <div class="header-box"><h1>Trending Search (Entity Stacking)</h1></div>
+                <div class="header-box"><h1>Trending Search (Trusted Partners)</h1></div>
                 <div class="card">
-                    <p class="desc">These keywords appear in the footer. Clicking one triggers the "Searching..." animation and redirects to Home.</p>
+                    <p class="desc">These keywords appear in the "Trusted Partners" section. Clicking one triggers the "Searching..." animation and redirects to Home (Entity Stacking).</p>
                     <div class="input-group">
                         <input type="text" id="newEntityKeyword" placeholder="e.g. NBA Streams Free">
                         <button class="btn-primary" onclick="addEntityRow()">Add Keyword</button>
@@ -134,12 +137,46 @@
                 </div>
             </section>
 
+            <!-- NEW: SOCIAL SHARING -->
+            <section id="tab-social" class="tab-content">
+                <div class="header-box"><h1>Social Sharing Manager</h1></div>
+                <div class="grid-2">
+                    <div class="card">
+                        <h3>Fake Share Counts</h3>
+                        <p class="desc">Define the numbers displayed on the social buttons.</p>
+                        <label>Telegram Count</label><input type="number" id="socialTelegram" placeholder="1240">
+                        <label>Discord Count</label><input type="number" id="socialDiscord" placeholder="850">
+                        <label>Reddit Count</label><input type="number" id="socialReddit" placeholder="340">
+                        <label>Twitter Count</label><input type="number" id="socialTwitter" placeholder="510">
+                    </div>
+                    <div class="card">
+                        <h3>Visibility Settings</h3>
+                        <label>Exclude on Pages (Comma separated slugs)</label>
+                        <textarea id="socialExcluded" rows="4" placeholder="dmca, contact, about"></textarea>
+                        <p class="desc">The social sidebar will be hidden on these pages.</p>
+                    </div>
+                </div>
+            </section>
+
         </main>
     </div>
 
     <!-- MODALS -->
     <div id="authModal" class="modal" style="display:none;"><div class="modal-content"><h3>Login</h3><input type="password" id="ghToken" placeholder="GitHub Token"><button class="save-btn" onclick="saveToken()">Access</button></div></div>
-    <div id="menuModal" class="modal" style="display:none;"><div class="modal-content"><h3>Add Link</h3><input type="hidden" id="menuTargetSection"><label>Title</label><input type="text" id="menuTitleItem"><label>URL</label><input type="text" id="menuUrlItem"><div class="modal-actions"><button class="btn-secondary" onclick="document.getElementById('menuModal').style.display='none'">Cancel</button><button class="btn-primary" onclick="saveMenuItem()">Add</button></div></div></div>
+    
+    <div id="menuModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3>Add Link</h3>
+            <input type="hidden" id="menuTargetSection">
+            <label>Title</label><input type="text" id="menuTitleItem">
+            <label>URL</label><input type="text" id="menuUrlItem">
+            <!-- Header Checkbox Injected by JS -->
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="document.getElementById('menuModal').style.display='none'">Cancel</button>
+                <button class="btn-primary" onclick="saveMenuItem()">Add</button>
+            </div>
+        </div>
+    </div>
     
     <script src="app.js"></script>
 </body>
