@@ -276,18 +276,23 @@
             renderUpcomingGrouped(upcomingMatches);
 
             // ---------------------------------------------------------
-            // 2. UPDATED DIRECT LINK HANDLING (?sport=ID or #ID)
+            // 2. UPDATED ROUTING LOGIC
             // ---------------------------------------------------------
-            let directId = window.location.hash.replace('#', ''); // Check #123
             
-            if (!directId) {
-                // Check ?sport=123
-                const params = new URLSearchParams(window.location.search);
-                directId = params.get('sport');
+            // PRIORITY 1: Check for PLAYER Link (/watch/?sport=ID)
+            const params = new URLSearchParams(window.location.search);
+            const playerTarget = params.get('sport');
+
+            if (playerTarget && window.MATCH_DATA[playerTarget]) {
+                openPlayer(playerTarget, false); // Direct to Player
+                return; // Stop processing (don't check hash)
             }
 
-            if(directId && window.MATCH_DATA[directId]) {
-                openInfoModal(directId); 
+            // PRIORITY 2: Check for INFO Link (/#ID)
+            const infoTarget = window.location.hash.replace('#', '');
+            
+            if (infoTarget && window.MATCH_DATA[infoTarget]) {
+                openInfoModal(infoTarget); // Show Info Overlay
             }
             // ---------------------------------------------------------
         }
