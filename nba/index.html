@@ -275,11 +275,21 @@
             renderLiveSection(liveMatches);
             renderUpcomingGrouped(upcomingMatches);
 
-            // 2. Direct Link Handling with INFO OVERLAY logic
-            const hashId = window.location.hash.replace('#', '');
-            if(hashId && window.MATCH_DATA[hashId]) {
-                openInfoModal(hashId); // DIRECT URL -> Opens Info Overlay
+            // ---------------------------------------------------------
+            // 2. UPDATED DIRECT LINK HANDLING (?sport=ID or #ID)
+            // ---------------------------------------------------------
+            let directId = window.location.hash.replace('#', ''); // Check #123
+            
+            if (!directId) {
+                // Check ?sport=123
+                const params = new URLSearchParams(window.location.search);
+                directId = params.get('sport');
             }
+
+            if(directId && window.MATCH_DATA[directId]) {
+                openInfoModal(directId); 
+            }
+            // ---------------------------------------------------------
         }
 
         function renderLiveSection(matches) {
