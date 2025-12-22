@@ -275,59 +275,68 @@
             const container = document.getElementById('upcoming-container');
             container.innerHTML = '';
 
-            const priorityGroups = {}; // Key: Priority Name (e.g. "NFL")
-            const genericGroups = {};  // Key: Sport Name (e.g. "Cricket")
+            // UNIFIED GROUPING to prevent Double Sections (e.g. Cricket vs cricket)
+            const allGroups = {};
 
             matches.forEach(m => {
-                // 1. CHECK HIDDEN (Strict Filtering)
-                // Check if this match matches ANY hidden priority
+                // 1. HIDDEN CHECK
                 const hiddenKey = Object.keys(PRIORITIES).find(k => {
-                    const p = PRIORITIES[k];
-                    if(!p.isHidden) return false;
-                    // Check if match text matches the hidden key
+                    if(!PRIORITIES[k].isHidden) return false;
                     const txt = (m.league + " " + m.sport).toLowerCase();
                     return txt.includes(k.toLowerCase());
                 });
-                if(hiddenKey) return; // Skip this match completely
+                if(hiddenKey) return; // Skip hidden matches
 
-                // 2. CHECK PRIORITY (League Section)
-                // Does this match belong to a configured Priority?
+                // 2. DETERMINE GROUP KEY
+                // Check if it belongs to a Priority Group
                 const prioKey = Object.keys(PRIORITIES).find(k => {
-                    const p = PRIORITIES[k];
                     const txt = (m.league + " " + m.sport).toLowerCase();
                     return txt.includes(k.toLowerCase());
                 });
+
+                let groupKey = "";
+                let groupScore = 0;
+                let isPriority = false;
+                let hasLink = false;
+                let iconKey = "";
 
                 if (prioKey) {
-                    if (!priorityGroups[prioKey]) priorityGroups[prioKey] = [];
-                    priorityGroups[prioKey].push(m);
+                    // It is a Priority Group (e.g. "NFL")
+                    groupKey = prioKey; // Use strict Admin Key
+                    groupScore = PRIORITIES[prioKey].score;
+                    isPriority = true; // Flag for row rendering (Show Sport Name)
+                    hasLink = PRIORITIES[prioKey].hasLink;
+                    iconKey = prioKey;
                 } else {
-                    // Fallback to Generic Sport Group
-                    const sport = m.sport || "General";
-                    if (!genericGroups[sport]) genericGroups[sport] = [];
-                    genericGroups[sport].push(m);
+                    // Fallback to Generic Sport (e.g. "Cricket")
+                    // Normalize to Title Case to prevent "cricket" vs "Cricket" split
+                    const sportRaw = m.sport || "General";
+                    groupKey = toTitleCase(sportRaw); 
+                    groupScore = 0;
+                    isPriority = false; // Flag for row rendering (Show League Name)
+                    hasLink = false;
+                    iconKey = groupKey;
                 }
+
+                if (!allGroups[groupKey]) {
+                    allGroups[groupKey] = {
+                        name: groupKey,
+                        score: groupScore,
+                        matches: [],
+                        isLeague: isPriority,
+                        hasLink: hasLink,
+                        iconKey: iconKey
+                    };
+                }
+                allGroups[groupKey].matches.push(m);
             });
 
-            // 3. RENDER PRIORITY GROUPS (High Score First)
-            const sortedPrioKeys = Object.keys(priorityGroups).sort((a,b) => PRIORITIES[b].score - PRIORITIES[a].score);
-            
-            sortedPrioKeys.forEach(key => {
-                const config = PRIORITIES[key];
-                const ms = priorityGroups[key];
-                ms.sort((a,b) => a.startTimeUnix - b.startTimeUnix);
-                // IS PRIORITY: Display Main Sport in row (e.g. "American Football")
-                createSection(container, key, ms, config.hasLink, key, true);
-            });
+            // 3. SORT & RENDER
+            const sortedGroups = Object.values(allGroups).sort((a,b) => b.score - a.score);
 
-            // 4. RENDER GENERIC GROUPS (Alphabetical)
-            const sortedGenericKeys = Object.keys(genericGroups).sort();
-            
-            sortedGenericKeys.forEach(key => {
-                const ms = genericGroups[key];
-                ms.sort((a,b) => a.startTimeUnix - b.startTimeUnix);
-                // NOT PRIORITY: Display League/Tournament in row (e.g. "International League T20")
-                createSection(container, key, ms, false, key, false);
+            sortedGroups.forEach(group => {
+                group.matches.sort((a,b) => a.startTimeUnix - b.startTimeUnix);
+                createSection(container, group.name, group.matches, group.hasLink, group.iconKey, group.isLeague);
             });
         }
 
@@ -342,8 +351,8 @@
             section.innerHTML = `<div class="sec-head"><div class="sec-title">${getSportIcon(iconKey)} Upcoming ${title}</div>${linkHtml}</div>`;
             const list = document.createElement('div');
             
-            // Pass the context. If isPrioritySection is true, we pass the title to filter it out.
-            // If isPrioritySection is false, we pass NULL so it shows the specific league.
+            // If isPrioritySection is TRUE (e.g. "NFL"), we pass the title to filter it out.
+            // If isPrioritySection is FALSE (e.g. "Cricket"), we pass NULL so it shows specific leagues (e.g. "Big Bash").
             matches.forEach(m => list.appendChild(createMatchRow(m, isPrioritySection ? title : null)));
             
             section.appendChild(list);
@@ -374,16 +383,14 @@
                 <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_b_letter||'T')}">${m.team_b_letter||'T'}</span> ${tB}</div>`;
             }
 
-            // 3. TAG DISPLAY LOGIC (CRITICAL FIX)
+            // 3. TAG DISPLAY LOGIC
             let tagText = "";
             
             if (priorityContext) {
-                // We are in a Priority Section (e.g. "NFL"). 
-                // Show Main Sport to avoid redundancy (e.g. "American Football").
+                // Priority Section (e.g. "NFL") -> Show Sport Name (e.g. "American Football")
                 tagText = m.sport.toUpperCase();
             } else {
-                // We are in a Generic Section (e.g. "Cricket").
-                // Show Specific League/Tournament (e.g. "International League T20").
+                // Generic Section (e.g. "Cricket") -> Show League Name (e.g. "International League T20")
                 tagText = m.league || m.tournament || m.sport;
             }
 
@@ -414,6 +421,7 @@
             }
         }
         
+        function toTitleCase(str) { return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}); }
         function injectDynamicSchema(seoData) { if(!seoData) return; let jsonStr = JSON.stringify(seoData).replace(/https:\/\/example\.com/g, SITE_DOMAIN); const script = document.createElement('script'); script.type = 'application/ld+json'; script.text = jsonStr; document.head.appendChild(script); }
         function getSportIcon(n) { n=(n||"").toLowerCase(); if(n.includes('soccer')||n.includes('premier')||n.includes('league')) return '⚽'; if(n.includes('basket')||n.includes('nba')) return '🏀'; if(n.includes('football')||n.includes('nfl')) return '🏈'; if(n.includes('baseball')||n.includes('mlb')) return '⚾'; if(n.includes('ufc')||n.includes('mma')||n.includes('boxing')) return '🥊'; if(n.includes('hockey')||n.includes('nhl')) return '🏒'; if(n.includes('f1')||n.includes('motor')) return '🏎️'; if(n.includes('cricket')||n.includes('ashes')) return '🏏'; return '🏆'; }
         function getColor(char) { const c = ['#e53935','#d81b60','#8e24aa','#5e35b1','#3949ab','#1e88e5','#039be5','#00897b','#43a047','#7cb342','#c0ca33','#fdd835','#fb8c00']; return c[char.charCodeAt(0) % c.length]; }
