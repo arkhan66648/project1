@@ -128,11 +128,24 @@
         .f-link:hover { color: white; }
         .copyright { color: #444; font-size: 0.7rem; }
 
-        /* POPUPS & PLAYER MODAL */
+        /* POPUPS & OVERLAYS */
         .entity-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         
-        /* Modal Container - styles loaded dynamically by player.js */
+        /* Stream Player Modal */
         .modal { position: fixed; inset: 0; background: #050505; z-index: 2000; display: none; flex-direction: column; }
+
+        /* --- NEW: Information Overlay Styles --- */
+        .modal-info { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 3000; display: none; align-items: center; justify-content: center; }
+        .info-content { background: #111; border: 1px solid #333; padding: 40px 30px; border-radius: 12px; width: 90%; max-width: 500px; text-align: center; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        .close-info { position: absolute; top: 15px; right: 15px; background: none; color: #666; font-size: 1.2rem; padding: 5px; transition: 0.2s; border: none; font-weight: bold; }
+        .close-info:hover { color: #fff; transform: scale(1.1); }
+        .info-header { color: var(--brand-primary); font-weight: 800; text-transform: uppercase; font-size: 0.85rem; margin-bottom: 15px; letter-spacing: 1px; }
+        #infoTeams { font-size: 1.6rem; margin: 0 0 20px 0; color: white; line-height: 1.3; font-weight: 700; }
+        .info-meta { display: flex; flex-direction: column; gap: 8px; color: #ccc; font-size: 1rem; margin-bottom: 30px; background: #1a1a1a; padding: 15px; border-radius: 8px; }
+        .meta-row { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 8px; }
+        .meta-row:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+        .btn-watch-lg { background: var(--brand-primary); color: white; font-size: 1.1rem; font-weight: 800; padding: 16px 30px; border-radius: 8px; width: 100%; text-transform: uppercase; transition: 0.2s; box-shadow: 0 4px 15px rgba(208,0,0,0.4); display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-watch-lg:hover { background: var(--brand-dark); transform: scale(1.02); }
 
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
@@ -208,8 +221,22 @@
         <p style="color:#888;">Checking stream availability...</p>
     </div>
 
-    <!-- PLAYER CONTAINER (Empty initially) -->
+    <!-- PLAYER CONTAINER (Stream Overlay) -->
     <div id="streamModal" class="modal"></div>
+
+    <!-- NEW: MATCH INFO OVERLAY -->
+    <div id="infoModal" class="modal-info">
+        <div class="info-content">
+            <button class="close-info" onclick="closeInfoModal()">✕</button>
+            <div class="info-header">Match Information</div>
+            <h2 id="infoTeams">Loading...</h2>
+            <div class="info-meta">
+                <div class="meta-row"><span>📅 Date</span> <span id="infoDate">-</span></div>
+                <div class="meta-row"><span>⏱ Status</span> <span id="infoStatus" style="color:var(--brand-primary); font-weight:700;">-</span></div>
+            </div>
+            <button id="infoWatchBtn" class="btn-watch-lg">📺 WATCH STREAM</button>
+        </div>
+    </div>
 
     <script>
         const API_URL = "https://vercelapi-olive.vercel.app/api/sync-nodes";
@@ -248,10 +275,10 @@
             renderLiveSection(liveMatches);
             renderUpcomingGrouped(upcomingMatches);
 
-            // 2. Direct Link Handling
+            // 2. Direct Link Handling with INFO OVERLAY logic
             const hashId = window.location.hash.replace('#', '');
             if(hashId && window.MATCH_DATA[hashId]) {
-                openPlayer(hashId, true);
+                openInfoModal(hashId); // DIRECT URL -> Opens Info Overlay
             }
         }
 
@@ -262,7 +289,6 @@
             topList.innerHTML = ''; hiddenList.innerHTML = ''; btn.style.display='none';
             if (matches.length === 0) { topList.innerHTML = '<div style="text-align:center; padding:30px; color:#444;">No live matches currently.</div>'; return; }
             
-            // For LIVE matches, we pass 'null' as section context so it defaults to League/Sport Name based on data
             matches.slice(0, 5).forEach(m => topList.appendChild(createMatchRow(m, null)));
             if (matches.length > 5) {
                 matches.slice(5).forEach(m => hiddenList.appendChild(createMatchRow(m, null)));
@@ -275,20 +301,16 @@
             const container = document.getElementById('upcoming-container');
             container.innerHTML = '';
 
-            // UNIFIED GROUPING to prevent Double Sections (e.g. Cricket vs cricket)
             const allGroups = {};
 
             matches.forEach(m => {
-                // 1. HIDDEN CHECK
                 const hiddenKey = Object.keys(PRIORITIES).find(k => {
                     if(!PRIORITIES[k].isHidden) return false;
                     const txt = (m.league + " " + m.sport).toLowerCase();
                     return txt.includes(k.toLowerCase());
                 });
-                if(hiddenKey) return; // Skip hidden matches
+                if(hiddenKey) return;
 
-                // 2. DETERMINE GROUP KEY
-                // Check if it belongs to a Priority Group
                 const prioKey = Object.keys(PRIORITIES).find(k => {
                     const txt = (m.league + " " + m.sport).toLowerCase();
                     return txt.includes(k.toLowerCase());
@@ -301,19 +323,16 @@
                 let iconKey = "";
 
                 if (prioKey) {
-                    // It is a Priority Group (e.g. "NFL")
-                    groupKey = prioKey; // Use strict Admin Key
+                    groupKey = prioKey;
                     groupScore = PRIORITIES[prioKey].score;
-                    isPriority = true; // Flag for row rendering (Show Sport Name)
+                    isPriority = true;
                     hasLink = PRIORITIES[prioKey].hasLink;
                     iconKey = prioKey;
                 } else {
-                    // Fallback to Generic Sport (e.g. "Cricket")
-                    // Normalize to Title Case to prevent "cricket" vs "Cricket" split
                     const sportRaw = m.sport || "General";
                     groupKey = toTitleCase(sportRaw); 
                     groupScore = 0;
-                    isPriority = false; // Flag for row rendering (Show League Name)
+                    isPriority = false;
                     hasLink = false;
                     iconKey = groupKey;
                 }
@@ -331,7 +350,6 @@
                 allGroups[groupKey].matches.push(m);
             });
 
-            // 3. SORT & RENDER
             const sortedGroups = Object.values(allGroups).sort((a,b) => b.score - a.score);
 
             sortedGroups.forEach(group => {
@@ -350,11 +368,7 @@
 
             section.innerHTML = `<div class="sec-head"><div class="sec-title">${getSportIcon(iconKey)} Upcoming ${title}</div>${linkHtml}</div>`;
             const list = document.createElement('div');
-            
-            // If isPrioritySection is TRUE (e.g. "NFL"), we pass the title to filter it out.
-            // If isPrioritySection is FALSE (e.g. "Cricket"), we pass NULL so it shows specific leagues (e.g. "Big Bash").
             matches.forEach(m => list.appendChild(createMatchRow(m, isPrioritySection ? title : null)));
-            
             section.appendChild(list);
             container.appendChild(section);
         }
@@ -363,7 +377,6 @@
             const div = document.createElement('div');
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
-            // 1. TIME
             let timeCol;
             if (m.is_live) {
                 timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
@@ -372,7 +385,6 @@
                 timeCol = `<span class="time-main">${parts[1] || ''}</span><span class="time-sub">${parts[0]}</span>`; 
             }
 
-            // 2. TEAMS
             let teamsHtml = '';
             const tA = m.team_a; const tB = m.team_b;
             if (!tB) {
@@ -383,21 +395,17 @@
                 <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_b_letter||'T')}">${m.team_b_letter||'T'}</span> ${tB}</div>`;
             }
 
-            // 3. TAG DISPLAY LOGIC
             let tagText = "";
-            
             if (priorityContext) {
-                // Priority Section (e.g. "NFL") -> Show Sport Name (e.g. "American Football")
                 tagText = m.sport.toUpperCase();
             } else {
-                // Generic Section (e.g. "Cricket") -> Show League Name (e.g. "International League T20")
                 tagText = m.league || m.tournament || m.sport;
             }
 
-            // 4. META & ACTION
             let metaHtml = '', actionHtml = '';
             if (m.is_live) {
                 metaHtml = `<div class="meta-top">${m.live_viewers || 'N/A'}</div>`;
+                // WATCH BUTTON calls openPlayer DIRECTLY
                 actionHtml = `<button class="btn-watch" onclick="openPlayer('${m.id}', false)">WATCH <span class="hd-badge">HD</span></button>`;
             } else {
                 metaHtml = `<div class="meta-top" style="color:#aaa; font-weight:400;">${m.status_text}</div>`;
@@ -408,6 +416,31 @@
             return div;
         }
 
+        // --- NEW INFO OVERLAY LOGIC ---
+        function openInfoModal(matchId) {
+            const m = window.MATCH_DATA[matchId];
+            if(!m) return; // Should likely show a 'expired' msg but for now just return
+
+            document.getElementById('infoTeams').innerHTML = m.team_b ? `${m.team_a} <span style="color:#666; font-size:0.8em;">vs</span> ${m.team_b}` : m.team_a;
+            document.getElementById('infoDate').innerText = m.formatted_date;
+            document.getElementById('infoStatus').innerText = m.is_live ? "LIVE NOW 🔥" : m.status_text;
+            
+            // The Watch button inside the info overlay opens the actual player
+            document.getElementById('infoWatchBtn').onclick = function() {
+                closeInfoModal();
+                openPlayer(matchId, false);
+            };
+
+            document.getElementById('infoModal').style.display = 'flex';
+        }
+
+        function closeInfoModal() {
+            document.getElementById('infoModal').style.display = 'none';
+            // Clear hash silently
+            history.replaceState(null, null, ' ');
+        }
+
+        // --- EXISTING PLAYER LOGIC ---
         function openPlayer(matchId, startLocked) {
             const m = window.MATCH_DATA[matchId];
             if(!m) return alert("Match expired or not found.");
