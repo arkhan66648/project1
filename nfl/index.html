@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -203,11 +203,11 @@
     <header>
         <div class="header-container">
             <a href="/" class="logo-link"><img src="/assets/streameast-logo-hd.jpg" class="logo-img"> <div class="logo-text">Stream<span>East</span></div></a>
-            <nav class="nav-links" id="desktopNav"><a href="#" >Schedule</a><a href="/#faqs" >FAQs</a></nav>
+            <nav class="nav-links" id="desktopNav"><a href="#">Schedule</a><a href="/#faqs">FAQs</a></nav>
             <button class="hamburger" onclick="toggleMenu()">☰</button>
         </div>
     </header>
-    <div class="mobile-menu" id="mobileMenu"><a href="#" >Schedule</a><a href="/#faqs" >FAQs</a></div>
+    <div class="mobile-menu" id="mobileMenu"><a href="#">Schedule</a><a href="/#faqs">FAQs</a></div>
 
     <div class="hero">
         <div class="sys-status"><div class="dot"></div> System Status: Online</div>
@@ -250,7 +250,15 @@
         <div class="section-box" style="margin-top:50px;">
             <div class="sec-head"><div class="sec-title">🏆 Popular Leagues</div></div>
             <div class="leagues-grid">
-                <a href="/contact" class="footer-link">Contact</a><a href="/#soccer" class="footer-link">⚽ Soccer</a> 
+                
+            <a href="/contact" class="league-card">
+                <span class="l-icon">🏆</span>
+                <span>Contact</span>
+            </a>
+            <a href="/#soccer" class="league-card">
+                <span class="l-icon">⚽</span>
+                <span>⚽ Soccer</span>
+            </a> 
                 <!-- Note: Build script will inject <a> tags. CSS .league-card logic applied in JS or manually via build script override if possible, otherwise we style the <a> tag as block -->
             </div>
         </div>
@@ -261,7 +269,7 @@
             <p style="font-size:0.8rem; color:#666; margin:5px 0 15px 0;">Find official alternatives and verified streams</p>
             <div class="partner-tags">
                 <!-- Built by JS from Config or Entity list -->
-                <div class="entity-footer-section"><h3>Trending Searches</h3><div class="entity-tags"><button class="entity-tag" onclick="triggerEntityPopup('Methstreams')">Methstreams</button><button class="entity-tag" onclick="triggerEntityPopup('Sportsurge')">Sportsurge</button></div></div>
+                <button class="p-tag" onclick="triggerEntityPopup('Methstreams')">Methstreams</button><button class="p-tag" onclick="triggerEntityPopup('Sportsurge')">Sportsurge</button>
             </div>
         </div>
 
@@ -272,11 +280,11 @@
         <div class="footer-grid">
             <div class="f-brand">
                 <img src="/assets/streameast-logo-hd.jpg" class="logo-img"> <div class="logo-text">Stream<span>East</span></div>
-                <div class="f-desc"><div class="disclaimer">Hello world</div></div>
+                <div class="f-desc">Hello world</div>
             </div>
             <div>
                 <h4 style="color:#fff; margin-bottom:15px;">Quick Links</h4>
-                <div class="f-links"><a href="/dmca" class="footer-link">DMCA</a><a href="/contact" class="footer-link">Contact</a></div>
+                <div class="f-links"><a href="/dmca" class="f-link">DMCA</a><a href="/contact" class="f-link">Contact</a></div>
             </div>
         </div>
         <div class="copyright">Copyright</div>
@@ -315,15 +323,13 @@
     </div>
 
     <script>
+        const ENABLE_SCHEMAS = { live: false, schedule: false };
         const API_URL = "https://vercelapi-olive.vercel.app/api/sync-nodes";
         const TARGET_COUNTRY = "US"; 
         const PRIORITIES = {"NFL": {"score": 100, "isLeague": true, "hasLink": true}, "NBA": {"score": 95, "isLeague": true, "hasLink": true}, "MLB": {"score": 90, "isLeague": true, "hasLink": true}, "College Football": {"score": 88, "isLeague": true, "hasLink": false}, "College Basketball": {"score": 87, "isLeague": true, "hasLink": false}, "NHL": {"score": 85, "isLeague": true, "hasLink": false}, "UFC": {"score": 80, "isLeague": true, "hasLink": false}, "MMA": {"score": 79, "isLeague": false, "hasLink": false}, "MLS": {"score": 70, "isLeague": true, "hasLink": false}, "Premier League": {"score": 60, "isLeague": true, "hasLink": false}, "Boxing": {"score": 50, "isLeague": false, "hasLink": false}, "Tennis": {"score": 40, "isLeague": false, "hasLink": false}, "Other": {"score": 10, "isLeague": false, "hasLink": false, "isHidden": false}}; 
         const SITE_DOMAIN = "https://crackstreams.help";
         // REQ #9: Share Counts (Mock or dynamic)
-        const SHARE_CONFIG = {
-            excluded: ['dmca', 'about', 'contact', 'privacy'],
-            counts: { telegram: 1240, discord: 850, reddit: 340, twitter: 510 } 
-        };
+        const SHARE_CONFIG = {"excluded": [], "counts": {}};
 
         let allMatches = [];
         window.MATCH_DATA = {}; 
