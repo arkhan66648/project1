@@ -279,7 +279,7 @@
     "counts": {
       "telegram": "1200",
       "whatsapp": "800",
-      "reddit": "300",
+      "reddit": "600",
       "twitter": "500"
     },
     "excluded_pages": "dmca,contact,about,privacy"
