@@ -174,7 +174,9 @@
       "content": "<h2>Welcome boss</h2>",
       "id": "p_oktg8q1t8",
       "schemas": {
-        "org": true
+        "org": true,
+        "live": true,
+        "schedule": true
       },
       "title": "No. #1 Streaming Website",
       "layout": "home",
@@ -268,5 +270,14 @@
     {
       "keyword": "Sportsurge"
     }
-  ]
+  ],
+  "social_sharing": {
+    "counts": {
+      "telegram": "1200",
+      "discord": "800",
+      "reddit": "300",
+      "twitter": "500"
+    },
+    "excluded_pages": "dmca,contact,about,privacy"
+  }
 }
