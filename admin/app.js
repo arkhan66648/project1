@@ -47,7 +47,8 @@ const DEMO_CONFIG = {
         logo_url: "", target_country: "US"
     },
     social_sharing: {
-        counts: { telegram: 1200, discord: 800, reddit: 300, twitter: 500 },
+        // Changed discord to whatsapp here
+        counts: { telegram: 1200, whatsapp: 800, reddit: 300, twitter: 500 },
         excluded_pages: "dmca,contact,about,privacy"
     },
     theme: {
@@ -126,7 +127,8 @@ function injectSocialTab() {
                     <h3>Fake Share Counts</h3>
                     <p class="desc">These numbers appear on the social buttons.</p>
                     <label>Telegram Count</label><input type="number" id="socialTelegram">
-                    <label>Discord Count</label><input type="number" id="socialDiscord">
+                    <!-- REPLACED DISCORD WITH WHATSAPP -->
+                    <label>WhatsApp Count</label><input type="number" id="socialWhatsapp">
                     <label>Reddit Count</label><input type="number" id="socialReddit">
                     <label>Twitter Count</label><input type="number" id="socialTwitter">
                 </div>
@@ -145,12 +147,10 @@ function injectSocialTab() {
 function injectSchemaOptions() {
     const group = document.querySelector('#pageEditorView .checkbox-group');
     if(group && !document.getElementById('schemaLive')) {
-        // Live Badge Schema
         const lbl1 = document.createElement('label');
         lbl1.innerHTML = '<input type="checkbox" id="schemaLive"> Live Badge Schema (EventLive)';
         group.appendChild(lbl1);
 
-        // Schedule Schema
         const lbl2 = document.createElement('label');
         lbl2.innerHTML = '<input type="checkbox" id="schemaSchedule"> Match Schedule Schema (ItemList)';
         group.appendChild(lbl2);
@@ -217,10 +217,10 @@ function populateUI() {
     setVal('heroGradient', t.hero_gradient_start);
     setVal('fontFamily', t.font_family);
 
-    // Social Sharing
+    // Social Sharing - UPDATED
     const soc = configData.social_sharing || { counts: {} };
     setVal('socialTelegram', soc.counts?.telegram || 0);
-    setVal('socialDiscord', soc.counts?.discord || 0);
+    setVal('socialWhatsapp', soc.counts?.whatsapp || 0); // Changed from discord to whatsapp
     setVal('socialReddit', soc.counts?.reddit || 0);
     setVal('socialTwitter', soc.counts?.twitter || 0);
     setVal('socialExcluded', soc.excluded_pages || "");
@@ -333,11 +333,8 @@ window.editPage = (id) => {
     setVal('pageMetaKeywords', p.meta_keywords); 
     setVal('pageCanonical', p.canonical_url); 
     
-    // Schema Checkboxes
     if(!p.schemas) p.schemas = {};
     document.getElementById('schemaOrg').checked = !!p.schemas.org;
-    
-    // New Schemas
     if(document.getElementById('schemaLive')) document.getElementById('schemaLive').checked = !!p.schemas.live;
     if(document.getElementById('schemaSchedule')) document.getElementById('schemaSchedule').checked = !!p.schemas.schedule;
 
@@ -359,7 +356,6 @@ window.saveEditorContentToMemory = () => {
     p.canonical_url = getVal('pageCanonical');
     p.content = tinymce.get('pageContentEditor').getContent();
     
-    // Save Schemas
     p.schemas = {
         org: document.getElementById('schemaOrg').checked,
         live: document.getElementById('schemaLive') ? document.getElementById('schemaLive').checked : false,
@@ -389,7 +385,7 @@ window.deletePage = (id) => {
 };
 
 // ==========================================
-// 7. MENUS & ENTITIES (Header Highlight)
+// 7. MENUS & ENTITIES
 // ==========================================
 function renderMenus() {
     ['header', 'hero', 'footer_leagues', 'footer_static'].forEach(sec => {
@@ -412,32 +408,25 @@ window.openMenuModal = (sec) => {
     document.getElementById('menuTargetSection').value = sec; 
     setVal('menuTitleItem',''); 
     setVal('menuUrlItem',''); 
-    
-    // Dynamic Checkbox for Header
     const modalContent = document.querySelector('#menuModal .modal-content');
     const existingCheck = document.getElementById('menuHighlightCheck');
     if(existingCheck) existingCheck.parentNode.remove();
-
     if(sec === 'header') {
         const wrap = document.createElement('div');
         wrap.innerHTML = `<label style="display:inline-flex; align-items:center; gap:5px; margin-top:10px;"><input type="checkbox" id="menuHighlightCheck"> Highlight this link (Gold Color)</label>`;
-        // Insert before actions
         modalContent.insertBefore(wrap, modalContent.querySelector('.modal-actions'));
     }
-
     document.getElementById('menuModal').style.display='flex'; 
 };
 
 window.saveMenuItem = () => { 
     const sec = document.getElementById('menuTargetSection').value;
     const isHighlight = document.getElementById('menuHighlightCheck') ? document.getElementById('menuHighlightCheck').checked : false;
-    
     const item = { 
         title: getVal('menuTitleItem'), 
         url: getVal('menuUrlItem'),
         highlight: sec === 'header' ? isHighlight : false 
     };
-
     if(!configData.menus[sec]) configData.menus[sec] = [];
     configData.menus[sec].push(item);
     renderMenus();
@@ -482,11 +471,11 @@ document.getElementById('saveBtn').onclick = async () => {
         hero_gradient_start: getVal('heroGradient'), font_family: getVal('fontFamily')
     };
 
-    // Save Social
+    // Save Social - UPDATED
     configData.social_sharing = {
         counts: {
             telegram: getVal('socialTelegram'),
-            discord: getVal('socialDiscord'),
+            whatsapp: getVal('socialWhatsapp'), // Use Whatsapp input
             reddit: getVal('socialReddit'),
             twitter: getVal('socialTwitter')
         },
@@ -535,16 +524,11 @@ function startPolling() {
     }, 5000);
 }
 
-// Tabs
 window.switchTab = (id) => {
     document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
-    
-    // Handle injected tabs
     const target = document.getElementById(`tab-${id}`);
     if(target) target.classList.add('active');
-    
-    // Handle injected buttons (like nav-social)
     const btn = document.getElementById(`nav-${id}`) || event.currentTarget;
     if(btn) btn.classList.add('active');
 };
