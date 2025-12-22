@@ -570,18 +570,27 @@
 
             let html = '';
             ['telegram', 'discord', 'reddit', 'twitter', 'copy'].forEach(p => {
-                let onclick = '';
-                if(p === 'copy') onclick = `onclick="navigator.clipboard.writeText('${SITE_DOMAIN}'); alert('Link copied!');"`;
-                else if(p === 'discord') onclick = `onclick="alert('Join our Discord!')"`; 
-                else onclick = `onclick="window.open('${actions[p]}', '_blank')"`;
+    let onclick = '';
+    if(p === 'copy') {
+        onclick = `onclick="navigator.clipboard.writeText('${SITE_DOMAIN}'); alert('Link copied!');"`;
+    } else if(p === 'discord') {
+        onclick = `onclick="alert('Join our Discord!')"`;
+    } else {
+        onclick = `onclick="window.open('${actions[p]}', '_blank')"`;
+    }
 
-                // NEW: Render count in a span
-                html += `
-                <div class="social-btn" ${onclick}>
-                    ${icons[p]}
-                    <span class="s-count">${formatCount(SHARE_CONFIG.counts[p])}</span>
-                </div>`;
-            });
+    const countHtml = p === 'copy'
+        ? '' // ✅ no count for copy
+        : `<span class="s-count">${formatCount(SHARE_CONFIG.counts[p])}</span>`;
+
+    html += `
+        <div class="social-btn" ${onclick}>
+            ${icons[p]}
+            ${countHtml}
+        </div>
+    `;
+});
+
             sb.innerHTML = html;
         }
 
