@@ -78,6 +78,12 @@
         "score": 40,
         "isLeague": false,
         "hasLink": false
+      },
+      "Other": {
+        "score": 10,
+        "isLeague": false,
+        "hasLink": false,
+        "isHidden": false
       }
     },
     "UK": {
