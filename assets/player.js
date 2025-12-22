@@ -1,5 +1,5 @@
 // assets/player.js
-// Handles Crypto loading, Player Layout, and Stream Playback
+// Fixed Layout (Flexbox), Body Scroll Lock, and robust loading
 
 const SECRET_KEY = "12345678901234567890123456789012"; 
 
@@ -40,45 +40,117 @@ function decryptStreamUrl(encryptedString) {
 
 // 3. MAIN INITIALIZER
 window.initPlayer = async function(matchData, isLocked) {
-    // Note: isLocked param is kept for compatibility but not used for blocking anymore 
-    // because master_template handles the info overlay.
-    
     window.currentMatchData = matchData;
     const modal = document.getElementById('streamModal');
     if(!modal) return;
 
-    // A. INJECT CSS ONCE
+    // A. LOCK BODY SCROLL (Fixes background scrolling issue)
+    document.body.style.overflow = 'hidden';
+
+    // B. INJECT CSS (Updated for Flexbox & Scroll Fixes)
     if(!document.getElementById('player-styles')) {
         const style = document.createElement('style');
         style.id = 'player-styles';
         style.textContent = `
             :root { --brand-primary: #D00000; --bg-sidebar: #0f0f0f; }
-            .player-layout { display: grid; grid-template-columns: 1fr 350px; grid-template-rows: 55px 1fr; height: 100vh; width: 100%; background: #050505; color: #eee; overflow:hidden; }
-            @media (max-width: 900px) {
-                .player-layout { display: flex; flex-direction: column; height: 100%; overflow-y: auto; }
-                .video-stage { flex: 0 0 auto; }
-                .sidebar { flex: 1; min-height: 400px; }
+            
+            /* DESKTOP LAYOUT (Flexbox - Fills Screen) */
+            .player-layout { 
+                display: flex; 
+                height: 100vh; 
+                width: 100%; 
+                background: #050505; 
+                color: #eee; 
+                overflow: hidden; /* Prevents double scrollbars */
             }
-            .overlay-header { grid-column: 1 / -1; background: #080808; border-bottom: 1px solid #222; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 50; }
+            
+            .main-area {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                min-width: 0; /* Important for flex child truncation */
+                height: 100%;
+            }
+
+            .overlay-header { 
+                background: #080808; 
+                border-bottom: 1px solid #222; 
+                display: flex; 
+                align-items: center; 
+                justify-content: space-between; 
+                padding: 0 20px; 
+                height: 55px;
+                flex-shrink: 0;
+            }
+
+            /* Video Stage - Fills remaining vertical space */
+            .video-stage { 
+                flex: 1; 
+                background: #000; 
+                position: relative; 
+                display: flex; 
+                flex-direction: column;
+                overflow-y: auto; /* Allow controls to scroll if needed */
+            }
+            
+            /* Video Wrapper - DESKTOP: Fill space */
+            .video-wrapper { 
+                width: 100%; 
+                flex-grow: 1; /* Pushes controls down, fills space */
+                min-height: 400px; /* Minimum height for video */
+                position: relative; 
+                background: #000; 
+            }
+            
+            .video-wrapper iframe { 
+                position: absolute; 
+                top: 0; left: 0; 
+                width: 100%; height: 100%; 
+                border: none; 
+            }
+
+            .controls-container { padding: 15px 20px; background: #050505; }
+
+            /* SIDEBAR - DESKTOP */
+            .sidebar { 
+                width: 350px; 
+                background: var(--bg-sidebar); 
+                border-left: 1px solid #222; 
+                display: flex; 
+                flex-direction: column; 
+                height: 100%;
+                flex-shrink: 0;
+            }
+
+            /* MOBILE LAYOUT (Stacking) */
+            @media (max-width: 900px) {
+                .player-layout { flex-direction: column; overflow-y: auto; height: 100%; }
+                .main-area { flex: none; height: auto; }
+                .sidebar { width: 100%; height: 500px; flex: none; border-left: none; border-top: 1px solid #222; }
+                
+                /* On Mobile, force 16:9 Aspect Ratio */
+                .video-wrapper { 
+                    flex-grow: 0; 
+                    height: 0; 
+                    padding-top: 56.25%; 
+                }
+            }
+
+            /* UI ELEMENTS */
             .back-nav { display: flex; align-items: center; gap: 8px; color: #999; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; cursor: pointer; }
             .back-nav:hover { color: white; }
             .back-nav svg { width: 18px; fill: currentColor; }
             
-            .video-stage { grid-column: 1 / 2; display: flex; flex-direction: column; background: black; position: relative; overflow-y: auto; }
-            .video-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #000; z-index: 10; }
-            .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-            .video-msg { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #888; font-size: 0.9rem; gap: 10px; }
+            .video-msg { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #888; font-size: 0.9rem; gap: 10px; z-index: 5; }
             
-            .controls-container { padding: 20px; }
-            .links-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
-            .srv-btn { background: #111; border: 1px solid #333; color: #888; padding: 8px 16px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.2s; }
+            .links-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+            .srv-btn { background: #111; border: 1px solid #333; color: #888; padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.2s; }
             .srv-btn:hover { background: #222; color: #fff; }
             .srv-btn.active { background: var(--brand-primary); border-color: var(--brand-primary); color: white; }
             .more-btn { border-style: dashed; }
             .hidden-links-box { display: none; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; background: #0e0e0e; padding: 10px; margin-bottom: 15px; border:1px solid #222; border-radius:4px; }
             .hidden-links-box.show { display: grid; }
 
-            .sidebar { grid-column: 2 / 3; background: var(--bg-sidebar); border-left: 1px solid #222; display: flex; flex-direction: column; }
             .chat-container { flex: 1; display: flex; flex-direction: column; min-height: 0; }
             .chat-messages { flex: 1; overflow-y: auto; padding: 10px; }
             .c-msg { padding: 4px 0; font-size: 0.85rem; color: #ccc; border-bottom: 1px solid #1a1a1a; }
@@ -95,39 +167,45 @@ window.initPlayer = async function(matchData, isLocked) {
     const matchTitle = m.team_b ? `${m.team_a} vs ${m.team_b}` : m.team_a;
     const leagueTitle = m.tournament || m.league || m.sport;
 
-    // B. BUILD LAYOUT
+    // C. BUILD LAYOUT (FLEX STRUCTURE)
     modal.innerHTML = `
         <div class="player-layout">
-            <header class="overlay-header">
-                <div style="display:flex; align-items:center; gap:15px;">
-                    <div class="back-nav" onclick="closeStreamModal()">
-                        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                        <span>Back</span>
+            
+            <!-- LEFT / TOP: VIDEO & HEADER -->
+            <div class="main-area">
+                <header class="overlay-header">
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <div class="back-nav" onclick="closeStreamModal()">
+                            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                            <span>Back</span>
+                        </div>
+                        <div style="border-left:1px solid #333; padding-left:15px;">
+                            <span style="font-size:0.75rem; color:#666; font-weight:800; text-transform:uppercase;">${leagueTitle}</span>
+                            <div style="font-weight:700; font-size:0.95rem; color:white;">${matchTitle}</div>
+                        </div>
                     </div>
-                    <div style="border-left:1px solid #333; padding-left:15px;">
-                        <span style="font-size:0.75rem; color:#666; font-weight:800; text-transform:uppercase;">${leagueTitle}</span>
-                        <div style="font-weight:700; font-size:0.95rem; color:white;">${matchTitle}</div>
-                    </div>
-                </div>
-                <div><span style="font-size:0.8rem; font-weight:700; color:#444;">STREAMING</span></div>
-            </header>
+                    <div><span style="font-size:0.8rem; font-weight:700; color:#444;">STREAMING</span></div>
+                </header>
 
-            <section class="video-stage">
-                <div class="video-wrapper" id="videoWrapper">
-                    <div class="video-msg">
-                        <div class="pulse-dot"></div>
-                        <span>Initializing Player...</span>
+                <div class="video-stage">
+                    <div class="video-wrapper" id="videoWrapper">
+                        <div class="video-msg">
+                            <div class="pulse-dot"></div>
+                            <span>Initializing Player...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="controls-container">
+                        <div class="links-row" id="linksRow"></div>
+                        <div class="hidden-links-box" id="hiddenLinksBox"></div>
+                        <div style="font-size:0.75rem; color:#555; line-height:1.4;">
+                            <strong>Note:</strong> If the stream buffering, please try a different server from the buttons above.
+                        </div>
                     </div>
                 </div>
-                <div class="controls-container">
-                    <div class="links-row" id="linksRow"></div>
-                    <div class="hidden-links-box" id="hiddenLinksBox"></div>
-                    <div style="font-size:0.75rem; color:#555; line-height:1.4;">
-                        <strong>Note:</strong> If the stream does not load, please try a different server from the buttons above.
-                    </div>
-                </div>
-            </section>
+            </div>
 
+            <!-- RIGHT / BOTTOM: CHAT -->
             <aside class="sidebar">
                 <div class="chat-container">
                     <div style="padding:10px; border-bottom:1px solid #222; font-weight:700; font-size:0.8rem; color:#888;">LIVE CHAT</div>
@@ -144,17 +222,16 @@ window.initPlayer = async function(matchData, isLocked) {
 
     modal.style.display = 'flex';
     
-    // C. UPDATE URL
+    // D. UPDATE URL
     if(history.pushState) {
         history.pushState({}, "", `/watch/${m.id}`);
     }
 
-    // D. LOAD STREAMS & PLAY
+    // E. LOAD STREAMS & PLAY
     const vw = document.getElementById('videoWrapper');
     
-    // Check if streams exist
     if (m.streams && m.streams.length > 0) {
-        vw.innerHTML = '<div class="video-msg"><div class="pulse-dot"></div><span>Loading Decryption Library...</span></div>';
+        vw.innerHTML = '<div class="video-msg"><div class="pulse-dot"></div><span>Loading Decryption...</span></div>';
         
         try {
             await ensureCrypto(); // Load CryptoJS
@@ -162,12 +239,15 @@ window.initPlayer = async function(matchData, isLocked) {
             // Render Buttons
             renderStreamButtons(m.streams);
 
-            // Auto Play First Stream
-            playStream(m.streams[0], document.querySelector('.srv-btn')); // Pass first button
+            // Auto Play First Stream (Tiny delay to ensure DOM is ready)
+            setTimeout(() => {
+                const firstBtn = document.querySelector('.srv-btn');
+                if(firstBtn) playStream(m.streams[0], firstBtn);
+            }, 50);
 
         } catch (e) {
             console.error(e);
-            vw.innerHTML = '<div class="video-msg" style="color:red;">Failed to load security libraries.</div>';
+            vw.innerHTML = '<div class="video-msg" style="color:red;">Failed to load player components.</div>';
         }
     } else {
         vw.innerHTML = '<div class="video-msg">No streams available for this match.</div>';
@@ -216,7 +296,7 @@ function playStream(stream, btnElement) {
     }
 
     const vw = document.getElementById('videoWrapper');
-    vw.innerHTML = '<div class="video-msg"><div class="pulse-dot"></div><span>Connecting to Stream...</span></div>';
+    vw.innerHTML = '<div class="video-msg"><div class="pulse-dot"></div><span>Connecting...</span></div>';
 
     // Get URL (Decrypt if needed)
     let finalUrl = stream.url;
@@ -225,20 +305,21 @@ function playStream(stream, btnElement) {
     }
 
     if (finalUrl) {
-        // Create Iframe
         const iframe = document.createElement('iframe');
         iframe.src = finalUrl;
         iframe.setAttribute('allow', 'autoplay; fullscreen; encrypted-media; picture-in-picture');
         iframe.setAttribute('scrolling', 'no');
+        
+        // CSS Reset for Iframe to ensure it fills
         iframe.style.position = 'absolute';
         iframe.style.top = '0';
         iframe.style.left = '0';
         iframe.style.width = '100%';
         iframe.style.height = '100%';
         iframe.style.border = 'none';
-        iframe.style.backgroundColor = '#000'; // Prevent white flash
+        iframe.style.backgroundColor = '#000';
         
-        vw.innerHTML = ''; // Clear loading message
+        vw.innerHTML = ''; 
         vw.appendChild(iframe);
     } else {
         vw.innerHTML = '<div class="video-msg" style="color:#ef4444;">Stream Link Error</div>';
@@ -262,5 +343,9 @@ window.closeStreamModal = function() {
     const m = document.getElementById('streamModal');
     m.style.display = 'none';
     m.innerHTML = ''; // Destroy iframe to stop audio
+    
+    // UNLOCK BODY SCROLL
+    document.body.style.overflow = '';
+    
     history.pushState({}, "", "/");
 }
