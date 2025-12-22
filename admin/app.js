@@ -7,37 +7,37 @@ const FILE_PATH = 'data/config.json';
 const BRANCH = 'main'; 
 
 // ==========================================
-// 2. DEFAULT DATA (UPDATED FOR NEW BACKEND)
+// 2. DEFAULT DATA
 // ==========================================
 const DEFAULT_PRIORITIES = {
     US: [
-        { name: "NFL", score: 100, isLeague: true, hasLink: true },
-        { name: "NBA", score: 95, isLeague: true, hasLink: true },
-        { name: "MLB", score: 90, isLeague: true, hasLink: true },
-        { name: "College Football", score: 88, isLeague: true, hasLink: false },
-        { name: "NCAA", score: 87, isLeague: true, hasLink: false },
-        { name: "NHL", score: 85, isLeague: true, hasLink: false },
-        { name: "UFC", score: 80, isLeague: true, hasLink: false },
-        { name: "Premier League", score: 75, isLeague: true, hasLink: false },
-        { name: "MLS", score: 70, isLeague: true, hasLink: false },
-        { name: "Champions League", score: 65, isLeague: true, hasLink: false },
-        { name: "Boxing", score: 50, isLeague: false, hasLink: false },
-        { name: "Formula 1", score: 45, isLeague: true, hasLink: false },
-        { name: "Tennis", score: 40, isLeague: false, hasLink: false }
+        { name: "NFL", score: 100, isLeague: true, hasLink: true, isHidden: false },
+        { name: "NBA", score: 95, isLeague: true, hasLink: true, isHidden: false },
+        { name: "MLB", score: 90, isLeague: true, hasLink: true, isHidden: false },
+        { name: "College Football", score: 88, isLeague: true, hasLink: false, isHidden: false },
+        { name: "NCAA", score: 87, isLeague: true, hasLink: false, isHidden: false },
+        { name: "NHL", score: 85, isLeague: true, hasLink: false, isHidden: false },
+        { name: "UFC", score: 80, isLeague: true, hasLink: false, isHidden: false },
+        { name: "Premier League", score: 75, isLeague: true, hasLink: false, isHidden: false },
+        { name: "MLS", score: 70, isLeague: true, hasLink: false, isHidden: false },
+        { name: "Champions League", score: 65, isLeague: true, hasLink: false, isHidden: false },
+        { name: "Boxing", score: 50, isLeague: false, hasLink: false, isHidden: false },
+        { name: "Formula 1", score: 45, isLeague: true, hasLink: false, isHidden: false },
+        { name: "Tennis", score: 40, isLeague: false, hasLink: false, isHidden: false }
     ],
     UK: [
-        { name: "Premier League", score: 100, isLeague: true, hasLink: true },
-        { name: "Champions League", score: 95, isLeague: true, hasLink: true },
-        { name: "Championship", score: 90, isLeague: true, hasLink: false },
-        { name: "The Ashes", score: 85, isLeague: true, hasLink: false },
-        { name: "Cricket", score: 80, isLeague: false, hasLink: false },
-        { name: "Rugby", score: 75, isLeague: false, hasLink: false },
-        { name: "Snooker", score: 70, isLeague: false, hasLink: false },
-        { name: "Darts", score: 65, isLeague: false, hasLink: false },
-        { name: "F1", score: 60, isLeague: true, hasLink: true },
-        { name: "Formula 1", score: 60, isLeague: true, hasLink: true },
-        { name: "Boxing", score: 50, isLeague: false, hasLink: false },
-        { name: "NFL", score: 40, isLeague: true, hasLink: false }
+        { name: "Premier League", score: 100, isLeague: true, hasLink: true, isHidden: false },
+        { name: "Champions League", score: 95, isLeague: true, hasLink: true, isHidden: false },
+        { name: "Championship", score: 90, isLeague: true, hasLink: false, isHidden: false },
+        { name: "The Ashes", score: 85, isLeague: true, hasLink: false, isHidden: false },
+        { name: "Cricket", score: 80, isLeague: false, hasLink: false, isHidden: false },
+        { name: "Rugby", score: 75, isLeague: false, hasLink: false, isHidden: false },
+        { name: "Snooker", score: 70, isLeague: false, hasLink: false, isHidden: false },
+        { name: "Darts", score: 65, isLeague: false, hasLink: false, isHidden: false },
+        { name: "F1", score: 60, isLeague: true, hasLink: true, isHidden: false },
+        { name: "Formula 1", score: 60, isLeague: true, hasLink: true, isHidden: false },
+        { name: "Boxing", score: 50, isLeague: false, hasLink: false, isHidden: false },
+        { name: "NFL", score: 40, isLeague: true, hasLink: false, isHidden: false }
     ]
 };
 
@@ -74,7 +74,6 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
     
-    // Add "Reset" Button to Priority Section dynamically if not present
     const prioHeader = document.querySelector('#tab-priorities .header-box');
     if(prioHeader && !document.getElementById('resetPrioBtn')) {
         const btn = document.createElement('button');
@@ -155,7 +154,7 @@ function populateUI() {
 }
 
 // ==========================================
-// 5. PRIORITIES (With Reset Logic)
+// 5. PRIORITIES (With Hide Feature)
 // ==========================================
 function renderPriorities() {
     const c = getVal('targetCountry') || 'US';
@@ -164,17 +163,20 @@ function renderPriorities() {
     
     if(!configData.sport_priorities[c]) configData.sport_priorities[c] = {};
     
-    // Sort logic
     const items = Object.entries(configData.sport_priorities[c])
         .map(([name, data]) => ({ name, ...data }))
         .sort((a,b) => b.score - a.score);
 
     container.innerHTML = items.map(item => `
-        <div class="menu-item-row" style="flex-wrap:wrap;">
+        <div class="menu-item-row" style="flex-wrap:wrap; opacity: ${item.isHidden ? '0.5' : '1'};">
             <strong style="width:140px; overflow:hidden;">${item.name}</strong>
             <div style="flex:1; display:flex; gap:10px; align-items:center;">
-                <label style="margin:0; font-size:0.75rem;"><input type="checkbox" ${item.isLeague?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','isLeague',this.checked)"> Is League</label>
+                <label style="margin:0; font-size:0.75rem;"><input type="checkbox" ${item.isLeague?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','isLeague',this.checked)"> League</label>
                 <label style="margin:0; font-size:0.75rem;"><input type="checkbox" ${item.hasLink?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','hasLink',this.checked)"> Link</label>
+                
+                <!-- NEW HIDE CHECKBOX -->
+                <label style="margin:0; font-size:0.75rem; color:#ef4444;"><input type="checkbox" ${item.isHidden?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','isHidden',this.checked)"> Hide</label>
+                
                 <input type="number" value="${item.score}" onchange="updatePrioMeta('${c}','${item.name}','score',this.value)" style="width:60px; margin:0;">
                 <button class="btn-icon" onclick="deletePriority('${c}', '${item.name}')">×</button>
             </div>
@@ -188,7 +190,12 @@ window.resetPriorities = () => {
     configData.sport_priorities[c] = {};
     const defaults = DEFAULT_PRIORITIES[c] || DEFAULT_PRIORITIES['US'];
     defaults.forEach(item => {
-        configData.sport_priorities[c][item.name] = { score: item.score, isLeague: item.isLeague, hasLink: item.hasLink };
+        configData.sport_priorities[c][item.name] = { 
+            score: item.score, 
+            isLeague: item.isLeague, 
+            hasLink: item.hasLink,
+            isHidden: item.isHidden || false 
+        };
     });
     renderPriorities();
 };
@@ -197,7 +204,7 @@ window.addPriorityRow = () => {
     const c = getVal('targetCountry');
     const name = getVal('newSportName');
     if(name) {
-        configData.sport_priorities[c][name] = { score: 50, isLeague: false, hasLink: false };
+        configData.sport_priorities[c][name] = { score: 50, isLeague: false, hasLink: false, isHidden: false };
         setVal('newSportName', '');
         renderPriorities();
     }
@@ -207,6 +214,9 @@ window.updatePrioMeta = (c, name, key, val) => {
     const item = configData.sport_priorities[c][name];
     if(key === 'score') item.score = parseInt(val);
     else item[key] = val;
+    
+    // Re-render to show opacity change for hidden items
+    if(key === 'isHidden') renderPriorities();
 };
 window.deletePriority = (c, name) => {
     delete configData.sport_priorities[c][name];
@@ -346,7 +356,7 @@ window.deleteEntityRow = (idx) => { configData.entity_stacking.splice(idx, 1); r
 // ==========================================
 document.getElementById('saveBtn').onclick = async () => {
     if(isBuilding) return;
-    saveEditorContentToMemory(); // Capture page editor if open
+    saveEditorContentToMemory(); 
     
     configData.site_settings = {
         title_part_1: getVal('titleP1'), title_part_2: getVal('titleP2'),
