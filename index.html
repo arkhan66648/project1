@@ -11,8 +11,6 @@
     <link rel="icon" href="">
     
     <!-- 1. SYSTEM FONTS ONLY (Fastest) -->
-    <!-- No external font requests -->
-
     <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Organization", "name": "StreamEast", "url": "https://crackstreams.help", "logo": "/assets/streameast-logo-hd.jpg"}]</script>
 
     <style>
@@ -94,7 +92,7 @@
         .t-logo { width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); flex-shrink: 0; }
 
         .col-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; justify-content: center; }
-        .meta-top { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); }
+        .meta-top { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); white-space: nowrap; }
         
         .col-action { margin-left: auto; width: 100%; }
         .btn-watch { background: var(--brand-primary); color: white; font-size: 0.65rem; font-weight: 800; padding: 8px 10px; border-radius: 4px; width: 100%; text-transform: uppercase; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; gap:5px; }
@@ -264,9 +262,10 @@
             topList.innerHTML = ''; hiddenList.innerHTML = ''; btn.style.display='none';
             if (matches.length === 0) { topList.innerHTML = '<div style="text-align:center; padding:30px; color:#444;">No live matches currently.</div>'; return; }
             
-            matches.slice(0, 5).forEach(m => topList.appendChild(createMatchRow(m, 'league')));
+            // For LIVE matches, we pass 'null' as section context so it defaults to League Name
+            matches.slice(0, 5).forEach(m => topList.appendChild(createMatchRow(m, null)));
             if (matches.length > 5) {
-                matches.slice(5).forEach(m => hiddenList.appendChild(createMatchRow(m, 'league')));
+                matches.slice(5).forEach(m => hiddenList.appendChild(createMatchRow(m, null)));
                 btn.style.display = 'block'; btn.innerText = `Show ${matches.length - 5} More Matches ▼`;
                 btn.onclick = () => { hiddenList.style.display='block'; btn.style.display='none'; };
             }
@@ -279,7 +278,6 @@
             // 1. Group by "Best Available Category"
             const groups = {};
             matches.forEach(m => {
-                // Use League first (e.g. "NFL"), fallback to Sport (e.g. "Tennis")
                 const category = m.league || m.sport || "General";
                 if (!groups[category]) groups[category] = [];
                 groups[category].push(m);
@@ -288,11 +286,8 @@
             // 2. Identify Groups vs Priority List
             const groupKeys = Object.keys(groups);
             const sortedGroups = groupKeys.map(catName => {
-                // Find matching priority config
-                // We check if the Priority Name is inside the Category Name (e.g. "NFL" is in "NFL")
                 const prioKey = Object.keys(PRIORITIES).find(k => catName.toLowerCase().includes(k.toLowerCase()));
-                
-                const score = prioKey ? PRIORITIES[prioKey].score : 0; // Default 0 if not popular
+                const score = prioKey ? PRIORITIES[prioKey].score : 0; 
                 const config = prioKey ? PRIORITIES[prioKey] : { isLeague: false, hasLink: false };
                 
                 return {
@@ -301,7 +296,7 @@
                     matches: groups[catName],
                     isLeague: config.isLeague,
                     hasLink: config.hasLink,
-                    iconKey: prioKey || catName // Used for getting the emoji
+                    iconKey: prioKey || catName 
                 };
             });
 
@@ -310,60 +305,74 @@
 
             // 4. Render
             sortedGroups.forEach(group => {
-                // Sort matches inside group by time
                 group.matches.sort((a,b) => a.startTimeUnix - b.startTimeUnix);
-                createSection(container, group.name, group.matches, group.isLeague, group.hasLink, group.iconKey);
+                // Pass 'true' if it's a recognized League Section (e.g. NFL), so row shows Sport (e.g. Football)
+                const isKnownLeague = group.isLeague; 
+                createSection(container, group.name, group.matches, group.hasLink, group.iconKey, isKnownLeague);
             });
         }
 
-        function createSection(container, title, matches, isLeague, hasLink, iconKey) {
+        function createSection(container, title, matches, hasLink, iconKey, isKnownLeague) {
             const section = document.createElement('div');
-            
             let linkHtml = '';
-            // Only show link if Admin says hasLink=true AND we have a valid slug logic
             if (hasLink) {
                 const slug = iconKey.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
-                // Note: The python script builds static pages. This link assumes a page exists.
                 linkHtml = `<a href="/${slug}/" class="sec-right-link">View All ></a>`;
             }
 
             section.innerHTML = `<div class="sec-head"><div class="sec-title">${getSportIcon(iconKey)} ${title}</div>${linkHtml}</div>`;
-            
             const list = document.createElement('div');
-            // For inside rows, if we are in an "NFL" section, showing "NFL" tag is redundant. Show Team names prominently.
-            matches.forEach(m => list.appendChild(createMatchRow(m, 'time')));
+            
+            // Pass the SECTION TITLE (e.g. "NFL") to the row creator
+            matches.forEach(m => list.appendChild(createMatchRow(m, isKnownLeague ? title : null)));
             
             section.appendChild(list);
             container.appendChild(section);
         }
 
-        function createMatchRow(m, displayMode) {
+        function createMatchRow(m, sectionContext) {
             const div = document.createElement('div');
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
+            // 1. TIME COLUMN
             let timeCol;
-            if (m.is_live) timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
-            else { 
+            if (m.is_live) {
+                timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
+            } else { 
                 const parts = m.formatted_date.split('•'); 
                 timeCol = `<span class="time-main">${parts[1] || ''}</span><span class="time-sub">${parts[0]}</span>`; 
             }
 
+            // 2. TEAMS COLUMN
             let teamsHtml = '';
             const tA = m.team_a; const tB = m.team_b;
-            if (!tB) teamsHtml = `<div class="team-name" style="font-size:1rem;"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tA}</div>`;
-            else teamsHtml = `
+            if (!tB) {
+                teamsHtml = `<div class="team-name" style="font-size:1rem;"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tA}</div>`;
+            } else {
+                teamsHtml = `
                 <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tA}</div>
                 <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_b_letter||'T')}">${m.team_b_letter||'T'}</span> ${tB}</div>`;
+            }
 
-            // If we are in a grouped section, the tag is less important, but useful for generic lists
-            const tagText = m.league || m.sport; 
+            // 3. TAG LOGIC (Smart Display)
+            // If we are inside an "NFL" section, we show "American Football" or "Football" instead of "NFL" again.
+            // If sectionContext is null (e.g. generic list), show the specific League/Tournament.
+            let tagText = m.league || m.tournament || m.sport;
+            
+            if (sectionContext && tagText.toLowerCase().includes(sectionContext.toLowerCase())) {
+                // The match tag is same as Section Title (redundant). Switch to Sport.
+                tagText = m.sport.toUpperCase(); 
+            }
 
+            // 4. META & ACTION
             let metaHtml = '', actionHtml = '';
             if (m.is_live) {
-                metaHtml = `<div class="meta-top">🔥 ${m.live_viewers || 'N/A'}</div>`;
+                // Backend already adds emoji if needed, or we add fire if just a number
+                metaHtml = `<div class="meta-top">${m.live_viewers || 'N/A'}</div>`;
                 actionHtml = `<button class="btn-watch" onclick="openPlayer('${m.id}', false)">WATCH <span class="hd-badge">HD</span></button>`;
             } else {
-                metaHtml = `<div class="meta-top" style="color:#aaa; font-weight:400;">Upcoming</div>`;
+                // UPCOMING STATUS: Use m.status_text (e.g. "20h 11m")
+                metaHtml = `<div class="meta-top" style="color:#aaa; font-weight:400;">${m.status_text}</div>`;
                 actionHtml = `<button class="btn-watch btn-notify" onclick="this.innerHTML='✓ SET'; this.classList.add('active');">🔔 NOTIFY</button>`;
             }
 
