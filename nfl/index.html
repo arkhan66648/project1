@@ -75,6 +75,9 @@
         /* --- REQ #9: SOCIAL SIDEBAR (Professional) --- */
         .social-sidebar { position: fixed; left: 0; top: 50%; transform: translateY(-50%); z-index: 90; display: flex; flex-direction: column; gap: 8px; background: rgba(10,10,10,0.95); border: 1px solid var(--border); border-left: none; padding: 12px 8px; border-radius: 0 8px 8px 0; box-shadow: 4px 0 15px rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
         /* === PROFESSIONAL SOCIAL BUTTON COLORS === */
+
+        
+        
 .social-btn {
     width: 44px;
     padding: 6px 0;
@@ -92,6 +95,13 @@
 
     transition: transform 0.2s ease, color 0.2s ease, background 0.2s ease;
 }
+        .social-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor; /* ← THIS IS THE FIX */
+    display: block;
+}
+
 
 /* Platform-specific subtle accents */
 .social-btn.telegram { color: #229ED9; }   /* Telegram blue */
@@ -533,12 +543,12 @@
             // REQ #10: Force 0.7rem for both single and dual teams
             if (!tB) {
                 // Single team (e.g. F1)
-                teamsHtml = `<div class="team-name" style="font-size:0.7rem;"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tA}</div>`;
+                teamsHtml = `<div class="team-name"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tA}</div>`;
             } else {
                 // Dual team
                 teamsHtml = `
-                <div class="team-name" style="font-size:0.7rem;"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tA}</div>
-                <div class="team-name" style="font-size:0.7rem;"><span class="t-logo" style="background:${getColor(m.team_b_letter||'T')}">${m.team_b_letter||'T'}</span> ${tB}</div>`;
+                <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tA}</div>
+                <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_b_letter||'T')}">${m.team_b_letter||'T'}</span> ${tB}</div>`;
             }
 
             let tagText = priorityContext ? m.sport.toUpperCase() : (m.league || m.tournament || m.sport);
