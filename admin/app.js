@@ -46,6 +46,10 @@ const DEMO_CONFIG = {
         title_part_1: "Stream", title_part_2: "East", domain: "streameast.to",
         logo_url: "", target_country: "US"
     },
+    social_sharing: {
+        counts: { telegram: 1200, discord: 800, reddit: 300, twitter: 500 },
+        excluded_pages: "dmca,contact,about,privacy"
+    },
     theme: {
         brand_primary: "#D00000", brand_dark: "#8a0000", accent_gold: "#FFD700",
         bg_body: "#050505", hero_gradient_start: "#1a0505", font_family: "system-ui"
@@ -54,7 +58,7 @@ const DEMO_CONFIG = {
     menus: { header: [], hero: [], footer_leagues: [], footer_static: [] },
     entity_stacking: [],
     pages: [
-        { id: "p_home", title: "Home", slug: "home", layout: "home", meta_title: "Live Sports", content: "Welcome", schemas: { org: true } }
+        { id: "p_home", title: "Home", slug: "home", layout: "home", meta_title: "Live Sports", content: "Welcome", schemas: { org: true, live: true, schedule: true } }
     ]
 };
 
@@ -64,9 +68,14 @@ let currentEditingPageId = null;
 let isBuilding = false;
 
 // ==========================================
-// 3. INITIALIZATION
+// 3. INITIALIZATION & INJECTION
 // ==========================================
 window.addEventListener("DOMContentLoaded", () => {
+    // A. INJECT NEW UI ELEMENTS (Social Tab & Schema Checkboxes)
+    injectSocialTab();
+    injectSchemaOptions();
+
+    // B. INIT EDITOR
     if(typeof tinymce !== 'undefined') {
         tinymce.init({
             selector: '#pageContentEditor', height: 400, skin: 'oxide-dark', content_css: 'dark',
@@ -74,6 +83,7 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
     
+    // C. RESET BTN INJECTION
     const prioHeader = document.querySelector('#tab-priorities .header-box');
     if(prioHeader && !document.getElementById('resetPrioBtn')) {
         const btn = document.createElement('button');
@@ -84,11 +94,70 @@ window.addEventListener("DOMContentLoaded", () => {
         prioHeader.appendChild(btn);
     }
 
+    // D. AUTH
     const token = localStorage.getItem('gh_token');
     if (!token) document.getElementById('authModal').style.display = 'flex';
     else verifyAndLoad(token);
 });
 
+// --- DYNAMIC UI INJECTION ---
+function injectSocialTab() {
+    // 1. Add Nav Button
+    const nav = document.querySelector('.sidebar nav');
+    if(nav && !document.getElementById('nav-social')) {
+        const btn = document.createElement('button');
+        btn.className = 'nav-btn';
+        btn.id = 'nav-social';
+        btn.innerHTML = '💬 Social Sharing';
+        btn.onclick = () => switchTab('social');
+        nav.appendChild(btn);
+    }
+
+    // 2. Add Content Section
+    const main = document.querySelector('.content-area');
+    if(main && !document.getElementById('tab-social')) {
+        const section = document.createElement('section');
+        section.id = 'tab-social';
+        section.className = 'tab-content';
+        section.innerHTML = `
+            <div class="header-box"><h1>Social Sharing Settings</h1></div>
+            <div class="grid-2">
+                <div class="card">
+                    <h3>Fake Share Counts</h3>
+                    <p class="desc">These numbers appear on the social buttons.</p>
+                    <label>Telegram Count</label><input type="number" id="socialTelegram">
+                    <label>Discord Count</label><input type="number" id="socialDiscord">
+                    <label>Reddit Count</label><input type="number" id="socialReddit">
+                    <label>Twitter Count</label><input type="number" id="socialTwitter">
+                </div>
+                <div class="card">
+                    <h3>Visibility Control</h3>
+                    <label>Exclude on Pages (Slug separated by comma)</label>
+                    <textarea id="socialExcluded" rows="4" placeholder="dmca, contact, privacy"></textarea>
+                    <p class="desc">The share sidebar will NOT appear on these pages.</p>
+                </div>
+            </div>
+        `;
+        main.appendChild(section);
+    }
+}
+
+function injectSchemaOptions() {
+    const group = document.querySelector('#pageEditorView .checkbox-group');
+    if(group && !document.getElementById('schemaLive')) {
+        // Live Badge Schema
+        const lbl1 = document.createElement('label');
+        lbl1.innerHTML = '<input type="checkbox" id="schemaLive"> Live Badge Schema (EventLive)';
+        group.appendChild(lbl1);
+
+        // Schedule Schema
+        const lbl2 = document.createElement('label');
+        lbl2.innerHTML = '<input type="checkbox" id="schemaSchedule"> Match Schedule Schema (ItemList)';
+        group.appendChild(lbl2);
+    }
+}
+
+// --- AUTH ---
 window.saveToken = async () => {
     const token = document.getElementById('ghToken').value.trim();
     if(token) {
@@ -114,11 +183,12 @@ async function verifyAndLoad(token) {
         currentSha = data.sha;
         configData = JSON.parse(decodeURIComponent(escape(atob(data.content))));
         
-        // --- DATA MIGRATION FIXES ---
+        // --- DATA MIGRATION ---
         if(!configData.pages) configData.pages = DEMO_CONFIG.pages;
         configData.pages.forEach(p => { if(!p.id) p.id = 'p_' + Math.random().toString(36).substr(2, 9); });
         if(!configData.sport_priorities) configData.sport_priorities = { US: {}, UK: {} };
         if(!configData.menus.footer_leagues) configData.menus.footer_leagues = [];
+        if(!configData.social_sharing) configData.social_sharing = DEMO_CONFIG.social_sharing;
         
         populateUI();
         startPolling();
@@ -147,6 +217,14 @@ function populateUI() {
     setVal('heroGradient', t.hero_gradient_start);
     setVal('fontFamily', t.font_family);
 
+    // Social Sharing
+    const soc = configData.social_sharing || { counts: {} };
+    setVal('socialTelegram', soc.counts?.telegram || 0);
+    setVal('socialDiscord', soc.counts?.discord || 0);
+    setVal('socialReddit', soc.counts?.reddit || 0);
+    setVal('socialTwitter', soc.counts?.twitter || 0);
+    setVal('socialExcluded', soc.excluded_pages || "");
+
     renderPriorities();
     renderMenus();
     renderEntityStacking();
@@ -159,7 +237,7 @@ function populateUI() {
 function renderPriorities() {
     const c = getVal('targetCountry') || 'US';
     const container = document.getElementById('priorityListContainer');
-    document.getElementById('prioLabel').innerText = c;
+    if(document.getElementById('prioLabel')) document.getElementById('prioLabel').innerText = c;
     
     if(!configData.sport_priorities[c]) configData.sport_priorities[c] = {};
     
@@ -173,10 +251,7 @@ function renderPriorities() {
             <div style="flex:1; display:flex; gap:10px; align-items:center;">
                 <label style="margin:0; font-size:0.75rem;"><input type="checkbox" ${item.isLeague?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','isLeague',this.checked)"> League</label>
                 <label style="margin:0; font-size:0.75rem;"><input type="checkbox" ${item.hasLink?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','hasLink',this.checked)"> Link</label>
-                
-                <!-- NEW HIDE CHECKBOX -->
                 <label style="margin:0; font-size:0.75rem; color:#ef4444;"><input type="checkbox" ${item.isHidden?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','isHidden',this.checked)"> Hide</label>
-                
                 <input type="number" value="${item.score}" onchange="updatePrioMeta('${c}','${item.name}','score',this.value)" style="width:60px; margin:0;">
                 <button class="btn-icon" onclick="deletePriority('${c}', '${item.name}')">×</button>
             </div>
@@ -214,8 +289,6 @@ window.updatePrioMeta = (c, name, key, val) => {
     const item = configData.sport_priorities[c][name];
     if(key === 'score') item.score = parseInt(val);
     else item[key] = val;
-    
-    // Re-render to show opacity change for hidden items
     if(key === 'isHidden') renderPriorities();
 };
 window.deletePriority = (c, name) => {
@@ -224,7 +297,7 @@ window.deletePriority = (c, name) => {
 };
 
 // ==========================================
-// 6. PAGES SYSTEM
+// 6. PAGES SYSTEM (Updated with Schemas)
 // ==========================================
 function renderPageList() {
     const tbody = document.querySelector('#pagesTable tbody');
@@ -260,8 +333,13 @@ window.editPage = (id) => {
     setVal('pageMetaKeywords', p.meta_keywords); 
     setVal('pageCanonical', p.canonical_url); 
     
+    // Schema Checkboxes
     if(!p.schemas) p.schemas = {};
     document.getElementById('schemaOrg').checked = !!p.schemas.org;
+    
+    // New Schemas
+    if(document.getElementById('schemaLive')) document.getElementById('schemaLive').checked = !!p.schemas.live;
+    if(document.getElementById('schemaSchedule')) document.getElementById('schemaSchedule').checked = !!p.schemas.schedule;
 
     if(tinymce.get('pageContentEditor')) tinymce.get('pageContentEditor').setContent(p.content || '');
     document.getElementById('pageSlug').disabled = (p.slug === 'home');
@@ -280,8 +358,12 @@ window.saveEditorContentToMemory = () => {
     p.meta_keywords = getVal('pageMetaKeywords');
     p.canonical_url = getVal('pageCanonical');
     p.content = tinymce.get('pageContentEditor').getContent();
+    
+    // Save Schemas
     p.schemas = {
-        org: document.getElementById('schemaOrg').checked
+        org: document.getElementById('schemaOrg').checked,
+        live: document.getElementById('schemaLive') ? document.getElementById('schemaLive').checked : false,
+        schedule: document.getElementById('schemaSchedule') ? document.getElementById('schemaSchedule').checked : false
     };
 };
 
@@ -294,7 +376,7 @@ window.closePageEditor = () => {
 
 window.createNewPage = () => {
     const id = 'p_' + Date.now();
-    configData.pages.push({ id, title: "New Page", slug: "new-page", layout: "page", content: "" });
+    configData.pages.push({ id, title: "New Page", slug: "new-page", layout: "page", content: "", schemas: { org: true } });
     renderPageList();
     editPage(id);
 };
@@ -307,25 +389,55 @@ window.deletePage = (id) => {
 };
 
 // ==========================================
-// 7. MENUS & ENTITIES
+// 7. MENUS & ENTITIES (Header Highlight)
 // ==========================================
 function renderMenus() {
     ['header', 'hero', 'footer_leagues', 'footer_static'].forEach(sec => {
         const div = document.getElementById(`menu-${sec}`);
         if(div) {
-            div.innerHTML = (configData.menus[sec] || []).map((item, idx) => `
+            div.innerHTML = (configData.menus[sec] || []).map((item, idx) => {
+                const hl = item.highlight ? '<span style="color:#facc15">★</span>' : '';
+                return `
                 <div class="menu-item-row">
-                    <div><strong>${item.title}</strong> <small>(${item.url})</small></div>
+                    <div>${hl} <strong>${item.title}</strong> <small>(${item.url})</small></div>
                     <button class="btn-icon" onclick="deleteMenuItem('${sec}', ${idx})">×</button>
                 </div>
-            `).join('');
+            `;
+            }).join('');
         }
     });
 }
-window.openMenuModal = (sec) => { document.getElementById('menuTargetSection').value = sec; setVal('menuTitleItem',''); setVal('menuUrlItem',''); document.getElementById('menuModal').style.display='flex'; };
+
+window.openMenuModal = (sec) => { 
+    document.getElementById('menuTargetSection').value = sec; 
+    setVal('menuTitleItem',''); 
+    setVal('menuUrlItem',''); 
+    
+    // Dynamic Checkbox for Header
+    const modalContent = document.querySelector('#menuModal .modal-content');
+    const existingCheck = document.getElementById('menuHighlightCheck');
+    if(existingCheck) existingCheck.parentNode.remove();
+
+    if(sec === 'header') {
+        const wrap = document.createElement('div');
+        wrap.innerHTML = `<label style="display:inline-flex; align-items:center; gap:5px; margin-top:10px;"><input type="checkbox" id="menuHighlightCheck"> Highlight this link (Gold Color)</label>`;
+        // Insert before actions
+        modalContent.insertBefore(wrap, modalContent.querySelector('.modal-actions'));
+    }
+
+    document.getElementById('menuModal').style.display='flex'; 
+};
+
 window.saveMenuItem = () => { 
     const sec = document.getElementById('menuTargetSection').value;
-    const item = { title: getVal('menuTitleItem'), url: getVal('menuUrlItem') };
+    const isHighlight = document.getElementById('menuHighlightCheck') ? document.getElementById('menuHighlightCheck').checked : false;
+    
+    const item = { 
+        title: getVal('menuTitleItem'), 
+        url: getVal('menuUrlItem'),
+        highlight: sec === 'header' ? isHighlight : false 
+    };
+
     if(!configData.menus[sec]) configData.menus[sec] = [];
     configData.menus[sec].push(item);
     renderMenus();
@@ -339,9 +451,7 @@ function renderEntityStacking() {
     list.innerHTML = configData.entity_stacking.map((e, idx) => `
         <div class="menu-item-row">
             <strong>${e.keyword}</strong>
-            <div>
-                <button class="btn-icon" onclick="deleteEntityRow(${idx})">×</button>
-            </div>
+            <div><button class="btn-icon" onclick="deleteEntityRow(${idx})">×</button></div>
         </div>
     `).join('');
 }
@@ -370,6 +480,17 @@ document.getElementById('saveBtn').onclick = async () => {
         brand_primary: getVal('brandPrimary'), brand_dark: getVal('brandDark'),
         accent_gold: getVal('accentGold'), bg_body: getVal('bgBody'),
         hero_gradient_start: getVal('heroGradient'), font_family: getVal('fontFamily')
+    };
+
+    // Save Social
+    configData.social_sharing = {
+        counts: {
+            telegram: getVal('socialTelegram'),
+            discord: getVal('socialDiscord'),
+            reddit: getVal('socialReddit'),
+            twitter: getVal('socialTwitter')
+        },
+        excluded_pages: getVal('socialExcluded')
     };
 
     document.getElementById('saveBtn').innerText = "Saving...";
@@ -418,8 +539,14 @@ function startPolling() {
 window.switchTab = (id) => {
     document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
-    document.getElementById(`tab-${id}`).classList.add('active');
-    event.currentTarget.classList.add('active');
+    
+    // Handle injected tabs
+    const target = document.getElementById(`tab-${id}`);
+    if(target) target.classList.add('active');
+    
+    // Handle injected buttons (like nav-social)
+    const btn = document.getElementById(`nav-${id}`) || event.currentTarget;
+    if(btn) btn.classList.add('active');
 };
 function setVal(id, v) { if(document.getElementById(id)) document.getElementById(id).value = v || ""; }
 function getVal(id) { return document.getElementById(id)?.value || ""; }
