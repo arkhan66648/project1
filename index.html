@@ -747,12 +747,16 @@
     btn.innerHTML = '✓ NOTIFIED';
     btn.disabled = true;
 
+    const old = document.querySelector('.copy-toast');
+    if (old) old.remove();
+
     const t = document.createElement('div');
     t.className = 'copy-toast';
     t.innerText = 'You’ll be notified before kickoff';
     document.body.appendChild(t);
     setTimeout(() => t.remove(), 1600);
 }
+
 
         
     </script>
