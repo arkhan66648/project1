@@ -76,13 +76,13 @@
         .social-sidebar { position: fixed; left: 0; top: 50%; transform: translateY(-50%); z-index: 90; display: flex; flex-direction: column; gap: 8px; background: rgba(10,10,10,0.95); border: 1px solid var(--border); border-left: none; padding: 12px 8px; border-radius: 0 8px 8px 0; box-shadow: 4px 0 15px rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
         /* === PROFESSIONAL SOCIAL BUTTON COLORS === */
 .social-btn {
-    width: 50px;
-    padding: 8px 0;
+    width: 44px;
+    padding: 6px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 3px;
 
     /* Core professional look */
     color: #9aa0a6;                 /* neutral Google-style gray */
@@ -94,23 +94,22 @@
 }
 
 /* Platform-specific subtle accents */
-.social-btn.telegram { color: #7aa9c7; }
-.social-btn.discord  { color: #8b90c8; }
-.social-btn.reddit   { color: #c9785a; }
-.social-btn.twitter  { color: #7fb7d8; }
-.social-btn.copy     { color: #9aa0a6; }
+.social-btn.telegram { color: #229ED9; }   /* Telegram blue */
+.social-btn.discord  { color: #5865F2; }   /* Discord blurple */
+.social-btn.reddit   { color: #FF6A3D; }   /* Reddit orange */
+.social-btn.twitter  { color: #1DA1F2; }   /* Twitter blue */
+.social-btn.copy     { color: #9aa0a6; }   /* Neutral */
 
-/* Hover = unified brand highlight */
 .social-btn:hover {
-    background: #151515;
+    background: #141414;
     border-color: #2a2a2a;
-    color: #ffffff;
-    transform: translateX(2px);
+
+    /* premium micro-interaction */
+    transform: translateX(2px) scale(1.04);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
-.social-btn:hover svg {
-    fill: var(--brand-primary);
-}
+
 
 /* Share count = secondary, trusted */
 .s-count {
