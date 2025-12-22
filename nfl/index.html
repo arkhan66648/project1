@@ -140,7 +140,6 @@
 
         .copy-toast {
     position: fixed;
-    bottom: 90px;
     left: 50%;
     transform: translateX(-50%);
     background: #111;
@@ -161,6 +160,11 @@
     100% { opacity: 0; }
 }
 
+@media (max-width: 768px) {
+    .copy-toast {
+        bottom: 70px;
+    }
+}
 
         /* --- HERO --- */
         .hero { padding: 90px 15px 15px 15px; text-align: center; background: radial-gradient(circle at top, #1a0505 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); display: none; }
@@ -669,9 +673,18 @@
     "`;
 }
 
-    else if(p === 'discord') {
-        onclick = `onclick="alert('Join our Discord!')"`;
-    } else {
+    else if (p === 'discord') {
+    onclick = `onclick="
+        const old = document.querySelector('.copy-toast');
+        if (old) old.remove();
+        const t = document.createElement('div');
+        t.className = 'copy-toast';
+        t.innerText = 'Discord link coming soon';
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 1600);
+    "`;
+}
+ else {
         onclick = `onclick="window.open('${actions[p]}', '_blank')"`;
     }
 
