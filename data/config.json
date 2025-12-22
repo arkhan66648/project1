@@ -257,8 +257,9 @@
         "url": "/contact"
       },
       {
-        "title": "⚽ Soccer",
-        "url": "/#soccer"
+        "title": "Soccer",
+        "url": "/#soccer",
+        "highlight": false
       }
     ]
   },
@@ -269,6 +270,9 @@
     },
     {
       "keyword": "Sportsurge"
+    },
+    {
+      "keyword": "Crackstreams"
     }
   ],
   "social_sharing": {
