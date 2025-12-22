@@ -223,6 +223,11 @@
       {
         "title": "FAQs",
         "url": "/#faqs"
+      },
+      {
+        "title": "How we comeback",
+        "url": "/#comeback",
+        "highlight": true
       }
     ],
     "hero": [
@@ -233,6 +238,11 @@
       {
         "title": "🏀 NBA",
         "url": "/nba"
+      },
+      {
+        "title": "🥊 UFC",
+        "url": "/#ufc",
+        "highlight": false
       }
     ],
     "footer_links": [
@@ -249,6 +259,11 @@
       {
         "title": "Contact",
         "url": "/contact"
+      },
+      {
+        "title": "Terms & Conditions",
+        "url": "/terms",
+        "highlight": false
       }
     ],
     "footer_leagues": [
@@ -259,6 +274,11 @@
       {
         "title": "Soccer",
         "url": "/#soccer",
+        "highlight": false
+      },
+      {
+        "title": "MLB",
+        "url": "/#mlb",
         "highlight": false
       }
     ]
