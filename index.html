@@ -262,7 +262,7 @@
             topList.innerHTML = ''; hiddenList.innerHTML = ''; btn.style.display='none';
             if (matches.length === 0) { topList.innerHTML = '<div style="text-align:center; padding:30px; color:#444;">No live matches currently.</div>'; return; }
             
-            // For LIVE matches, we pass 'null' as section context so it defaults to League Name
+            // For LIVE matches, we pass 'null' as section context so it defaults to League/Sport Name based on data
             matches.slice(0, 5).forEach(m => topList.appendChild(createMatchRow(m, null)));
             if (matches.length > 5) {
                 matches.slice(5).forEach(m => hiddenList.appendChild(createMatchRow(m, null)));
@@ -275,44 +275,63 @@
             const container = document.getElementById('upcoming-container');
             container.innerHTML = '';
 
-            // 1. Group by "Best Available Category"
-            const groups = {};
+            const priorityGroups = {}; // Key: Priority Name (e.g. "NFL")
+            const genericGroups = {};  // Key: Sport Name (e.g. "Cricket")
+
             matches.forEach(m => {
-                const category = m.league || m.sport || "General";
-                if (!groups[category]) groups[category] = [];
-                groups[category].push(m);
+                // 1. CHECK HIDDEN (Strict Filtering)
+                // Check if this match matches ANY hidden priority
+                const hiddenKey = Object.keys(PRIORITIES).find(k => {
+                    const p = PRIORITIES[k];
+                    if(!p.isHidden) return false;
+                    // Check if match text matches the hidden key
+                    const txt = (m.league + " " + m.sport).toLowerCase();
+                    return txt.includes(k.toLowerCase());
+                });
+                if(hiddenKey) return; // Skip this match completely
+
+                // 2. CHECK PRIORITY (League Section)
+                // Does this match belong to a configured Priority?
+                const prioKey = Object.keys(PRIORITIES).find(k => {
+                    const p = PRIORITIES[k];
+                    const txt = (m.league + " " + m.sport).toLowerCase();
+                    return txt.includes(k.toLowerCase());
+                });
+
+                if (prioKey) {
+                    if (!priorityGroups[prioKey]) priorityGroups[prioKey] = [];
+                    priorityGroups[prioKey].push(m);
+                } else {
+                    // Fallback to Generic Sport Group
+                    const sport = m.sport || "General";
+                    if (!genericGroups[sport]) genericGroups[sport] = [];
+                    genericGroups[sport].push(m);
+                }
             });
 
-            // 2. Identify Groups vs Priority List
-            const groupKeys = Object.keys(groups);
-            const sortedGroups = groupKeys.map(catName => {
-                const prioKey = Object.keys(PRIORITIES).find(k => catName.toLowerCase().includes(k.toLowerCase()));
-                const score = prioKey ? PRIORITIES[prioKey].score : 0; 
-                const config = prioKey ? PRIORITIES[prioKey] : { isLeague: false, hasLink: false };
-                
-                return {
-                    name: catName,
-                    score: score,
-                    matches: groups[catName],
-                    isLeague: config.isLeague,
-                    hasLink: config.hasLink,
-                    iconKey: prioKey || catName 
-                };
+            // 3. RENDER PRIORITY GROUPS (High Score First)
+            const sortedPrioKeys = Object.keys(priorityGroups).sort((a,b) => PRIORITIES[b].score - PRIORITIES[a].score);
+            
+            sortedPrioKeys.forEach(key => {
+                const config = PRIORITIES[key];
+                const ms = priorityGroups[key];
+                ms.sort((a,b) => a.startTimeUnix - b.startTimeUnix);
+                // IS PRIORITY: Display Main Sport in row (e.g. "American Football")
+                createSection(container, key, ms, config.hasLink, key, true);
             });
 
-            // 3. Sort Groups by Score (High to Low)
-            sortedGroups.sort((a, b) => b.score - a.score);
-
-            // 4. Render
-            sortedGroups.forEach(group => {
-                group.matches.sort((a,b) => a.startTimeUnix - b.startTimeUnix);
-                // Pass 'true' if it's a recognized League Section (e.g. NFL), so row shows Sport (e.g. Football)
-                const isKnownLeague = group.isLeague; 
-                createSection(container, group.name, group.matches, group.hasLink, group.iconKey, isKnownLeague);
+            // 4. RENDER GENERIC GROUPS (Alphabetical)
+            const sortedGenericKeys = Object.keys(genericGroups).sort();
+            
+            sortedGenericKeys.forEach(key => {
+                const ms = genericGroups[key];
+                ms.sort((a,b) => a.startTimeUnix - b.startTimeUnix);
+                // NOT PRIORITY: Display League/Tournament in row (e.g. "International League T20")
+                createSection(container, key, ms, false, key, false);
             });
         }
 
-        function createSection(container, title, matches, hasLink, iconKey, isKnownLeague) {
+        function createSection(container, title, matches, hasLink, iconKey, isPrioritySection) {
             const section = document.createElement('div');
             let linkHtml = '';
             if (hasLink) {
@@ -320,21 +339,22 @@
                 linkHtml = `<a href="/${slug}/" class="sec-right-link">View All ></a>`;
             }
 
-            section.innerHTML = `<div class="sec-head"><div class="sec-title">${getSportIcon(iconKey)} ${title}</div>${linkHtml}</div>`;
+            section.innerHTML = `<div class="sec-head"><div class="sec-title">${getSportIcon(iconKey)} Upcoming ${title}</div>${linkHtml}</div>`;
             const list = document.createElement('div');
             
-            // Pass the SECTION TITLE (e.g. "NFL") to the row creator
-            matches.forEach(m => list.appendChild(createMatchRow(m, isKnownLeague ? title : null)));
+            // Pass the context. If isPrioritySection is true, we pass the title to filter it out.
+            // If isPrioritySection is false, we pass NULL so it shows the specific league.
+            matches.forEach(m => list.appendChild(createMatchRow(m, isPrioritySection ? title : null)));
             
             section.appendChild(list);
             container.appendChild(section);
         }
 
-        function createMatchRow(m, sectionContext) {
+        function createMatchRow(m, priorityContext) {
             const div = document.createElement('div');
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
-            // 1. TIME COLUMN
+            // 1. TIME
             let timeCol;
             if (m.is_live) {
                 timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
@@ -343,7 +363,7 @@
                 timeCol = `<span class="time-main">${parts[1] || ''}</span><span class="time-sub">${parts[0]}</span>`; 
             }
 
-            // 2. TEAMS COLUMN
+            // 2. TEAMS
             let teamsHtml = '';
             const tA = m.team_a; const tB = m.team_b;
             if (!tB) {
@@ -354,24 +374,25 @@
                 <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_b_letter||'T')}">${m.team_b_letter||'T'}</span> ${tB}</div>`;
             }
 
-            // 3. TAG LOGIC (Smart Display)
-            // If we are inside an "NFL" section, we show "American Football" or "Football" instead of "NFL" again.
-            // If sectionContext is null (e.g. generic list), show the specific League/Tournament.
-            let tagText = m.league || m.tournament || m.sport;
+            // 3. TAG DISPLAY LOGIC (CRITICAL FIX)
+            let tagText = "";
             
-            if (sectionContext && tagText.toLowerCase().includes(sectionContext.toLowerCase())) {
-                // The match tag is same as Section Title (redundant). Switch to Sport.
-                tagText = m.sport.toUpperCase(); 
+            if (priorityContext) {
+                // We are in a Priority Section (e.g. "NFL"). 
+                // Show Main Sport to avoid redundancy (e.g. "American Football").
+                tagText = m.sport.toUpperCase();
+            } else {
+                // We are in a Generic Section (e.g. "Cricket").
+                // Show Specific League/Tournament (e.g. "International League T20").
+                tagText = m.league || m.tournament || m.sport;
             }
 
             // 4. META & ACTION
             let metaHtml = '', actionHtml = '';
             if (m.is_live) {
-                // Backend already adds emoji if needed, or we add fire if just a number
                 metaHtml = `<div class="meta-top">${m.live_viewers || 'N/A'}</div>`;
                 actionHtml = `<button class="btn-watch" onclick="openPlayer('${m.id}', false)">WATCH <span class="hd-badge">HD</span></button>`;
             } else {
-                // UPCOMING STATUS: Use m.status_text (e.g. "20h 11m")
                 metaHtml = `<div class="meta-top" style="color:#aaa; font-weight:400;">${m.status_text}</div>`;
                 actionHtml = `<button class="btn-watch btn-notify" onclick="this.innerHTML='✓ SET'; this.classList.add('active');">🔔 NOTIFY</button>`;
             }
