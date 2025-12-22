@@ -329,7 +329,7 @@
         const PRIORITIES = {"NFL": {"score": 100, "isLeague": true, "hasLink": true}, "NBA": {"score": 95, "isLeague": true, "hasLink": true}, "MLB": {"score": 90, "isLeague": true, "hasLink": true}, "College Football": {"score": 88, "isLeague": true, "hasLink": false}, "College Basketball": {"score": 87, "isLeague": true, "hasLink": false}, "NHL": {"score": 85, "isLeague": true, "hasLink": false}, "UFC": {"score": 80, "isLeague": true, "hasLink": false}, "MMA": {"score": 79, "isLeague": false, "hasLink": false}, "MLS": {"score": 70, "isLeague": true, "hasLink": false}, "Premier League": {"score": 60, "isLeague": true, "hasLink": false}, "Boxing": {"score": 50, "isLeague": false, "hasLink": false}, "Tennis": {"score": 40, "isLeague": false, "hasLink": false}, "Other": {"score": 10, "isLeague": false, "hasLink": false, "isHidden": false}}; 
         const SITE_DOMAIN = "https://crackstreams.help";
         // REQ #9: Share Counts (Mock or dynamic)
-        const SHARE_CONFIG = {"excluded": [], "counts": {}};
+        const SHARE_CONFIG = {"excluded": ["dmca", "contact", "about", "privacy"], "counts": {"telegram": "1200", "discord": "800", "reddit": "300", "twitter": "500"}};
 
         let allMatches = [];
         window.MATCH_DATA = {}; 
