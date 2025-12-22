@@ -224,7 +224,7 @@ window.initPlayer = async function(matchData, isLocked) {
     
     // D. UPDATE URL
     if(history.pushState) {
-        history.pushState({}, "", `/watch/${m.id}`);
+        history.pushState({}, "", `/watch/?sport=${m.id}`);
     }
 
     // E. LOAD STREAMS & PLAY
