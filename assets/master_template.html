@@ -128,13 +128,41 @@
         .col-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; justify-content: center; }
         .meta-top { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); white-space: nowrap; }
         
-        .col-action { margin-left: auto; width: 100%; }
-        .btn-watch { background: var(--brand-primary); color: white; font-size: 0.65rem; font-weight: 800; padding: 8px 10px; border-radius: 4px; width: 100%; text-transform: uppercase; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; gap:5px; }
+        /* --- UPDATED: ACTION COLUMN (Flex Stack) --- */
+        .col-action { 
+            margin-left: auto; 
+            width: 100%; 
+            display: flex;
+            flex-direction: column; /* Stack Watch & Copy buttons vertically */
+            align-items: center;
+            justify-content: center;
+            gap: 5px; /* Slight gap between buttons */
+        }
+        
+        .btn-watch { background: var(--brand-primary); color: white; font-size: 0.65rem; font-weight: 800; padding: 6px 10px; border-radius: 4px; width: 100%; text-transform: uppercase; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; gap:5px; height: 26px; }
         .btn-watch:hover { background: var(--brand-dark); transform: scale(1.02); }
         .hd-badge { background: rgba(0,0,0,0.3); padding: 1px 4px; border-radius: 3px; font-size: 0.55rem; border: 1px solid rgba(255,255,255,0.2); }
-        .btn-notify { background: transparent; border: 1px solid #333; color: #888; padding: 6px 0; box-shadow: none; justify-content: center; transition: all 0.25s ease; }
+        .btn-notify { background: transparent; border: 1px solid #333; color: #888; padding: 0; box-shadow: none; justify-content: center; transition: all 0.25s ease; height: 26px; }
         .btn-notify.active { border-color: var(--status-green); color: var(--status-green); background: rgba(0, 230, 118, 0.08); cursor: default; }
         
+        /* --- NEW: COPY LINK BUTTON STYLE --- */
+        .btn-copy-link {
+            background: none;
+            border: none;
+            color: #555; /* Subtle Grey */
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: 0.2s;
+            padding: 0;
+        }
+        .btn-copy-link:hover { color: var(--status-green); }
+        .btn-copy-link svg { width: 10px; height: 10px; fill: currentColor; }
+
         .show-more-btn { display: block; width: 100%; max-width: 300px; margin: 20px auto; background: #151515; border: 1px solid #333; color: #ccc; padding: 12px; border-radius: 30px; font-weight: 600; font-size: 0.85rem; transition:0.2s; cursor: pointer; }
         .show-more-btn:hover { border-color: var(--brand-primary); color: #fff; background: #1a1a1a; }
         
@@ -315,9 +343,6 @@
             counts: { telegram: 1240, whatsapp: 850, reddit: 340, twitter: 510 } 
         };
 
-        // --- FIXED HERE: SMART ALIAS KEYS MUST BE LOWERCASE & NO SPACES ---
-        // Your Admin panel sends keys like "Premier League", but your `normalizeKey` function
-        // turns them into "premierleague". The keys below must match that output.
         const SMART_ALIASES = {
             // FOOTBALL / SOCCER
             'football': 'soccer',
@@ -334,16 +359,16 @@
             'euro': 'soccer',
             'uefaeuro': 'soccer',
             'copaamerica': 'soccer',
-            'facup': 'soccer',           // Added common cup
-            'carabaocup': 'soccer',      // Added common cup
+            'facup': 'soccer',           
+            'carabaocup': 'soccer',      
 
             // AMERICAN FOOTBALL
             'nfl': 'americanfootball',
             'americanfootball': 'americanfootball',
             'collegefootball': 'americanfootball',
             'ncaafootball': 'americanfootball',
-            'ncaaf': 'americanfootball',  // <--- FIXED: Added Acronym
-            'ncaafb': 'americanfootball', // <--- FIXED: Added Variation
+            'ncaaf': 'americanfootball',  
+            'ncaafb': 'americanfootball', 
             'superbowl': 'americanfootball',
 
             // BASKETBALL
@@ -351,7 +376,7 @@
             'basketball': 'basketball',
             'collegebasketball': 'basketball',
             'ncaabasketball': 'basketball',
-            'ncaab': 'basketball',        // <--- FIXED: Added Acronym
+            'ncaab': 'basketball',        
             'wnba': 'basketball',
             'euroleague': 'basketball',
 
@@ -390,12 +415,12 @@
             // OTHER SPORTS
             'tennis': 'tennis',
             'golf': 'golf',
-            'pga': 'golf',               // Added PGA
-            'livgolf': 'golf',           // Added LIV
+            'pga': 'golf',               
+            'livgolf': 'golf',           
             'rugby': 'rugby',
             'rugbyunion': 'rugby',
             'rugbyleague': 'rugby',
-            'sixnations': 'rugby',       // Added Six Nations
+            'sixnations': 'rugby',       
             'darts': 'darts',
             'pdc': 'darts',
             'snooker': 'snooker'
@@ -411,7 +436,6 @@
             loadMatches();
         });
 
-        // --- IMPROVED BACK TO TOP (Auto Hide) ---
         window.addEventListener('scroll', () => {
             const btn = document.getElementById('backToTop');
             if(window.scrollY > 300) {
@@ -431,7 +455,6 @@
                 const data = await res.json();
                 allMatches = data.matches;
                 
-                // DYNAMIC SCHEMA (Live/Schedule) - Only inject if not null/nill
                 if(data.seo && data.seo !== "nill" && Object.keys(data.seo).length > 0) {
                     injectDynamicSchema(data.seo);
                 }
@@ -452,12 +475,8 @@
             const oneDay = 24 * 60 * 60 * 1000;
             const upcomingMatches = matches.filter(m => !m.is_live && (m.startTimeUnix - now) < oneDay);
             
-            // Trending Live: Blind trust (no filter), show Tournament Name
             renderLiveSection(liveMatches);
-            
-            // Upcoming: Strict Admin Priority Logic
             renderUpcomingGrouped(upcomingMatches);
-            
             checkUrlParams();
         }
 
@@ -477,7 +496,6 @@
             
             document.getElementById('live-count').innerText = `● ${matches.length} Live Matches`;
             
-            // Live matches: Pass 'true' for isTrendingLive flag
             matches.slice(0, 5).forEach(m => topList.appendChild(createMatchRow(m, { isTrendingLive: true })));
             
             if (matches.length > 5) {
@@ -487,7 +505,6 @@
             }
         }
 
-        // --- HELPER: Normalize Key for De-duplication (american football == American-Football) ---
         function normalizeKey(str) {
             if(!str) return "";
             return str.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -498,7 +515,6 @@
             container.innerHTML = '';
             const allGroups = {};
             
-            // Check for "Hide Others" Global Flag
             const HIDE_OTHERS = PRIORITIES._HIDE_OTHERS === true;
 
             matches.forEach(m => {
@@ -510,28 +526,21 @@
                 const leagueKey = normalizeKey(leagueRaw);
                 const tournamentKey = normalizeKey(tournamentRaw);
 
-                // 1. Try to match with Admin Priority List
                 let matchedPrioKey = null;
                 
-                // We iterate priority keys to find a match (League OR Sport)
                 Object.keys(PRIORITIES).forEach(pKey => {
                     const normPKey = normalizeKey(pKey);
-                    
-                    // --- SMART ALIAS LOGIC ---
                     const aliasTarget = SMART_ALIASES[normPKey];
-                    
-                    // Check strict match OR alias match
                     if (
                         normPKey === leagueKey || 
                         normPKey === tournamentKey || 
                         normPKey === sportKey ||
-                        (aliasTarget && aliasTarget === sportKey) // <--- ALIAS CHECK
+                        (aliasTarget && aliasTarget === sportKey)
                     ) {
                         matchedPrioKey = pKey;
                     }
                 });
 
-                // 2. Logic to Assign Group
                 let groupName = "";
                 let groupScore = 0;
                 let hasLink = false;
@@ -541,24 +550,20 @@
                 if (matchedPrioKey) {
                     const conf = PRIORITIES[matchedPrioKey];
                     isHidden = conf.isHidden;
-                    if (isHidden) return; // Skip hidden items immediately
+                    if (isHidden) return;
 
-                    groupName = matchedPrioKey; // Use the Admin's capitalization
+                    groupName = matchedPrioKey;
                     groupScore = conf.score;
                     hasLink = conf.hasLink;
-                    isLeague = conf.isLeague; // Crucial for Badge Logic
+                    isLeague = conf.isLeague;
                 } else {
-                    // Item not in priority list
-                    if (HIDE_OTHERS) return; // Skip if "Hide All Others" is active
-                    
-                    // Fallback: Group by Sport
+                    if (HIDE_OTHERS) return;
                     groupName = toTitleCase(sportRaw);
-                    groupScore = 0; // Low priority
+                    groupScore = 0;
                     hasLink = false;
-                    isLeague = false; // Default to Sport mode
+                    isLeague = false;
                 }
 
-                // De-duplication Key for the Group Object
                 const uniqueGroupKey = normalizeKey(groupName);
 
                 if (!allGroups[uniqueGroupKey]) {
@@ -574,11 +579,9 @@
                 allGroups[uniqueGroupKey].matches.push(m);
             });
 
-            // Sort Groups by Score
             const sortedGroups = Object.values(allGroups).sort((a,b) => b.score - a.score);
 
             sortedGroups.forEach(group => {
-                // Sort Matches by Time
                 group.matches.sort((a,b) => a.startTimeUnix - b.startTimeUnix);
                 createSection(container, group.name, group.matches, group.hasLink, group.iconKey, group.isLeague);
             });
@@ -590,7 +593,6 @@
             
             let linkHtml = '';
             if (hasLink) {
-                // UPDATE: Link structure domain/nba-streams/
                 const slug = normalizeKey(iconKey) + '-streams'; 
                 linkHtml = `<a href="/${slug}/" class="sec-right-link">View All ></a>`;
             }
@@ -598,7 +600,6 @@
             section.innerHTML = `<div class="sec-head"><div class="sec-title">${getSportIcon(iconKey)} Upcoming ${title}</div>${linkHtml}</div>`;
             const list = document.createElement('div');
             
-            // Pass the context (isLeague) to row creation
             matches.forEach(m => list.appendChild(createMatchRow(m, { isLeague, isUpcoming: true })));
             section.appendChild(list);
             container.appendChild(section);
@@ -608,17 +609,16 @@
             const div = document.createElement('div');
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
-            // COLUMN 1: TIME ONLY (Clock + Date)
+            // COLUMN 1: TIME
             let timeCol;
             if (m.is_live) {
                 timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
             } else { 
                 const parts = m.formatted_date.split('•'); 
-                // Show 8:00 PM and Date below
                 timeCol = `<span class="time-main">${parts[1] || ''}</span><span class="time-sub">${parts[0]}</span>`; 
             }
             
-            // COLUMN 2: TEAMS (Unchanged)
+            // COLUMN 2: TEAMS
             let teamsHtml = '';
             const tA = m.team_a; const tB = m.team_b;
             if (!tB) {
@@ -629,12 +629,11 @@
                 <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_b_letter||'T')}">${m.team_b_letter||'T'}</span> ${tB}</div>`;
             }
             
-            // COLUMN 3: META/STATUS (Countdown or Viewers)
+            // COLUMN 3: META
             let metaHtml = '';
             if (m.is_live) {
                  metaHtml = `<div class="meta-top">${m.live_viewers || 'N/A'}</div>`;
             } else {
-                 // HERE IS THE FIX: "Starts in" + Countdown in the 3rd column
                  metaHtml = `
                     <div style="display:flex; flex-direction:column; align-items:flex-end;">
                         <span style="font-size:0.55rem; color:#888; font-weight:700; text-transform:uppercase; margin-bottom:2px;">Starts in</span>
@@ -643,10 +642,16 @@
                  `;
             }
 
-            // COLUMN 4: ACTION (Unchanged)
+            // COLUMN 4: ACTION (Updated for Stacked Copy Link)
             let actionHtml = '';
-            if (m.is_live) actionHtml = `<button class="btn-watch" onclick="openPlayer('${m.id}', false)">WATCH <span class="hd-badge">HD</span></button>`;
-            else actionHtml = `<button class="btn-watch btn-notify" onclick="setNotify(this)">🔔 NOTIFY</button>`;
+            const matchLink = `${SITE_DOMAIN}/#${m.id}`;
+            const copyBtn = `<button class="btn-copy-link" onclick="copyText('${matchLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Copy Link</button>`;
+
+            if (m.is_live) {
+                actionHtml = `<button class="btn-watch" onclick="openPlayer('${m.id}', false)">WATCH <span class="hd-badge">HD</span></button>${copyBtn}`;
+            } else {
+                actionHtml = `<button class="btn-watch btn-notify" onclick="setNotify(this)">🔔 NOTIFY</button>${copyBtn}`;
+            }
             
             // BADGE LOGIC
             let tagText = "";
@@ -663,7 +668,6 @@
             }
             tagText = (tagText || "General").toUpperCase();
             
-            // ASSEMBLE ROW
             div.innerHTML = `<div class="col-time">${timeCol}</div><div class="teams-wrapper"><div class="league-tag">${tagText}</div>${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${actionHtml}</div>`;
             return div;
         }
@@ -707,8 +711,6 @@
 
             const sb = document.getElementById('socialSidebar');
             
-            // --- FIXED HERE: ADDED 'actions' OBJECT FOR SOCIAL SHARING ---
-            // Previously, the code tried to use 'actions[p]' but 'actions' wasn't defined.
             const actions = {
                 telegram: `https://t.me/share/url?url=${encodeURIComponent(SITE_DOMAIN)}`,
                 whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(SITE_DOMAIN)}`,
@@ -727,16 +729,7 @@
             ['telegram', 'whatsapp', 'reddit', 'twitter', 'copy'].forEach(p => {
                 let onclick = '';
                 if (p === 'copy') {
-                    onclick = `onclick="
-                    navigator.clipboard.writeText('${SITE_DOMAIN}');
-                    const old = document.querySelector('.copy-toast');
-                    if (old) old.remove();
-                    const t = document.createElement('div');
-                    t.className = 'copy-toast';
-                    t.innerText = 'Link copied ✓';
-                    document.body.appendChild(t);
-                    setTimeout(() => t.remove(), 1600);
-                    "`;
+                    onclick = `onclick="copyText('${SITE_DOMAIN}')"`;
                 } else {
                     onclick = `onclick="window.open('${actions[p]}', '_blank')"`;
                 }
@@ -744,6 +737,18 @@
                 html += `<div class="social-btn ${p}" ${onclick}>${icons[p]}${countHtml}</div>`;
             });
             sb.innerHTML = html;
+        }
+
+        // --- NEW HELPER: Copy Text ---
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+            const old = document.querySelector('.copy-toast');
+            if (old) old.remove();
+            const t = document.createElement('div');
+            t.className = 'copy-toast';
+            t.innerText = 'Link copied ✓';
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 1600);
         }
 
         function formatCount(num) {
@@ -787,13 +792,7 @@
             btn.classList.add('active');
             btn.innerHTML = '✓ Set';
             btn.disabled = true;
-            const old = document.querySelector('.copy-toast');
-            if (old) old.remove();
-            const t = document.createElement('div');
-            t.className = 'copy-toast';
-            t.innerText = 'You’ll be notified before kickoff';
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 1600);
+            copyText('You’ll be notified before kickoff'); // Reuse toast logic
         }
     </script>
 </body>
