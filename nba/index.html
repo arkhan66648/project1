@@ -540,9 +540,8 @@
                     groupConfigs[stackId].isLeague = conf.isLeague;
                     // If the priority key exactly matches the stack ID (e.g. NFL), use it as the name.
                     // Otherwise, we'll format the stack ID later (e.g. mma -> MMA) to avoid labeling all fights as "UFC"
-                    if (normalizeKey(conf.name) === stackId) {
-                        groupConfigs[stackId].name = conf.name;
-                    }
+                    // Always update the name to the highest priority item's name
+                    groupConfigs[stackId].name = conf.name;
                 }
             });
 
@@ -571,11 +570,8 @@
                     isLeague = conf.isLeague;
                     iconKey = conf.iconKey; 
                     
-                    // Name Strategy: Use standardized name (e.g. "MMA") unless Priority matched exactly
-                    groupName = formatSportName(stackId); 
-                    if (normalizeKey(conf.name) === stackId) {
-                         groupName = conf.name;
-                    }
+                    // Use the name defined in the Priority List (e.g. "NFL")
+                    groupName = conf.name;
                 } else {
                     // No Priority found
                     if (HIDE_OTHERS) return;
