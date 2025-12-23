@@ -317,10 +317,10 @@
   ],
   "social_sharing": {
     "counts": {
-      "telegram": "1200",
-      "whatsapp": "1200",
-      "reddit": "600",
-      "twitter": "500"
+      "telegram": "12000",
+      "whatsapp": "14400",
+      "reddit": "60077",
+      "twitter": "5544"
     },
     "excluded_pages": "dmca,contact,about,privacy"
   }
