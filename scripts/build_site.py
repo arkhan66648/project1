@@ -145,7 +145,7 @@ def render_page(template, config, page_data):
 
     html = html.replace('{{ARTICLE_CONTENT}}', page_data.get('content', ''))
 
-    # --- 6. JS Injections (Priorities, Socials, Schemas) ---
+    # --- 6. JS Injections (Priorities, Socials) ---
     
     # Priorities Injection
     # This automatically handles the new "_HIDE_OTHERS" key from Admin/Config 
@@ -170,27 +170,69 @@ def render_page(template, config, page_data):
     social_json = json.dumps(js_social_object)
     html = re.sub(r'const SHARE_CONFIG = \{.*?\};', f'const SHARE_CONFIG = {social_json};', html, flags=re.DOTALL)
 
-    # --- 7. Schemas ---
-    # A. Static Org Schema
+    # --- 7. STATIC SCHEMA GENERATION (Updated) ---
+    # We build a list of schema objects and dump them into {{SCHEMA_BLOCK}}
+    
     schemas = []
-    if page_data.get('schemas', {}).get('org'):
-        schemas.append({
-            "@context": "https://schema.org", "@type": "Organization",
-            "name": f"{p1}{p2}", "url": f"https://{domain}", "logo": s.get('logo_url')
-        })
-    
-    if schemas: html = html.replace('{{SCHEMA_BLOCK}}', f'<script type="application/ld+json">{json.dumps(schemas)}</script>')
-    else: html = html.replace('{{SCHEMA_BLOCK}}', '')
+    page_schemas = page_data.get('schemas', {})
 
-    # B. Dynamic Schema Control (Req #8)
-    # We inject a variable so frontend knows if it's allowed to inject Live/Schedule schemas
-    enable_live_schema = "true" if page_data.get('schemas', {}).get('live') else "false"
-    enable_schedule_schema = "true" if page_data.get('schemas', {}).get('schedule') else "false"
-    
-    # We prepend this config to the API URL definition in the script
-    # This is a robust way to add config without breaking the template's structure
-    schema_config_js = f'const ENABLE_SCHEMAS = {{ live: {enable_live_schema}, schedule: {enable_schedule_schema} }};\n        const API_URL'
-    html = html.replace('const API_URL', schema_config_js)
+    # A. Organization Schema
+    if page_schemas.get('org'):
+        schemas.append({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "@id": f"https://{domain}/#organization",
+            "name": f"{p1}{p2}",
+            "url": f"https://{domain}/",
+            "logo": {
+                "@type": "ImageObject",
+                "url": s.get('logo_url')
+            }
+        })
+
+    # B. WebSite Schema (New)
+    if page_schemas.get('website'):
+        schemas.append({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "@id": f"https://{domain}/#website",
+            "url": f"https://{domain}/",
+            "name": f"{p1}{p2}",
+            "publisher": {
+                "@type": "Organization",
+                "@id": f"https://{domain}/#organization"
+            }
+        })
+
+    # C. FAQ Schema (New)
+    if page_schemas.get('faq'):
+        faq_list = page_schemas.get('faq_list', [])
+        valid_faqs = []
+        for item in faq_list:
+            if item.get('q') and item.get('a'):
+                valid_faqs.append({
+                    "@type": "Question",
+                    "name": item.get('q'),
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": item.get('a')
+                    }
+                })
+        
+        if valid_faqs:
+            schemas.append({
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "mainEntity": valid_faqs
+            })
+
+    # D. Inject into HTML
+    if schemas:
+        # Places all schemas into one script tag as an array (Best SEO practice)
+        schema_html = f'<script type="application/ld+json">{json.dumps(schemas)}</script>'
+        html = html.replace('{{SCHEMA_BLOCK}}', schema_html)
+    else:
+        html = html.replace('{{SCHEMA_BLOCK}}', '')
 
     return html
 
@@ -213,9 +255,8 @@ def build_site():
         if slug == 'home':
             out_path = os.path.join(OUTPUT_DIR, 'index.html')
         else:
-            # This handles your new requirement: 
-            # If you create a page with slug "nba-streams" in Admin, 
-            # this correctly creates folder "nba-streams" and index.html inside it.
+            # This handles the requirement for custom slugs (e.g., 'nba-streams')
+            # It creates the folder based on the slug provided in the Admin Panel
             dir_path = os.path.join(OUTPUT_DIR, slug)
             os.makedirs(dir_path, exist_ok=True)
             out_path = os.path.join(dir_path, 'index.html')
