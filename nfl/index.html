@@ -131,10 +131,10 @@
         .sec-right-link:hover { color: var(--brand-primary); text-decoration: underline; }
         
         /* MATCH ROW STYLES (Grid Layout) */
-        .match-row { display: grid; grid-template-columns: 45px 1fr 50px 75px; align-items: center; gap: 8px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 6px; padding: 10px 8px; margin-bottom: 8px; position: relative; transition: 0.2s; }
+        .match-row { display: grid; grid-template-columns: 45px 1fr 50px 75px; align-items: center; gap: 8px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 6px; padding: 10px 8px 5px 8px; margin-bottom: 8px; position: relative; transition: 0.2s; }
         .match-row:hover { border-color: #444; transform: translateY(-2px); }
         .match-row.live { border-left: 3px solid var(--brand-primary); background: linear-gradient(90deg, rgba(208,0,0,0.06) 0%, rgba(20,20,20,0.8) 100%); }
-        @media (min-width: 768px) { .match-row { grid-template-columns: 80px 1fr 100px 110px; padding: 15px 20px; gap: 20px; } }
+        @media (min-width: 768px) { .match-row { grid-template-columns: 80px 1fr 100px 110px; padding: 15px 20px 10px 20px; gap: 20px; } }
         
         .col-time { text-align: center; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
         .time-label { font-size: 0.55rem; color: #666; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
@@ -161,7 +161,7 @@
         .btn-notify.active { border-color: var(--status-green); color: var(--status-green); background: rgba(0, 230, 118, 0.08); cursor: default; }
         
         /* COPY LINK BUTTON STYLE */
-        .btn-copy-link { background: none; border: none; color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: 0.2s; padding: 0; }
+        .btn-copy-link { background: none; border: none; color: #94a3b8; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: 0.2s; padding: 0; margin-top: 5px;}
         .btn-copy-link:hover { color: var(--status-green); }
         .btn-copy-link svg { width: 10px; height: 10px; fill: currentColor; }
 
