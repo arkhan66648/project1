@@ -11,35 +11,60 @@ const BRANCH = 'main';
 // ==========================================
 const DEFAULT_PRIORITIES = {
     US: {
-        _HIDE_OTHERS: false,
+        _HIDE_OTHERS: false, // Keep false to catch minor sports at the bottom
+        
+        // --- TIER 1: THE BIG 4 (Massive Traffic) ---
         "NFL": { score: 100, isLeague: true, hasLink: true, isHidden: false },
-        "NBA": { score: 95, isLeague: true, hasLink: true, isHidden: false },
-        "MLB": { score: 90, isLeague: true, hasLink: true, isHidden: false },
-        "College Football": { score: 88, isLeague: true, hasLink: false, isHidden: false },
-        "NCAA": { score: 87, isLeague: true, hasLink: false, isHidden: false },
-        "NHL": { score: 85, isLeague: true, hasLink: false, isHidden: false },
-        "UFC": { score: 80, isLeague: true, hasLink: false, isHidden: false },
-        "Premier League": { score: 75, isLeague: true, hasLink: false, isHidden: false },
-        "MLS": { score: 70, isLeague: true, hasLink: false, isHidden: false },
-        "Champions League": { score: 65, isLeague: true, hasLink: false, isHidden: false },
-        "Boxing": { score: 50, isLeague: false, hasLink: false, isHidden: false },
-        "Formula 1": { score: 45, isLeague: true, hasLink: false, isHidden: false },
-        "Tennis": { score: 40, isLeague: false, hasLink: false, isHidden: false }
+        "NBA": { score: 99, isLeague: true, hasLink: true, isHidden: false },
+        "MLB": { score: 98, isLeague: true, hasLink: true, isHidden: false },
+        "NHL": { score: 97, isLeague: true, hasLink: true, isHidden: false },
+        
+        // --- TIER 2: FIGHTING & RACING (High CPM/Value) ---
+        "UFC": { score: 95, isLeague: true, hasLink: true, isHidden: false }, // "MMA" matches map here via alias
+        "Boxing": { score: 94, isLeague: false, hasLink: true, isHidden: false }, // Individual events
+        "Formula 1": { score: 93, isLeague: true, hasLink: true, isHidden: false },
+
+        // --- TIER 3: COLLEGE SPORTS (Specific Entities) ---
+        "College Football": { score: 90, isLeague: true, hasLink: true, isHidden: false }, // Maps to 'ncaaf'
+        "College Basketball": { score: 89, isLeague: true, hasLink: true, isHidden: false }, // Maps to 'ncaab'
+
+        // --- TIER 4: GLOBAL SOCCER (Specific Leagues > "Soccer") ---
+        "Premier League": { score: 85, isLeague: true, hasLink: true, isHidden: false },
+        "Champions League": { score: 84, isLeague: true, hasLink: true, isHidden: false },
+        "MLS": { score: 83, isLeague: true, hasLink: true, isHidden: false },
+        "LaLiga": { score: 82, isLeague: true, hasLink: true, isHidden: false },
+        "Bundesliga": { score: 81, isLeague: true, hasLink: true, isHidden: false },
+        "Serie A": { score: 80, isLeague: true, hasLink: true, isHidden: false },
+
+        // --- TIER 5: LOW PRIORITY / CATCH-ALL ---
+        "Tennis": { score: 40, isLeague: false, hasLink: true, isHidden: false }, // Grand Slams
+        "Golf": { score: 30, isLeague: false, hasLink: false, isHidden: false }
     },
     UK: {
         _HIDE_OTHERS: false,
+
+        // --- TIER 1: FOOTBALL IS KING ---
         "Premier League": { score: 100, isLeague: true, hasLink: true, isHidden: false },
-        "Champions League": { score: 95, isLeague: true, hasLink: true, isHidden: false },
-        "Championship": { score: 90, isLeague: true, hasLink: false, isHidden: false },
-        "The Ashes": { score: 85, isLeague: true, hasLink: false, isHidden: false },
-        "Cricket": { score: 80, isLeague: false, hasLink: false, isHidden: false },
-        "Rugby": { score: 75, isLeague: false, hasLink: false, isHidden: false },
-        "Snooker": { score: 70, isLeague: false, hasLink: false, isHidden: false },
-        "Darts": { score: 65, isLeague: false, hasLink: false, isHidden: false },
-        "F1": { score: 60, isLeague: true, hasLink: true, isHidden: false },
-        "Formula 1": { score: 60, isLeague: true, hasLink: true, isHidden: false },
-        "Boxing": { score: 50, isLeague: false, hasLink: false, isHidden: false },
-        "NFL": { score: 40, isLeague: true, hasLink: false, isHidden: false }
+        "Champions League": { score: 99, isLeague: true, hasLink: true, isHidden: false },
+        "Championship": { score: 98, isLeague: true, hasLink: true, isHidden: false }, // EFL
+        "Scottish Premiership": { score: 97, isLeague: true, hasLink: true, isHidden: false }, // SPFL
+        "Europa League": { score: 96, isLeague: true, hasLink: true, isHidden: false },
+
+        // --- TIER 2: TRADITIONAL UK SPORTS ---
+        "Boxing": { score: 90, isLeague: false, hasLink: true, isHidden: false }, // Joshua/Fury fights
+        "Formula 1": { score: 88, isLeague: true, hasLink: true, isHidden: false },
+        "Cricket": { score: 85, isLeague: false, hasLink: true, isHidden: false }, // Ashes/IPL
+        "Rugby": { score: 84, isLeague: false, hasLink: true, isHidden: false }, // Six Nations/Premiership
+        "Darts": { score: 82, isLeague: false, hasLink: true, isHidden: false }, // PDC
+        "Snooker": { score: 80, isLeague: false, hasLink: true, isHidden: false },
+
+        // --- TIER 3: US IMPORTS ---
+        "NFL": { score: 70, isLeague: true, hasLink: true, isHidden: false },
+        "NBA": { score: 65, isLeague: true, hasLink: true, isHidden: false },
+        "UFC": { score: 60, isLeague: true, hasLink: true, isHidden: false },
+
+        // --- TIER 4: CATCH-ALL ---
+        "Tennis": { score: 40, isLeague: false, hasLink: false, isHidden: false }
     }
 };
 
