@@ -189,7 +189,10 @@
       "schemas": {
         "org": true,
         "live": true,
-        "schedule": true
+        "schedule": true,
+        "faq_list": [],
+        "website": true,
+        "faq": false
       },
       "title": "No. #1 Streaming Website",
       "layout": "home",
@@ -207,7 +210,8 @@
       "schemas": {
         "live": false,
         "upcoming": false,
-        "org": false
+        "org": false,
+        "faq_list": []
       },
       "meta_title": "NFL Bite",
       "meta_desc": "tfdhgdfgd"
@@ -221,7 +225,8 @@
       "schemas": {
         "live": false,
         "upcoming": false,
-        "org": false
+        "org": false,
+        "faq_list": []
       },
       "meta_title": "dgdfgd",
       "meta_desc": "dgdfgdgdgd"
