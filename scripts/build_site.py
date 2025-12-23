@@ -88,24 +88,36 @@ def render_page(template, config, page_data):
     site_name = f"{p1}{p2}"
     html = html.replace('{{SITE_NAME}}', site_name)
     
-    # 2. OG Image (Force Absolute URL for Logo)
+    # 2. OG Image Logic (Absolute URL + Mime Type Detection)
     raw_logo = s.get('logo_url', '')
+    og_image = ""
+    og_mime = "image/png" # Default fallback
+    
     if raw_logo:
+        # A. Handle Absolute URL
         if raw_logo.startswith('http'):
-            # Already absolute
             og_image = raw_logo
         else:
-            # Convert relative to absolute (Critical for Facebook/Discord)
+            # B. Convert relative to absolute
             clean_domain = domain[:-1] if domain.endswith('/') else domain
             clean_logo = raw_logo[1:] if raw_logo.startswith('/') else raw_logo
-            # Ensure domain has protocol
             if not clean_domain.startswith('http'):
                 clean_domain = f"https://{clean_domain}"
             og_image = f"{clean_domain}/{clean_logo}"
-    else:
-        og_image = "" # Fallback if no logo
-        
+            
+        # C. Detect MIME Type
+        low_img = og_image.lower()
+        if low_img.endswith('.webp'):
+            og_mime = "image/webp"
+        elif low_img.endswith('.jpg') or low_img.endswith('.jpeg'):
+            og_mime = "image/jpeg"
+        elif low_img.endswith('.gif'):
+            og_mime = "image/gif"
+        else:
+            og_mime = "image/png"
+
     html = html.replace('{{OG_IMAGE}}', og_image)
+    html = html.replace('{{OG_MIME}}', og_mime)
     # ---------------------------------
 
     logo_html = f'<div class="logo-text">{p1}<span>{p2}</span></div>'
