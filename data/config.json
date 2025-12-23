@@ -230,6 +230,23 @@
       },
       "meta_title": "dgdfgd",
       "meta_desc": "dgdfgdgdgd"
+    },
+    {
+      "id": "p_1766500261942",
+      "title": "DMCA",
+      "slug": "dmca",
+      "layout": "page",
+      "content": "<p>dgdgdgd</p>",
+      "schemas": {
+        "org": false,
+        "faq_list": [],
+        "website": false,
+        "faq": false
+      },
+      "meta_title": "sfsfs",
+      "meta_desc": "sdssdfs",
+      "meta_keywords": "",
+      "canonical_url": ""
     }
   ],
   "menus": {
