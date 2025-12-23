@@ -129,7 +129,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--accent); outline
 
 .desc { color: #64748b; font-size: 0.85rem; margin-bottom: 15px; line-height: 1.4; }
 
-/* CHECKBOX GROUPS (New for Schemas) */
+/* CHECKBOX GROUPS & FAQ EDITOR STYLES */
 .checkbox-group label {
     display: flex;
     align-items: center;
@@ -143,6 +143,22 @@ input[type="checkbox"] {
     width: 16px;
     height: 16px;
     cursor: pointer;
+}
+
+/* FAQ SPECIFIC */
+.faq-q, .faq-a {
+    width: 100%;
+    background: #020617;
+    border: 1px solid #334155;
+    color: white;
+    padding: 8px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.85rem;
+}
+.faq-q:focus, .faq-a:focus {
+    border-color: var(--accent);
+    outline: none;
 }
 
 /* EDITOR SPECIFIC */
