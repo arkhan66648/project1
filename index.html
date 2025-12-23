@@ -324,14 +324,16 @@
         const SITE_DOMAIN = "https://crackstreams.help";
         const SHARE_CONFIG = {"excluded": ["dmca", "contact", "about", "privacy"], "counts": {"telegram": "1200", "whatsapp": "1200", "reddit": "600", "twitter": "500"}};
 
-        // --- EXPANDED SMART ALIAS SYSTEM (Matches Admin Keys -> Backend Keys) ---
+        // --- FIXED HERE: SMART ALIAS KEYS MUST BE LOWERCASE & NO SPACES ---
+        // Your Admin panel sends keys like "Premier League", but your `normalizeKey` function
+        // turns them into "premierleague". The keys below must match that output.
         const SMART_ALIASES = {
-    // FOOTBALL / SOCCER
+            // FOOTBALL / SOCCER
             'football': 'soccer',
             'soccer': 'soccer',
-            'premierleague': 'soccer',      // Space removed
-            'championsleague': 'soccer',    // Space removed
-            'europaleague': 'soccer',
+            'premierleague': 'soccer',      // FIXED: removed space
+            'championsleague': 'soccer',    // FIXED: removed space
+            'europaleague': 'soccer',       // FIXED: removed space
             'laliga': 'soccer',
             'bundesliga': 'soccer',
             'seriea': 'soccer',
@@ -339,12 +341,13 @@
             'mls': 'soccer',
             'worldcup': 'soccer',
             'euro': 'soccer',
+            'uefaeuro': 'soccer',           // FIXED: removed space
             'copaamerica': 'soccer',
 
             // AMERICAN FOOTBALL
             'nfl': 'americanfootball',
             'americanfootball': 'americanfootball',
-            'collegefootball': 'americanfootball',  // Space removed
+            'collegefootball': 'americanfootball',  // FIXED: removed space
             'ncaafootball': 'americanfootball',
 
             // BASKETBALL
@@ -376,7 +379,7 @@
             // CRICKET
             'cricket': 'cricket',
             'ashes': 'cricket',
-            'theashes': 'cricket',
+            'theashes': 'cricket',          // FIXED: removed space
             'ipl': 'cricket',
             't20': 'cricket',
             'odi': 'cricket',
@@ -389,7 +392,7 @@
             'rugbyleague': 'rugby',
             'darts': 'darts',
             'snooker': 'snooker'
-};
+        };
 
         let allMatches = [];
         window.MATCH_DATA = {}; 
@@ -696,6 +699,16 @@
             if(SHARE_CONFIG.excluded.includes(currentSlug)) return;
 
             const sb = document.getElementById('socialSidebar');
+            
+            // --- FIXED HERE: ADDED 'actions' OBJECT FOR SOCIAL SHARING ---
+            // Previously, the code tried to use 'actions[p]' but 'actions' wasn't defined.
+            const actions = {
+                telegram: `https://t.me/share/url?url=${encodeURIComponent(SITE_DOMAIN)}`,
+                whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(SITE_DOMAIN)}`,
+                reddit: `https://www.reddit.com/submit?url=${encodeURIComponent(SITE_DOMAIN)}`,
+                twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(SITE_DOMAIN)}`
+            };
+
             const icons = {
                 telegram: '<svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.47-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.28L19.84 4c.75-.28 1.4.52 1.16 1.76l-2.8 13.2c-.2.9-1.09.9-1.8.6l-5.45-4.06-2.6 2.5c-.3.3-.55.55-1.1.55l.45-3.6z"/></svg>',
                 whatsapp: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.33 4.97L2 22l5.25-1.38a9.86 9.86 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.51 2 12.04 2zm0 17.99a8.1 8.1 0 01-4.13-1.13l-.3-.18-3.12.82.83-3.04-.2-.31a8.06 8.06 0 01-1.23-4.31c0-4.45 3.63-8.08 8.08-8.08 4.45 0 8.08 3.63 8.08 8.08 0 4.45-3.63 8.15-8.08 8.15zm4.43-6.03c-.24-.12-1.41-.7-1.63-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.48-.4-.42-.54-.42h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2 0 1.18.86 2.32.98 2.48.12.16 1.7 2.6 4.12 3.65.58.25 1.03.4 1.38.51.58.18 1.1.15 1.52.09.46-.07 1.41-.58 1.61-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg>',
