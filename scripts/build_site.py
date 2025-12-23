@@ -197,7 +197,7 @@ def render_page(template, config, page_data):
             "url": f"https://{domain}/",
             "logo": {
                 "@type": "ImageObject",
-                "url": s.get('logo_url')
+                "url": og_image
             }
         })
 
