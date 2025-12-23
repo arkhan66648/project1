@@ -128,16 +128,8 @@
         .col-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; justify-content: center; }
         .meta-top { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); white-space: nowrap; }
         
-        /* --- UPDATED: ACTION COLUMN (Flex Stack) --- */
-        .col-action { 
-            margin-left: auto; 
-            width: 100%; 
-            display: flex;
-            flex-direction: column; /* Stack Watch & Copy buttons vertically */
-            align-items: center;
-            justify-content: center;
-            gap: 5px; /* Slight gap between buttons */
-        }
+        /* ACTION COLUMN (Flex Stack) */
+        .col-action { margin-left: auto; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
         
         .btn-watch { background: var(--brand-primary); color: white; font-size: 0.65rem; font-weight: 800; padding: 6px 10px; border-radius: 4px; width: 100%; text-transform: uppercase; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; gap:5px; height: 26px; }
         .btn-watch:hover { background: var(--brand-dark); transform: scale(1.02); }
@@ -145,51 +137,52 @@
         .btn-notify { background: transparent; border: 1px solid #333; color: #888; padding: 0; box-shadow: none; justify-content: center; transition: all 0.25s ease; height: 26px; }
         .btn-notify.active { border-color: var(--status-green); color: var(--status-green); background: rgba(0, 230, 118, 0.08); cursor: default; }
         
-        /* --- NEW: COPY LINK BUTTON STYLE --- */
-        .btn-copy-link {
-            background: none;
-            border: none;
-            color: #555; /* Subtle Grey */
-            font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            transition: 0.2s;
-            padding: 0;
-        }
+        /* COPY LINK BUTTON STYLE */
+        .btn-copy-link { background: none; border: none; color: #555; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: 0.2s; padding: 0; }
         .btn-copy-link:hover { color: var(--status-green); }
         .btn-copy-link svg { width: 10px; height: 10px; fill: currentColor; }
 
         .show-more-btn { display: block; width: 100%; max-width: 300px; margin: 20px auto; background: #151515; border: 1px solid #333; color: #ccc; padding: 12px; border-radius: 30px; font-weight: 600; font-size: 0.85rem; transition:0.2s; cursor: pointer; }
         .show-more-btn:hover { border-color: var(--brand-primary); color: #fff; background: #1a1a1a; }
         
-        /* LEAGUES GRID */
-        .leagues-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
-        @media (min-width: 600px) { .leagues-grid { grid-template-columns: repeat(4, 1fr); } }
-        .league-card { background: #111; border: 1px solid var(--border); padding: 15px; border-radius: 6px; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
-        .league-card:hover { border-color: var(--brand-primary); transform: translateY(-3px); background: #151515; }
-        .league-card span { font-size: 0.85rem; font-weight: 600; color: #ddd; }
-        .l-icon { font-size: 1.2rem; }
+        /* FIXED: PROFESSIONAL FOOTER LEAGUES GRID */
+        .leagues-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Auto-responsive */
+            gap: 12px; 
+            margin-top: 15px; 
+        }
         
-        /* FOOTER & PARTNERS */
-        .partners-box { background: #0a0a0a; border: 1px solid var(--border); padding: 25px; border-radius: 8px; text-align: center; margin-top: 40px; }
-        .partner-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 15px; }
-        .p-tag { background: #111; border: 1px solid #222; color: #888; padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
-        .p-tag:hover { border-color: var(--brand-primary); color: white; }
+        .league-card { 
+            background: #111; 
+            border: 1px solid var(--border); 
+            padding: 10px 15px; /* Compact padding */
+            border-radius: 4px; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            transition: 0.2s; 
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .league-card:hover { border-color: var(--brand-primary); background: #1a1a1a; transform: translateY(-2px); }
+        .league-card span { font-size: 0.8rem; font-weight: 700; color: #ccc; overflow: hidden; text-overflow: ellipsis; }
+        .l-icon { font-size: 1.1rem; }
         
-        footer { background: #020202; border-top: 1px solid var(--border); padding: 50px 20px; margin-top: 60px; }
-        .footer-grid { display: grid; grid-template-columns: 1fr; gap: 30px; max-width: 1000px; margin: 0 auto; text-align: center; }
-        @media(min-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; text-align: left; } .footer-grid div:last-child { text-align: right; } }
-        .f-brand h2 { margin: 0 0 10px 0; font-style: italic; text-transform: uppercase; }
-        .f-desc { color: #666; font-size: 0.8rem; line-height: 1.6; max-width: 400px; margin: 0 auto; }
+        /* FOOTER GENERAL FIXES */
+        footer { background: #020617; border-top: 1px solid var(--border); padding: 60px 20px 30px 20px; margin-top: 60px; }
+        .footer-grid { display: grid; grid-template-columns: 1fr; gap: 40px; max-width: 1100px; margin: 0 auto; text-align: center; }
+        @media(min-width: 768px) { 
+            .footer-grid { grid-template-columns: 1fr 1fr; text-align: left; } 
+            .footer-grid div:last-child { text-align: right; } 
+        }
+        .f-brand h2 { margin: 0 0 15px 0; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: -1px; }
+        .f-desc { color: #64748b; font-size: 0.85rem; line-height: 1.6; max-width: 400px; margin: 0 auto; }
         @media(min-width: 768px) { .f-desc { margin: 0; } }
-        .f-links { display: flex; flex-direction: column; gap: 10px; }
-        .f-link { color: #888; font-size: 0.85rem; font-weight: 500; }
-        .f-link:hover { color: var(--brand-primary); }
-        .copyright { margin-top: 40px; border-top: 1px solid #111; padding-top: 20px; text-align: center; font-size: 0.75rem; color: #444; }
+        .f-links { display: flex; flex-direction: column; gap: 12px; }
+        .f-link { color: #94a3b8; font-size: 0.9rem; font-weight: 500; transition: 0.2s; }
+        .f-link:hover { color: white; transform: translateX(5px); }
+        .copyright { margin-top: 50px; border-top: 1px solid #1e293b; padding-top: 25px; text-align: center; font-size: 0.75rem; color: #475569; }
         
         /* BACK TO TOP (FADE LOGIC) */
         .back-to-top { position: fixed; bottom: 80px; right: 20px; background: var(--brand-primary); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; opacity: 0; visibility: hidden; transition: 0.3s; z-index: 90; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
@@ -197,31 +190,34 @@
         .back-to-top svg { width: 24px; height: 24px; fill: white; }
         @media (min-width: 768px) { .back-to-top { bottom: 30px; } }
         
-        /* MODALS */
+        /* FIXED: MODALS (Responsive) */
         .modal { position: fixed; inset: 0; background: #050505; z-index: 2000; display: none; flex-direction: column; }
-        .modal-info { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 3000; display: none; align-items: center; justify-content: center; }
-        .info-content { background: #111; border: 1px solid #333; padding: 40px 30px; border-radius: 12px; width: 90%; max-width: 500px; text-align: center; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        .close-info { position: absolute; top: 15px; right: 15px; background: none; color: #666; font-size: 1.2rem; padding: 5px; transition: 0.2s; border: none; font-weight: bold; }
-        .close-info:hover { color: #fff; transform: scale(1.1); }
-        .info-header { color: var(--brand-primary); font-weight: 800; text-transform: uppercase; font-size: 0.85rem; margin-bottom: 15px; letter-spacing: 1px; }
-        #infoTeams { font-size: 1.6rem; margin: 0 0 20px 0; color: white; line-height: 1.3; font-weight: 700; }
-        .info-meta { display: flex; flex-direction: column; gap: 8px; color: #ccc; font-size: 1rem; margin-bottom: 30px; background: #1a1a1a; padding: 15px; border-radius: 8px; }
-        .meta-row { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 8px; }
-        .meta-row:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
-        .btn-watch-lg { background: var(--brand-primary); color: white; font-size: 1.1rem; font-weight: 800; padding: 16px 30px; border-radius: 8px; width: 100%; text-transform: uppercase; transition: 0.2s; box-shadow: 0 4px 15px rgba(208,0,0,0.4); display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .modal-info { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); z-index: 3000; display: none; align-items: center; justify-content: center; }
         
-        .search-overlay { position: fixed; inset: 0; background: rgba(5,5,5,0.9); backdrop-filter: blur(8px); z-index: 5000; display: none; align-items: center; justify-content: center; }
-        .search-modal-box { width: 90%; max-width: 500px; background: #0f0f0f; border: 1px solid #333; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        .search-loader { width: 50px; height: 50px; border: 4px solid #222; border-top-color: var(--brand-primary); border-radius: 50%; animation: spin 1s infinite linear; margin: 0 auto 20px auto; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .search-keyword-h3 { font-size: 1.4rem; font-weight: 700; color: #fff; margin: 0 0 15px 0; line-height: 1.3; }
-        .search-keyword-h3 span { color: var(--brand-primary); }
-        .search-sub-text { font-size: 0.9rem; color: #888; margin-bottom: 5px; }
-        .found-box { margin-top: 25px; padding-top: 20px; border-top: 1px solid #222; opacity: 0; transform: translateY(10px); transition: 0.3s; }
-        .found-box.active { opacity: 1; transform: translateY(0); }
-        .best-alt-msg { font-size: 0.95rem; color: #ccc; margin-bottom: 10px; }
-        .best-alt-msg strong { color: #fff; }
-        .redirect-msg { font-size: 0.8rem; color: var(--status-green); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        /* Updated Info Content Box */
+        .info-content { 
+            background: #0f0f0f; 
+            border: 1px solid #333; 
+            padding: 30px 20px; 
+            border-radius: 12px; 
+            width: 90%; 
+            max-width: 480px; 
+            text-align: center; 
+            position: relative; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+        .close-info { position: absolute; top: 15px; right: 15px; background: none; color: #666; font-size: 1.2rem; padding: 5px; transition: 0.2s; border: none; font-weight: bold; cursor: pointer; }
+        .close-info:hover { color: #fff; transform: scale(1.1); }
+        .info-header { color: var(--brand-primary); font-weight: 800; text-transform: uppercase; font-size: 0.75rem; margin-bottom: 15px; letter-spacing: 1px; }
+        #infoTeams { font-size: 1.4rem; margin: 0 0 20px 0; color: white; line-height: 1.3; font-weight: 800; }
+        .info-meta { display: flex; flex-direction: column; gap: 10px; color: #ccc; font-size: 0.95rem; margin-bottom: 25px; background: #161616; padding: 15px; border-radius: 8px; border: 1px solid #222; }
+        .meta-row { display: flex; justify-content: space-between; border-bottom: 1px solid #2a2a2a; padding-bottom: 8px; margin-bottom: 0; }
+        .meta-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .btn-watch-lg { background: var(--brand-primary); color: white; font-size: 1rem; font-weight: 800; padding: 14px 20px; border-radius: 6px; width: 100%; text-transform: uppercase; transition: 0.2s; box-shadow: 0 4px 15px rgba(208,0,0,0.4); display: flex; align-items: center; justify-content: center; gap: 10px; }
+        
+        /* Disabled Button Style for Upcoming */
+        .btn-watch-lg:disabled { background: #222; color: #555; cursor: not-allowed; box-shadow: none; border: 1px solid #333; }
+
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     </style>
@@ -293,11 +289,7 @@
             </a></div>
         </div>
 
-        <div class="partners-box">
-            <h3 style="margin:0; color:#fff; text-transform:uppercase;">Trusted Partners</h3>
-            <p style="font-size:0.8rem; color:#666; margin:5px 0 15px 0;">Find official alternatives and verified streams</p>
-            <div class="partner-tags"><button class="p-tag" onclick="triggerEntityPopup('Methstreams')">Methstreams</button><button class="p-tag" onclick="triggerEntityPopup('Sportsurge')">Sportsurge</button><button class="p-tag" onclick="triggerEntityPopup('Crackstreams')">Crackstreams</button><button class="p-tag" onclick="triggerEntityPopup('Buffstreams')">Buffstreams</button></div>
-        </div>
+        <!-- REMOVED: Trusted Partners Section (Entity Stacking) as requested -->
 
     </div>
 
@@ -308,7 +300,7 @@
                 <div class="f-desc">Hello world</div>
             </div>
             <div>
-                <h4 style="color:#fff; margin-bottom:15px;">Quick Links</h4>
+                <h4 style="color:#fff; margin-bottom:15px; text-transform:uppercase; font-size:0.9rem;">Quick Links</h4>
                 <div class="f-links"><a href="/dmca" class="f-link">DMCA</a><a href="/contact" class="f-link">Contact</a><a href="/terms" class="f-link">Terms & Conditions</a></div>
             </div>
         </div>
@@ -319,29 +311,24 @@
         <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
     </button>
 
-    <div id="searchOverlay" class="search-overlay">
-        <div class="search-modal-box">
-            <div class="search-loader"></div>
-            <h3 class="search-keyword-h3">Searching for <span id="sKw"></span> live streams</h3>
-            <div class="search-sub-text">Checking availability for "<span id="sKw2"></span>"...</div>
-            <div id="foundBox" class="found-box">
-                <div class="best-alt-msg"><strong>crackstreams.help</strong> is the best official alternative for <span id="sKw3"></span></div>
-                <div class="redirect-msg">Redirecting to Homepage...</div>
-            </div>
-        </div>
-    </div>
+    <!-- REMOVED: Search Overlay as requested -->
 
     <div id="streamModal" class="modal"></div>
+    
+    <!-- UPDATED: Info Modal -->
     <div id="infoModal" class="modal-info">
         <div class="info-content">
             <button class="close-info" onclick="closeInfoModal()">✕</button>
             <div class="info-header">Match Information</div>
             <h2 id="infoTeams">Loading...</h2>
+            
             <div class="info-meta">
                 <div class="meta-row"><span>📅 Date</span> <span id="infoDate">-</span></div>
-                <div class="meta-row"><span>⏱ Status</span> <span id="infoStatus" style="color:var(--brand-primary); font-weight:700;">-</span></div>
+                <div class="meta-row"><span>⏱ Status</span> <span id="infoStatus" style="font-weight:700;">-</span></div>
             </div>
+            
             <button id="infoWatchBtn" class="btn-watch-lg">📺 WATCH STREAM</button>
+            <div id="infoExtraMsg" style="display:none;"></div>
         </div>
     </div>
 
@@ -353,86 +340,27 @@
         const SHARE_CONFIG = {"excluded": ["dmca", "contact", "about", "privacy"], "counts": {"telegram": "12000", "whatsapp": "14400", "reddit": "60077", "twitter": "5544"}};
 
         const SMART_ALIASES = {
-            // FOOTBALL / SOCCER
-            'football': 'soccer',
-            'soccer': 'soccer',
-            'premierleague': 'soccer',
-            'championsleague': 'soccer',
-            'europaleague': 'soccer',
-            'laliga': 'soccer',
-            'bundesliga': 'soccer',
-            'seriea': 'soccer',
-            'ligue1': 'soccer',
-            'mls': 'soccer',
-            'worldcup': 'soccer',
-            'euro': 'soccer',
-            'uefaeuro': 'soccer',
-            'copaamerica': 'soccer',
-            'facup': 'soccer',           
-            'carabaocup': 'soccer',      
-
-            // AMERICAN FOOTBALL
-            'nfl': 'americanfootball',
-            'americanfootball': 'americanfootball',
-            'collegefootball': 'americanfootball',
-            'ncaafootball': 'americanfootball',
-            'ncaaf': 'americanfootball',  
-            'ncaafb': 'americanfootball', 
-            'superbowl': 'americanfootball',
-
-            // BASKETBALL
-            'nba': 'basketball',
-            'basketball': 'basketball',
-            'collegebasketball': 'basketball',
-            'ncaabasketball': 'basketball',
-            'ncaab': 'basketball',        
-            'wnba': 'basketball',
-            'euroleague': 'basketball',
-
-            // BASEBALL
-            'mlb': 'baseball',
-            'baseball': 'baseball',
-
-            // ICE HOCKEY
-            'nhl': 'icehockey',
-            'icehockey': 'icehockey',
-            'ahl': 'icehockey',
-
-            // COMBAT SPORTS
-            'ufc': 'mma',
-            'mma': 'mma',
-            'boxing': 'boxing',
-            'fight': 'mma',
-
-            // MOTORSPORT
-            'f1': 'motorsport',
-            'formula1': 'motorsport',
-            'formulaone': 'motorsport',
-            'nascar': 'motorsport',
-            'motogp': 'motorsport',
-            'indycar': 'motorsport',
-
-            // CRICKET
-            'cricket': 'cricket',
-            'ashes': 'cricket',
-            'theashes': 'cricket',
-            'ipl': 'cricket',
-            't20': 'cricket',
-            'odi': 'cricket',
-            'testcricket': 'cricket',
-
-            // OTHER SPORTS
-            'tennis': 'tennis',
-            'golf': 'golf',
-            'pga': 'golf',               
-            'livgolf': 'golf',           
-            'rugby': 'rugby',
-            'rugbyunion': 'rugby',
-            'rugbyleague': 'rugby',
-            'sixnations': 'rugby',       
-            'darts': 'darts',
-            'pdc': 'darts',
-            'snooker': 'snooker'
+            'football': 'soccer', 'soccer': 'soccer', 'premierleague': 'soccer',
+            'championsleague': 'soccer', 'europaleague': 'soccer', 'laliga': 'soccer',
+            'bundesliga': 'soccer', 'seriea': 'soccer', 'ligue1': 'soccer',
+            'mls': 'soccer', 'worldcup': 'soccer', 'euro': 'soccer',
+            'uefaeuro': 'soccer', 'copaamerica': 'soccer', 'facup': 'soccer',
+            'carabaocup': 'soccer',
+            'nfl': 'americanfootball', 'americanfootball': 'americanfootball',
+            'collegefootball': 'americanfootball', 'ncaafootball': 'americanfootball',
+            'ncaaf': 'americanfootball', 'ncaafb': 'americanfootball', 'superbowl': 'americanfootball',
+            'nba': 'basketball', 'basketball': 'basketball', 'collegebasketball': 'basketball',
+            'ncaabasketball': 'basketball', 'ncaab': 'basketball', 'wnba': 'basketball',
+            'euroleague': 'basketball', 'mlb': 'baseball', 'baseball': 'baseball',
+            'nhl': 'icehockey', 'icehockey': 'icehockey', 'ahl': 'icehockey',
+            'ufc': 'mma', 'mma': 'mma', 'boxing': 'boxing', 'fight': 'mma',
+            'f1': 'motorsport', 'formula1': 'motorsport', 'formulaone': 'motorsport',
+            'nascar': 'motorsport', 'motogp': 'motorsport', 'indycar': 'motorsport',
+            'cricket': 'cricket', 'ashes': 'cricket', 'theashes': 'cricket',
+            'ipl': 'cricket', 't20': 'cricket', 'odi': 'cricket', 'testcricket': 'cricket',
+            'tennis': 'tennis', 'golf': 'golf', 'pga': 'golf', 'livgolf': 'golf',
+            'rugby': 'rugby', 'rugbyunion': 'rugby', 'rugbyleague': 'rugby',
+            'sixnations': 'rugby', 'darts': 'darts', 'pdc': 'darts', 'snooker': 'snooker'
         };
 
         let allMatches = [];
@@ -452,7 +380,7 @@
                 clearTimeout(scrollTimeout);
                 scrollTimeout = setTimeout(() => {
                     btn.classList.remove('show');
-                }, 2000); // Hide after 2 seconds of inactivity
+                }, 2000); 
             } else {
                 btn.classList.remove('show');
             }
@@ -618,7 +546,6 @@
             const div = document.createElement('div');
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
-            // COLUMN 1: TIME
             let timeCol;
             if (m.is_live) {
                 timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
@@ -627,7 +554,6 @@
                 timeCol = `<span class="time-main">${parts[1] || ''}</span><span class="time-sub">${parts[0]}</span>`; 
             }
             
-            // COLUMN 2: TEAMS
             let teamsHtml = '';
             const tA = m.team_a; const tB = m.team_b;
             if (!tB) {
@@ -638,7 +564,6 @@
                 <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_b_letter||'T')}">${m.team_b_letter||'T'}</span> ${tB}</div>`;
             }
             
-            // COLUMN 3: META
             let metaHtml = '';
             if (m.is_live) {
                  metaHtml = `<div class="meta-top">${m.live_viewers || 'N/A'}</div>`;
@@ -651,7 +576,6 @@
                  `;
             }
 
-            // COLUMN 4: ACTION (Updated for Stacked Copy Link)
             let actionHtml = '';
             const matchLink = `${SITE_DOMAIN}/#${m.id}`;
             const copyBtn = `<button class="btn-copy-link" onclick="copyText('${matchLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Copy Link</button>`;
@@ -662,7 +586,6 @@
                 actionHtml = `<button class="btn-watch btn-notify" onclick="setNotify(this)">🔔 NOTIFY</button>${copyBtn}`;
             }
             
-            // BADGE LOGIC
             let tagText = "";
             if (context.isTrendingLive) {
                 tagText = m.league || m.tournament || m.sport;
@@ -699,21 +622,6 @@
             });
         }
 
-        window.triggerEntityPopup = function(keyword) {
-            const ov = document.getElementById('searchOverlay');
-            document.getElementById('sKw').innerText = keyword;
-            document.getElementById('sKw2').innerText = keyword;
-            document.getElementById('sKw3').innerText = keyword;
-            ov.style.display = 'flex';
-            document.getElementById('foundBox').classList.remove('active');
-            document.querySelector('.search-loader').style.display = 'block';
-            setTimeout(() => {
-                document.querySelector('.search-loader').style.display = 'none';
-                document.getElementById('foundBox').classList.add('active');
-                setTimeout(() => window.location.href = "/", 2000);
-            }, 1500);
-        };
-
         function renderSocials() {
             const currentSlug = window.location.pathname.replace(/\//g, '');
             if(SHARE_CONFIG.excluded.includes(currentSlug)) return;
@@ -748,7 +656,6 @@
             sb.innerHTML = html;
         }
 
-        // --- NEW HELPER: Copy Text ---
         function copyText(text) {
             navigator.clipboard.writeText(text);
             const old = document.querySelector('.copy-toast');
@@ -772,16 +679,46 @@
             const hash = window.location.hash.replace('#', '');
             if(hash && window.MATCH_DATA[hash]) openInfoModal(hash);
         }
+
+        // FIXED: Professional Upcoming Overlay Logic
         function openInfoModal(id) {
             const m = window.MATCH_DATA[id];
             if(!m) return;
+            
             document.getElementById('infoTeams').innerHTML = m.team_b ? `${m.team_a} <span style="color:#666; font-size:0.8em;">vs</span> ${m.team_b}` : m.team_a;
             document.getElementById('infoDate').innerText = m.formatted_date;
-            document.getElementById('infoStatus').innerText = m.is_live ? "LIVE NOW 🔥" : m.status_text;
-            document.getElementById('infoWatchBtn').onclick = () => { closeInfoModal(); openPlayer(id, false); };
+            
+            const btn = document.getElementById('infoWatchBtn');
+            const extraMsg = document.getElementById('infoExtraMsg');
+            const statusEl = document.getElementById('infoStatus');
+
+            if (m.is_live) {
+                // Live State
+                statusEl.innerHTML = `LIVE NOW <span style="color:var(--status-green);">●</span>`;
+                statusEl.style.color = "var(--brand-primary)";
+                btn.innerHTML = "📺 WATCH STREAM";
+                btn.disabled = false;
+                btn.onclick = () => { closeInfoModal(); openPlayer(id, false); };
+                extraMsg.style.display = 'none';
+            } else {
+                // Upcoming State
+                statusEl.innerHTML = `Upcoming <span style="color:#666; margin:0 5px;">|</span> Starts in: <span style="color:#fff;">${m.status_text}</span>`;
+                statusEl.style.color = "#ccc";
+                btn.innerHTML = "🔒 STREAM OFFLINE";
+                btn.disabled = true;
+                btn.onclick = null;
+                extraMsg.innerHTML = "✨ Stream will be available 15 minutes before kickoff";
+                extraMsg.style.display = 'block';
+                extraMsg.style.marginTop = "15px";
+                extraMsg.style.fontSize = "0.85rem";
+                extraMsg.style.color = "var(--accent-gold)";
+            }
+            
             document.getElementById('infoModal').style.display = 'flex';
         }
+
         function closeInfoModal() { document.getElementById('infoModal').style.display = 'none'; history.replaceState(null, null, ' '); }
+        
         function openPlayer(id, locked) {
             const m = window.MATCH_DATA[id];
             if(!m) return alert("Match expired.");
@@ -801,7 +738,7 @@
             btn.classList.add('active');
             btn.innerHTML = '✓ Set';
             btn.disabled = true;
-            copyText('You’ll be notified before kickoff'); // Reuse toast logic
+            copyText('You’ll be notified before kickoff'); 
         }
     </script>
 </body>
