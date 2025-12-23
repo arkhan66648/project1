@@ -366,7 +366,7 @@
         const SITE_DOMAIN = "https://crackstreams.help";
         const SHARE_CONFIG = {"excluded": ["dmca", "contact", "about", "privacy"], "counts": {"telegram": "12000", "whatsapp": "14400", "reddit": "60077", "twitter": "5544"}};
 
-        // FIXED: NAME_FIXES to ensure spacing for double word sports
+        // FIXED: NAME_FIXES to ensure spacing for double word sports AND proper MMA formatting
         const NAME_FIXES = {
             'americanfootball': 'American Football',
             'collegefootball': 'College Football',
@@ -380,7 +380,8 @@
             'premierleague': 'Premier League',
             'championsleague': 'Champions League',
             'europaleague': 'Europa League',
-            'superbowl': 'Super Bowl'
+            'superbowl': 'Super Bowl',
+            'mma': 'MMA' 
         };
 
         const SMART_ALIASES = {
@@ -497,6 +498,8 @@
             return toTitleCase(raw);
         }
 
+        // FIXED: REWRITTEN LOGIC FOR ENTITY STACKING
+        // This groups "Fight", "UFC", "MMA" into one logical stack and applies the highest priority found.
         function renderUpcomingGrouped(matches) {
             const container = document.getElementById('upcoming-container');
             container.innerHTML = '';
@@ -504,67 +507,98 @@
             
             const HIDE_OTHERS = PRIORITIES._HIDE_OTHERS === true;
 
-            matches.forEach(m => {
-                const sportRaw = (m.sport || "General").trim();
-                const leagueRaw = (m.league || "").trim();
-                const tournamentRaw = (m.tournament || "").trim();
+            // 1. Build a Map of Canonical Groups based on Priorities
+            // This allows specific priorities (UFC) to boost the generic group (MMA)
+            const groupConfigs = {};
 
-                const sportKey = normalizeKey(sportRaw);
-                const leagueKey = normalizeKey(leagueRaw);
-                const tournamentKey = normalizeKey(tournamentRaw);
-
-                let matchedPrioKey = null;
+            Object.keys(PRIORITIES).forEach(pKey => {
+                if (pKey === '_HIDE_OTHERS') return;
                 
-                Object.keys(PRIORITIES).forEach(pKey => {
-                    const normPKey = normalizeKey(pKey);
-                    const aliasTarget = SMART_ALIASES[normPKey];
-                    if (
-                        normPKey === leagueKey || 
-                        normPKey === tournamentKey || 
-                        normPKey === sportKey ||
-                        (aliasTarget && aliasTarget === sportKey)
-                    ) {
-                        matchedPrioKey = pKey;
-                    }
-                });
+                const conf = PRIORITIES[pKey];
+                if (conf.isHidden) return;
 
+                const normPKey = normalizeKey(pKey);
+                // Determine the Canonical Group (Stack ID) for this Priority Item
+                const stackId = SMART_ALIASES[normPKey] || normPKey;
+
+                if (!groupConfigs[stackId]) {
+                    groupConfigs[stackId] = {
+                        score: 0,
+                        name: pKey, 
+                        hasLink: false,
+                        isLeague: false,
+                        iconKey: pKey 
+                    };
+                }
+
+                // Entity Stacking: Inherit the highest score in the stack
+                if (conf.score > groupConfigs[stackId].score) {
+                    groupConfigs[stackId].score = conf.score;
+                    // We keep the priority item name as the icon source, but the group name usually standardizes
+                    groupConfigs[stackId].iconKey = pKey; 
+                    groupConfigs[stackId].hasLink = conf.hasLink;
+                    groupConfigs[stackId].isLeague = conf.isLeague;
+                    // If the priority key exactly matches the stack ID (e.g. NFL), use it as the name.
+                    // Otherwise, we'll format the stack ID later (e.g. mma -> MMA) to avoid labeling all fights as "UFC"
+                    if (normalizeKey(conf.name) === stackId) {
+                        groupConfigs[stackId].name = conf.name;
+                    }
+                }
+            });
+
+            matches.forEach(m => {
+                // 2. Identify Match's Canonical Group (Stack ID)
+                const sportRaw = (m.sport || "General").trim();
+                const sportKey = normalizeKey(sportRaw);
+                const leagueKey = normalizeKey(m.league || "");
+                
+                // Determine Stack ID. Prefer League alias if exists (e.g. UFC -> mma), else Sport alias
+                let stackId = SMART_ALIASES[sportKey] || sportKey;
+                if (SMART_ALIASES[leagueKey]) stackId = SMART_ALIASES[leagueKey];
+
+                // 3. Match against Configs
                 let groupName = "";
                 let groupScore = 0;
                 let hasLink = false;
                 let isLeague = false;
-                let isHidden = false;
+                let iconKey = "";
 
-                if (matchedPrioKey) {
-                    const conf = PRIORITIES[matchedPrioKey];
-                    isHidden = conf.isHidden;
-                    if (isHidden) return;
-
-                    groupName = matchedPrioKey;
+                if (groupConfigs[stackId]) {
+                    // It matches a Priority Stack!
+                    const conf = groupConfigs[stackId];
                     groupScore = conf.score;
                     hasLink = conf.hasLink;
                     isLeague = conf.isLeague;
+                    iconKey = conf.iconKey; 
+                    
+                    // Name Strategy: Use standardized name (e.g. "MMA") unless Priority matched exactly
+                    groupName = formatSportName(stackId); 
+                    if (normalizeKey(conf.name) === stackId) {
+                         groupName = conf.name;
+                    }
                 } else {
+                    // No Priority found
                     if (HIDE_OTHERS) return;
-                    // FIXED: Use formatSportName instead of just toTitleCase to handle double words
                     groupName = formatSportName(sportRaw);
+                    stackId = normalizeKey(groupName); 
                     groupScore = 0;
                     hasLink = false;
                     isLeague = false;
+                    iconKey = groupName;
                 }
 
-                const uniqueGroupKey = normalizeKey(groupName);
-
-                if (!allGroups[uniqueGroupKey]) {
-                    allGroups[uniqueGroupKey] = {
+                // 4. Add to Groups
+                if (!allGroups[stackId]) {
+                    allGroups[stackId] = {
                         name: groupName,
                         score: groupScore,
                         matches: [],
                         hasLink,
                         isLeague,
-                        iconKey: groupName
+                        iconKey: iconKey || groupName
                     };
                 }
-                allGroups[uniqueGroupKey].matches.push(m);
+                allGroups[stackId].matches.push(m);
             });
 
             const sortedGroups = Object.values(allGroups).sort((a,b) => b.score - a.score);
@@ -786,7 +820,7 @@
             document.body.appendChild(s);
         }
         function toTitleCase(str) { return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()); }
-        function getSportIcon(n) { n=(n||"").toLowerCase(); if(n.includes('soccer')||n.includes('premier')) return '⚽'; if(n.includes('basket')||n.includes('nba')) return '🏀'; if(n.includes('football')||n.includes('nfl')) return '🏈'; if(n.includes('baseball')||n.includes('mlb')) return '⚾'; if(n.includes('fight')||n.includes('ufc')||n.includes('box')) return '🥊'; if(n.includes('motor')||n.includes('f1')) return '🏎️'; return '🏆'; }
+        function getSportIcon(n) { n=(n||"").toLowerCase(); if(n.includes('soccer')||n.includes('premier')) return '⚽'; if(n.includes('basket')||n.includes('nba')) return '🏀'; if(n.includes('football')||n.includes('nfl')) return '🏈'; if(n.includes('baseball')||n.includes('mlb')) return '⚾'; if(n.includes('fight')||n.includes('ufc')||n.includes('box')||n.includes('mma')) return '🥊'; if(n.includes('motor')||n.includes('f1')) return '🏎️'; return '🏆'; }
         function getColor(char) { const c = ['#e53935','#d81b60','#8e24aa','#5e35b1','#3949ab','#1e88e5','#039be5','#00897b','#43a047','#7cb342','#c0ca33','#fdd835','#fb8c00']; return c[char.charCodeAt(0) % c.length]; }
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
         function setNotify(btn) {
