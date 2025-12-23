@@ -35,6 +35,7 @@ def build_menu_html(menu_items, section):
             elif "ufc" in t_low or "boxing" in t_low: icon = "🥊"
             elif "f1" in t_low or "motor" in t_low: icon = "🏎️"
             
+            # Preserves your specific League Card HTML structure
             html += f'''
             <a href="{url}" class="league-card">
                 <span class="l-icon">{icon}</span>
@@ -139,14 +140,16 @@ def render_page(template, config, page_data):
         html = html.replace('{{DISPLAY_HERO}}', 'block')
     else:
         html = html.replace('{{DISPLAY_HERO}}', 'none')
-        # Inject CSS to hide live sections on subpages
+        # Inject CSS to hide live sections on subpages (Critical for SEO pages)
         html = html.replace('</head>', '<style>#live-section, #upcoming-container { display: none !important; }</style></head>')
 
     html = html.replace('{{ARTICLE_CONTENT}}', page_data.get('content', ''))
 
     # --- 6. JS Injections (Priorities, Socials, Schemas) ---
     
-    # Priorities
+    # Priorities Injection
+    # This automatically handles the new "_HIDE_OTHERS" key from Admin/Config 
+    # because it dumps the entire dictionary for that country.
     priorities = config.get('sport_priorities', {}).get(country, {})
     html = html.replace('{{JS_PRIORITIES}}', json.dumps(priorities))
     
@@ -163,6 +166,7 @@ def render_page(template, config, page_data):
     }
     
     # Regex to replace the default SHARE_CONFIG in template with dynamic one
+    # This uses re.DOTALL to ensure it catches multiline JS objects
     social_json = json.dumps(js_social_object)
     html = re.sub(r'const SHARE_CONFIG = \{.*?\};', f'const SHARE_CONFIG = {social_json};', html, flags=re.DOTALL)
 
@@ -184,6 +188,7 @@ def render_page(template, config, page_data):
     enable_schedule_schema = "true" if page_data.get('schemas', {}).get('schedule') else "false"
     
     # We prepend this config to the API URL definition in the script
+    # This is a robust way to add config without breaking the template's structure
     schema_config_js = f'const ENABLE_SCHEMAS = {{ live: {enable_live_schema}, schedule: {enable_schedule_schema} }};\n        const API_URL'
     html = html.replace('const API_URL', schema_config_js)
 
@@ -204,9 +209,13 @@ def build_site():
         slug = page.get('slug')
         final_html = render_page(template, config, page)
         
+        # Folder Generation Logic
         if slug == 'home':
             out_path = os.path.join(OUTPUT_DIR, 'index.html')
         else:
+            # This handles your new requirement: 
+            # If you create a page with slug "nba-streams" in Admin, 
+            # this correctly creates folder "nba-streams" and index.html inside it.
             dir_path = os.path.join(OUTPUT_DIR, slug)
             os.makedirs(dir_path, exist_ok=True)
             out_path = os.path.join(dir_path, 'index.html')
