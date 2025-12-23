@@ -10,35 +10,37 @@ const BRANCH = 'main';
 // 2. DEFAULT DATA
 // ==========================================
 const DEFAULT_PRIORITIES = {
-    US: [
-        { name: "NFL", score: 100, isLeague: true, hasLink: true, isHidden: false },
-        { name: "NBA", score: 95, isLeague: true, hasLink: true, isHidden: false },
-        { name: "MLB", score: 90, isLeague: true, hasLink: true, isHidden: false },
-        { name: "College Football", score: 88, isLeague: true, hasLink: false, isHidden: false },
-        { name: "NCAA", score: 87, isLeague: true, hasLink: false, isHidden: false },
-        { name: "NHL", score: 85, isLeague: true, hasLink: false, isHidden: false },
-        { name: "UFC", score: 80, isLeague: true, hasLink: false, isHidden: false },
-        { name: "Premier League", score: 75, isLeague: true, hasLink: false, isHidden: false },
-        { name: "MLS", score: 70, isLeague: true, hasLink: false, isHidden: false },
-        { name: "Champions League", score: 65, isLeague: true, hasLink: false, isHidden: false },
-        { name: "Boxing", score: 50, isLeague: false, hasLink: false, isHidden: false },
-        { name: "Formula 1", score: 45, isLeague: true, hasLink: false, isHidden: false },
-        { name: "Tennis", score: 40, isLeague: false, hasLink: false, isHidden: false }
-    ],
-    UK: [
-        { name: "Premier League", score: 100, isLeague: true, hasLink: true, isHidden: false },
-        { name: "Champions League", score: 95, isLeague: true, hasLink: true, isHidden: false },
-        { name: "Championship", score: 90, isLeague: true, hasLink: false, isHidden: false },
-        { name: "The Ashes", score: 85, isLeague: true, hasLink: false, isHidden: false },
-        { name: "Cricket", score: 80, isLeague: false, hasLink: false, isHidden: false },
-        { name: "Rugby", score: 75, isLeague: false, hasLink: false, isHidden: false },
-        { name: "Snooker", score: 70, isLeague: false, hasLink: false, isHidden: false },
-        { name: "Darts", score: 65, isLeague: false, hasLink: false, isHidden: false },
-        { name: "F1", score: 60, isLeague: true, hasLink: true, isHidden: false },
-        { name: "Formula 1", score: 60, isLeague: true, hasLink: true, isHidden: false },
-        { name: "Boxing", score: 50, isLeague: false, hasLink: false, isHidden: false },
-        { name: "NFL", score: 40, isLeague: true, hasLink: false, isHidden: false }
-    ]
+    US: {
+        _HIDE_OTHERS: false, // Default to allowing other sports
+        "NFL": { score: 100, isLeague: true, hasLink: true, isHidden: false },
+        "NBA": { score: 95, isLeague: true, hasLink: true, isHidden: false },
+        "MLB": { score: 90, isLeague: true, hasLink: true, isHidden: false },
+        "College Football": { score: 88, isLeague: true, hasLink: false, isHidden: false },
+        "NCAA": { score: 87, isLeague: true, hasLink: false, isHidden: false },
+        "NHL": { score: 85, isLeague: true, hasLink: false, isHidden: false },
+        "UFC": { score: 80, isLeague: true, hasLink: false, isHidden: false },
+        "Premier League": { score: 75, isLeague: true, hasLink: false, isHidden: false },
+        "MLS": { score: 70, isLeague: true, hasLink: false, isHidden: false },
+        "Champions League": { score: 65, isLeague: true, hasLink: false, isHidden: false },
+        "Boxing": { score: 50, isLeague: false, hasLink: false, isHidden: false },
+        "Formula 1": { score: 45, isLeague: true, hasLink: false, isHidden: false },
+        "Tennis": { score: 40, isLeague: false, hasLink: false, isHidden: false }
+    },
+    UK: {
+        _HIDE_OTHERS: false,
+        "Premier League": { score: 100, isLeague: true, hasLink: true, isHidden: false },
+        "Champions League": { score: 95, isLeague: true, hasLink: true, isHidden: false },
+        "Championship": { score: 90, isLeague: true, hasLink: false, isHidden: false },
+        "The Ashes": { score: 85, isLeague: true, hasLink: false, isHidden: false },
+        "Cricket": { score: 80, isLeague: false, hasLink: false, isHidden: false },
+        "Rugby": { score: 75, isLeague: false, hasLink: false, isHidden: false },
+        "Snooker": { score: 70, isLeague: false, hasLink: false, isHidden: false },
+        "Darts": { score: 65, isLeague: false, hasLink: false, isHidden: false },
+        "F1": { score: 60, isLeague: true, hasLink: true, isHidden: false },
+        "Formula 1": { score: 60, isLeague: true, hasLink: true, isHidden: false },
+        "Boxing": { score: 50, isLeague: false, hasLink: false, isHidden: false },
+        "NFL": { score: 40, isLeague: true, hasLink: false, isHidden: false }
+    }
 };
 
 const DEMO_CONFIG = {
@@ -47,7 +49,6 @@ const DEMO_CONFIG = {
         logo_url: "", target_country: "US"
     },
     social_sharing: {
-        // Changed discord to whatsapp here
         counts: { telegram: 1200, whatsapp: 800, reddit: 300, twitter: 500 },
         excluded_pages: "dmca,contact,about,privacy"
     },
@@ -55,7 +56,7 @@ const DEMO_CONFIG = {
         brand_primary: "#D00000", brand_dark: "#8a0000", accent_gold: "#FFD700",
         bg_body: "#050505", hero_gradient_start: "#1a0505", font_family: "system-ui"
     },
-    sport_priorities: { US: {}, UK: {} }, 
+    sport_priorities: JSON.parse(JSON.stringify(DEFAULT_PRIORITIES)), 
     menus: { header: [], hero: [], footer_leagues: [], footer_static: [] },
     entity_stacking: [],
     pages: [
@@ -72,7 +73,7 @@ let isBuilding = false;
 // 3. INITIALIZATION & INJECTION
 // ==========================================
 window.addEventListener("DOMContentLoaded", () => {
-    // A. INJECT NEW UI ELEMENTS (Social Tab & Schema Checkboxes)
+    // A. INJECT NEW UI ELEMENTS
     injectSocialTab();
     injectSchemaOptions();
 
@@ -103,7 +104,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
 // --- DYNAMIC UI INJECTION ---
 function injectSocialTab() {
-    // 1. Add Nav Button
     const nav = document.querySelector('.sidebar nav');
     if(nav && !document.getElementById('nav-social')) {
         const btn = document.createElement('button');
@@ -114,7 +114,6 @@ function injectSocialTab() {
         nav.appendChild(btn);
     }
 
-    // 2. Add Content Section
     const main = document.querySelector('.content-area');
     if(main && !document.getElementById('tab-social')) {
         const section = document.createElement('section');
@@ -127,7 +126,6 @@ function injectSocialTab() {
                     <h3>Fake Share Counts</h3>
                     <p class="desc">These numbers appear on the social buttons.</p>
                     <label>Telegram Count</label><input type="number" id="socialTelegram">
-                    <!-- REPLACED DISCORD WITH WHATSAPP -->
                     <label>WhatsApp Count</label><input type="number" id="socialWhatsapp">
                     <label>Reddit Count</label><input type="number" id="socialReddit">
                     <label>Twitter Count</label><input type="number" id="socialTwitter">
@@ -186,7 +184,12 @@ async function verifyAndLoad(token) {
         // --- DATA MIGRATION ---
         if(!configData.pages) configData.pages = DEMO_CONFIG.pages;
         configData.pages.forEach(p => { if(!p.id) p.id = 'p_' + Math.random().toString(36).substr(2, 9); });
-        if(!configData.sport_priorities) configData.sport_priorities = { US: {}, UK: {} };
+        
+        // Initialize priorities if missing
+        if(!configData.sport_priorities) configData.sport_priorities = JSON.parse(JSON.stringify(DEFAULT_PRIORITIES));
+        if(!configData.sport_priorities.US) configData.sport_priorities.US = { _HIDE_OTHERS: false };
+        if(!configData.sport_priorities.UK) configData.sport_priorities.UK = { _HIDE_OTHERS: false };
+
         if(!configData.menus.footer_leagues) configData.menus.footer_leagues = [];
         if(!configData.social_sharing) configData.social_sharing = DEMO_CONFIG.social_sharing;
         
@@ -217,10 +220,9 @@ function populateUI() {
     setVal('heroGradient', t.hero_gradient_start);
     setVal('fontFamily', t.font_family);
 
-    // Social Sharing - UPDATED
     const soc = configData.social_sharing || { counts: {} };
     setVal('socialTelegram', soc.counts?.telegram || 0);
-    setVal('socialWhatsapp', soc.counts?.whatsapp || 0); // Changed from discord to whatsapp
+    setVal('socialWhatsapp', soc.counts?.whatsapp || 0);
     setVal('socialReddit', soc.counts?.reddit || 0);
     setVal('socialTwitter', soc.counts?.twitter || 0);
     setVal('socialExcluded', soc.excluded_pages || "");
@@ -232,46 +234,74 @@ function populateUI() {
 }
 
 // ==========================================
-// 5. PRIORITIES (With Hide Feature)
+// 5. PRIORITIES (Updated with Hide Others)
 // ==========================================
 function renderPriorities() {
     const c = getVal('targetCountry') || 'US';
     const container = document.getElementById('priorityListContainer');
     if(document.getElementById('prioLabel')) document.getElementById('prioLabel').innerText = c;
     
-    if(!configData.sport_priorities[c]) configData.sport_priorities[c] = {};
+    // Ensure data integrity
+    if(!configData.sport_priorities[c]) configData.sport_priorities[c] = { _HIDE_OTHERS: false };
+
+    // 1. Render Global Country Settings (Hide Others Checkbox)
+    const isHideOthers = !!configData.sport_priorities[c]._HIDE_OTHERS;
     
+    // 2. Render List
     const items = Object.entries(configData.sport_priorities[c])
+        .filter(([name]) => name !== '_HIDE_OTHERS') // Filter out the setting key
         .map(([name, data]) => ({ name, ...data }))
         .sort((a,b) => b.score - a.score);
 
-    container.innerHTML = items.map(item => `
+    // Build HTML
+    let html = `
+        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+            <label style="margin:0; font-weight:700; color:#fca5a5; display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" ${isHideOthers ? 'checked' : ''} onchange="toggleHideOthers('${c}', this.checked)"> 
+                🚫 Hide all others (Strict Mode)
+            </label>
+            <p style="margin:5px 0 0 26px; font-size:0.8rem; color:#aaa;">
+                If checked, only the leagues/sports listed below will be displayed in the upcoming section. Everything else from the backend will be hidden.
+            </p>
+        </div>
+    `;
+
+    html += items.map(item => `
         <div class="menu-item-row" style="flex-wrap:wrap; opacity: ${item.isHidden ? '0.5' : '1'};">
             <strong style="width:140px; overflow:hidden;">${item.name}</strong>
             <div style="flex:1; display:flex; gap:10px; align-items:center;">
-                <label style="margin:0; font-size:0.75rem;"><input type="checkbox" ${item.isLeague?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','isLeague',this.checked)"> League</label>
-                <label style="margin:0; font-size:0.75rem;"><input type="checkbox" ${item.hasLink?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','hasLink',this.checked)"> Link</label>
-                <label style="margin:0; font-size:0.75rem; color:#ef4444;"><input type="checkbox" ${item.isHidden?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','isHidden',this.checked)"> Hide</label>
+                <label style="margin:0; font-size:0.75rem;">
+                    <input type="checkbox" ${item.isLeague?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','isLeague',this.checked)"> League
+                </label>
+                <label style="margin:0; font-size:0.75rem;">
+                    <input type="checkbox" ${item.hasLink?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','hasLink',this.checked)"> Link
+                </label>
+                <label style="margin:0; font-size:0.75rem; color:#ef4444;">
+                    <input type="checkbox" ${item.isHidden?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','isHidden',this.checked)"> Hide
+                </label>
                 <input type="number" value="${item.score}" onchange="updatePrioMeta('${c}','${item.name}','score',this.value)" style="width:60px; margin:0;">
                 <button class="btn-icon" onclick="deletePriority('${c}', '${item.name}')">×</button>
             </div>
         </div>
     `).join('');
+
+    container.innerHTML = html;
 }
+
+window.toggleHideOthers = (c, checked) => {
+    if(!configData.sport_priorities[c]) configData.sport_priorities[c] = {};
+    configData.sport_priorities[c]._HIDE_OTHERS = checked;
+    // No re-render needed for checkbox toggle, acts like input
+};
 
 window.resetPriorities = () => {
     const c = getVal('targetCountry');
     if(!confirm(`Reset priorities for ${c} to default settings?`)) return;
-    configData.sport_priorities[c] = {};
-    const defaults = DEFAULT_PRIORITIES[c] || DEFAULT_PRIORITIES['US'];
-    defaults.forEach(item => {
-        configData.sport_priorities[c][item.name] = { 
-            score: item.score, 
-            isLeague: item.isLeague, 
-            hasLink: item.hasLink,
-            isHidden: item.isHidden || false 
-        };
-    });
+    
+    // Deep copy default
+    const defaults = JSON.parse(JSON.stringify(DEFAULT_PRIORITIES[c] || DEFAULT_PRIORITIES['US']));
+    configData.sport_priorities[c] = defaults;
+    
     renderPriorities();
 };
 
@@ -279,7 +309,10 @@ window.addPriorityRow = () => {
     const c = getVal('targetCountry');
     const name = getVal('newSportName');
     if(name) {
-        configData.sport_priorities[c][name] = { score: 50, isLeague: false, hasLink: false, isHidden: false };
+        if(!configData.sport_priorities[c]) configData.sport_priorities[c] = { _HIDE_OTHERS: false };
+        // Determine if it looks like a league (simple heuristic, user can change)
+        const isLikelyLeague = name.toLowerCase().includes('league') || name.toLowerCase().includes('nba') || name.toLowerCase().includes('nfl');
+        configData.sport_priorities[c][name] = { score: 50, isLeague: isLikelyLeague, hasLink: false, isHidden: false };
         setVal('newSportName', '');
         renderPriorities();
     }
@@ -289,15 +322,18 @@ window.updatePrioMeta = (c, name, key, val) => {
     const item = configData.sport_priorities[c][name];
     if(key === 'score') item.score = parseInt(val);
     else item[key] = val;
-    if(key === 'isHidden') renderPriorities();
+    if(key === 'isHidden') renderPriorities(); // Re-render to show opacity change
 };
+
 window.deletePriority = (c, name) => {
-    delete configData.sport_priorities[c][name];
-    renderPriorities();
+    if(confirm(`Remove ${name} from priorities?`)) {
+        delete configData.sport_priorities[c][name];
+        renderPriorities();
+    }
 };
 
 // ==========================================
-// 6. PAGES SYSTEM (Updated with Schemas)
+// 6. PAGES SYSTEM
 // ==========================================
 function renderPageList() {
     const tbody = document.querySelector('#pagesTable tbody');
@@ -471,11 +507,10 @@ document.getElementById('saveBtn').onclick = async () => {
         hero_gradient_start: getVal('heroGradient'), font_family: getVal('fontFamily')
     };
 
-    // Save Social - UPDATED
     configData.social_sharing = {
         counts: {
             telegram: getVal('socialTelegram'),
-            whatsapp: getVal('socialWhatsapp'), // Use Whatsapp input
+            whatsapp: getVal('socialWhatsapp'), 
             reddit: getVal('socialReddit'),
             twitter: getVal('socialTwitter')
         },
@@ -526,12 +561,24 @@ function startPolling() {
 
 window.switchTab = (id) => {
     document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
+    document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(e => e.classList.remove('active'));
     const target = document.getElementById(`tab-${id}`);
     if(target) target.classList.add('active');
-    const btn = document.getElementById(`nav-${id}`) || event.currentTarget;
-    if(btn) btn.classList.add('active');
+    
+    // Find nav button
+    let btn = document.getElementById(`nav-${id}`);
+    // Fallback if triggered via onClick this context
+    if(!btn) {
+        document.querySelectorAll('.nav-btn').forEach(b => {
+            if(b.onclick.toString().includes(id)) btn = b;
+        });
+    }
+    if(btn) {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
 };
+
 function setVal(id, v) { if(document.getElementById(id)) document.getElementById(id).value = v || ""; }
 function getVal(id) { return document.getElementById(id)?.value || ""; }
 window.updatePreview = () => {};
