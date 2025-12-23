@@ -122,7 +122,7 @@ def render_page(template, config, page_data):
     logo_html = f'<div class="logo-text">{p1}<span>{p2}</span></div>'
     if s.get('logo_url'): 
         # Added alt="{site_name} Logo" here
-        logo_html = f'<img src="{s.get("logo_url")}" class="logo-img" alt="{site_name} Logo"> {logo_html}'
+        logo_html = f'<img src="{s.get("logo_url")}" class="logo-img" alt="{site_name} Logo" fetchpriority="high"> {logo_html}'
         
     html = html.replace('{{LOGO_HTML}}', logo_html)
     html = html.replace('{{DOMAIN}}', domain)
@@ -240,6 +240,10 @@ def render_page(template, config, page_data):
         html = html.replace('{{SCHEMA_BLOCK}}', schema_html)
     else:
         html = html.replace('{{SCHEMA_BLOCK}}', '')
+        preload_html = ""
+    if s.get('logo_url'):
+        preload_html = f'<link rel="preload" as="image" href="{s.get("logo_url")}" fetchpriority="high">'
+    html = html.replace('{{LOGO_PRELOAD}}', preload_html)
 
     return html
 
