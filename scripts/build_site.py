@@ -56,16 +56,6 @@ def build_menu_html(menu_items, section):
             
     return html
 
-def generate_entity_footer(entities):
-    # Req #5: Trusted Partners (Entity Stacking)
-    if not entities: return ""
-    html = ""
-    for item in entities:
-        kw = item.get('keyword', '').replace('"', '&quot;')
-        # Generates buttons that trigger the overlay defined in the template
-        html += f'<button class="p-tag" onclick="triggerEntityPopup(\'{kw}\')">{kw}</button>'
-    return html
-
 def render_page(template, config, page_data):
     s = config.get('site_settings', {})
     t = config.get('theme', {})
@@ -116,7 +106,8 @@ def render_page(template, config, page_data):
     if disclaimer: html = html.replace('{{FOOTER_DISCLAIMER}}', f'{disclaimer}')
     else: html = html.replace('{{FOOTER_DISCLAIMER}}', '')
 
-    html = html.replace('{{ENTITY_SECTION}}', generate_entity_footer(config.get('entity_stacking', [])))
+    # --- REMOVED ENTITY SECTION (Safely replaced with empty string) ---
+    html = html.replace('{{ENTITY_SECTION}}', '')
     
     # --- 4. SEO & Metadata ---
     html = html.replace('{{META_TITLE}}', page_data.get('meta_title') or f"{p1}{p2} - {page_data.get('title')}")
@@ -148,8 +139,6 @@ def render_page(template, config, page_data):
     # --- 6. JS Injections (Priorities, Socials) ---
     
     # Priorities Injection
-    # This automatically handles the new "_HIDE_OTHERS" key from Admin/Config 
-    # because it dumps the entire dictionary for that country.
     priorities = config.get('sport_priorities', {}).get(country, {})
     html = html.replace('{{JS_PRIORITIES}}', json.dumps(priorities))
     
@@ -166,12 +155,10 @@ def render_page(template, config, page_data):
     }
     
     # Regex to replace the default SHARE_CONFIG in template with dynamic one
-    # This uses re.DOTALL to ensure it catches multiline JS objects
     social_json = json.dumps(js_social_object)
     html = re.sub(r'const SHARE_CONFIG = \{.*?\};', f'const SHARE_CONFIG = {social_json};', html, flags=re.DOTALL)
 
     # --- 7. STATIC SCHEMA GENERATION (Updated) ---
-    # We build a list of schema objects and dump them into {{SCHEMA_BLOCK}}
     
     schemas = []
     page_schemas = page_data.get('schemas', {})
@@ -255,8 +242,7 @@ def build_site():
         if slug == 'home':
             out_path = os.path.join(OUTPUT_DIR, 'index.html')
         else:
-            # This handles the requirement for custom slugs (e.g., 'nba-streams')
-            # It creates the folder based on the slug provided in the Admin Panel
+            # Creates folder based on slug (e.g. /nba-streams/index.html)
             dir_path = os.path.join(OUTPUT_DIR, slug)
             os.makedirs(dir_path, exist_ok=True)
             out_path = os.path.join(dir_path, 'index.html')
