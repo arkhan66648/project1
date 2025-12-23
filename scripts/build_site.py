@@ -83,12 +83,11 @@ def render_page(template, config, page_data):
     p2 = s.get('title_part_2', 'East')
     domain = s.get('domain', 'example.com')
     
-    # --- NEW: OG INFORMATION LOGIC ---
-    # 1. Site Name (Entity Consistency)
+    # [FIX 1] Define Site Name early for use in Alt Tags and OG Data
     site_name = f"{p1}{p2}"
     html = html.replace('{{SITE_NAME}}', site_name)
     
-    # 2. OG Image Logic (Absolute URL + Mime Type Detection)
+    # [FIX 2] OG Image Logic (Absolute URL + Mime Type Detection)
     raw_logo = s.get('logo_url', '')
     og_image = ""
     og_mime = "image/png" # Default fallback
@@ -105,7 +104,7 @@ def render_page(template, config, page_data):
                 clean_domain = f"https://{clean_domain}"
             og_image = f"{clean_domain}/{clean_logo}"
             
-        # C. Detect MIME Type
+        # C. Detect MIME Type (WebP Support)
         low_img = og_image.lower()
         if low_img.endswith('.webp'):
             og_mime = "image/webp"
@@ -118,10 +117,13 @@ def render_page(template, config, page_data):
 
     html = html.replace('{{OG_IMAGE}}', og_image)
     html = html.replace('{{OG_MIME}}', og_mime)
-    # ---------------------------------
 
+    # [FIX 3] Add ALT Tag to Logo
     logo_html = f'<div class="logo-text">{p1}<span>{p2}</span></div>'
-    if s.get('logo_url'): logo_html = f'<img src="{s.get("logo_url")}" class="logo-img"> {logo_html}'
+    if s.get('logo_url'): 
+        # Added alt="{site_name} Logo" here
+        logo_html = f'<img src="{s.get("logo_url")}" class="logo-img" alt="{site_name} Logo"> {logo_html}'
+        
     html = html.replace('{{LOGO_HTML}}', logo_html)
     html = html.replace('{{DOMAIN}}', domain)
     html = html.replace('{{FAVICON}}', s.get('favicon_url', ''))
