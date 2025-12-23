@@ -72,21 +72,42 @@ def render_page(template, config, page_data):
     html = html.replace('{{FONT_FAMILY}}', t.get('font_family', 'system-ui'))
     
     # Req #1: Target Country & Lang
-    # Strict Logic for US/UK Admin Panel Options
     country = s.get('target_country', 'US')
     html = html.replace('{{TARGET_COUNTRY}}', country)
     
-    lang_code = 'en-US' # Default
-    if country == 'UK':
-        lang_code = 'en-GB'
-    
-    # Update HTML tag
+    lang_code = 'en-US' 
+    if country == 'UK': lang_code = 'en-GB'
     html = html.replace('lang="en"', f'lang="{lang_code}"')
     
     p1 = s.get('title_part_1', 'Stream')
     p2 = s.get('title_part_2', 'East')
     domain = s.get('domain', 'example.com')
     
+    # --- NEW: OG INFORMATION LOGIC ---
+    # 1. Site Name (Entity Consistency)
+    site_name = f"{p1}{p2}"
+    html = html.replace('{{SITE_NAME}}', site_name)
+    
+    # 2. OG Image (Force Absolute URL for Logo)
+    raw_logo = s.get('logo_url', '')
+    if raw_logo:
+        if raw_logo.startswith('http'):
+            # Already absolute
+            og_image = raw_logo
+        else:
+            # Convert relative to absolute (Critical for Facebook/Discord)
+            clean_domain = domain[:-1] if domain.endswith('/') else domain
+            clean_logo = raw_logo[1:] if raw_logo.startswith('/') else raw_logo
+            # Ensure domain has protocol
+            if not clean_domain.startswith('http'):
+                clean_domain = f"https://{clean_domain}"
+            og_image = f"{clean_domain}/{clean_logo}"
+    else:
+        og_image = "" # Fallback if no logo
+        
+    html = html.replace('{{OG_IMAGE}}', og_image)
+    # ---------------------------------
+
     logo_html = f'<div class="logo-text">{p1}<span>{p2}</span></div>'
     if s.get('logo_url'): logo_html = f'<img src="{s.get("logo_url")}" class="logo-img"> {logo_html}'
     html = html.replace('{{LOGO_HTML}}', logo_html)
@@ -106,14 +127,12 @@ def render_page(template, config, page_data):
     if disclaimer: html = html.replace('{{FOOTER_DISCLAIMER}}', f'{disclaimer}')
     else: html = html.replace('{{FOOTER_DISCLAIMER}}', '')
 
-    # --- REMOVED ENTITY SECTION (Safely replaced with empty string) ---
     html = html.replace('{{ENTITY_SECTION}}', '')
     
     # --- 4. SEO & Metadata ---
     html = html.replace('{{META_TITLE}}', page_data.get('meta_title') or f"{p1}{p2} - {page_data.get('title')}")
     html = html.replace('{{META_DESC}}', page_data.get('meta_desc', ''))
     
-    # Req #7: Meta Keywords Fix
     keywords = page_data.get('meta_keywords', '')
     if keywords: html = html.replace('{{META_KEYWORDS}}', f'<meta name="keywords" content="{keywords}">')
     else: html = html.replace('{{META_KEYWORDS}}', '')
@@ -131,21 +150,15 @@ def render_page(template, config, page_data):
         html = html.replace('{{DISPLAY_HERO}}', 'block')
     else:
         html = html.replace('{{DISPLAY_HERO}}', 'none')
-        # Inject CSS to hide live sections on subpages (Critical for SEO pages)
         html = html.replace('</head>', '<style>#live-section, #upcoming-container { display: none !important; }</style></head>')
 
     html = html.replace('{{ARTICLE_CONTENT}}', page_data.get('content', ''))
 
-    # --- 6. JS Injections (Priorities, Socials) ---
-    
-    # Priorities Injection
+    # --- 6. JS Injections ---
     priorities = config.get('sport_priorities', {}).get(country, {})
     html = html.replace('{{JS_PRIORITIES}}', json.dumps(priorities))
     
-    # Req #9: Social Sharing Config
     social_data = config.get('social_sharing', {})
-    
-    # We parse the excluded string into a list
     excluded_str = social_data.get('excluded_pages', '')
     excluded_list = [x.strip() for x in excluded_str.split(',') if x.strip()]
     
@@ -154,16 +167,13 @@ def render_page(template, config, page_data):
         "counts": social_data.get('counts', {})
     }
     
-    # Regex to replace the default SHARE_CONFIG in template with dynamic one
     social_json = json.dumps(js_social_object)
     html = re.sub(r'const SHARE_CONFIG = \{.*?\};', f'const SHARE_CONFIG = {social_json};', html, flags=re.DOTALL)
 
-    # --- 7. STATIC SCHEMA GENERATION (Updated) ---
-    
+    # --- 7. STATIC SCHEMA GENERATION ---
     schemas = []
     page_schemas = page_data.get('schemas', {})
 
-    # A. Organization Schema
     if page_schemas.get('org'):
         schemas.append({
             "@context": "https://schema.org",
@@ -177,7 +187,6 @@ def render_page(template, config, page_data):
             }
         })
 
-    # B. WebSite Schema (New)
     if page_schemas.get('website'):
         schemas.append({
             "@context": "https://schema.org",
@@ -191,7 +200,6 @@ def render_page(template, config, page_data):
             }
         })
 
-    # C. FAQ Schema (New)
     if page_schemas.get('faq'):
         faq_list = page_schemas.get('faq_list', [])
         valid_faqs = []
@@ -213,9 +221,7 @@ def render_page(template, config, page_data):
                 "mainEntity": valid_faqs
             })
 
-    # D. Inject into HTML
     if schemas:
-        # Places all schemas into one script tag as an array (Best SEO practice)
         schema_html = f'<script type="application/ld+json">{json.dumps(schemas)}</script>'
         html = html.replace('{{SCHEMA_BLOCK}}', schema_html)
     else:
