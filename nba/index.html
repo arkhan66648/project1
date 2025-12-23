@@ -8,11 +8,15 @@
     <meta name="description" content="dgdfgdgdgd">
     
     <meta name="theme-color" content="#050505">
-    <link rel="canonical" href="https://crackstreams.help/nba">
+    
+    <!-- FAVICON (Supports PNG, ICO, JPG) -->
     <link rel="icon" href="">
+    <link rel="canonical" href="https://crackstreams.help/nba">
     
+    <!-- STATIC SCHEMAS (Org, Website, FAQ) - Hardcoded by Build Script -->
+    
+
     <style>html { scroll-behavior: smooth; }</style>
-    
 
     <style>
         /* =========================================
@@ -53,8 +57,12 @@
         .logo-img { height: 35px; width: 35px; border-radius: 6px; object-fit: cover; box-shadow: 0 0 10px rgba(208,0,0,0.3); }
         .logo-text { font-size: 1.4rem; font-weight: 900; font-style: italic; letter-spacing: -1px; text-transform: uppercase; line-height: 1; }
         .logo-text span { color: var(--brand-primary); }
-        .nav-links { display: none; gap: 20px; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #aaa; }
-        .nav-links a:hover, .nav-links a.active { color: white; border-bottom: 2px solid var(--brand-primary); }
+        
+        /* NAV LINKS (Fixed Hover) */
+        .nav-links { display: none; gap: 20px; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #aaa; height: 100%; }
+        .nav-links a { display: flex; align-items: center; height: 100%; border-bottom: 2px solid transparent; transition: all 0.2s ease; }
+        .nav-links a:hover, .nav-links a.active { color: white; border-bottom-color: var(--brand-primary); }
+        
         .hamburger { display: block; font-size: 1.4rem; color: white; background: none; }
         .mobile-menu { position: fixed; top: 60px; left: 0; width: 100%; background: #0f0f0f; border-bottom: 1px solid var(--border); display: none; flex-direction: column; z-index: 99; }
         .mobile-menu.active { display: flex; }
@@ -99,7 +107,7 @@
         .sec-right-link { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; }
         .sec-right-link:hover { color: var(--brand-primary); text-decoration: underline; }
         
-        /* MATCH ROW STYLES */
+        /* MATCH ROW STYLES (Grid Layout) */
         .match-row { display: grid; grid-template-columns: 45px 1fr 50px 75px; align-items: center; gap: 8px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 6px; padding: 10px 8px; margin-bottom: 8px; position: relative; transition: 0.2s; }
         .match-row:hover { border-color: #444; transform: translateY(-2px); }
         .match-row.live { border-left: 3px solid var(--brand-primary); background: linear-gradient(90deg, rgba(208,0,0,0.06) 0%, rgba(20,20,20,0.8) 100%); }
@@ -119,6 +127,7 @@
         
         .col-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; justify-content: center; }
         .meta-top { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); white-space: nowrap; }
+        
         .col-action { margin-left: auto; width: 100%; }
         .btn-watch { background: var(--brand-primary); color: white; font-size: 0.65rem; font-weight: 800; padding: 8px 10px; border-radius: 4px; width: 100%; text-transform: uppercase; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; gap:5px; }
         .btn-watch:hover { background: var(--brand-dark); transform: scale(1.02); }
@@ -316,6 +325,82 @@
         const SITE_DOMAIN = "https://crackstreams.help";
         const SHARE_CONFIG = {"excluded": ["dmca", "contact", "about", "privacy"], "counts": {"telegram": "1200", "whatsapp": "1200", "reddit": "600", "twitter": "500"}};
 
+        // --- EXPANDED SMART ALIAS SYSTEM (Matches Admin Keys -> Backend Keys) ---
+        const SMART_ALIASES = {
+    // FOOTBALL / SOCCER
+    'football': 'soccer',
+    'soccer': 'soccer',
+    'premier league': 'soccer',
+    'champions league': 'soccer',
+    'europa league': 'soccer',
+    'laliga': 'soccer',
+    'la liga': 'soccer',
+    'bundesliga': 'soccer',
+    'serie a': 'soccer',
+    'ligue 1': 'soccer',
+    'mls': 'soccer',
+    'world cup': 'soccer',
+    'fifa world cup': 'soccer',
+    'euro': 'soccer',
+    'uefa euro': 'soccer',
+    'copa america': 'soccer',
+
+    // AMERICAN FOOTBALL
+    'nfl': 'americanfootball',
+    'american football': 'americanfootball',
+    'americanfootball': 'americanfootball',
+    'college football': 'americanfootball',
+    'ncaa football': 'americanfootball',
+
+    // BASKETBALL
+    'nba': 'basketball',
+    'basketball': 'basketball',
+    'college basketball': 'basketball',
+    'ncaa basketball': 'basketball',
+
+    // BASEBALL
+    'mlb': 'baseball',
+    'baseball': 'baseball',
+
+    // ICE HOCKEY
+    'nhl': 'icehockey',
+    'ice hockey': 'icehockey',
+    'icehockey': 'icehockey',
+
+    // COMBAT SPORTS
+    'ufc': 'mma',
+    'mma': 'mma',
+    'boxing': 'boxing',
+
+    // SPORTS ENTERTAINMENT
+    'wwe': 'wrestling',
+
+    // MOTORSPORT
+    'f1': 'motorsport',
+    'formula 1': 'motorsport',
+    'formula1': 'motorsport',
+    'nascar': 'motorsport',
+    'motogp': 'motorsport',
+    'indycar': 'motorsport',
+
+    // CRICKET
+    'cricket': 'cricket',
+    'ashes': 'cricket',
+    'the ashes': 'cricket',
+    'ipl': 'cricket',
+    't20': 'cricket',
+    'odi': 'cricket',
+
+    // OTHER SPORTS
+    'tennis': 'tennis',
+    'golf': 'golf',
+    'rugby': 'rugby',
+    'rugby union': 'rugby',
+    'rugby league': 'rugby',
+    'darts': 'darts',
+    'snooker': 'snooker'
+};
+
         let allMatches = [];
         window.MATCH_DATA = {}; 
         let scrollTimeout;
@@ -345,7 +430,12 @@
                 const res = await fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`);
                 const data = await res.json();
                 allMatches = data.matches;
-                if(data.seo) injectDynamicSchema(data.seo);
+                
+                // DYNAMIC SCHEMA (Live/Schedule) - Only inject if not null/nill
+                if(data.seo && data.seo !== "nill" && Object.keys(data.seo).length > 0) {
+                    injectDynamicSchema(data.seo);
+                }
+                
                 renderApp(data.matches);
             } catch(e) { console.error(e); }
         }
@@ -408,7 +498,7 @@
             container.innerHTML = '';
             const allGroups = {};
             
-            // Check for "Hide Others" Global Flag (For future Admin Panel update)
+            // Check for "Hide Others" Global Flag
             const HIDE_OTHERS = PRIORITIES._HIDE_OTHERS === true;
 
             matches.forEach(m => {
@@ -426,8 +516,17 @@
                 // We iterate priority keys to find a match (League OR Sport)
                 Object.keys(PRIORITIES).forEach(pKey => {
                     const normPKey = normalizeKey(pKey);
-                    // Match against League, Tournament, or Sport
-                    if (normPKey === leagueKey || normPKey === tournamentKey || normPKey === sportKey) {
+                    
+                    // --- SMART ALIAS LOGIC ---
+                    const aliasTarget = SMART_ALIASES[normPKey];
+                    
+                    // Check strict match OR alias match
+                    if (
+                        normPKey === leagueKey || 
+                        normPKey === tournamentKey || 
+                        normPKey === sportKey ||
+                        (aliasTarget && aliasTarget === sportKey) // <--- ALIAS CHECK
+                    ) {
                         matchedPrioKey = pKey;
                     }
                 });
@@ -509,20 +608,17 @@
             const div = document.createElement('div');
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
-            // TIME COLUMN
+            // COLUMN 1: TIME ONLY (Clock + Date)
             let timeCol;
             if (m.is_live) {
                 timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
             } else { 
                 const parts = m.formatted_date.split('•'); 
-                // ADDED "STARTS IN" LABEL
-                timeCol = `
-                <span class="time-label">Starts in</span>
-                <span class="time-main">${m.status_text}</span>
-                <span class="time-sub">${parts[1] || ''} ${parts[0]}</span>`; 
+                // Show 8:00 PM and Date below
+                timeCol = `<span class="time-main">${parts[1] || ''}</span><span class="time-sub">${parts[0]}</span>`; 
             }
             
-            // TEAM COLUMN
+            // COLUMN 2: TEAMS (Unchanged)
             let teamsHtml = '';
             const tA = m.team_a; const tB = m.team_b;
             if (!tB) {
@@ -533,31 +629,41 @@
                 <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_b_letter||'T')}">${m.team_b_letter||'T'}</span> ${tB}</div>`;
             }
             
-            // BADGE LOGIC (Crucial for Admin Control)
-            let tagText = "";
-            if (context.isTrendingLive) {
-                 // Trending Live -> Show Tournament Name
-                tagText = m.league || m.tournament || m.sport;
-            } else if (context.isUpcoming) {
-                if (context.isLeague) {
-                    // If Admin checked "League" -> Show Main Sport Name
-                    tagText = m.sport;
-                } else {
-                    // If Admin unchecked "League" (Sport mode) -> Show Tournament Name
-                    tagText = m.league || m.tournament;
-                }
+            // COLUMN 3: META/STATUS (Countdown or Viewers)
+            let metaHtml = '';
+            if (m.is_live) {
+                 metaHtml = `<div class="meta-top">${m.live_viewers || 'N/A'}</div>`;
             } else {
-                // Fallback
-                tagText = m.league || m.tournament;
+                 // HERE IS THE FIX: "Starts in" + Countdown in the 3rd column
+                 metaHtml = `
+                    <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                        <span style="font-size:0.55rem; color:#888; font-weight:700; text-transform:uppercase; margin-bottom:2px;">Starts in</span>
+                        <span class="meta-top" style="color:#fff; font-size:0.8rem;">${m.status_text}</span>
+                    </div>
+                 `;
             }
-            tagText = (tagText || "General").toUpperCase();
 
-            // META & ACTION
-            let metaHtml = m.is_live ? `<div class="meta-top">${m.live_viewers || 'N/A'}</div>` : ''; 
+            // COLUMN 4: ACTION (Unchanged)
             let actionHtml = '';
             if (m.is_live) actionHtml = `<button class="btn-watch" onclick="openPlayer('${m.id}', false)">WATCH <span class="hd-badge">HD</span></button>`;
             else actionHtml = `<button class="btn-watch btn-notify" onclick="setNotify(this)">🔔 NOTIFY</button>`;
             
+            // BADGE LOGIC
+            let tagText = "";
+            if (context.isTrendingLive) {
+                tagText = m.league || m.tournament || m.sport;
+            } else if (context.isUpcoming) {
+                if (context.isLeague) {
+                    tagText = m.sport;
+                } else {
+                    tagText = m.league || m.tournament;
+                }
+            } else {
+                tagText = m.league || m.tournament;
+            }
+            tagText = (tagText || "General").toUpperCase();
+            
+            // ASSEMBLE ROW
             div.innerHTML = `<div class="col-time">${timeCol}</div><div class="teams-wrapper"><div class="league-tag">${tagText}</div>${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${actionHtml}</div>`;
             return div;
         }
@@ -570,7 +676,6 @@
         }
 
         function injectDynamicSchema(seoData) {
-            if(!seoData || seoData === "nill") return;
             const jsonStr = JSON.stringify(seoData).replace(/https:\/\/example\.com/g, SITE_DOMAIN);
             const parsed = JSON.parse(jsonStr);
             Object.values(parsed).forEach(schema => {
@@ -607,13 +712,6 @@
                 reddit: '<svg viewBox="0 0 24 24"><path d="M24 12c0-6.627-5.373-12-12-12S0 5.373 0 12c0 6.627 5.373 12 12 12s12-5.373 12-12zm-4.59 2.06c.01.14.01.28.01.43 0 3.13-3.01 5.67-6.72 5.67-3.71 0-6.72-2.54-6.72-5.67 0-.15 0-.29.01-.43-.43-.2-.72-.62-.72-1.11 0-.68.55-1.23 1.23-1.23.33 0 .64.13.87.35.83-.6 1.95-.99 3.22-1.05l.66-3.11 2.16.46a1.05 1.05 0 1 0 .12-.58l-2.44-.52-.74 3.49c1.28.06 2.41.45 3.25 1.06.23-.22.54-.35.87-.35.68 0 1.23.55 1.23 1.23 0 .49-.29.91-.72 1.11z"/></svg>',
                 twitter: '<svg viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>',
                 copy: '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>'
-            };
-            const actions = {
-                telegram: 'https://t.me/share/url?url=' + encodeURIComponent(SITE_DOMAIN),
-                twitter: 'https://twitter.com/intent/tweet?text=Watch%20Live%20Sports&url=' + encodeURIComponent(SITE_DOMAIN),
-                reddit: 'https://reddit.com/submit?url=' + encodeURIComponent(SITE_DOMAIN),
-                whatsapp: 'https://api.whatsapp.com/send?text=' + encodeURIComponent(SITE_DOMAIN),
-                copy: '#'
             };
             let html = '';
             ['telegram', 'whatsapp', 'reddit', 'twitter', 'copy'].forEach(p => {
