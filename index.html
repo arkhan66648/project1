@@ -14,7 +14,7 @@
     <link rel="canonical" href="https://streameast.com">
     
     <!-- STATIC SCHEMAS (Org, Website, FAQ) - Hardcoded by Build Script -->
-    <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Organization", "name": "StreamEast", "url": "https://crackstreams.help", "logo": "/assets/streameast-logo-hd.jpg"}]</script>
+    <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "Organization", "@id": "https://crackstreams.help/#organization", "name": "StreamEast", "url": "https://crackstreams.help/", "logo": {"@type": "ImageObject", "url": "/assets/streameast-logo-hd.jpg"}}, {"@context": "https://schema.org", "@type": "WebSite", "@id": "https://crackstreams.help/#website", "url": "https://crackstreams.help/", "name": "StreamEast", "publisher": {"@type": "Organization", "@id": "https://crackstreams.help/#organization"}}]</script>
 
     <style>html { scroll-behavior: smooth; }</style>
 
@@ -318,7 +318,6 @@
     </div>
 
     <script>
-        const ENABLE_SCHEMAS = { live: true, schedule: true };
         const API_URL = "https://vercelapi-olive.vercel.app/api/sync-nodes";
         const TARGET_COUNTRY = "US"; 
         const PRIORITIES = {"_HIDE_OTHERS": false, "NFL": {"score": 100, "isLeague": true, "hasLink": true, "isHidden": false}, "NBA": {"score": 95, "isLeague": true, "hasLink": true, "isHidden": false}, "MLB": {"score": 90, "isLeague": true, "hasLink": true, "isHidden": false}, "College Football": {"score": 88, "isLeague": true, "hasLink": false, "isHidden": false}, "NCAA": {"score": 87, "isLeague": true, "hasLink": false, "isHidden": false}, "NHL": {"score": 85, "isLeague": true, "hasLink": false, "isHidden": false}, "UFC": {"score": 80, "isLeague": true, "hasLink": false, "isHidden": false}, "Premier League": {"score": 75, "isLeague": true, "hasLink": false, "isHidden": false}, "MLS": {"score": 70, "isLeague": true, "hasLink": false, "isHidden": false}, "Champions League": {"score": 65, "isLeague": true, "hasLink": false, "isHidden": false}, "Boxing": {"score": 50, "isLeague": false, "hasLink": false, "isHidden": false}, "Formula 1": {"score": 45, "isLeague": true, "hasLink": false, "isHidden": false}, "Tennis": {"score": 40, "isLeague": false, "hasLink": false, "isHidden": false}}; 
