@@ -86,11 +86,9 @@
                             <label>Meta Keywords (Comma separated)</label><input type="text" id="pageMetaKeywords">
                             <label>Canonical URL</label><input type="text" id="pageCanonical">
                             
-                            <!-- Updated Schema Section -->
+                            <!-- Schema Section (Populated by app.js) -->
                             <div class="checkbox-group" style="margin-top:15px; display:flex; flex-direction:column; gap:8px;">
-                                <label><input type="checkbox" id="schemaOrg"> Static Org Schema (Organization)</label>
-                                <label><input type="checkbox" id="schemaLive"> Live Badge Schema (EventLive)</label>
-                                <label><input type="checkbox" id="schemaSchedule"> Match Schedule Schema (ItemList)</label>
+                                <!-- Dynamic Content: Org, Website, FAQ Editor -->
                             </div>
                         </div>
                     </div>
@@ -145,7 +143,6 @@
                         <h3>Fake Share Counts</h3>
                         <p class="desc">Define the numbers displayed on the social buttons.</p>
                         <label>Telegram Count</label><input type="number" id="socialTelegram" placeholder="1240">
-                        <!-- CHANGED DISCORD TO WHATSAPP HERE -->
                         <label>WhatsApp Count</label><input type="number" id="socialWhatsapp" placeholder="850">
                         <label>Reddit Count</label><input type="number" id="socialReddit" placeholder="340">
                         <label>Twitter Count</label><input type="number" id="socialTwitter" placeholder="510">
