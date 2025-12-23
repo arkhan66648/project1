@@ -7,7 +7,7 @@ const FILE_PATH = 'data/config.json';
 const BRANCH = 'main'; 
 
 // ==========================================
-// 2. DEFAULT DATA
+// 2. DEFAULT DATA (Perfected for Entity Stacking)
 // ==========================================
 const DEFAULT_PRIORITIES = {
     US: {
@@ -20,13 +20,13 @@ const DEFAULT_PRIORITIES = {
         "NHL": { score: 97, isLeague: true, hasLink: true, isHidden: false },
         
         // --- TIER 2: FIGHTING & RACING (High CPM/Value) ---
-        "UFC": { score: 95, isLeague: true, hasLink: true, isHidden: false }, // "MMA" matches map here via alias
-        "Boxing": { score: 94, isLeague: false, hasLink: true, isHidden: false }, // Individual events
+        "UFC": { score: 95, isLeague: true, hasLink: true, isHidden: false }, 
+        "Boxing": { score: 94, isLeague: false, hasLink: true, isHidden: false }, 
         "Formula 1": { score: 93, isLeague: true, hasLink: true, isHidden: false },
 
         // --- TIER 3: COLLEGE SPORTS (Specific Entities) ---
-        "College Football": { score: 90, isLeague: true, hasLink: true, isHidden: false }, // Maps to 'ncaaf'
-        "College Basketball": { score: 89, isLeague: true, hasLink: true, isHidden: false }, // Maps to 'ncaab'
+        "College Football": { score: 90, isLeague: true, hasLink: true, isHidden: false }, 
+        "College Basketball": { score: 89, isLeague: true, hasLink: true, isHidden: false }, 
 
         // --- TIER 4: GLOBAL SOCCER (Specific Leagues > "Soccer") ---
         "Premier League": { score: 85, isLeague: true, hasLink: true, isHidden: false },
@@ -37,7 +37,7 @@ const DEFAULT_PRIORITIES = {
         "Serie A": { score: 80, isLeague: true, hasLink: true, isHidden: false },
 
         // --- TIER 5: LOW PRIORITY / CATCH-ALL ---
-        "Tennis": { score: 40, isLeague: false, hasLink: true, isHidden: false }, // Grand Slams
+        "Tennis": { score: 40, isLeague: false, hasLink: true, isHidden: false }, 
         "Golf": { score: 30, isLeague: false, hasLink: false, isHidden: false }
     },
     UK: {
@@ -46,16 +46,16 @@ const DEFAULT_PRIORITIES = {
         // --- TIER 1: FOOTBALL IS KING ---
         "Premier League": { score: 100, isLeague: true, hasLink: true, isHidden: false },
         "Champions League": { score: 99, isLeague: true, hasLink: true, isHidden: false },
-        "Championship": { score: 98, isLeague: true, hasLink: true, isHidden: false }, // EFL
-        "Scottish Premiership": { score: 97, isLeague: true, hasLink: true, isHidden: false }, // SPFL
+        "Championship": { score: 98, isLeague: true, hasLink: true, isHidden: false }, 
+        "Scottish Premiership": { score: 97, isLeague: true, hasLink: true, isHidden: false }, 
         "Europa League": { score: 96, isLeague: true, hasLink: true, isHidden: false },
 
         // --- TIER 2: TRADITIONAL UK SPORTS ---
-        "Boxing": { score: 90, isLeague: false, hasLink: true, isHidden: false }, // Joshua/Fury fights
+        "Boxing": { score: 90, isLeague: false, hasLink: true, isHidden: false }, 
         "Formula 1": { score: 88, isLeague: true, hasLink: true, isHidden: false },
-        "Cricket": { score: 85, isLeague: false, hasLink: true, isHidden: false }, // Ashes/IPL
-        "Rugby": { score: 84, isLeague: false, hasLink: true, isHidden: false }, // Six Nations/Premiership
-        "Darts": { score: 82, isLeague: false, hasLink: true, isHidden: false }, // PDC
+        "Cricket": { score: 85, isLeague: false, hasLink: true, isHidden: false }, 
+        "Rugby": { score: 84, isLeague: false, hasLink: true, isHidden: false }, 
+        "Darts": { score: 82, isLeague: false, hasLink: true, isHidden: false }, 
         "Snooker": { score: 80, isLeague: false, hasLink: true, isHidden: false },
 
         // --- TIER 3: US IMPORTS ---
@@ -83,7 +83,7 @@ const DEMO_CONFIG = {
     },
     sport_priorities: JSON.parse(JSON.stringify(DEFAULT_PRIORITIES)), 
     menus: { header: [], hero: [], footer_leagues: [], footer_static: [] },
-    entity_stacking: [],
+    // Removed entity_stacking array
     pages: [
         { id: "p_home", title: "Home", slug: "home", layout: "home", meta_title: "Live Sports", content: "Welcome", schemas: { org: true, website: true } }
     ]
@@ -201,7 +201,7 @@ function populateUI() {
 
     renderPriorities();
     renderMenus();
-    renderEntityStacking();
+    // Entity Stacking Render Removed
     renderPageList();
 }
 
@@ -339,7 +339,6 @@ window.editPage = (id) => {
     if(!p.schemas.faq_list) p.schemas.faq_list = [];
 
     const checkboxGroup = document.querySelector('#pageEditorView .checkbox-group');
-    // Replace content entirely to match new requirements
     checkboxGroup.innerHTML = `
         <label style="color:#facc15; font-weight:700; border-bottom:1px solid #333; padding-bottom:5px; margin-bottom:10px;">Static Schemas (SEO)</label>
         <label><input type="checkbox" id="schemaOrg" ${p.schemas.org ? 'checked' : ''}> Organization Schema</label>
@@ -378,7 +377,7 @@ window.renderFaqItems = (list) => {
 };
 
 window.addFaqItem = () => {
-    saveCurrentFaqState(); // Save current inputs to memory
+    saveCurrentFaqState(); 
     const p = configData.pages.find(x => x.id === currentEditingPageId);
     p.schemas.faq_list.push({ q: "", a: "" });
     renderFaqItems(p.schemas.faq_list);
@@ -391,7 +390,6 @@ window.removeFaqItem = (idx) => {
     renderFaqItems(p.schemas.faq_list);
 };
 
-// Helper to sync inputs back to data model before re-rendering
 function saveCurrentFaqState() {
     if(!currentEditingPageId) return;
     const p = configData.pages.find(x => x.id === currentEditingPageId);
@@ -421,14 +419,12 @@ window.saveEditorContentToMemory = () => {
     p.canonical_url = getVal('pageCanonical');
     p.content = tinymce.get('pageContentEditor').getContent();
     
-    // Schema Saving
-    saveCurrentFaqState(); // Ensure FAQs are synced
+    saveCurrentFaqState(); 
     
     if(!p.schemas) p.schemas = {};
     p.schemas.org = document.getElementById('schemaOrg').checked;
     p.schemas.website = document.getElementById('schemaWebsite').checked;
     p.schemas.faq = document.getElementById('schemaFaq').checked;
-    // Live & Schedule are handled by Backend only now
 };
 
 window.closePageEditor = () => {
@@ -453,7 +449,7 @@ window.deletePage = (id) => {
 };
 
 // ==========================================
-// 7. MENUS & ENTITIES
+// 7. MENUS
 // ==========================================
 function renderMenus() {
     ['header', 'hero', 'footer_leagues', 'footer_static'].forEach(sec => {
@@ -502,22 +498,6 @@ window.saveMenuItem = () => {
 };
 window.deleteMenuItem = (sec, idx) => { configData.menus[sec].splice(idx, 1); renderMenus(); };
 
-function renderEntityStacking() {
-    const list = document.getElementById('entityList');
-    if(!configData.entity_stacking) configData.entity_stacking = [];
-    list.innerHTML = configData.entity_stacking.map((e, idx) => `
-        <div class="menu-item-row">
-            <strong>${e.keyword}</strong>
-            <div><button class="btn-icon" onclick="deleteEntityRow(${idx})">×</button></div>
-        </div>
-    `).join('');
-}
-window.addEntityRow = () => {
-    const kw = getVal('newEntityKeyword');
-    if(kw) { configData.entity_stacking.push({ keyword: kw }); setVal('newEntityKeyword',''); renderEntityStacking(); }
-};
-window.deleteEntityRow = (idx) => { configData.entity_stacking.splice(idx, 1); renderEntityStacking(); };
-
 // ==========================================
 // 8. SAVE & UTILS
 // ==========================================
@@ -548,6 +528,8 @@ document.getElementById('saveBtn').onclick = async () => {
         },
         excluded_pages: getVal('socialExcluded')
     };
+
+    // Removed Entity Stacking from save logic
 
     document.getElementById('saveBtn').innerText = "Saving...";
     document.getElementById('saveBtn').disabled = true;
