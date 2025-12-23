@@ -327,77 +327,68 @@
         // --- EXPANDED SMART ALIAS SYSTEM (Matches Admin Keys -> Backend Keys) ---
         const SMART_ALIASES = {
     // FOOTBALL / SOCCER
-    'football': 'soccer',
-    'soccer': 'soccer',
-    'premier league': 'soccer',
-    'champions league': 'soccer',
-    'europa league': 'soccer',
-    'laliga': 'soccer',
-    'la liga': 'soccer',
-    'bundesliga': 'soccer',
-    'serie a': 'soccer',
-    'ligue 1': 'soccer',
-    'mls': 'soccer',
-    'world cup': 'soccer',
-    'fifa world cup': 'soccer',
-    'euro': 'soccer',
-    'uefa euro': 'soccer',
-    'copa america': 'soccer',
+            'football': 'soccer',
+            'soccer': 'soccer',
+            'premierleague': 'soccer',      // Space removed
+            'championsleague': 'soccer',    // Space removed
+            'europaleague': 'soccer',
+            'laliga': 'soccer',
+            'bundesliga': 'soccer',
+            'seriea': 'soccer',
+            'ligue1': 'soccer',
+            'mls': 'soccer',
+            'worldcup': 'soccer',
+            'euro': 'soccer',
+            'copaamerica': 'soccer',
 
-    // AMERICAN FOOTBALL
-    'nfl': 'americanfootball',
-    'american football': 'americanfootball',
-    'americanfootball': 'americanfootball',
-    'college football': 'americanfootball',
-    'ncaa football': 'americanfootball',
+            // AMERICAN FOOTBALL
+            'nfl': 'americanfootball',
+            'americanfootball': 'americanfootball',
+            'collegefootball': 'americanfootball',  // Space removed
+            'ncaafootball': 'americanfootball',
 
-    // BASKETBALL
-    'nba': 'basketball',
-    'basketball': 'basketball',
-    'college basketball': 'basketball',
-    'ncaa basketball': 'basketball',
+            // BASKETBALL
+            'nba': 'basketball',
+            'basketball': 'basketball',
+            'collegebasketball': 'basketball',
+            'ncaabasketball': 'basketball',
 
-    // BASEBALL
-    'mlb': 'baseball',
-    'baseball': 'baseball',
+            // BASEBALL
+            'mlb': 'baseball',
+            'baseball': 'baseball',
 
-    // ICE HOCKEY
-    'nhl': 'icehockey',
-    'ice hockey': 'icehockey',
-    'icehockey': 'icehockey',
+            // ICE HOCKEY
+            'nhl': 'icehockey',
+            'icehockey': 'icehockey',
 
-    // COMBAT SPORTS
-    'ufc': 'mma',
-    'mma': 'mma',
-    'boxing': 'boxing',
+            // COMBAT SPORTS
+            'ufc': 'mma',
+            'mma': 'mma',
+            'boxing': 'boxing',
 
-    // SPORTS ENTERTAINMENT
-    'wwe': 'wrestling',
+            // MOTORSPORT
+            'f1': 'motorsport',
+            'formula1': 'motorsport',
+            'formulaone': 'motorsport',
+            'nascar': 'motorsport',
+            'motogp': 'motorsport',
 
-    // MOTORSPORT
-    'f1': 'motorsport',
-    'formula 1': 'motorsport',
-    'formula1': 'motorsport',
-    'nascar': 'motorsport',
-    'motogp': 'motorsport',
-    'indycar': 'motorsport',
+            // CRICKET
+            'cricket': 'cricket',
+            'ashes': 'cricket',
+            'theashes': 'cricket',
+            'ipl': 'cricket',
+            't20': 'cricket',
+            'odi': 'cricket',
 
-    // CRICKET
-    'cricket': 'cricket',
-    'ashes': 'cricket',
-    'the ashes': 'cricket',
-    'ipl': 'cricket',
-    't20': 'cricket',
-    'odi': 'cricket',
-
-    // OTHER SPORTS
-    'tennis': 'tennis',
-    'golf': 'golf',
-    'rugby': 'rugby',
-    'rugby union': 'rugby',
-    'rugby league': 'rugby',
-    'darts': 'darts',
-    'snooker': 'snooker'
+            // OTHER SPORTS
+            'tennis': 'tennis',
+            'golf': 'golf',
+            'rugby': 'rugby',
+            'rugbyunion': 'rugby',
+            'rugbyleague': 'rugby',
+            'darts': 'darts',
+            'snooker': 'snooker'
 };
 
         let allMatches = [];
