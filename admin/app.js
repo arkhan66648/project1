@@ -11,7 +11,7 @@ const BRANCH = 'main';
 // ==========================================
 const DEFAULT_PRIORITIES = {
     US: {
-        _HIDE_OTHERS: false, // Default to allowing other sports
+        _HIDE_OTHERS: false,
         "NFL": { score: 100, isLeague: true, hasLink: true, isHidden: false },
         "NBA": { score: 95, isLeague: true, hasLink: true, isHidden: false },
         "MLB": { score: 90, isLeague: true, hasLink: true, isHidden: false },
@@ -60,7 +60,7 @@ const DEMO_CONFIG = {
     menus: { header: [], hero: [], footer_leagues: [], footer_static: [] },
     entity_stacking: [],
     pages: [
-        { id: "p_home", title: "Home", slug: "home", layout: "home", meta_title: "Live Sports", content: "Welcome", schemas: { org: true, live: true, schedule: true } }
+        { id: "p_home", title: "Home", slug: "home", layout: "home", meta_title: "Live Sports", content: "Welcome", schemas: { org: true, website: true } }
     ]
 };
 
@@ -70,14 +70,10 @@ let currentEditingPageId = null;
 let isBuilding = false;
 
 // ==========================================
-// 3. INITIALIZATION & INJECTION
+// 3. INITIALIZATION
 // ==========================================
 window.addEventListener("DOMContentLoaded", () => {
-    // A. INJECT NEW UI ELEMENTS
-    injectSocialTab();
-    injectSchemaOptions();
-
-    // B. INIT EDITOR
+    // 1. Init Editor
     if(typeof tinymce !== 'undefined') {
         tinymce.init({
             selector: '#pageContentEditor', height: 400, skin: 'oxide-dark', content_css: 'dark',
@@ -85,7 +81,7 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
     
-    // C. RESET BTN INJECTION
+    // 2. Inject Reset Button for Priorities
     const prioHeader = document.querySelector('#tab-priorities .header-box');
     if(prioHeader && !document.getElementById('resetPrioBtn')) {
         const btn = document.createElement('button');
@@ -96,64 +92,11 @@ window.addEventListener("DOMContentLoaded", () => {
         prioHeader.appendChild(btn);
     }
 
-    // D. AUTH
+    // 3. Auth Check
     const token = localStorage.getItem('gh_token');
     if (!token) document.getElementById('authModal').style.display = 'flex';
     else verifyAndLoad(token);
 });
-
-// --- DYNAMIC UI INJECTION ---
-function injectSocialTab() {
-    const nav = document.querySelector('.sidebar nav');
-    if(nav && !document.getElementById('nav-social')) {
-        const btn = document.createElement('button');
-        btn.className = 'nav-btn';
-        btn.id = 'nav-social';
-        btn.innerHTML = '💬 Social Sharing';
-        btn.onclick = () => switchTab('social');
-        nav.appendChild(btn);
-    }
-
-    const main = document.querySelector('.content-area');
-    if(main && !document.getElementById('tab-social')) {
-        const section = document.createElement('section');
-        section.id = 'tab-social';
-        section.className = 'tab-content';
-        section.innerHTML = `
-            <div class="header-box"><h1>Social Sharing Settings</h1></div>
-            <div class="grid-2">
-                <div class="card">
-                    <h3>Fake Share Counts</h3>
-                    <p class="desc">These numbers appear on the social buttons.</p>
-                    <label>Telegram Count</label><input type="number" id="socialTelegram">
-                    <label>WhatsApp Count</label><input type="number" id="socialWhatsapp">
-                    <label>Reddit Count</label><input type="number" id="socialReddit">
-                    <label>Twitter Count</label><input type="number" id="socialTwitter">
-                </div>
-                <div class="card">
-                    <h3>Visibility Control</h3>
-                    <label>Exclude on Pages (Slug separated by comma)</label>
-                    <textarea id="socialExcluded" rows="4" placeholder="dmca, contact, privacy"></textarea>
-                    <p class="desc">The share sidebar will NOT appear on these pages.</p>
-                </div>
-            </div>
-        `;
-        main.appendChild(section);
-    }
-}
-
-function injectSchemaOptions() {
-    const group = document.querySelector('#pageEditorView .checkbox-group');
-    if(group && !document.getElementById('schemaLive')) {
-        const lbl1 = document.createElement('label');
-        lbl1.innerHTML = '<input type="checkbox" id="schemaLive"> Live Badge Schema (EventLive)';
-        group.appendChild(lbl1);
-
-        const lbl2 = document.createElement('label');
-        lbl2.innerHTML = '<input type="checkbox" id="schemaSchedule"> Match Schedule Schema (ItemList)';
-        group.appendChild(lbl2);
-    }
-}
 
 // --- AUTH ---
 window.saveToken = async () => {
@@ -181,11 +124,15 @@ async function verifyAndLoad(token) {
         currentSha = data.sha;
         configData = JSON.parse(decodeURIComponent(escape(atob(data.content))));
         
-        // --- DATA MIGRATION ---
+        // --- DATA NORMALIZATION ---
         if(!configData.pages) configData.pages = DEMO_CONFIG.pages;
-        configData.pages.forEach(p => { if(!p.id) p.id = 'p_' + Math.random().toString(36).substr(2, 9); });
+        configData.pages.forEach(p => { 
+            if(!p.id) p.id = 'p_' + Math.random().toString(36).substr(2, 9); 
+            if(!p.schemas) p.schemas = {};
+            if(!p.schemas.faq_list) p.schemas.faq_list = [];
+        });
         
-        // Initialize priorities if missing
+        // Ensure Priorities Structure
         if(!configData.sport_priorities) configData.sport_priorities = JSON.parse(JSON.stringify(DEFAULT_PRIORITIES));
         if(!configData.sport_priorities.US) configData.sport_priorities.US = { _HIDE_OTHERS: false };
         if(!configData.sport_priorities.UK) configData.sport_priorities.UK = { _HIDE_OTHERS: false };
@@ -234,26 +181,24 @@ function populateUI() {
 }
 
 // ==========================================
-// 5. PRIORITIES (Updated with Hide Others)
+// 5. PRIORITIES (With Hide Others)
 // ==========================================
 function renderPriorities() {
     const c = getVal('targetCountry') || 'US';
     const container = document.getElementById('priorityListContainer');
     if(document.getElementById('prioLabel')) document.getElementById('prioLabel').innerText = c;
     
-    // Ensure data integrity
     if(!configData.sport_priorities[c]) configData.sport_priorities[c] = { _HIDE_OTHERS: false };
 
-    // 1. Render Global Country Settings (Hide Others Checkbox)
+    // 1. Hide Others Flag
     const isHideOthers = !!configData.sport_priorities[c]._HIDE_OTHERS;
     
-    // 2. Render List
+    // 2. Sort Items
     const items = Object.entries(configData.sport_priorities[c])
-        .filter(([name]) => name !== '_HIDE_OTHERS') // Filter out the setting key
+        .filter(([name]) => name !== '_HIDE_OTHERS')
         .map(([name, data]) => ({ name, ...data }))
         .sort((a,b) => b.score - a.score);
 
-    // Build HTML
     let html = `
         <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 15px; border-radius: 6px; margin-bottom: 20px;">
             <label style="margin:0; font-weight:700; color:#fca5a5; display:flex; align-items:center; gap:10px;">
@@ -261,7 +206,7 @@ function renderPriorities() {
                 🚫 Hide all others (Strict Mode)
             </label>
             <p style="margin:5px 0 0 26px; font-size:0.8rem; color:#aaa;">
-                If checked, only the leagues/sports listed below will be displayed in the upcoming section. Everything else from the backend will be hidden.
+                If checked, only the leagues/sports listed below will be displayed in the upcoming section.
             </p>
         </div>
     `;
@@ -291,17 +236,13 @@ function renderPriorities() {
 window.toggleHideOthers = (c, checked) => {
     if(!configData.sport_priorities[c]) configData.sport_priorities[c] = {};
     configData.sport_priorities[c]._HIDE_OTHERS = checked;
-    // No re-render needed for checkbox toggle, acts like input
 };
 
 window.resetPriorities = () => {
     const c = getVal('targetCountry');
     if(!confirm(`Reset priorities for ${c} to default settings?`)) return;
-    
-    // Deep copy default
     const defaults = JSON.parse(JSON.stringify(DEFAULT_PRIORITIES[c] || DEFAULT_PRIORITIES['US']));
     configData.sport_priorities[c] = defaults;
-    
     renderPriorities();
 };
 
@@ -310,7 +251,6 @@ window.addPriorityRow = () => {
     const name = getVal('newSportName');
     if(name) {
         if(!configData.sport_priorities[c]) configData.sport_priorities[c] = { _HIDE_OTHERS: false };
-        // Determine if it looks like a league (simple heuristic, user can change)
         const isLikelyLeague = name.toLowerCase().includes('league') || name.toLowerCase().includes('nba') || name.toLowerCase().includes('nfl');
         configData.sport_priorities[c][name] = { score: 50, isLeague: isLikelyLeague, hasLink: false, isHidden: false };
         setVal('newSportName', '');
@@ -322,18 +262,18 @@ window.updatePrioMeta = (c, name, key, val) => {
     const item = configData.sport_priorities[c][name];
     if(key === 'score') item.score = parseInt(val);
     else item[key] = val;
-    if(key === 'isHidden') renderPriorities(); // Re-render to show opacity change
+    if(key === 'isHidden') renderPriorities();
 };
 
 window.deletePriority = (c, name) => {
-    if(confirm(`Remove ${name} from priorities?`)) {
+    if(confirm(`Remove ${name}?`)) {
         delete configData.sport_priorities[c][name];
         renderPriorities();
     }
 };
 
 // ==========================================
-// 6. PAGES SYSTEM
+// 6. PAGES SYSTEM (New Schema & FAQ UI)
 // ==========================================
 function renderPageList() {
     const tbody = document.querySelector('#pagesTable tbody');
@@ -369,14 +309,78 @@ window.editPage = (id) => {
     setVal('pageMetaKeywords', p.meta_keywords); 
     setVal('pageCanonical', p.canonical_url); 
     
+    // --- RENDER DYNAMIC SCHEMA UI ---
     if(!p.schemas) p.schemas = {};
-    document.getElementById('schemaOrg').checked = !!p.schemas.org;
-    if(document.getElementById('schemaLive')) document.getElementById('schemaLive').checked = !!p.schemas.live;
-    if(document.getElementById('schemaSchedule')) document.getElementById('schemaSchedule').checked = !!p.schemas.schedule;
+    if(!p.schemas.faq_list) p.schemas.faq_list = [];
+
+    const checkboxGroup = document.querySelector('#pageEditorView .checkbox-group');
+    // Replace content entirely to match new requirements
+    checkboxGroup.innerHTML = `
+        <label style="color:#facc15; font-weight:700; border-bottom:1px solid #333; padding-bottom:5px; margin-bottom:10px;">Static Schemas (SEO)</label>
+        <label><input type="checkbox" id="schemaOrg" ${p.schemas.org ? 'checked' : ''}> Organization Schema</label>
+        <label><input type="checkbox" id="schemaWebsite" ${p.schemas.website ? 'checked' : ''}> WebSite Schema</label>
+        <label><input type="checkbox" id="schemaFaq" ${p.schemas.faq ? 'checked' : ''} onchange="toggleFaqEditor(this.checked)"> FAQ Schema</label>
+        
+        <div id="faqEditorContainer" style="display:${p.schemas.faq ? 'block' : 'none'}; background:#0f172a; padding:15px; border:1px solid #334155; border-radius:6px; margin-top:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h4 style="margin:0; font-size:0.9rem;">FAQ Items</h4>
+                <button class="btn-primary" style="padding:4px 10px; font-size:0.8rem;" onclick="addFaqItem()">+ Add Question</button>
+            </div>
+            <div id="faqList" style="display:flex; flex-direction:column; gap:10px;"></div>
+        </div>
+    `;
+
+    // Render existing FAQs
+    renderFaqItems(p.schemas.faq_list);
 
     if(tinymce.get('pageContentEditor')) tinymce.get('pageContentEditor').setContent(p.content || '');
     document.getElementById('pageSlug').disabled = (p.slug === 'home');
 };
+
+window.toggleFaqEditor = (isChecked) => {
+    document.getElementById('faqEditorContainer').style.display = isChecked ? 'block' : 'none';
+};
+
+window.renderFaqItems = (list) => {
+    const container = document.getElementById('faqList');
+    container.innerHTML = list.map((item, idx) => `
+        <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:4px; border:1px solid #333;">
+            <input type="text" placeholder="Question" class="faq-q" value="${item.q || ''}" style="margin-bottom:5px; font-weight:bold;">
+            <textarea placeholder="Answer" class="faq-a" rows="2" style="margin-bottom:5px;">${item.a || ''}</textarea>
+            <button class="btn-danger" style="padding:4px 8px; font-size:0.7rem;" onclick="removeFaqItem(${idx})">Remove</button>
+        </div>
+    `).join('');
+};
+
+window.addFaqItem = () => {
+    saveCurrentFaqState(); // Save current inputs to memory
+    const p = configData.pages.find(x => x.id === currentEditingPageId);
+    p.schemas.faq_list.push({ q: "", a: "" });
+    renderFaqItems(p.schemas.faq_list);
+};
+
+window.removeFaqItem = (idx) => {
+    saveCurrentFaqState();
+    const p = configData.pages.find(x => x.id === currentEditingPageId);
+    p.schemas.faq_list.splice(idx, 1);
+    renderFaqItems(p.schemas.faq_list);
+};
+
+// Helper to sync inputs back to data model before re-rendering
+function saveCurrentFaqState() {
+    if(!currentEditingPageId) return;
+    const p = configData.pages.find(x => x.id === currentEditingPageId);
+    const container = document.getElementById('faqList');
+    if(!container) return;
+    
+    const qInputs = container.querySelectorAll('.faq-q');
+    const aInputs = container.querySelectorAll('.faq-a');
+    
+    p.schemas.faq_list = Array.from(qInputs).map((input, idx) => ({
+        q: input.value,
+        a: aInputs[idx].value
+    }));
+}
 
 window.saveEditorContentToMemory = () => {
     if(!currentEditingPageId) return;
@@ -392,11 +396,14 @@ window.saveEditorContentToMemory = () => {
     p.canonical_url = getVal('pageCanonical');
     p.content = tinymce.get('pageContentEditor').getContent();
     
-    p.schemas = {
-        org: document.getElementById('schemaOrg').checked,
-        live: document.getElementById('schemaLive') ? document.getElementById('schemaLive').checked : false,
-        schedule: document.getElementById('schemaSchedule') ? document.getElementById('schemaSchedule').checked : false
-    };
+    // Schema Saving
+    saveCurrentFaqState(); // Ensure FAQs are synced
+    
+    if(!p.schemas) p.schemas = {};
+    p.schemas.org = document.getElementById('schemaOrg').checked;
+    p.schemas.website = document.getElementById('schemaWebsite').checked;
+    p.schemas.faq = document.getElementById('schemaFaq').checked;
+    // Live & Schedule are handled by Backend only now
 };
 
 window.closePageEditor = () => {
@@ -567,7 +574,6 @@ window.switchTab = (id) => {
     
     // Find nav button
     let btn = document.getElementById(`nav-${id}`);
-    // Fallback if triggered via onClick this context
     if(!btn) {
         document.querySelectorAll('.nav-btn').forEach(b => {
             if(b.onclick.toString().includes(id)) btn = b;
