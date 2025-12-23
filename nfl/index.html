@@ -206,6 +206,9 @@
         .f-link { color: #94a3b8; font-size: 0.9rem; font-weight: 500; transition: 0.2s; }
         .f-link:hover { color: white; transform: translateX(5px); }
         .copyright { margin-top: 50px; border-top: 1px solid #1e293b; padding-top: 25px; text-align: center; font-size: 0.75rem; color: #475569; }
+
+        /* REPLACED H4 WITH DIV FOR SEO/ACCESSIBILITY */
+        .f-head { color: #fff; margin-bottom: 15px; text-transform: uppercase; font-size: 0.9rem; font-weight: 700; }
         
         /* BACK TO TOP (FADE LOGIC) */
         .back-to-top { position: fixed; bottom: 80px; right: 20px; background: var(--brand-primary); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; opacity: 0; visibility: hidden; transition: 0.3s; z-index: 90; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
@@ -323,7 +326,8 @@
                 <div class="f-desc">Hello world</div>
             </div>
             <div>
-                <h4 style="color:#fff; margin-bottom:15px; text-transform:uppercase; font-size:0.9rem;">Quick Links</h4>
+                <!-- FIXED: Replaced h4 with div.f-head for better SEO structure -->
+                <div class="f-head">Quick Links</div>
                 <div class="f-links"><a href="/dmca" class="f-link">DMCA</a><a href="/contact" class="f-link">Contact</a><a href="/terms" class="f-link">Terms & Conditions</a></div>
             </div>
         </div>
@@ -361,6 +365,23 @@
         const PRIORITIES = {"_HIDE_OTHERS": false, "NFL": {"score": 100, "isLeague": true, "hasLink": true, "isHidden": false}, "NBA": {"score": 95, "isLeague": true, "hasLink": true, "isHidden": false}, "MLB": {"score": 90, "isLeague": true, "hasLink": true, "isHidden": false}, "College Football": {"score": 88, "isLeague": true, "hasLink": false, "isHidden": false}, "NCAA": {"score": 87, "isLeague": true, "hasLink": false, "isHidden": false}, "NHL": {"score": 85, "isLeague": true, "hasLink": false, "isHidden": false}, "UFC": {"score": 80, "isLeague": true, "hasLink": false, "isHidden": false}, "Premier League": {"score": 75, "isLeague": true, "hasLink": false, "isHidden": false}, "MLS": {"score": 70, "isLeague": true, "hasLink": false, "isHidden": false}, "Champions League": {"score": 65, "isLeague": true, "hasLink": false, "isHidden": false}, "Boxing": {"score": 50, "isLeague": false, "hasLink": false, "isHidden": false}, "Formula 1": {"score": 45, "isLeague": true, "hasLink": false, "isHidden": false}, "Tennis": {"score": 40, "isLeague": false, "hasLink": false, "isHidden": false}}; 
         const SITE_DOMAIN = "https://crackstreams.help";
         const SHARE_CONFIG = {"excluded": ["dmca", "contact", "about", "privacy"], "counts": {"telegram": "12000", "whatsapp": "14400", "reddit": "60077", "twitter": "5544"}};
+
+        // FIXED: NAME_FIXES to ensure spacing for double word sports
+        const NAME_FIXES = {
+            'americanfootball': 'American Football',
+            'collegefootball': 'College Football',
+            'ncaafootball': 'NCAA Football',
+            'collegebasketball': 'College Basketball',
+            'ncaabasketball': 'NCAA Basketball',
+            'icehockey': 'Ice Hockey',
+            'rugbyunion': 'Rugby Union',
+            'rugbyleague': 'Rugby League',
+            'formula1': 'Formula 1',
+            'premierleague': 'Premier League',
+            'championsleague': 'Champions League',
+            'europaleague': 'Europa League',
+            'superbowl': 'Super Bowl'
+        };
 
         const SMART_ALIASES = {
             'football': 'soccer', 'soccer': 'soccer', 'premierleague': 'soccer',
@@ -470,6 +491,12 @@
             return str.toLowerCase().replace(/[^a-z0-9]/g, '');
         }
 
+        function formatSportName(raw) {
+            const key = normalizeKey(raw);
+            if(NAME_FIXES[key]) return NAME_FIXES[key];
+            return toTitleCase(raw);
+        }
+
         function renderUpcomingGrouped(matches) {
             const container = document.getElementById('upcoming-container');
             container.innerHTML = '';
@@ -518,7 +545,8 @@
                     isLeague = conf.isLeague;
                 } else {
                     if (HIDE_OTHERS) return;
-                    groupName = toTitleCase(sportRaw);
+                    // FIXED: Use formatSportName instead of just toTitleCase to handle double words
+                    groupName = formatSportName(sportRaw);
                     groupScore = 0;
                     hasLink = false;
                     isLeague = false;
@@ -583,8 +611,8 @@
                 teamsHtml = `<div class="team-name"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tA}</div>`;
             } else {
                 teamsHtml = `
-                <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tA}</div>
-                <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_b_letter||'T')}">${m.team_b_letter||'T'}</span> ${tB}</div>`;
+                <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tB}</div>
+                <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_b_letter||'T')}">${m.team_b_letter||'T'}</span> ${tA}</div>`;
             }
             
             let metaHtml = '';
@@ -604,8 +632,10 @@
             const copyBtn = `<button class="btn-copy-link" onclick="copyText('${matchLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Copy Link</button>`;
 
             if (m.is_live) {
-                actionHtml = `<button class="btn-watch" onclick="openPlayer('${m.id}', false)">WATCH <span class="hd-badge">HD</span></button>${copyBtn}`;
+                // FIXED: REMOVED copyBtn from Trending Live Section matches
+                actionHtml = `<button class="btn-watch" onclick="openPlayer('${m.id}', false)">WATCH <span class="hd-badge">HD</span></button>`;
             } else {
+                // Kept copyBtn for Upcoming Matches
                 actionHtml = `<button class="btn-watch btn-notify" onclick="setNotify(this)">🔔 NOTIFY</button>${copyBtn}`;
             }
             
@@ -621,7 +651,9 @@
             } else {
                 tagText = m.league || m.tournament;
             }
-            tagText = (tagText || "General").toUpperCase();
+            
+            // FIXED: Applied formatSportName to tags so "icehockey" becomes "Ice Hockey"
+            tagText = formatSportName(tagText || "General").toUpperCase();
             
             div.innerHTML = `<div class="col-time">${timeCol}</div><div class="teams-wrapper"><div class="league-tag">${tagText}</div>${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${actionHtml}</div>`;
             return div;
