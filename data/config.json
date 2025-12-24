@@ -271,6 +271,23 @@
       "meta_desc": "sdssdfs",
       "meta_keywords": "",
       "canonical_url": ""
+    },
+    {
+      "id": "p_1766569719411",
+      "title": "Watch Now",
+      "slug": "watch",
+      "layout": "watch",
+      "content": "<p>This is watch page</p>",
+      "schemas": {
+        "org": false,
+        "faq_list": [],
+        "website": false,
+        "faq": false
+      },
+      "meta_title": "Watch Pge Meta Title",
+      "meta_desc": "Meta testing for watch ",
+      "meta_keywords": "watch now, live now, live streams",
+      "canonical_url": ""
     }
   ],
   "menus": {
