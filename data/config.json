@@ -277,7 +277,7 @@
       "title": "Watch Now",
       "slug": "watch",
       "layout": "watch",
-      "content": "<p>This is watch page</p>",
+      "content": "<p>This is watch page test</p>",
       "schemas": {
         "org": false,
         "faq_list": [],
@@ -375,10 +375,10 @@
   ],
   "social_sharing": {
     "counts": {
-      "telegram": "12000",
-      "whatsapp": "14400",
-      "reddit": "60077",
-      "twitter": "5544"
+      "telegram": 12000,
+      "whatsapp": 14400,
+      "reddit": 60077,
+      "twitter": 5544
     },
     "excluded_pages": "dmca,contact,about,privacy"
   }
