@@ -12,8 +12,6 @@ def load_json(path):
         with open(path, 'r', encoding='utf-8') as f: return json.load(f)
     return {}
 
-# --- NEW HELPER FUNCTION ---
-# Creates a URL-friendly slug from a string (e.g., "Premier League" -> "premierleague")
 def normalize_key(s):
     return re.sub(r'[^a-z0-9]', '', s.lower())
 
@@ -91,17 +89,14 @@ def render_page(template, config, page_data):
         if raw_logo.startswith('http'):
             og_image = raw_logo
         else:
-            clean_domain = domain[:-1] if domain.endswith('/') else domain
-            clean_logo = raw_logo[1:] if raw_logo.startswith('/') else raw_logo
-            if not clean_domain.startswith('http'):
-                clean_domain = f"https://{clean_domain}"
-            og_image = f"{clean_domain}/{clean_logo}"
+            clean_domain = domain.rstrip('/')
+            clean_logo = raw_logo.lstrip('/')
+            og_image = f"https://{clean_domain}/{clean_logo}"
             
         low_img = og_image.lower()
         if low_img.endswith('.webp'): og_mime = "image/webp"
         elif low_img.endswith(('.jpg', '.jpeg')): og_mime = "image/jpeg"
         elif low_img.endswith('.gif'): og_mime = "image/gif"
-        else: og_mime = "image/png"
 
     html = html.replace('{{OG_IMAGE}}', og_image)
     html = html.replace('{{OG_MIME}}', og_mime)
@@ -119,55 +114,56 @@ def render_page(template, config, page_data):
     html = html.replace('{{HERO_PILLS}}', build_menu_html(m.get('hero', []), 'hero'))
     html = html.replace('{{FOOTER_STATIC}}', build_menu_html(m.get('footer_static', []), 'footer_static'))
     
-    # --- MODIFICATION START: AUTOMATED FOOTER LEAGUES ---
     auto_footer_leagues = []
     priorities = config.get('sport_priorities', {}).get(country, {})
     if priorities:
-        # Sort leagues by score, descending, to show the most important ones first
         sorted_priorities = sorted(
             [item for item in priorities.items() if not item[0].startswith('_')],
             key=lambda item: item[1].get('score', 0),
             reverse=True
         )
         for name, data in sorted_priorities:
-            # Check if the 'hasLink' property is true in the admin panel
             if data.get('hasLink'):
                 slug = normalize_key(name)
-                auto_footer_leagues.append({
-                    'title': name,
-                    'url': f'/{slug}-streams/'
-                })
+                auto_footer_leagues.append({'title': name, 'url': f'/{slug}-streams/'})
     html = html.replace('{{FOOTER_LEAGUES}}', build_menu_html(auto_footer_leagues, 'footer_leagues'))
-    # --- MODIFICATION END ---
 
     # --- 3. Footer Content ---
     html = html.replace('{{FOOTER_COPYRIGHT}}', s.get('footer_copyright', f"&copy; 2025 {domain}"))
-    disclaimer = s.get('footer_disclaimer', '')
-    html = html.replace('{{FOOTER_DISCLAIMER}}', disclaimer)
+    html = html.replace('{{FOOTER_DISCLAIMER}}', s.get('footer_disclaimer', ''))
 
     # --- 4. SEO & Metadata ---
-    html = html.replace('{{META_TITLE}}', page_data.get('meta_title') or f"{site_name} - {page_data.get('title')}")
-    html = html.replace('{{META_DESC}}', page_data.get('meta_desc', ''))
+    layout = page_data.get('layout', 'page')
+
+    # --- MODIFICATION START ---
+    # If the layout is 'watch', render empty meta tags. Otherwise, use admin panel values.
+    if layout == 'watch':
+        html = html.replace('{{META_TITLE}}', '')
+        html = html.replace('{{META_DESC}}', '')
+        # Also remove hardcoded canonical for watch page, JS will handle it
+        html = html.replace('<link rel="canonical" href="{{CANONICAL_URL}}">', '')
+    else:
+        html = html.replace('{{META_TITLE}}', page_data.get('meta_title') or f"{site_name} - {page_data.get('title')}")
+        html = html.replace('{{META_DESC}}', page_data.get('meta_desc', ''))
+        # Standard canonical logic for all other pages
+        canon = page_data.get('canonical_url', '')
+        if not canon and page_data.get('slug'):
+            canon_slug = page_data.get('slug')
+            canon = f"https://{domain}/{canon_slug}/" if canon_slug != 'home' else f"https://{domain}/"
+        html = html.replace('{{CANONICAL_URL}}', canon)
+    # --- MODIFICATION END ---
     
     keywords = page_data.get('meta_keywords', '')
     if keywords: html = html.replace('{{META_KEYWORDS}}', f'<meta name="keywords" content="{keywords}">')
     else: html = html.replace('{{META_KEYWORDS}}', '')
 
-    canon = page_data.get('canonical_url', '')
-    if not canon and page_data.get('slug'):
-        canon_slug = page_data.get('slug')
-        # Ensure trailing slash for directories, but not for the homepage file
-        canon = f"https://{domain}/{canon_slug}/" if canon_slug != 'home' else f"https://{domain}/"
-    html = html.replace('{{CANONICAL_URL}}', canon)
-
     html = html.replace('{{H1_TITLE}}', page_data.get('title', ''))
     html = html.replace('{{HERO_TEXT}}', page_data.get('hero_text') or page_data.get('meta_desc', ''))
 
     # --- 5. Layout Logic (for master_template only) ---
-    layout = page_data.get('layout', 'page')
     if layout == 'home':
         html = html.replace('{{DISPLAY_HERO}}', 'block')
-    elif '{{DISPLAY_HERO}}' in html: # Only modify if the placeholder exists
+    elif '{{DISPLAY_HERO}}' in html:
         html = html.replace('{{DISPLAY_HERO}}', 'none')
         html = html.replace('</head>', '<style>#live-section, #upcoming-container { display: none !important; }</style></head>')
 
@@ -177,8 +173,7 @@ def render_page(template, config, page_data):
     html = html.replace('{{JS_PRIORITIES}}', json.dumps(priorities))
     
     social_data = config.get('social_sharing', {})
-    excluded_str = social_data.get('excluded_pages', '')
-    excluded_list = [x.strip() for x in excluded_str.split(',') if x.strip()]
+    excluded_list = [x.strip() for x in social_data.get('excluded_pages', '').split(',') if x.strip()]
     js_social_object = {"excluded": excluded_list, "counts": social_data.get('counts', {})}
     social_json = json.dumps(js_social_object)
     if 'const SHARE_CONFIG' in html:
@@ -186,28 +181,14 @@ def render_page(template, config, page_data):
 
     # --- 7. STATIC SCHEMA GENERATION ---
     schemas = []
+    # (Schema logic remains unchanged)
     page_schemas = page_data.get('schemas', {})
-
     if page_schemas.get('org'):
-        schemas.append({
-            "@context": "https://schema.org", "@type": "Organization",
-            "@id": f"https://{domain}/#organization", "name": site_name,
-            "url": f"https://{domain}/", "logo": {"@type": "ImageObject", "url": og_image}
-        })
-
+        schemas.append({"@context": "https://schema.org", "@type": "Organization", "@id": f"https://{domain}/#organization", "name": site_name, "url": f"https://{domain}/", "logo": {"@type": "ImageObject", "url": og_image}})
     if page_schemas.get('website'):
-        schemas.append({
-            "@context": "https://schema.org", "@type": "WebSite",
-            "@id": f"https://{domain}/#website", "url": f"https://{domain}/",
-            "name": site_name, "publisher": {"@type": "Organization", "@id": f"https://{domain}/#organization"}
-        })
-
+        schemas.append({"@context": "https://schema.org", "@type": "WebSite", "@id": f"https://{domain}/#website", "url": f"https://{domain}/", "name": site_name, "publisher": {"@type": "Organization", "@id": f"https://{domain}/#organization"}})
     if page_schemas.get('faq'):
-        faq_list = page_schemas.get('faq_list', [])
-        valid_faqs = [
-            {"@type": "Question", "name": item.get('q'), "acceptedAnswer": {"@type": "Answer", "text": item.get('a')}}
-            for item in faq_list if item.get('q') and item.get('a')
-        ]
+        valid_faqs = [{"@type": "Question", "name": item.get('q'), "acceptedAnswer": {"@type": "Answer", "text": item.get('a')}} for item in page_schemas.get('faq_list', []) if item.get('q') and item.get('a')]
         if valid_faqs:
             schemas.append({"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": valid_faqs})
 
@@ -247,23 +228,14 @@ def build_site():
             continue
 
         layout = page.get('layout')
-        template_to_use = None
-
-        if layout == 'watch':
-            template_to_use = watch_template_content
-            print(f"   -> Building '{slug}' using WATCH template")
-        else:
-            template_to_use = master_template_content
-            print(f"   -> Building '{slug}' using MASTER template")
+        template_to_use = watch_template_content if layout == 'watch' else master_template_content
+        print(f"   -> Building '{slug}' using {'WATCH' if layout == 'watch' else 'MASTER'} template")
         
         final_html = render_page(template_to_use, config, page)
         
-        if slug == 'home':
-            out_path = os.path.join(OUTPUT_DIR, 'index.html')
-        else:
-            dir_path = os.path.join(OUTPUT_DIR, slug)
-            os.makedirs(dir_path, exist_ok=True)
-            out_path = os.path.join(dir_path, 'index.html')
+        out_dir = os.path.join(OUTPUT_DIR, slug) if slug != 'home' else OUTPUT_DIR
+        os.makedirs(out_dir, exist_ok=True)
+        out_path = os.path.join(out_dir, 'index.html')
             
         with open(out_path, 'w', encoding='utf-8') as f:
             f.write(final_html)
