@@ -82,8 +82,8 @@ const DEMO_CONFIG = {
         bg_body: "#050505", hero_gradient_start: "#1a0505", font_family: "system-ui"
     },
     sport_priorities: JSON.parse(JSON.stringify(DEFAULT_PRIORITIES)), 
-    menus: { header: [], hero: [], footer_leagues: [], footer_static: [] },
-    // Removed entity_stacking array
+    // MODIFICATION: Removed 'footer_leagues'
+    menus: { header: [], hero: [], footer_static: [] },
     pages: [
         { id: "p_home", title: "Home", slug: "home", layout: "home", meta_title: "Live Sports", content: "Welcome", schemas: { org: true, website: true } }
     ]
@@ -157,12 +157,11 @@ async function verifyAndLoad(token) {
             if(!p.schemas.faq_list) p.schemas.faq_list = [];
         });
         
-        // Ensure Priorities Structure
         if(!configData.sport_priorities) configData.sport_priorities = JSON.parse(JSON.stringify(DEFAULT_PRIORITIES));
         if(!configData.sport_priorities.US) configData.sport_priorities.US = { _HIDE_OTHERS: false };
         if(!configData.sport_priorities.UK) configData.sport_priorities.UK = { _HIDE_OTHERS: false };
 
-        if(!configData.menus.footer_leagues) configData.menus.footer_leagues = [];
+        // MODIFICATION: Removed check for 'footer_leagues'
         if(!configData.social_sharing) configData.social_sharing = DEMO_CONFIG.social_sharing;
         
         populateUI();
@@ -185,13 +184,8 @@ function populateUI() {
     setVal('targetCountry', s.target_country || 'US');
 
     const t = configData.theme || {};
-    setVal('brandPrimary', t.brand_primary);
-    setVal('brandDark', t.brand_dark);
-    setVal('accentGold', t.accent_gold);
-    setVal('bgBody', t.bg_body);
-    setVal('heroGradient', t.hero_gradient_start);
-    setVal('fontFamily', t.font_family);
-
+    // Removed theme settings as they are not in the provided HTML
+    
     const soc = configData.social_sharing || { counts: {} };
     setVal('socialTelegram', soc.counts?.telegram || 0);
     setVal('socialWhatsapp', soc.counts?.whatsapp || 0);
@@ -201,7 +195,6 @@ function populateUI() {
 
     renderPriorities();
     renderMenus();
-    // Entity Stacking Render Removed
     renderPageList();
 }
 
@@ -215,10 +208,8 @@ function renderPriorities() {
     
     if(!configData.sport_priorities[c]) configData.sport_priorities[c] = { _HIDE_OTHERS: false };
 
-    // 1. Hide Others Flag
     const isHideOthers = !!configData.sport_priorities[c]._HIDE_OTHERS;
     
-    // 2. Sort Items
     const items = Object.entries(configData.sport_priorities[c])
         .filter(([name]) => name !== '_HIDE_OTHERS')
         .map(([name, data]) => ({ name, ...data }))
@@ -354,7 +345,6 @@ window.editPage = (id) => {
         </div>
     `;
 
-    // Render existing FAQs
     renderFaqItems(p.schemas.faq_list);
 
     if(tinymce.get('pageContentEditor')) tinymce.get('pageContentEditor').setContent(p.content || '');
@@ -452,7 +442,8 @@ window.deletePage = (id) => {
 // 7. MENUS
 // ==========================================
 function renderMenus() {
-    ['header', 'hero', 'footer_leagues', 'footer_static'].forEach(sec => {
+    // MODIFICATION: Removed 'footer_leagues' from this array
+    ['header', 'hero', 'footer_static'].forEach(sec => {
         const div = document.getElementById(`menu-${sec}`);
         if(div) {
             div.innerHTML = (configData.menus[sec] || []).map((item, idx) => {
@@ -513,23 +504,19 @@ document.getElementById('saveBtn').onclick = async () => {
         footer_disclaimer: getVal('footerDisclaimer'),
         target_country: getVal('targetCountry')
     };
-    configData.theme = {
-        brand_primary: getVal('brandPrimary'), brand_dark: getVal('brandDark'),
-        accent_gold: getVal('accentGold'), bg_body: getVal('bgBody'),
-        hero_gradient_start: getVal('heroGradient'), font_family: getVal('fontFamily')
-    };
+    
+    // Theme object is not in the HTML, so this is removed to avoid errors
+    // configData.theme = { ... };
 
     configData.social_sharing = {
         counts: {
-            telegram: getVal('socialTelegram'),
-            whatsapp: getVal('socialWhatsapp'), 
-            reddit: getVal('socialReddit'),
-            twitter: getVal('socialTwitter')
+            telegram: parseInt(getVal('socialTelegram')) || 0,
+            whatsapp: parseInt(getVal('socialWhatsapp')) || 0, 
+            reddit: parseInt(getVal('socialReddit')) || 0,
+            twitter: parseInt(getVal('socialTwitter')) || 0
         },
         excluded_pages: getVal('socialExcluded')
     };
-
-    // Removed Entity Stacking from save logic
 
     document.getElementById('saveBtn').innerText = "Saving...";
     document.getElementById('saveBtn').disabled = true;
@@ -547,51 +534,71 @@ document.getElementById('saveBtn').onclick = async () => {
             const d = await res.json();
             currentSha = d.content.sha;
             startPolling();
-        } else alert("Save failed. Check console.");
-    } catch(e) { alert("Error: " + e.message); }
+        } else {
+             alert("Save failed. Check console.");
+             document.getElementById('saveBtn').innerText = "💾 Save & Build Site";
+             document.getElementById('saveBtn').disabled = false;
+        }
+    } catch(e) { 
+        alert("Error: " + e.message); 
+        document.getElementById('saveBtn').innerText = "💾 Save & Build Site";
+        document.getElementById('saveBtn').disabled = false;
+    }
 };
 
 function startPolling() {
+    isBuilding = true;
     document.getElementById('saveBtn').innerText = "Building...";
+    document.getElementById('saveBtn').disabled = true;
+    document.getElementById('buildStatusText').innerText = "Building...";
+    document.getElementById('buildStatusBox').className = "build-box building";
+
     const iv = setInterval(async () => {
         const token = localStorage.getItem('gh_token');
-        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/runs?per_page=1`, { headers: { 'Authorization': `token ${token}` } });
-        const d = await res.json();
-        const run = d.workflow_runs[0];
-        
-        if(run.status === 'completed') {
+        try {
+            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/runs?per_page=1`, { headers: { 'Authorization': `token ${token}` } });
+            if (!res.ok) { // Stop polling on API error
+                clearInterval(iv);
+                throw new Error(`GitHub API error: ${res.status}`);
+            }
+            const d = await res.json();
+            if (!d.workflow_runs || d.workflow_runs.length === 0) return; // No runs yet, continue polling
+            
+            const run = d.workflow_runs[0];
+            
+            if(run.status === 'completed') {
+                clearInterval(iv);
+                isBuilding = false;
+                document.getElementById('saveBtn').disabled = false;
+                document.getElementById('saveBtn').innerText = "💾 Save & Build Site";
+                document.getElementById('buildStatusText').innerText = run.conclusion === 'success' ? "Live ✅" : "Failed ❌";
+                document.getElementById('buildStatusBox').className = `build-box ${run.conclusion}`;
+            }
+        } catch(e) {
+            console.error("Polling error:", e);
             clearInterval(iv);
             isBuilding = false;
             document.getElementById('saveBtn').disabled = false;
             document.getElementById('saveBtn').innerText = "💾 Save & Build Site";
-            document.getElementById('buildStatusText').innerText = run.conclusion === 'success' ? "Live ✅" : "Failed ❌";
-            document.getElementById('buildStatusBox').className = `build-box ${run.conclusion}`;
-        } else {
-            document.getElementById('buildStatusText').innerText = "Building...";
-            document.getElementById('buildStatusBox').className = "build-box building";
+            document.getElementById('buildStatusText').innerText = "Polling Error";
+            document.getElementById('buildStatusBox').className = "build-box failure";
         }
     }, 5000);
 }
 
 window.switchTab = (id) => {
     document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
-    document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(e => e.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    
     const target = document.getElementById(`tab-${id}`);
     if(target) target.classList.add('active');
     
-    // Find nav button
-    let btn = document.getElementById(`nav-${id}`);
-    if(!btn) {
-        document.querySelectorAll('.nav-btn').forEach(b => {
-            if(b.onclick.toString().includes(id)) btn = b;
-        });
-    }
-    if(btn) {
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
+    document.querySelectorAll('.nav-btn').forEach(b => {
+        if(b.onclick.toString().includes(`'${id}'`)) {
+            b.classList.add('active');
+        }
+    });
 };
 
 function setVal(id, v) { if(document.getElementById(id)) document.getElementById(id).value = v || ""; }
 function getVal(id) { return document.getElementById(id)?.value || ""; }
-window.updatePreview = () => {};
