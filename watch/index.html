@@ -11,7 +11,6 @@
 
     <!-- OPEN GRAPH & SOCIAL (Entity Stacking Optimized) -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{CANONICAL_URL}}">
     <meta property="og:site_name" content="StreamEast">
     <meta property="og:title" content="">
     <meta property="og:description" content="">
@@ -65,7 +64,7 @@
         .social-btn svg { width: 20px; height: 20px; fill: currentColor; }
         .social-btn.telegram { color: #229ED9; } .social-btn.whatsapp { color: #25D366; } .social-btn.reddit { color: #FF6A3D; } .social-btn.twitter { color: #1DA1F2; } .social-btn.copy { color: #9aa0a6; }
         .s-count { font-size: 0.65rem; font-weight: 700; color: #94a3b8; }
-        @media (max-width: 768px) { .social-sidebar { top: auto; bottom: 0; left: 0; right: 0; transform: none; flex-direction: row; width: 100%; border-radius: 0; border: none; border-top: 1px solid var(--border); background: #050505; justify-content: space-evenly; padding: 5px; height: 55px; } }
+        @media (max-width: 1024px) { .social-sidebar { display: none; } }
         .copy-toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: #111; border: 1px solid #333; color: #fff; padding: 8px 14px; font-size: 0.75rem; border-radius: 6px; z-index: 9999; opacity: 0; animation: fadeToast 1.6s ease forwards; }
         @keyframes fadeToast { 0%{opacity:0; transform: translate(-50%, 10px);} 20%{opacity:1; transform: translate(-50%, 0);} 80%{opacity:1;} 100%{opacity:0;} }
         .container { max-width: 1100px; margin: 0 auto; padding: 20px 15px; min-height: 60vh; }
@@ -79,10 +78,22 @@
         .f-links { display: flex; flex-direction: column; gap: 12px; }
         .copyright { margin-top: 50px; border-top: 1px solid #1e293b; padding-top: 25px; text-align: center; font-size: 0.75rem; color: #475569; }
         .f-head { color: #fff; margin-bottom: 15px; text-transform: uppercase; font-size: 0.9rem; font-weight: 700; }
-        .hero-section { padding: 90px 15px 30px 15px; text-align: center; background: radial-gradient(circle at top, #1a0505 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); }
-        .hero-section h1 { margin: 0 0 20px 0; font-size: 1.8rem; font-weight: 800; }
-        .hero-section p { color: #999; font-size: 0.9rem; max-width: 800px; margin: 0 auto; }
-        .info-table { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px; max-width: 700px; margin: 0 auto 25px auto; padding: 20px; }
+        
+        /* --- NEW LAYOUT STYLES --- */
+        .hero-section { padding: 90px 15px 30px 15px; background: radial-gradient(circle at top, #1a0505 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); }
+        .hero-section h1 { text-align: center; margin: 0 0 20px 0; font-size: 1.8rem; font-weight: 800; }
+        .watch-grid { display: grid; max-width: 1400px; margin: 0 auto; gap: 20px; grid-template-columns: 300px 1fr 300px; }
+        .ad-sidebar, .chat-sidebar { background-color: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px; padding: 15px; text-align: center; height: 500px; } /* Placeholder height */
+        .media-column { text-align: center; }
+        @media(max-width: 1024px) {
+            .watch-grid { grid-template-columns: 1fr; }
+            .ad-sidebar { order: 2; height: 250px; } /* Ad moves below player on mobile */
+            .media-column { order: 1; }
+            .chat-sidebar { order: 3; }
+        }
+        .ad-sidebar p, .chat-sidebar p { color: var(--text-muted); font-weight: 600; }
+
+        .info-table { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px; margin: 0 auto 25px auto; padding: 20px; }
         .info-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #2a2a2a; }
         .info-row:last-child { border-bottom: none; }
         .info-label { color: var(--text-muted); }
@@ -90,10 +101,10 @@
         .info-value.live { color: var(--status-green); animation: pulse 1.5s infinite; }
         .btn-watch-action { display: inline-block; background: var(--brand-primary); color: white; font-size: 1.1rem; font-weight: 800; padding: 14px 40px; border-radius: 6px; text-transform: uppercase; transition: 0.2s; box-shadow: 0 4px 15px rgba(208,0,0,0.4); }
         .btn-watch-action:disabled { background: #222; color: #555; cursor: not-allowed; box-shadow: none; border: 1px solid #333; }
-        .btn-view-matches { display: inline-block; background: var(--accent-gold); color: #000; font-weight: 700; padding: 12px 30px; border-radius: 6px; margin-top: 10px; }
-        .player-container { background: #000; position: relative; }
-        .player-container iframe { width: 100%; height: 100%; border: none; aspect-ratio: 16/9; }
-        .fullscreen-btn { position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; border: 1px solid #555; border-radius: 4px; padding: 8px; cursor: pointer; z-index: 10; }
+        .btn-view-matches { display: inline-block; background: var(--accent-gold); color: #000; font-weight: 700; padding: 12px 30px; border-radius: 6px; }
+        .player-container { background: #000; position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; }
+        .player-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .fullscreen-btn { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; border: 1px solid #555; border-radius: 4px; padding: 8px; cursor: pointer; z-index: 10; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
     </style>
 </head>
@@ -113,13 +124,14 @@
     <div id="watch-container">
         <div class="hero-section">
             <h1 id="main-h1"></h1>
+            <!-- The new 3-column grid will be rendered inside this paragraph tag -->
             <p id="hero-paragraph"></p>
         </div>
     </div>
 
     <main class="container">
         <div class="seo-box" style="margin-top:20px; color:#aaa; font-size:0.9rem; line-height:1.6;">
-            <p>This is watch page test hsfsfsb dgsdgd</p>
+            
         </div>
         <div class="section-box" style="margin-top:50px;">
             <div class="sec-head"><div class="f-head">🏆 Popular Leagues</div></div>
@@ -230,12 +242,12 @@
                 const match = window.MATCH_DATA[streamId];
                 handleSeoAndCanonical(match, 'stream');
                 updateSeoTags(match);
-                renderPlayerView(match);
+                renderThreeColumnLayout(match, 'stream');
             } else if (infoId && window.MATCH_DATA[infoId]) {
                 const match = window.MATCH_DATA[infoId];
                 handleSeoAndCanonical(match, 'info');
                 updateSeoTags(match);
-                renderInfoView(match);
+                renderThreeColumnLayout(match, 'info');
             } else {
                 handleSeoAndCanonical(null, 'base');
                 renderBaseWatchPage();
@@ -247,7 +259,7 @@
             document.querySelectorAll('link[rel="canonical"], meta[name="robots"]').forEach(el => el.remove());
 
             let canonicalUrl = `${SITE_DOMAIN}/watch/`;
-            let robotsContent = "index, follow";
+            let robotsContent = "index, follow"; // Default for base and info pages
 
             if (mode === 'info' && match) {
                 canonicalUrl = `${SITE_DOMAIN}/watch/?match=${match.id}`;
@@ -271,7 +283,6 @@
             const matchTitle = match.team_b ? `${match.team_a} vs ${match.team_b}` : match.team_a;
             const startTime = match.formatted_date.replace('•', '').trim();
             const cleanDomain = SITE_DOMAIN.replace('https://', '');
-
             const newTitle = `${SITE_TITLE} - ${matchTitle} live stream | Start - ${startTime}`;
             const newDesc = `Watch ${matchTitle} on ${cleanDomain} completely free. No sign up required. Match start time is ${startTime}. Click the watch button and enjoy the stream!`;
 
@@ -281,63 +292,61 @@
             document.querySelector('meta[property="og:description"]').setAttribute("content", newDesc);
             document.querySelector('meta[name="twitter:title"]').setAttribute("content", newTitle);
             document.querySelector('meta[name="twitter:description"]').setAttribute("content", newDesc);
-            
             document.getElementById('main-h1').innerText = matchTitle;
         }
 
         function renderBaseWatchPage() {
             const heroParagraph = document.getElementById('hero-paragraph');
-            heroParagraph.innerHTML += `<br><br><a href="/" class="btn-view-matches">View Live & Upcoming Matches</a>`;
+            heroParagraph.innerHTML = `<a href="/" class="btn-view-matches">View Live & Upcoming Matches</a>`;
         }
 
-        function renderInfoView(match) {
+        function renderThreeColumnLayout(match, mode) {
             const heroParagraph = document.getElementById('hero-paragraph');
-            const watchUrl = `${SITE_DOMAIN}/watch/?id=${match.id}`;
-            let watchButtonHtml, viewersRow = '', statusClass = '', statusText = 'Upcoming';
+            let mediaContent = '';
 
-            if (match.is_live) {
-                watchButtonHtml = `<a href="${watchUrl}" class="btn-watch-action">📺 Watch Now</a>`;
-                viewersRow = `<div class="info-row"><span class="info-label">👀 Viewers</span><span class="info-value">${match.live_viewers || '10k+'}</span></div>`;
-                statusClass = 'live';
-                statusText = `Live - ${match.status_text || 'Playing'}`;
-            } else {
-                const diffMinutes = (match.startTimeUnix - Date.now()) / 60000;
-                if (diffMinutes > 0 && diffMinutes <= 30) {
-                    watchButtonHtml = `<a href="${watchUrl}" class="btn-watch-action">📺 Watch Now</a>`;
+            if (mode === 'stream') {
+                const streamUrl = match.streams && match.streams.length > 0 ? match.streams[0].embed_url : null;
+                if(streamUrl) {
+                    mediaContent = `<div class="player-container" id="player-wrapper">
+                        <iframe src="${streamUrl}" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                        <button class="fullscreen-btn" onclick="toggleFullScreen()">
+                            <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                        </button></div>`;
                 } else {
-                    watchButtonHtml = `<button class="btn-watch-action" disabled>⏳ Starts in ${match.status_text}</button>`;
+                    mediaContent = `<p>No stream available for this match.</p>`;
                 }
+            } else { // 'info' mode
+                const watchUrl = `${SITE_DOMAIN}/watch/?id=${match.id}`;
+                let watchButtonHtml, viewersRow = '', statusClass = '', statusText = 'Upcoming';
+
+                if (match.is_live) {
+                    watchButtonHtml = `<a href="${watchUrl}" class="btn-watch-action">📺 Watch Now</a>`;
+                    viewersRow = `<div class="info-row"><span class="info-label">👀 Viewers</span><span class="info-value">${match.live_viewers || '10k+'}</span></div>`;
+                    statusClass = 'live';
+                    statusText = `Live - ${match.status_text || 'Playing'}`;
+                } else {
+                    const diffMinutes = (match.startTimeUnix - Date.now()) / 60000;
+                    if (diffMinutes > 0 && diffMinutes <= 30) {
+                        watchButtonHtml = `<a href="${watchUrl}" class="btn-watch-action">📺 Watch Now</a>`;
+                    } else {
+                        watchButtonHtml = `<button class="btn-watch-action" disabled>⏳ Starts in ${match.status_text}</button>`;
+                    }
+                }
+                mediaContent = `<div class="info-table">
+                    <div class="info-row"><span class="info-label">Status</span><span class="info-value ${statusClass}">${statusText}</span></div>
+                    <div class="info-row"><span class="info-label">📅 Start Time</span><span class="info-value">${match.formatted_date.replace('•', 'at')}</span></div>
+                    <div class="info-row"><span class="info-label">🏆 Tournament</span><span class="info-value">${match.tournament || 'N/A'}</span></div>
+                    <div class="info-row"><span class="info-label">📺 Channels</span><span class="info-value">${match.streams ? match.streams.length : 0} Available</span></div>
+                    ${viewersRow}</div>${watchButtonHtml}`;
             }
 
-            const tableHtml = `<div class="info-table">
-                <div class="info-row"><span class="info-label">Status</span><span class="info-value ${statusClass}">${statusText}</span></div>
-                <div class="info-row"><span class="info-label">📅 Start Time</span><span class="info-value">${match.formatted_date.replace('•', 'at')}</span></div>
-                <div class="info-row"><span class="info-label">📺 Channels</span><span class="info-value">${match.streams ? match.streams.length : 0} Available</span></div>
-                ${viewersRow}</div>${watchButtonHtml}`;
-            
-            heroParagraph.innerHTML = tableHtml;
-        }
-
-        function renderPlayerView(match) {
-            const container = document.getElementById('watch-container');
-            if (!match.streams || match.streams.length === 0) {
-                container.innerHTML = `<div class="hero-section"><p>No streams available for this match.</p></div>`;
-                return;
-            }
-
-            const streamUrl = match.streams[0].embed_url;
-
-            if (!streamUrl) {
-                container.innerHTML = `<div class="hero-section"><p>Error: Stream URL is missing.</p></div>`;
-                return;
-            }
-
-            container.innerHTML = `<div class="player-container" id="player-wrapper">
-                <iframe src="${streamUrl}" allow="autoplay; fullscreen" allowfullscreen></iframe>
-                <button class="fullscreen-btn" onclick="toggleFullScreen()">
-                    <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-                </button></div>`;
-            document.getElementById('hero-paragraph').style.display = 'none';
+            heroParagraph.innerHTML = `
+                <div class="watch-grid">
+                    <div class="ad-sidebar"><p>300x250 Ad Space</p></div>
+                    <div class="media-column">${mediaContent}</div>
+                    <div class="chat-sidebar"><p>Live Chat</p></div>
+                </div>
+            `;
         }
         
         function toggleFullScreen() {
@@ -354,14 +363,14 @@
             const sb = document.getElementById('socialSidebar');
             if(!sb) return;
 
-            let shareUrl = `${SITE_DOMAIN}/watch/`;
+            let shareUrl = SITE_DOMAIN + '/'; // Default to homepage
             const params = new URLSearchParams(window.location.search);
             const streamId = params.get('id');
             const infoId = params.get('match');
 
-            if (streamId) {
+            if (streamId) { // On stream page
                 shareUrl = `${SITE_DOMAIN}/watch/?match=${streamId}`;
-            } else if (infoId) {
+            } else if (infoId) { // On info page
                 shareUrl = `${SITE_DOMAIN}/watch/?match=${infoId}`;
             }
 
@@ -382,24 +391,24 @@
             };
             
             let html = '';
-            // Add social buttons
-            for (const [p, url] of Object.entries(actions)) {
-                html += `<div class="social-btn ${p}" onclick="window.open('${url}', '_blank')">${icons[p]}<span class="s-count">${(SHARE_CONFIG.counts[p] / 1000).toFixed(1)}k</span></div>`;
+            for (const p in icons) {
+                const url = p === 'copy' ? `javascript:copyText('${shareUrl}')` : actions[p];
+                const target = p === 'copy' ? '' : 'target="_blank"';
+                const countHtml = p === 'copy' ? '' : `<span class="s-count">${(SHARE_CONFIG.counts[p] / 1000).toFixed(1)}k</span>`;
+                html += `<div class="social-btn ${p}" onclick="${p === 'copy' ? `copyText('${shareUrl}')` : `window.open('${url}', '_blank')`}">${icons[p]}${countHtml}</div>`;
             }
-            // Add copy button
-            html += `<div class="social-btn copy" onclick="copyText('${shareUrl}')">${icons.copy}</div>`;
-            
             sb.innerHTML = html;
         }
 
         function copyText(text) {
             navigator.clipboard.writeText(text);
-            const old = document.querySelector('.copy-toast');
-            if (old) old.remove();
-            const t = document.createElement('div');
-            t.className = 'copy-toast';
-            t.innerText = 'Link copied ✓';
-            document.body.appendChild(t);
+            const oldToast = document.querySelector('.copy-toast');
+            if (oldToast) oldToast.remove();
+            const toast = document.createElement('div');
+            toast.className = 'copy-toast';
+            toast.innerText = 'Link copied ✓';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 1600);
         }
         
         function highlightActiveMenu() {
@@ -408,7 +417,7 @@
                 if (link.getAttribute('href') === path) link.classList.add('active');
             });
         }
-        function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
+        function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
     </script>
 
 </body>
