@@ -32,7 +32,7 @@
     <!-- STATIC SCHEMAS -->
     {{SCHEMA_BLOCK}}
     
-    <!-- Canonical and Robots tags are now injected by JavaScript -->
+    <!-- Canonical and Robots tags are now injected by JavaScript for Safety -->
 
     <style>html { scroll-behavior: smooth; }</style>
     <style>
@@ -169,39 +169,76 @@
             } catch (e) { console.error("Failed to load match data:", e); }
         }
 
-        function initializeWatchPage() {
+        // ============================================
+        // 1. ROUTING LOGIC (Query Params)
+        // ============================================
+        function getMatchContext() {
             const params = new URLSearchParams(window.location.search);
-            const streamId = params.get('id');
-            const infoId = params.get('match');
+            
+            // A. Direct Stream (?stream=slug) - From Homepage Live Button
+            const streamSlug = params.get('stream');
+            if (streamSlug) {
+                return { mode: 'stream', id: extractId(streamSlug), slug: streamSlug };
+            }
 
-            if (streamId && window.MATCH_DATA[streamId]) {
-                const match = window.MATCH_DATA[streamId];
-                handleSeoAndCanonical(match, 'stream');
+            // B. Safe Info Page (?v=slug) - From Google Schema or Upcoming Button
+            const infoSlug = params.get('v');
+            if (infoSlug) {
+                return { mode: 'info', id: extractId(infoSlug), slug: infoSlug };
+            }
+
+            // C. Legacy Params (Backwards compatibility)
+            if (params.get('id')) return { mode: 'stream', id: params.get('id'), slug: null };
+            if (params.get('match')) return { mode: 'info', id: params.get('match'), slug: null };
+
+            return null;
+        }
+
+        function extractId(slug) {
+            if (!slug) return null;
+            const parts = slug.split('-');
+            return parts[parts.length - 1]; // MD5 hash is always at end
+        }
+
+        function initializeWatchPage() {
+            const ctx = getMatchContext();
+
+            if (ctx && window.MATCH_DATA[ctx.id]) {
+                const match = window.MATCH_DATA[ctx.id];
+                
+                // SEO: Force Canonical to point to safe ?v= version
+                handleSeoAndCanonical(match); 
                 updateSeoTags(match);
-                renderThreeColumnLayout(match, 'stream');
-            } else if (infoId && window.MATCH_DATA[infoId]) {
-                const match = window.MATCH_DATA[infoId];
-                handleSeoAndCanonical(match, 'info');
-                updateSeoTags(match);
-                renderThreeColumnLayout(match, 'info');
+
+                // ROUTING DECISION:
+                // 1. If user asks for stream AND match is live -> Show Player immediately
+                if (ctx.mode === 'stream' && match.is_live) {
+                    renderDirectPlayer(match);
+                } 
+                // 2. Otherwise (Upcoming, or ?v= link) -> Show Gatekeeper
+                else {
+                    renderGatekeeperLayout(match);
+                }
+                
             } else {
-                handleSeoAndCanonical(null, 'base');
+                handleSeoAndCanonical(null);
                 renderBaseWatchPage();
             }
             renderSocials();
         }
 
-        function handleSeoAndCanonical(match, mode) {
+        // ============================================
+        // 2. SEO & META MANAGEMENT
+        // ============================================
+        function handleSeoAndCanonical(match) {
             document.querySelectorAll('link[rel="canonical"], meta[name="robots"]').forEach(el => el.remove());
 
             let canonicalUrl = `${SITE_DOMAIN}/watch/`;
-            let robotsContent = "index, follow"; // Default for base and info pages
+            let robotsContent = "index, follow"; 
 
-            if (mode === 'info' && match) {
-                canonicalUrl = `${SITE_DOMAIN}/watch/?match=${match.id}`;
-            } else if (mode === 'stream' && match) {
-                canonicalUrl = `${SITE_DOMAIN}/watch/?match=${match.id}`;
-                robotsContent = "noindex, nofollow";
+            if (match) {
+                // IMPORTANT: We tell Google the authoritative URL is ?v=slug (Safe Page)
+                canonicalUrl = `${SITE_DOMAIN}/watch/?v=${match.slug}`;
             }
 
             const canonicalTag = document.createElement('link');
@@ -219,8 +256,8 @@
             const matchTitle = match.team_b ? `${match.team_a} vs ${match.team_b}` : match.team_a;
             const startTime = match.formatted_date.replace('•', '').trim();
             const cleanDomain = SITE_DOMAIN.replace('https://', '');
-            const newTitle = `${SITE_TITLE} - ${matchTitle} live stream | Start - ${startTime}`;
-            const newDesc = `Watch ${matchTitle} on ${cleanDomain} completely free. No sign up required. Match start time is ${startTime}. Click the watch button and enjoy the stream!`;
+            const newTitle = `${matchTitle} Live Stream | ${match.tournament} | ${SITE_TITLE}`;
+            const newDesc = `Live score, updates, and stream info for ${matchTitle} in ${match.tournament}. Match starts at ${startTime}. Watch on ${cleanDomain}.`;
 
             document.title = newTitle;
             document.querySelector('meta[name="description"]').setAttribute("content", newDesc);
@@ -236,51 +273,92 @@
             heroParagraph.innerHTML = `<a href="/" class="btn-view-matches">View Live & Upcoming Matches</a>`;
         }
 
-        function renderThreeColumnLayout(match, mode) {
+        // ============================================
+        // 3. LAYOUT MODES
+        // ============================================
+        
+        // MODE A: GATEKEEPER (Safe Info + Click to Play)
+        function renderGatekeeperLayout(match) {
             const heroParagraph = document.getElementById('hero-paragraph');
-            let mediaContent = '';
+            
+            let statusClass = '', statusText = 'Upcoming';
+            let actionButtonHtml = '';
+            let viewersHtml = '';
 
-            if (mode === 'stream') {
-                const streamUrl = match.streams && match.streams.length > 0 ? match.streams[0].embed_url : null;
+            if (match.is_live) {
+                statusClass = 'live';
+                statusText = `Live - ${match.status_text}`;
+                viewersHtml = `<div class="info-row"><span class="info-label">👀 Viewers</span><span class="info-value">${match.live_viewers || '10k+'}</span></div>`;
+                
+                const streamUrl = match.streams && match.streams.length > 0 ? match.streams[0].embed_url : '';
+                
                 if(streamUrl) {
-                    mediaContent = `<div class="player-container" id="player-wrapper">
-                        <iframe src="${streamUrl}" allow="autoplay; fullscreen" allowfullscreen></iframe>
-                        <button class="fullscreen-btn" onclick="toggleFullScreen()">
-                            <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-                        </button></div>`;
+                    // Google Bot does NOT click buttons -> Safe
+                    actionButtonHtml = `<button onclick="revealPlayer('${streamUrl}')" class="btn-watch-action">▶ Click to Play Stream</button>`;
                 } else {
-                    mediaContent = `<p>No stream available for this match.</p>`;
+                    actionButtonHtml = `<button disabled class="btn-watch-action">Stream Loading...</button>`;
                 }
-            } else { // 'info' mode
-                const watchUrl = `${SITE_DOMAIN}/watch/?id=${match.id}`;
-                let watchButtonHtml, viewersRow = '', statusClass = '', statusText = 'Upcoming';
-
-                if (match.is_live) {
-                    watchButtonHtml = `<a href="${watchUrl}" class="btn-watch-action">📺 Watch Now</a>`;
-                    viewersRow = `<div class="info-row"><span class="info-label">👀 Viewers</span><span class="info-value">${match.live_viewers || '10k+'}</span></div>`;
-                    statusClass = 'live';
-                    statusText = `Live - ${match.status_text || 'Playing'}`;
-                } else {
-                    const diffMinutes = (match.startTimeUnix - Date.now()) / 60000;
-                    if (diffMinutes > 0 && diffMinutes <= 30) {
-                        watchButtonHtml = `<a href="${watchUrl}" class="btn-watch-action">📺 Watch Now</a>`;
-                    } else {
-                        watchButtonHtml = `<button class="btn-watch-action" disabled>⏳ Starts in ${match.status_text}</button>`;
-                    }
-                }
-                mediaContent = `<div class="info-table">
-                    <div class="info-row"><span class="info-label">Status</span><span class="info-value ${statusClass}">${statusText}</span></div>
-                    <div class="info-row"><span class="info-label">📅 Start Time</span><span class="info-value">${match.formatted_date.replace('•', 'at')}</span></div>
-                    <div class="info-row"><span class="info-label">🏆 Tournament</span><span class="info-value">${match.tournament || 'N/A'}</span></div>
-                    <div class="info-row"><span class="info-label">📺 Channels</span><span class="info-value">${match.streams ? match.streams.length : 0} Available</span></div>
-                    ${viewersRow}</div>${watchButtonHtml}`;
+            } else {
+                statusText = `Starts in ${match.status_text}`;
+                actionButtonHtml = `<button class="btn-watch-action" disabled>⏳ Waiting for Match Start</button>`;
             }
+
+            const mediaContent = `
+                <div id="media-container">
+                    <div class="info-table">
+                        <div class="info-row"><span class="info-label">Status</span><span class="info-value ${statusClass}">${statusText}</span></div>
+                        <div class="info-row"><span class="info-label">📅 Start Time</span><span class="info-value">${match.formatted_date.replace('•', 'at')}</span></div>
+                        <div class="info-row"><span class="info-label">🏆 Tournament</span><span class="info-value">${match.tournament || 'N/A'}</span></div>
+                        <div class="info-row"><span class="info-label">📺 Channels</span><span class="info-value">${match.streams ? match.streams.length : 0} Available</span></div>
+                        ${viewersHtml}
+                    </div>
+                    ${actionButtonHtml}
+                    <p style="margin-top:15px; font-size:0.8rem; color:#666;">*Stream loads in a secure player. No sign-up required.</p>
+                </div>
+            `;
 
             heroParagraph.innerHTML = `
                 <div class="watch-grid">
-                    <div class="ad-sidebar"><p>300x250 Ad Space</p></div>
+                    <div class="ad-sidebar"><p>Ad Space Left</p></div>
                     <div class="media-column">${mediaContent}</div>
-                    <div class="chat-sidebar"><p>Live Chat</p></div>
+                    <div class="chat-sidebar"><p>Chat / Ads</p></div>
+                </div>
+            `;
+        }
+
+        // MODE B: DIRECT PLAYER (Instant Play for ?stream=)
+        function renderDirectPlayer(match) {
+            const streamUrl = match.streams && match.streams.length > 0 ? match.streams[0].embed_url : null;
+            if(streamUrl) {
+                // Directly show player iframe
+                renderPlayerFrame(streamUrl);
+            } else {
+                renderGatekeeperLayout(match); // Fallback
+            }
+        }
+
+        // Helper: Injects Iframe
+        window.revealPlayer = (url) => { renderPlayerFrame(url); }
+
+        function renderPlayerFrame(url) {
+            const heroParagraph = document.getElementById('hero-paragraph');
+            const mediaContent = `
+                <div class="player-container" id="player-wrapper">
+                    <iframe src="${url}" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                    <button class="fullscreen-btn" onclick="toggleFullScreen()">
+                        <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                    </button>
+                </div>
+                <div style="margin-top:15px;">
+                    <button onclick="window.location.reload()" class="btn-view-matches" style="background:#333; font-size:0.8rem;">Stop Stream & Return</button>
+                </div>
+            `;
+
+            heroParagraph.innerHTML = `
+                <div class="watch-grid">
+                    <div class="ad-sidebar"><p>Ad Space Left</p></div>
+                    <div class="media-column">${mediaContent}</div>
+                    <div class="chat-sidebar"><p>Chat / Ads</p></div>
                 </div>
             `;
         }
@@ -299,15 +377,14 @@
             const sb = document.getElementById('socialSidebar');
             if(!sb) return;
 
-            let shareUrl = SITE_DOMAIN + '/'; // Default to homepage
+            // SHARE LOGIC: Always share the SAFE info link
             const params = new URLSearchParams(window.location.search);
-            const streamId = params.get('id');
-            const infoId = params.get('match');
+            const matchId = getMatchContext()?.id;
+            let shareUrl = SITE_DOMAIN + '/';
 
-            if (streamId) { // On stream page
-                shareUrl = `${SITE_DOMAIN}/watch/?match=${streamId}`;
-            } else if (infoId) { // On info page
-                shareUrl = `${SITE_DOMAIN}/watch/?match=${infoId}`;
+            if(matchId && window.MATCH_DATA[matchId]) {
+                // Even if user is watching stream, sharing button gives the Safe Link
+                shareUrl = `${SITE_DOMAIN}/watch/?v=${window.MATCH_DATA[matchId].slug}`;
             }
 
             const encodedUrl = encodeURIComponent(shareUrl);
@@ -329,32 +406,35 @@
             let html = '';
             for (const p in icons) {
                 const url = p === 'copy' ? `javascript:copyText('${shareUrl}')` : actions[p];
-                const target = p === 'copy' ? '' : 'target="_blank"';
-                const countHtml = p === 'copy' ? '' : `<span class="s-count">${(SHARE_CONFIG.counts[p] / 1000).toFixed(1)}k</span>`;
-                html += `<div class="social-btn ${p}" onclick="${p === 'copy' ? `copyText('${shareUrl}')` : `window.open('${url}', '_blank')`}">${icons[p]}${countHtml}</div>`;
+                html += `<div class="social-btn ${p}" onclick="${p === 'copy' ? `copyText('${shareUrl}')` : `window.open('${url}', '_blank')`}">${icons[p]}</div>`;
             }
             sb.innerHTML = html;
         }
 
         function copyText(text) {
             navigator.clipboard.writeText(text);
-            const oldToast = document.querySelector('.copy-toast');
-            if (oldToast) oldToast.remove();
-            const toast = document.createElement('div');
-            toast.className = 'copy-toast';
-            toast.innerText = 'Link copied ✓';
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 1600);
+            const old = document.querySelector('.copy-toast');
+            if (old) old.remove();
+            const t = document.createElement('div');
+            t.className = 'copy-toast';
+            t.innerText = 'Link copied ✓';
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 1600);
         }
-        
+
         function highlightActiveMenu() {
             const path = window.location.pathname;
             document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(link => {
                 if (link.getAttribute('href') === path) link.classList.add('active');
             });
         }
-        function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
+        function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
+        function setNotify(btn) {
+            btn.classList.add('active');
+            btn.innerHTML = '✓ Set';
+            btn.disabled = true;
+            copyText('You’ll be notified before kickoff'); 
+        }
     </script>
-
 </body>
 </html>
