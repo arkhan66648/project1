@@ -538,7 +538,7 @@
             
             let linkHtml = '';
             if (hasLink) {
-                const slug = normalizeKey(iconKey) + '-streams'; 
+                const slug = normalizeKey(iconKey);
                 linkHtml = `<a href="/${slug}/" class="sec-right-link">View All ></a>`;
             }
             
@@ -564,12 +564,13 @@
             
             let teamsHtml = '';
             const tA = m.team_a; const tB = m.team_b;
+            const matchTitle = tB ? `${tA} vs ${tB}` : tA;
             if (!tB) {
                 teamsHtml = `<div class="team-name"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tA}</div>`;
             } else {
                 teamsHtml = `
-                <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tB}</div>
-                <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_b_letter||'T')}">${m.team_b_letter||'T'}</span> ${tA}</div>`;
+                <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tA}</div>
+                <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_b_letter||'T')}">${m.team_b_letter||'T'}</span> ${tB}</div>`;
             }
             
             let metaHtml = '';
@@ -585,14 +586,23 @@
             }
 
             let actionHtml = '';
-            
+            const watchUrl = `${SITE_DOMAIN}/watch/?id=${m.id}`;
+            const infoUrl = `${SITE_DOMAIN}/watch/#${m.id}`;
+            const watchBtn = `<a href="${watchUrl}" title="Watch ${matchTitle}" class="btn-watch">WATCH <span class="hd-badge">HD</span></a>`;
+            const copyBtn = `<button class="btn-copy-link" onclick="copyText('${infoUrl}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Copy Link</button>`;
+            const notifyBtn = `<button class="btn-watch btn-notify" onclick="setNotify(this)">🔔 NOTIFY</button>`;
+
             if (m.is_live) {
-                const matchTitle = m.team_b ? `${m.team_a} vs ${m.team_b}` : m.team_a;
-                actionHtml = `<a href="/watch/?id=${m.id}" title="Watch ${matchTitle}" class="btn-watch">WATCH <span class="hd-badge">HD</span></a>`;
+                actionHtml = watchBtn;
             } else {
-                const matchLink = `${SITE_DOMAIN}/watch/#${m.id}`;
-                const copyBtn = `<button class="btn-copy-link" onclick="copyText('${matchLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Copy Link</button>`;
-                actionHtml = `<button class="btn-watch btn-notify" onclick="setNotify(this)">🔔 NOTIFY</button>${copyBtn}`;
+                const now = Date.now();
+                const diffMinutes = (m.startTimeUnix - now) / 60000;
+                
+                if (diffMinutes > 0 && diffMinutes <= 30) {
+                    actionHtml = watchBtn + copyBtn;
+                } else {
+                    actionHtml = notifyBtn + copyBtn;
+                }
             }
             
             let tagText = "";
