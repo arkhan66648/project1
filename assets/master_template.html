@@ -578,7 +578,7 @@
 
             let actionHtml = '';
             const watchUrl = `${SITE_DOMAIN}/watch/?id=${m.id}`; // Direct stream URL
-            const infoUrl = `${SITE_DOMAIN}/watch/#${m.id}`;      // Info page URL
+            const infoUrl = `${SITE_DOMAIN}/watch/?match=${m.id}`;      // Info page URL
             
             // Button for LIVE matches (uses direct stream URL)
             const liveWatchBtn = `<a href="${watchUrl}" title="Watch ${matchTitle}" class="btn-watch">WATCH <span class="hd-badge">HD</span></a>`;
