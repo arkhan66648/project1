@@ -135,30 +135,30 @@ def render_page(template, config, page_data):
     # --- 4. SEO & Metadata ---
     layout = page_data.get('layout', 'page')
 
-    # --- MODIFICATION START ---
-    # If the layout is 'watch', render empty meta tags. Otherwise, use admin panel values.
     if layout == 'watch':
         html = html.replace('{{META_TITLE}}', '')
         html = html.replace('{{META_DESC}}', '')
-        # Also remove hardcoded canonical for watch page, JS will handle it
         html = html.replace('<link rel="canonical" href="{{CANONICAL_URL}}">', '')
+        # --- MODIFICATION START ---
+        # Also render H1 and Hero Text as empty for the watch page
+        html = html.replace('{{H1_TITLE}}', '')
+        html = html.replace('{{HERO_TEXT}}', '')
+        # --- MODIFICATION END ---
     else:
         html = html.replace('{{META_TITLE}}', page_data.get('meta_title') or f"{site_name} - {page_data.get('title')}")
         html = html.replace('{{META_DESC}}', page_data.get('meta_desc', ''))
-        # Standard canonical logic for all other pages
+        html = html.replace('{{H1_TITLE}}', page_data.get('title', ''))
+        html = html.replace('{{HERO_TEXT}}', page_data.get('hero_text') or page_data.get('meta_desc', ''))
+        
         canon = page_data.get('canonical_url', '')
         if not canon and page_data.get('slug'):
             canon_slug = page_data.get('slug')
             canon = f"https://{domain}/{canon_slug}/" if canon_slug != 'home' else f"https://{domain}/"
         html = html.replace('{{CANONICAL_URL}}', canon)
-    # --- MODIFICATION END ---
     
     keywords = page_data.get('meta_keywords', '')
     if keywords: html = html.replace('{{META_KEYWORDS}}', f'<meta name="keywords" content="{keywords}">')
     else: html = html.replace('{{META_KEYWORDS}}', '')
-
-    html = html.replace('{{H1_TITLE}}', page_data.get('title', ''))
-    html = html.replace('{{HERO_TEXT}}', page_data.get('hero_text') or page_data.get('meta_desc', ''))
 
     # --- 5. Layout Logic (for master_template only) ---
     if layout == 'home':
@@ -181,7 +181,6 @@ def render_page(template, config, page_data):
 
     # --- 7. STATIC SCHEMA GENERATION ---
     schemas = []
-    # (Schema logic remains unchanged)
     page_schemas = page_data.get('schemas', {})
     if page_schemas.get('org'):
         schemas.append({"@context": "https://schema.org", "@type": "Organization", "@id": f"https://{domain}/#organization", "name": site_name, "url": f"https://{domain}/", "logo": {"@type": "ImageObject", "url": og_image}})
