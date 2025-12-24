@@ -140,9 +140,7 @@
     </header>
     <div class="mobile-menu" id="mobileMenu"><a href="#">Schedule</a><a href="/#faqs">FAQs</a><a href="/#comeback" style="color:#facc15; border-bottom:1px solid #facc15;">How we comeback</a></div>
 
-    <!-- This container is the new dynamic heart of the page -->
     <div id="watch-container">
-        <!-- Default view for /watch/ -->
         <div class="hero-section">
             <h1 id="main-h1">Watch Now</h1>
             <p id="hero-paragraph">Meta testing for watch </p>
@@ -150,9 +148,8 @@
     </div>
 
     <main class="container">
-        <!-- The article content will always appear here -->
         <div class="seo-box" style="margin-top:20px; color:#aaa; font-size:0.9rem; line-height:1.6;">
-            <p>This is watch page</p>
+            <p>This is watch page test</p>
         </div>
 
         <div class="section-box" style="margin-top:50px;">
@@ -243,13 +240,12 @@
         <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
     </button>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
     <script>
         const API_URL = "https://vercelapi-olive.vercel.app/api/sync-nodes";
         const TARGET_COUNTRY = "US";
         const SITE_DOMAIN = "https://crackstreams.help";
-        const SHARE_CONFIG = {"excluded": ["dmca", "contact", "about", "privacy"], "counts": {"telegram": "12000", "whatsapp": "14400", "reddit": "60077", "twitter": "5544"}};
-        const SECRET_KEY = "12345678901234567890123456789012";
+        const SITE_TITLE = "StreamEast"; // New variable for SEO
+        const SHARE_CONFIG = {"excluded": ["dmca", "contact", "about", "privacy"], "counts": {"telegram": 12000, "whatsapp": 14400, "reddit": 60077, "twitter": 5544}};
 
         let allMatches = [];
         window.MATCH_DATA = {}; 
@@ -286,15 +282,16 @@
                 renderInfoView(match);
             }
             
-            // This function call is now conditional based on URL
             renderSocials();
         }
 
         function updateSeoTags(match) {
             const matchTitle = match.team_b ? `${match.team_a} vs ${match.team_b}` : match.team_a;
-            const streamCount = match.streams ? match.streams.length : 0;
-            const newTitle = `Watch ${matchTitle} - ${match.formatted_date.split('•')[1]} - ${streamCount} Streams Available`;
-            const newDesc = `Watch the live stream of ${matchTitle}. Match scheduled for ${match.formatted_date}. Catch all the action live with multiple stream options available.`;
+            const startTime = match.formatted_date.replace('•', 'at').trim();
+            const cleanDomain = SITE_DOMAIN.replace('https://', '');
+
+            const newTitle = `${SITE_TITLE} - ${matchTitle} live stream | Start - ${startTime}`;
+            const newDesc = `Watch ${matchTitle} on ${cleanDomain} completely free. No sign up required. Match start time is ${startTime}. Click the watch button and enjoy the stream!`;
 
             document.title = newTitle;
             document.querySelector('meta[name="description"]').setAttribute("content", newDesc);
@@ -307,14 +304,12 @@
         }
 
         function renderInfoView(match) {
-            const container = document.getElementById('watch-container');
             const heroParagraph = document.getElementById('hero-paragraph');
-            
             const watchButtonUrl = `/watch/?id=${match.id}`;
             let watchButtonHtml;
             let viewersRow = '';
             let statusClass = '';
-            let statusText = `Upcoming`;
+            let statusText = 'Upcoming';
 
             if (match.is_live) {
                 watchButtonHtml = `<a href="${watchButtonUrl}" class="btn-watch-action">📺 Watch Now <span style="font-size: 0.7em; background: rgba(0,0,0,0.3); padding: 2px 5px; border-radius: 4px; margin-left: 5px;">HD</span></a>`;
@@ -322,7 +317,16 @@
                 statusClass = 'live';
                 statusText = `Live - ${match.status_text || 'Playing'}`;
             } else {
-                watchButtonHtml = `<button class="btn-watch-action" disabled>⏳ Coming Soon</button>`;
+                const now = Date.now();
+                const diffMinutes = (match.startTimeUnix - now) / 60000;
+
+                if (diffMinutes > 0 && diffMinutes <= 30) {
+                    // Match starts soon - show active watch button linking to stream page
+                    watchButtonHtml = `<a href="${watchButtonUrl}" class="btn-watch-action">📺 Watch Now</a>`;
+                } else {
+                    // Match is not starting soon
+                    watchButtonHtml = `<button class="btn-watch-action" disabled>⏳ Starts in ${match.status_text}</button>`;
+                }
                 statusClass = '';
                 statusText = `Upcoming`;
             }
@@ -335,7 +339,7 @@
                     </div>
                     <div class="info-row">
                         <span class="info-label">📅 Start Time</span>
-                        <span class="info-value">${match.formatted_date}</span>
+                        <span class="info-value">${match.formatted_date.replace('•', 'at')}</span>
                     </div>
                      <div class="info-row">
                         <span class="info-label">📺 Channels</span>
@@ -356,14 +360,11 @@
                 return;
             }
 
-            const firstStream = match.streams[0];
-            let streamUrl = firstStream.url;
-            if (firstStream.encrypted_data) {
-                streamUrl = decryptStreamUrl(firstStream.encrypted_data);
-            }
+            // Simplified: Directly use the stream URL
+            const streamUrl = match.streams[0].url;
 
             if (!streamUrl) {
-                container.innerHTML = `<div class="hero-section"><p>Error loading stream.</p></div>`;
+                container.innerHTML = `<div class="hero-section"><p>Error: Stream URL is missing.</p></div>`;
                 return;
             }
 
@@ -375,30 +376,12 @@
                     </button>
                 </div>
             `;
-            // Hide the default hero paragraph when player is active
             document.getElementById('hero-paragraph').style.display = 'none';
-        }
-
-        function decryptStreamUrl(encryptedString) {
-            try {
-                if (!window.CryptoJS) return null;
-                const parts = encryptedString.split(':');
-                if (parts.length !== 2) return null;
-
-                const iv = CryptoJS.enc.Hex.parse(parts[0]);
-                const ct = CryptoJS.enc.Hex.parse(parts[1]);
-                const key = CryptoJS.enc.Utf8.parse(SECRET_KEY);
-                
-                const dec = CryptoJS.AES.decrypt({ ciphertext: ct }, key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
-                return dec.toString(CryptoJS.enc.Utf8);
-            } catch (e) {
-                console.error("Decryption Error:", e);
-                return null;
-            }
         }
         
         function toggleFullScreen() {
             const elem = document.getElementById('player-wrapper');
+            if (!elem) return;
             if (!document.fullscreenElement) {
                 elem.requestFullscreen().catch(err => {
                     alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
@@ -412,12 +395,11 @@
             const sb = document.getElementById('socialSidebar');
             if(!sb) return;
 
-            let shareUrl = SITE_DOMAIN + window.location.pathname; // Default share URL
+            let shareUrl = SITE_DOMAIN + window.location.pathname; 
             const params = new URLSearchParams(window.location.search);
             const streamId = params.get('id');
             const infoId = window.location.hash.substring(1);
 
-            // IMPORTANT: Modify share URL if viewing a stream
             if (streamId) {
                 shareUrl = `${SITE_DOMAIN}/watch/#${streamId}`;
             } else if (infoId) {
