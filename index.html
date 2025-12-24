@@ -661,20 +661,27 @@
             }
 
             let actionHtml = '';
-            const watchUrl = `${SITE_DOMAIN}/watch/?id=${m.id}`;
-            const infoUrl = `${SITE_DOMAIN}/watch/#${m.id}`;
-            const watchBtn = `<a href="${watchUrl}" title="Watch ${matchTitle}" class="btn-watch">WATCH <span class="hd-badge">HD</span></a>`;
+            const watchUrl = `${SITE_DOMAIN}/watch/?id=${m.id}`; // Direct stream URL
+            const infoUrl = `${SITE_DOMAIN}/watch/#${m.id}`;      // Info page URL
+            
+            // Button for LIVE matches (uses direct stream URL)
+            const liveWatchBtn = `<a href="${watchUrl}" title="Watch ${matchTitle}" class="btn-watch">WATCH <span class="hd-badge">HD</span></a>`;
+            
+            // Button for UPCOMING matches (uses info page URL)
+            const upcomingWatchBtn = `<a href="${infoUrl}" title="View Info for ${matchTitle}" class="btn-watch">WATCH <span class="hd-badge">HD</span></a>`;
+
             const copyBtn = `<button class="btn-copy-link" onclick="copyText('${infoUrl}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Copy Link</button>`;
             const notifyBtn = `<button class="btn-watch btn-notify" onclick="setNotify(this)">🔔 NOTIFY</button>`;
 
             if (m.is_live) {
-                actionHtml = watchBtn;
+                actionHtml = liveWatchBtn;
             } else {
                 const now = Date.now();
                 const diffMinutes = (m.startTimeUnix - now) / 60000;
                 
                 if (diffMinutes > 0 && diffMinutes <= 30) {
-                    actionHtml = watchBtn + copyBtn;
+                    // This is the corrected line. It now uses the button that links to the info page.
+                    actionHtml = upcomingWatchBtn + copyBtn;
                 } else {
                     actionHtml = notifyBtn + copyBtn;
                 }
