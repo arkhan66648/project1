@@ -22,31 +22,26 @@
     <meta property="og:image:type" content="image/webp">
     <meta property="og:image:alt" content="StreamEast Logo">
 
-    <!-- TWITTER CARDS (Using 'summary' for Logo optimization) -->
+    <!-- TWITTER CARDS -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="sfsfs">
     <meta name="twitter:description" content="sdssdfs">
     <meta name="twitter:image" content="https://crackstreams.help/assets/test-logo.webp">
-    <!-- No twitter:site or creator tags, maintaining anonymity -->
     
-    <!-- ROBOTS (Maximize Snippets) -->
+    <!-- ROBOTS -->
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     
-    <!-- FAVICON (Supports PNG, ICO, JPG) -->
+    <!-- FAVICON -->
     <link rel="icon" href="/assets/Untitled%20design%20(46)-min.png">
     <link rel="canonical" href="https://crackstreams.help/dmca/">
-    <!-- PRELOAD LOGO -->
-<link rel="preload" as="image" href="/assets/test-logo.webp" fetchpriority="high">
+    <link rel="preload" as="image" href="/assets/test-logo.webp" fetchpriority="high">
     
-    <!-- STATIC SCHEMAS (Org, Website, FAQ) - Hardcoded by Build Script -->
+    <!-- STATIC SCHEMAS -->
     
 
     <style>html { scroll-behavior: smooth; }</style>
 
     <style>
-        /* =========================================
-           1. GLOBAL VARIABLES & RESET
-           ========================================= */
         :root {
             --brand-primary: #D00000;
             --brand-dark: #8a0000;
@@ -83,7 +78,6 @@
         .logo-text { font-size: 1.4rem; font-weight: 900; font-style: italic; letter-spacing: -1px; text-transform: uppercase; line-height: 1; }
         .logo-text span { color: var(--brand-primary); }
         
-        /* NAV LINKS (Fixed Hover) */
         .nav-links { display: none; gap: 20px; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: #aaa; height: 100%; }
         .nav-links a { display: flex; align-items: center; height: 100%; border-bottom: 2px solid transparent; transition: all 0.2s ease; }
         .nav-links a:hover, .nav-links a.active { color: white; border-bottom-color: var(--brand-primary); }
@@ -106,11 +100,12 @@
         .social-btn.copy     { color: #9aa0a6; }
         .social-btn:hover { background: #141414; border-color: #2a2a2a; transform: translateX(2px) scale(1.04); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         .s-count { font-size: 0.65rem; font-weight: 700; color: #94a3b8; letter-spacing: 0.3px; }
-        @media (max-width: 768px) {
-            .social-sidebar { top: auto; bottom: 0; left: 0; right: 0; transform: none; flex-direction: row; width: 100%; border-radius: 0; border: none; border-top: 1px solid var(--border); background: #050505; justify-content: space-evenly; padding: 5px; height: 55px; gap: 0; }
-            .social-btn { height: 100%; width: auto; padding: 0 10px; border: none; }
-            .social-btn:hover { background: transparent; transform: none; box-shadow: none; }
+        
+        /* NOTE: Sidebar hides on screens smaller than 1024px. This matches your request. */
+        @media (max-width: 1024px) {
+            .social-sidebar { display: none; }
         }
+        
         .copy-toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: #111; border: 1px solid #333; color: #fff; padding: 8px 14px; font-size: 0.75rem; border-radius: 6px; z-index: 9999; opacity: 0; animation: fadeToast 1.6s ease forwards; }
         @keyframes fadeToast { 0% { opacity: 0; transform: translate(-50%, 10px); } 20% { opacity: 1; transform: translate(-50%, 0); } 80% { opacity: 1; } 100% { opacity: 0; } }
         @media (max-width: 768px) { .copy-toast { bottom: 70px; } }
@@ -132,7 +127,7 @@
         .sec-right-link { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; }
         .sec-right-link:hover { color: var(--brand-primary); text-decoration: underline; }
         
-        /* MATCH ROW STYLES (Grid Layout) */
+        /* MATCH ROW STYLES */
         .match-row { display: grid; grid-template-columns: 45px 1fr 50px 75px; align-items: center; gap: 8px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 6px; padding: 10px 8px 5px 8px; margin-bottom: 8px; position: relative; transition: 0.2s; }
         .match-row:hover { border-color: #444; transform: translateY(-2px); }
         .match-row.live { border-left: 3px solid var(--brand-primary); background: linear-gradient(90deg, rgba(208,0,0,0.06) 0%, rgba(20,20,20,0.8) 100%); }
@@ -153,7 +148,6 @@
         .col-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; justify-content: center; }
         .meta-top { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); white-space: nowrap; }
         
-        /* ACTION COLUMN (Flex Stack) */
         .col-action { margin-left: auto; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
         
         .btn-watch { background: var(--brand-primary); color: white; font-size: 0.65rem; font-weight: 800; padding: 6px 10px; border-radius: 4px; width: 100%; text-transform: uppercase; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; gap:5px; height: 26px; }
@@ -162,7 +156,6 @@
         .btn-notify { background: transparent; border: 1px solid #333; color: #888; padding: 0; box-shadow: none; justify-content: center; transition: all 0.25s ease; height: 26px; }
         .btn-notify.active { border-color: var(--status-green); color: var(--status-green); background: rgba(0, 230, 118, 0.08); cursor: default; }
         
-        /* COPY LINK BUTTON STYLE */
         .btn-copy-link { background: none; border: none; color: #888; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: 0.2s; padding: 0; margin-top: 5px;}
         .btn-copy-link:hover { color: var(--status-green); }
         .btn-copy-link svg { width: 10px; height: 10px; fill: currentColor; }
@@ -170,37 +163,15 @@
         .show-more-btn { display: block; width: 100%; max-width: 300px; margin: 20px auto; background: #151515; border: 1px solid #333; color: #ccc; padding: 12px; border-radius: 30px; font-weight: 600; font-size: 0.85rem; transition:0.2s; cursor: pointer; }
         .show-more-btn:hover { border-color: var(--brand-primary); color: #fff; background: #1a1a1a; }
         
-        /* FIXED: PROFESSIONAL FOOTER LEAGUES GRID */
-        .leagues-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Auto-responsive */
-            gap: 12px; 
-            margin-top: 15px; 
-        }
-        
-        .league-card { 
-            background: #111; 
-            border: 1px solid var(--border); 
-            padding: 10px 15px; /* Compact padding */
-            border-radius: 4px; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            transition: 0.2s; 
-            white-space: nowrap;
-            overflow: hidden;
-        }
+        .leagues-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 15px; }
+        .league-card { background: #111; border: 1px solid var(--border); padding: 10px 15px; border-radius: 4px; display: flex; align-items: center; gap: 10px; transition: 0.2s; white-space: nowrap; overflow: hidden; }
         .league-card:hover { border-color: var(--brand-primary); background: #1a1a1a; transform: translateY(-2px); }
         .league-card span { font-size: 0.8rem; font-weight: 700; color: #ccc; overflow: hidden; text-overflow: ellipsis; }
         .l-icon { font-size: 1.1rem; }
         
-        /* FOOTER GENERAL FIXES */
-        footer { background: linear-gradient(180deg, #0e0e0e 0%, #050505 100%); border-top: 1px solid var(--border); border-top: 1px solid var(--border); padding: 60px 20px 30px 20px; margin-top: 60px; }
+        footer { background: linear-gradient(180deg, #0e0e0e 0%, #050505 100%); border-top: 1px solid var(--border); padding: 60px 20px 30px 20px; margin-top: 60px; }
         .footer-grid { display: grid; grid-template-columns: 1fr; gap: 40px; max-width: 1100px; margin: 0 auto; text-align: center; }
-        @media(min-width: 768px) { 
-            .footer-grid { grid-template-columns: 1fr 1fr; text-align: left; } 
-            .footer-grid div:last-child { text-align: right; } 
-        }
+        @media(min-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; text-align: left; } .footer-grid div:last-child { text-align: right; } }
         .f-brand h2 { margin: 0 0 15px 0; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: -1px; }
         .f-desc { color: #64748b; font-size: 0.85rem; line-height: 1.6; max-width: 400px; margin: 0 auto; }
         @media(min-width: 768px) { .f-desc { margin: 0; } }
@@ -208,11 +179,8 @@
         .f-link { color: #94a3b8; font-size: 0.9rem; font-weight: 500; transition: 0.2s; }
         .f-link:hover { color: white; transform: translateX(5px); }
         .copyright { margin-top: 50px; border-top: 1px solid #1e293b; padding-top: 25px; text-align: center; font-size: 0.75rem; color: #475569; }
-
-        /* REPLACED H4 WITH DIV FOR SEO/ACCESSIBILITY */
         .f-head { color: #fff; margin-bottom: 15px; text-transform: uppercase; font-size: 0.9rem; font-weight: 700; }
         
-        /* BACK TO TOP (FADE LOGIC) */
         .back-to-top { position: fixed; bottom: 80px; right: 20px; background: var(--brand-primary); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; opacity: 0; visibility: hidden; transition: 0.3s; z-index: 90; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         .back-to-top.show { opacity: 1; visibility: visible; }
         .back-to-top svg { width: 24px; height: 24px; fill: white; }
@@ -637,18 +605,19 @@
                  `;
             }
 
+            // === UPDATED ACTION LOGIC FOR SEO & USER EXPERIENCE ===
             let actionHtml = '';
             
-            // 1. SAFE LINK (For Copy Link & Upcoming) -> Loads Info/Gatekeeper (?v=)
-            const infoLink = `${SITE_DOMAIN}/watch/?v=${m.slug}`;
+            // 1. Fallback for Slug (Prevents "No Match" Error if backend is outdated)
+            const slug = m.slug || `match-${m.id}`;
             
-            // 2. DIRECT LINK (For Watch Button on Live) -> Loads Player Immediately (?stream=)
-            const streamLink = `${SITE_DOMAIN}/watch/?stream=${m.slug}`;
+            // 2. Safe URL (For Google/Info) -> ?v=
+            const infoLink = `${SITE_DOMAIN}/watch/?v=${slug}`;
             
-            // Button for LIVE matches (uses direct stream URL)
+            // 3. Stream URL (For Users) -> ?stream=
+            const streamLink = `${SITE_DOMAIN}/watch/?stream=${slug}`;
+            
             const liveWatchBtn = `<a href="${streamLink}" title="Watch ${matchTitle}" class="btn-watch">WATCH <span class="hd-badge">HD</span></a>`;
-            
-            // Button for UPCOMING matches (uses info page URL)
             const upcomingWatchBtn = `<a href="${infoLink}" title="View Info for ${matchTitle}" class="btn-watch">WATCH <span class="hd-badge">HD</span></a>`;
 
             const copyBtn = `<button class="btn-copy-link" onclick="copyText('${infoLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Copy Link</button>`;
@@ -666,6 +635,7 @@
                     actionHtml = notifyBtn + copyBtn;
                 }
             }
+            // =======================================================
             
             let tagText = "";
             if (context.isTrendingLive) {
@@ -726,12 +696,16 @@
             };
             
             let html = '';
-            for (const p in icons) {
-                const url = p === 'copy' ? `javascript:copyText('${shareUrl}')` : actions[p];
-                const target = p === 'copy' ? '' : 'target="_blank"';
-                const countHtml = p === 'copy' ? '' : `<span class="s-count">${(SHARE_CONFIG.counts[p] / 1000).toFixed(1)}k</span>`;
-                html += `<div class="social-btn ${p}" onclick="${p === 'copy' ? `copyText('${shareUrl}')` : `window.open('${url}', '_blank')`}">${icons[p]}${countHtml}</div>`;
-            }
+            ['telegram', 'whatsapp', 'reddit', 'twitter', 'copy'].forEach(p => {
+                let onclick = '';
+                if (p === 'copy') {
+                    onclick = `onclick="copyText('${SITE_DOMAIN}')"`;
+                } else {
+                    onclick = `onclick="window.open('${actions[p]}', '_blank')"`;
+                }
+                const countHtml = p === 'copy' ? '' : `<span class="s-count">${formatCount(SHARE_CONFIG.counts[p])}</span>`;
+                html += `<div class="social-btn ${p}" ${onclick}>${icons[p]}${countHtml}</div>`;
+            });
             sb.innerHTML = html;
         }
 
