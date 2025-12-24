@@ -277,7 +277,7 @@
       "title": "Watch Now",
       "slug": "watch",
       "layout": "watch",
-      "content": "<p>This is watch page test hsfsfsb dgsdgd</p>",
+      "content": "",
       "schemas": {
         "org": false,
         "faq_list": [],
