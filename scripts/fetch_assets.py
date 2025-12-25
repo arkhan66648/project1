@@ -21,7 +21,8 @@ HEADERS = {
     'Accept': 'application/json'
 }
 
-# Mapping: "Common Name" -> "Official TSDB Name"
+# CORRECTED TSDB LEAGUE NAMES
+# These must match exactly what is in TheSportsDB database
 TARGET_LEAGUES = {
     # Soccer
     "Premier League": "English Premier League",
@@ -42,13 +43,12 @@ TARGET_LEAGUES = {
     "NBA": "NBA",
     "NFL": "NFL",
     "NHL": "NHL",
-    "MLB": "Major League Baseball",
-    "NCAA Football": "NCAA Division 1",
-    "NCAA Basketball": "NCAA Division I Basketball",
+    "MLB": "MLB", # FIXED: Was "Major League Baseball"
+    "NCAA Football": "NCAA Division 1", # Note: TSDB data is sparse here
     
-    # Cricket / Rugby / Other
+    # Others
     "Big Bash League": "Australian Big Bash League",
-    "SA20": "South African SA20",
+    "SA20": "South African SA20", # Note: Might be missing in Free Tier
     "United Rugby Championship": "United Rugby Championship",
     "Top 14": "French Top 14",
     "Premiership Rugby": "English Premiership Rugby",
@@ -67,7 +67,7 @@ def normalize_filename(name):
 
 def process_and_save_image(url, save_path):
     """Downloads, Resizes to 60x60, Converts to WEBP"""
-    # SAFETY CHECK 1: If file exists, DO NOT download again.
+    # Check if file exists to save bandwidth
     if os.path.exists(save_path): 
         return False 
     
@@ -76,14 +76,13 @@ def process_and_save_image(url, save_path):
         if resp.status_code == 200:
             img = Image.open(BytesIO(resp.content))
             
-            # Convert to RGBA (Transparency)
             if img.mode != 'RGBA': 
                 img = img.convert('RGBA')
             
-            # Resize to exactly 60x60
+            # High Quality Resize
             img = img.resize((60, 60), Image.Resampling.LANCZOS)
             
-            # Save as WEBP
+            # Save
             img.save(save_path, 'WEBP', quality=90)
             return True
     except Exception:
@@ -100,7 +99,9 @@ def fetch_sports_logos():
         if data.get('sports'):
             for s in data['sports']:
                 name = s['strSport']
+                # Safely get URL
                 url = s.get('strSportIconGreen') or s.get('strSportThumb')
+                
                 if url:
                     path = os.path.join(DIRS['sports'], f"{normalize_filename(name)}.webp")
                     process_and_save_image(url, path)
@@ -113,35 +114,37 @@ def fetch_league_and_teams(tsdb_name):
     try:
         data = requests.get(url, headers=HEADERS, timeout=10).json()
         
+        # KEY FIX: Check if 'teams' is None before iterating
         if data and data.get('teams'):
             new_count = 0
             for t in data['teams']:
-                team_name = t['strTeam']
-                badge_url = t['strTeamBadge']
+                # KEY FIX: Use .get() to avoid crashing if key is missing
+                team_name = t.get('strTeam')
+                badge_url = t.get('strTeamBadge')
                 
-                if badge_url:
+                if team_name and badge_url:
                     slug = normalize_filename(team_name)
                     path = os.path.join(DIRS['teams'], f"{slug}.webp")
                     
-                    # This function returns True ONLY if it downloaded a NEW file
                     if process_and_save_image(badge_url, path):
                         new_count += 1
                         
-                    # Also save Alternate names if present
-                    if t.get('strAlternate'):
-                        slug_alt = normalize_filename(t['strAlternate'])
+                    # Save Alternate name if exists
+                    alt_name = t.get('strAlternate')
+                    if alt_name:
+                        slug_alt = normalize_filename(alt_name)
                         path_alt = os.path.join(DIRS['teams'], f"{slug_alt}.webp")
                         process_and_save_image(badge_url, path_alt)
 
             if new_count > 0:
                 print(f"   [+] {tsdb_name}: Downloaded {new_count} new logos.")
             else:
-                print(f"   [OK] {tsdb_name}: All logos up to date.")
+                print(f"   [OK] {tsdb_name}: Logos up to date.")
         else:
-            print(f"   [-] {tsdb_name}: No teams found (Check TSDB Name).")
+            print(f"   [-] {tsdb_name}: No teams found (or league name invalid).")
 
     except Exception as e:
-        print(f"   [!] Error {tsdb_name}: {e}")
+        print(f"   [!] Connection Error for {tsdb_name}: {e}")
 
 # ==========================================
 # 4. MAIN
@@ -163,8 +166,8 @@ def main():
         print(f" > [{i+1}/{total}] Checking: {tsdb_name}")
         fetch_league_and_teams(tsdb_name)
         
-        # SAFETY CHECK 2: Sleep to prevent rate limit (30 req/min)
-        time.sleep(2.0)
+        # Rate limit protection (Free Tier is strict)
+        time.sleep(1.5)
 
 if __name__ == "__main__":
     main()
