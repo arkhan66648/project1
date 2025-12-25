@@ -16,7 +16,6 @@ DIRS = {
     'sports': os.path.join(BASE_DIR, 'sports')
 }
 
-# Mimic a real browser to avoid 403 Forbidden errors on images
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -28,7 +27,14 @@ TARGET_LEAGUES = {
     "NBA": "NBA",
     "NFL": "NFL",
     "La Liga": "Spanish La Liga",
-    "F1": "Formula 1"
+    "F1": "Formula 1",
+    "UFC": "UFC",
+    "MLB": "MLB",
+    "NHL": "NHL",
+    "Bundesliga": "German Bundesliga",
+    "Serie A": "Italian Serie A",
+    "Ligue 1": "French Ligue 1",
+    "Champions League": "UEFA Champions League"
 }
 
 # ==========================================
@@ -39,16 +45,25 @@ def normalize_filename(name):
     clean = str(name).strip().replace("_", " ").replace(".", "")
     return "".join([c for c in clean.lower() if c.isalnum() or c == '-']).strip()
 
+def ensure_dir(path):
+    """
+    Fixes [Errno 17]: Checks if a FILE exists where we want a FOLDER.
+    If so, it deletes the file and creates the folder.
+    """
+    if os.path.exists(path):
+        if os.path.isfile(path):
+            print(f"   [!] Warning: Found a FILE named '{path}'. Deleting it to create directory.")
+            os.remove(path)
+    os.makedirs(path, exist_ok=True)
+
 def process_and_save_image(url, save_path):
-    # Skip if exists
+    # Skip if exists to save bandwidth and API calls
     if os.path.exists(save_path): 
         return False 
     
     try:
-        # Download with timeout
         resp = requests.get(url, headers=HEADERS, timeout=10)
         
-        # DEBUG: Print if image download fails
         if resp.status_code != 200:
             print(f"       [!] Image Download Failed: {resp.status_code} for {url}")
             return False
@@ -90,10 +105,8 @@ def fetch_league_and_teams(tsdb_name):
     url = f"{TSDB_BASE}/search_all_teams.php?l={encoded}"
     
     try:
-        # Request API
         resp = requests.get(url, headers=HEADERS, timeout=10)
         
-        # DEBUG: Check if API blocked us
         if resp.status_code != 200:
             print(f"   [!] API BLOCKED: Status {resp.status_code}")
             return
@@ -102,16 +115,14 @@ def fetch_league_and_teams(tsdb_name):
         
         if data and data.get('teams'):
             teams = data['teams']
-            print(f"   [i] Found {len(teams)} teams in {tsdb_name}. Downloading...")
+            # print(f"   [i] Found {len(teams)} teams in {tsdb_name}...")
             
             new_count = 0
             for t in teams:
                 team_name = t.get('strTeam')
                 badge_url = t.get('strTeamBadge')
                 
-                # DEBUG: Warn if badge is missing
                 if not badge_url:
-                    print(f"       [?] No badge URL for {team_name}")
                     continue
 
                 slug = normalize_filename(team_name)
@@ -119,11 +130,13 @@ def fetch_league_and_teams(tsdb_name):
                 
                 if process_and_save_image(badge_url, path):
                     new_count += 1
-                    # print(f"       [+] Saved {slug}") # Uncomment to see every file
             
-            print(f"   [+] Finished: {new_count} new logos saved for {tsdb_name}.")
+            if new_count > 0:
+                print(f"   [+] {tsdb_name}: Downloaded {new_count} new logos.")
+            else:
+                print(f"   [OK] {tsdb_name}: All logos up to date.")
         else:
-            print(f"   [-] API returned 0 teams for {tsdb_name} (Data is null).")
+            print(f"   [-] API returned 0 teams for {tsdb_name}.")
 
     except Exception as e:
         print(f"   [!] Critical Error {tsdb_name}: {e}")
@@ -132,17 +145,15 @@ def fetch_league_and_teams(tsdb_name):
 # 4. MAIN
 # ==========================================
 def main():
+    # Fix Directories using the new function
     for d in DIRS.values():
-        os.makedirs(d, exist_ok=True)
+        ensure_dir(d)
 
     print("--- 1. Harvesting Sports ---")
     fetch_sports_logos()
 
-    print("\n--- 2. Harvesting Leagues (Debug Mode) ---")
-    
-    # We loop through leagues
+    print("\n--- 2. Harvesting Leagues ---")
     for common, tsdb in TARGET_LEAGUES.items():
-        print(f" > Checking: {tsdb}")
         fetch_league_and_teams(tsdb)
         time.sleep(1.5)
 
