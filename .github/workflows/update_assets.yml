@@ -23,9 +23,10 @@ jobs:
           python-version: '3.9'
 
       - name: Install Dependencies
+        # Pointing to the requirements inside the scripts folder
         run: pip install -r scripts/requirements.txt
 
-      - name: 1. Fetch & Resize Logos (Harvester)
+      - name: 1. Fetch & Resize Logos (Safe Mode)
         run: python scripts/fetch_assets.py
 
       - name: 2. Generate Map (Bridge)
