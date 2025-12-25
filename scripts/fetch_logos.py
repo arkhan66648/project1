@@ -1,7 +1,7 @@
 import os
 import requests
 import time
-import re
+import urllib.parse
 from PIL import Image
 from io import BytesIO
 
@@ -18,13 +18,9 @@ DIRS = {
     'sports': os.path.join(BASE_DIR, 'sports')
 }
 
-# V2 API BASE URL (Using the structure you provided)
-# Note: Usually TSDB requires a key. We assume '3' (Free) or try direct path.
-# We will use the standard V1/V2 hybrid path which is most reliable for free tier users:
-# https://www.thesportsdb.com/api/v2/json/3/search/team/NAME
-TSDB_BASE = "https://www.thesportsdb.com/api/v2/json/3"
+# --- FIX: USE V1 BASE URL FOR FREE TIER ---
+TSDB_BASE = "https://www.thesportsdb.com/api/v1/json/3"
 
-# Headers to prevent 403 Forbidden errors
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 }
@@ -49,68 +45,69 @@ SPORT_MAPPING = {
 # 2. NAME CLEANING & FORMATTING
 # ==========================================
 def clean_name(name):
-    """
-    1. Removes prefixes like 'NBA:', 'NHL:', 'Serie A:'.
-    2. Removes specific garbage suffixes.
-    """
     if not name: return ""
     name = str(name).strip()
+    name = name.replace("_", " ") # Convert backend underscores to spaces
     
     # Remove "NBA: ", "NHL: " pattern
     name = re.sub(r'^[A-Za-z0-9\s-]{2,15}:\s*', '', name)
     
-    # Remove common suffixes that confuse search
+    # Remove common suffixes
     name = name.replace(" U20", "").replace(" W", "")
     
     return name.strip()
-
-def format_for_v2_api(name):
-    """
-    V2 requires underscores: 'Los Angeles Lakers' -> 'Los_Angeles_Lakers'
-    """
-    clean = clean_name(name)
-    return re.sub(r'\s+', '_', clean)
 
 def normalize_filename(name):
     """
     Filename safe: 'Los Angeles Lakers' -> 'los-angeles-lakers'
     """
-    clean = clean_name(name)
+    clean = str(name).strip().replace("_", " ")
     return re.sub(r'[^a-z0-9]', '-', clean.lower().strip())
 
 # ==========================================
 # 3. IMAGE PROCESSING
 # ==========================================
+import re # Added import re here just in case
+
 def save_image_optimized(url, save_path):
     try:
         resp = requests.get(url, headers=HEADERS, timeout=10)
         if resp.status_code == 200:
             img = Image.open(BytesIO(resp.content))
             
-            # Convert to RGBA (Transparency)
             if img.mode != 'RGBA': 
                 img = img.convert('RGBA')
             
-            # Resize to 60x60px (Perfect for 20px CSS display @ 3x Retina)
+            # Resize to 60x60px
             img.thumbnail((60, 60), Image.Resampling.LANCZOS)
             
             img.save(save_path, 'WEBP', quality=90)
             return True
-    except Exception as e:
-        # print(f"Img Error: {e}") 
+    except Exception:
         pass
     return False
 
 # ==========================================
-# 4. API FETCHING (V2 STRUCTURE)
+# 4. API FETCHING (V1 STRUCTURE)
 # ==========================================
-def fetch_logo_v2(category, query_name):
+def fetch_logo_v1(category, raw_name):
     """
     category: 'team' or 'league'
-    query_name: 'Manchester_United' (underscored)
+    raw_name: 'Manchester United' (Spaces, not underscores)
     """
-    endpoint = f"{TSDB_BASE}/search/{category}/{query_name}"
     
+    # Clean the name (remove prefixes, swap underscores for spaces)
+    clean = clean_name(raw_name)
+    encoded_name = urllib.parse.quote(clean) # Encodes spaces to %20
+    
+    endpoint = ""
+    
+    # --- FIX: USE V1 PHP ENDPOINTS ---
+    if category == 'team':
+        endpoint = f"{TSDB_BASE}/searchteams.php?t={encoded_name}"
+    elif category == 'league':
+        endpoint = f"{TSDB_BASE}/searchleague.php?l={encoded_name}"
+        
     try:
         res = requests.get(endpoint, headers=HEADERS, timeout=5)
         if res.status_code != 200: return None
@@ -119,7 +116,6 @@ def fetch_logo_v2(category, query_name):
         
         # Handle TEAM response
         if category == 'team' and data.get('teams'):
-            # V2 usually returns a list. Take the first one.
             return data['teams'][0].get('strTeamBadge')
             
         # Handle LEAGUE response
@@ -133,7 +129,8 @@ def fetch_logo_v2(category, query_name):
 def fetch_sport_thumb(sport_name):
     """Fetches sport icon from all_sports endpoint"""
     try:
-        endpoint = f"{TSDB_BASE}/all/sports"
+        # V1 Endpoint for sports
+        endpoint = f"{TSDB_BASE}/all_sports.php" 
         res = requests.get(endpoint, headers=HEADERS, timeout=5).json()
         if res.get('sports'):
             for s in res['sports']:
@@ -163,16 +160,13 @@ def main():
     unique_sports = set()
 
     for m in matches:
-        # Collect Teams (Use your specific fields)
         if m.get('team_a'): unique_teams.add(m['team_a'])
         if m.get('team_b'): unique_teams.add(m['team_b'])
         
-        # Collect Leagues
         lg = m.get('tournament') or m.get('league')
         if lg and 'other' not in lg.lower():
             unique_leagues.add(lg)
             
-        # Collect Sports
         sp = m.get('sport')
         if sp: unique_sports.add(sp)
 
@@ -180,15 +174,13 @@ def main():
     new_count = 0
     
     for raw_name in unique_teams:
-        # 1. Prepare names
-        v2_query = format_for_v2_api(raw_name)  # e.g. "Charlotte_Hornets"
-        slug = normalize_filename(raw_name)     # e.g. "charlotte-hornets"
+        slug = normalize_filename(raw_name)
         path = os.path.join(DIRS['teams'], f"{slug}.webp")
         
-        # 2. Check if missing
         if not os.path.exists(path):
-            print(f"   > Searching Team: {v2_query} ...")
-            url = fetch_logo_v2('team', v2_query)
+            print(f"   > Searching Team: {raw_name} ...")
+            # Pass raw_name directly, the function handles cleaning
+            url = fetch_logo_v1('team', raw_name)
             
             if url and save_image_optimized(url, path):
                 print(f"     [+] SAVED: {slug}.webp")
@@ -196,25 +188,24 @@ def main():
             else:
                 print(f"     [-] Not Found")
             
-            time.sleep(0.2) # Respect API limits
+            # --- IMPORTANT: V1 Free tier is stricter on rate limits ---
+            time.sleep(1.5) 
 
     print(f"--- 3. Processing {len(unique_leagues)} Leagues ---")
     for raw_name in unique_leagues:
-        v2_query = format_for_v2_api(raw_name)
         slug = normalize_filename(raw_name)
         path = os.path.join(DIRS['leagues'], f"{slug}.webp")
         
         if not os.path.exists(path):
-            print(f"   > Searching League: {v2_query} ...")
-            url = fetch_logo_v2('league', v2_query)
+            print(f"   > Searching League: {raw_name} ...")
+            url = fetch_logo_v1('league', raw_name)
             
             if url and save_image_optimized(url, path):
                 print(f"     [+] SAVED: {slug}.webp")
-            time.sleep(0.2)
+            time.sleep(1.5)
 
     print(f"--- 4. Processing {len(unique_sports)} Sports ---")
     for sp_slug in unique_sports:
-        # Map "basketball" -> "Basketball"
         pretty_name = SPORT_MAPPING.get(sp_slug.lower(), sp_slug.capitalize())
         path = os.path.join(DIRS['sports'], f"{sp_slug}.webp")
         
