@@ -1,61 +1,44 @@
 import os
 import requests
 import time
-import urllib.parse
 from PIL import Image
 from io import BytesIO
 
-# ==========================================
-# CONFIG (CRITICAL FIX HERE)
-# ==========================================
-API_KEY = "123"  # ✅ REQUIRED FOR GITHUB ACTIONS
-TSDB_BASE = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}"
-
-BASE_DIR = "assets/logos"
-DIRS = {
-    "teams": os.path.join(BASE_DIR, "teams"),
-}
+# ===============================
+# CONFIG (DOC-COMPLIANT)
+# ===============================
+API_KEY = "123"
+BASE_URL = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}"
+SAVE_DIR = "assets/logos/teams"
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0",
-    "Accept": "image/webp,image/*,*/*;q=0.8",
-    "Referer": "https://www.thesportsdb.com/",
+    "Referer": "https://www.thesportsdb.com/"
 }
 
-TARGET_LEAGUES = [
-    "English Premier League",
-    "NBA",
-    "NFL",
-    "Spanish La Liga",
-    "Formula 1",
-    "UFC",
-    "MLB",
-    "NHL",
-    "German Bundesliga",
-    "Italian Serie A",
-    "French Ligue 1",
-    "UEFA Champions League",
-]
+LEAGUES = {
+    "English_Premier_League": "Premier League",
+    "NBA": "NBA",
+    "NFL": "NFL",
+    "Spanish_La_Liga": "La Liga",
+    "German_Bundesliga": "Bundesliga",
+    "Italian_Serie_A": "Serie A",
+    "French_Ligue_1": "Ligue 1",
+    "UEFA_Champions_League": "Champions League",
+}
 
-# ==========================================
+# ===============================
 def normalize(name):
     return "".join(c for c in name.lower() if c.isalnum())
 
-def ensure_dir(path):
-    os.makedirs(path, exist_ok=True)
-
 def download_image(url, path):
-    if os.path.exists(path):
-        return False
-
-    if url.lower().endswith(".svg"):
+    if not url or url.endswith(".svg"):
         return False
 
     try:
         r = requests.get(url, headers=HEADERS, timeout=15)
         if r.status_code != 200:
             return False
-
         if "image" not in r.headers.get("Content-Type", ""):
             return False
 
@@ -63,45 +46,40 @@ def download_image(url, path):
         img.thumbnail((60, 60))
         img.save(path, "WEBP", quality=90)
         return True
-
     except:
         return False
 
-# ==========================================
-def fetch_league(league):
-    url = f"{TSDB_BASE}/search_all_teams.php?l={urllib.parse.quote(league)}"
+# ===============================
+def fetch_league(league_key):
+    url = f"{BASE_URL}/search_all_teams.php?l={league_key}"
     r = requests.get(url, timeout=15)
-
     data = r.json()
-    teams = data.get("teams")
 
+    teams = data.get("teams")
     if not teams:
-        print(f"   [-] {league}: API returned NULL teams")
+        print(f"   [-] {league_key}: NULL teams (API restriction)")
         return
 
     saved = 0
     for t in teams:
         name = t.get("strTeam")
         badge = t.get("strTeamBadge")
-        if not badge:
+        if not name or not badge:
             continue
 
-        path = os.path.join(DIRS["teams"], f"{normalize(name)}.webp")
+        path = os.path.join(SAVE_DIR, f"{normalize(name)}.webp")
         if download_image(badge, path):
             saved += 1
 
-    if saved:
-        print(f"   [+] {league}: Saved {saved} logos")
-    else:
-        print(f"   [=] {league}: No new logos saved")
+    print(f"   [+] {league_key}: Saved {saved} logos")
 
-# ==========================================
+# ===============================
 def main():
-    ensure_dir(DIRS["teams"])
+    os.makedirs(SAVE_DIR, exist_ok=True)
     print("--- Starting TSDB Logo Harvester ---")
 
-    for i, league in enumerate(TARGET_LEAGUES, 1):
-        print(f" > [{i}/{len(TARGET_LEAGUES)}] {league}")
+    for i, league in enumerate(LEAGUES.keys(), 1):
+        print(f" > [{i}/{len(LEAGUES)}] {league}")
         fetch_league(league)
         time.sleep(2)
 
