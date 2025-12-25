@@ -8,7 +8,7 @@ from io import BytesIO
 # ==========================================
 # CONFIG (CRITICAL FIX HERE)
 # ==========================================
-API_KEY = "1"  # ✅ REQUIRED FOR GITHUB ACTIONS
+API_KEY = "123"  # ✅ REQUIRED FOR GITHUB ACTIONS
 TSDB_BASE = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}"
 
 BASE_DIR = "assets/logos"
