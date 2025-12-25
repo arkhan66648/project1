@@ -2,15 +2,15 @@ name: Auto Logo Harvester
 
 on:
   schedule:
-    # Run every 6 hours
+    # Run every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
     - cron: '0 */6 * * *'
-  workflow_dispatch: # Allows you to click "Run Now" manually
+  workflow_dispatch: # Allows manual button click
 
 jobs:
   harvest_assets:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write # Important for pushing changes
 
     steps:
       - name: Checkout Code
@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install Libraries
+      - name: Install Dependencies
         run: pip install requests Pillow
 
       - name: Run Harvester Script
@@ -32,12 +32,12 @@ jobs:
           git config --global user.name "LogoBot"
           git config --global user.email "bot@noreply.github.com"
           
-          # Add the new logos
-          git add assets/logos/
+          # Force add the assets folder to ensure new files are staged
+          git add assets/logos/ --all
           
-          # Commit only if there are changes
+          # Check status and commit
           if git diff --staged --quiet; then
-            echo "No new logos to save."
+            echo "No new logos found."
           else
             git commit -m "Auto-Harvest: Added new Logos [Skip CI]"
             git push
