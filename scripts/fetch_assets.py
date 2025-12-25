@@ -3,17 +3,17 @@ import requests
 import urllib.parse
 
 API_KEY = "123"
-BASE_URL = "https://www.thesportsdb.com/api/v1/json"
+BASE_URL = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}"
 
-LEAGUES = [
-    "English Premier League",
-    "NBA",
-    "NFL",
-    "Spanish La Liga",
-    "German Bundesliga",
-    "Italian Serie A",
-    "French Ligue 1"
-]
+LEAGUES = {
+    "English Premier League": "4328",
+    "Spanish La Liga": "4335",
+    "German Bundesliga": "4331",
+    "Italian Serie A": "4332",
+    "French Ligue 1": "4334",
+    "NBA": "4387",
+    "NFL": "4391"
+}
 
 OUTPUT_DIR = "assets/logos"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -23,11 +23,10 @@ print("\n--- Starting TSDB Logo Harvester ---")
 def safe_name(name):
     return name.lower().replace(" ", "_").replace("/", "_")
 
-for idx, league in enumerate(LEAGUES, start=1):
+for idx, (league, league_id) in enumerate(LEAGUES.items(), start=1):
     print(f" > [{idx}/{len(LEAGUES)}] {league}")
 
-    league_q = urllib.parse.quote(league)
-    url = f"{BASE_URL}/{API_KEY}/search_all_teams.php?l={league_q}"
+    url = f"{BASE_URL}/lookup_all_teams.php?id={league_id}"
 
     try:
         res = requests.get(url, timeout=15)
@@ -45,7 +44,7 @@ for idx, league in enumerate(LEAGUES, start=1):
 
     for team in teams:
         team_name = team.get("strTeam")
-        badge_url = team.get("strBadge")
+        badge_url = team.get("strTeamBadge")
 
         if not team_name or not badge_url:
             continue
