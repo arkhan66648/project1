@@ -1,4 +1,6 @@
 {
   "teams": {},
-  "sports": {}
+  "sports": {
+    "soccer": "soccer.webp"
+  }
 }
