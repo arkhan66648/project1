@@ -23,7 +23,6 @@ def normalize_key(name):
     """
     Simplifies backend names for better matching
     'Man City' -> 'man-city'
-    'Washington Commanders' -> 'washington-commanders'
     """
     if not name: return ""
     clean = str(name).lower().replace(" fc", "").replace(" united", "").replace(" city", "")
@@ -32,12 +31,11 @@ def normalize_key(name):
 def main():
     print("--- 1. Loading Local Assets ---")
     
-    # Load available files (stripping .webp)
+    # Load available files (stripping .webp extension)
     available_teams = {f.replace('.webp', ''): f for f in os.listdir(DIRS['teams']) if f.endswith('.webp')}
-    available_leagues = {f.replace('.webp', ''): f for f in os.listdir(DIRS['leagues']) if f.endswith('.webp')}
     available_sports = {f.replace('.webp', ''): f for f in os.listdir(DIRS['sports']) if f.endswith('.webp')}
 
-    print(f"Local Library: {len(available_teams)} Teams, {len(available_leagues)} Leagues.")
+    print(f"Local Library: {len(available_teams)} Teams, {len(available_sports)} Sports.")
 
     print("--- 2. Fetching Backend Data ---")
     try:
@@ -47,56 +45,48 @@ def main():
         print(f"CRITICAL: Could not fetch backend. {e}")
         return
 
-    # Extract unique names
+    # Extract unique names from backend
     unique_teams = set()
-    unique_leagues = set()
     unique_sports = set()
 
     for m in matches:
         if m.get('team_a'): unique_teams.add(m['team_a'])
         if m.get('team_b'): unique_teams.add(m['team_b'])
-        if m.get('league'): unique_leagues.add(m['league'])
         if m.get('sport'): unique_sports.add(m['sport'])
 
     # Initialize Map Structure
     image_map = {
         "teams": {},
-        "leagues": {},
         "sports": {}
     }
 
     print(f"--- 3. Mapping {len(unique_teams)} Teams ---")
     
-    # --- TEAM MAPPING ---
+    # Prepare keys for fuzzy matching
     team_keys = list(available_teams.keys())
     
     for backend_name in unique_teams:
-        # A. Create a slug from backend name
-        # "Washington Commanders" -> "washington-commanders"
+        # Create a slug from backend name
         search_slug = "".join([c for c in backend_name.lower() if c.isalnum() or c == '-'])
         
         match_found = None
         
-        # 1. Exact Slug Match
+        # A. Exact Slug Match (Fastest)
         if search_slug in available_teams:
             match_found = available_teams[search_slug]
         
-        # 2. Fuzzy Match
+        # B. Fuzzy Match (Slower, but handles "Man City" vs "Manchester City")
         else:
-            # We normalize heavily for fuzzy search (remove FC, etc)
             norm_search = normalize_key(backend_name)
+            # cutoff=0.6 means 60% similarity required
             matches = get_close_matches(norm_search, team_keys, n=1, cutoff=0.6)
             if matches:
                 match_found = available_teams[matches[0]]
 
         if match_found:
             image_map["teams"][backend_name] = match_found
-            # print(f"   [+] {backend_name} -> {match_found}")
-        else:
-            # print(f"   [-] No logo for {backend_name}")
-            pass
 
-    # --- SPORT MAPPING (Simple Slug Match) ---
+    # --- SPORT MAPPING ---
     print(f"--- 4. Mapping Sports ---")
     for sp in unique_sports:
         slug = sp.lower()
