@@ -10,9 +10,9 @@ from difflib import get_close_matches
 # 1. CONFIGURATION
 # ==========================================
 MATCH_SOURCE_URL = "https://vercelapi-olive.vercel.app/api/sync-nodes?country=us" 
+# DOCS: "The current free API key is: 3"
 TSDB_BASE = "https://www.thesportsdb.com/api/v1/json/3"
 
-# Directory Setup
 BASE_DIR = 'assets/logos'
 DIRS = {
     'teams': os.path.join(BASE_DIR, 'teams'),
@@ -24,20 +24,31 @@ HEADERS = {
     'Accept': 'application/json'
 }
 
-# Known mappings to help the API find leagues
-LEAGUE_FIXES = {
+# DOCS: We must map your source names to TSDB "Official" League Names
+# Use this to translate what your API gives to what TSDB expects
+LEAGUE_MAP = {
     "Premier League": "English Premier League",
+    "Championship": "English League Championship",
+    "League One": "English League One",
+    "League Two": "English League Two",
     "Serie A": "Italian Serie A",
+    "Serie B": "Italian Serie B",
     "La Liga": "Spanish La Liga",
     "Bundesliga": "German Bundesliga",
     "Ligue 1": "French Ligue 1",
-    "Championship": "English League Championship",
     "Eredivisie": "Dutch Eredivisie",
     "Primeira Liga": "Portuguese Primeira Liga",
     "NBA": "NBA",
     "NHL": "NHL",
     "NFL": "NFL",
-    "MLB": "Major League Baseball"
+    "MLB": "Major League Baseball",
+    "Euroleague": "Euroleague Basketball",
+    "Champions League": "UEFA Champions League",
+    "Europa League": "UEFA Europa League",
+    "SA20": "South African SA20",
+    "Big Bash League": "Australian Big Bash League",
+    "Men's Big Bash League": "Australian Big Bash League",
+    "United Rugby Championship": "United Rugby Championship"
 }
 
 # ==========================================
@@ -48,17 +59,13 @@ def normalize_filename(name):
     return "".join([c for c in clean.lower() if c.isalnum() or c == '-']).strip()
 
 def ensure_dir(path):
-    """
-    Fixes the 'FileExistsError' by removing any file that matches the folder name
-    """
     if os.path.exists(path):
         if os.path.isfile(path):
-            print(f"[!] Warning: Found a file named '{path}' blocking the folder. Deleting it.")
             os.remove(path)
     os.makedirs(path, exist_ok=True)
 
 def save_image(url, save_path):
-    if os.path.exists(save_path): return False # Skip if exists
+    if os.path.exists(save_path): return False
     try:
         resp = requests.get(url, headers=HEADERS, timeout=10)
         if resp.status_code == 200:
@@ -71,115 +78,113 @@ def save_image(url, save_path):
     return False
 
 # ==========================================
-# 3. LEAGUE-BASED FETCHING
+# 3. CORE LOGIC (Using search_all_teams.php)
 # ==========================================
-def get_league_id(league_name):
-    """Search for a league and get its ID"""
-    search_name = LEAGUE_FIXES.get(league_name, league_name)
-    # Remove "Serie B: Venezia" prefixes to just get "Serie B"
-    if ":" in search_name:
-        search_name = search_name.split(":")[0].strip()
+def fetch_league_teams(league_name):
+    """
+    DOCS: "List all the teams in a specific league by the leagues name"
+    URL: search_all_teams.php?l=English Premier League
+    """
+    # 1. Map to TSDB Name (e.g. "Premier League" -> "English Premier League")
+    tsdb_name = LEAGUE_MAP.get(league_name, league_name)
     
-    endpoint = f"{TSDB_BASE}/searchleague.php?l={urllib.parse.quote(search_name)}"
+    encoded_name = urllib.parse.quote(tsdb_name)
+    endpoint = f"{TSDB_BASE}/search_all_teams.php?l={encoded_name}"
     
-    try:
-        data = requests.get(endpoint, headers=HEADERS, timeout=5).json()
-        if data and data.get('leagues'):
-            return data['leagues'][0]['idLeague']
-    except: pass
-    return None
-
-def fetch_teams_by_league(league_id):
-    """Get ALL teams in a league (Efficiency: 1 req = 20 teams)"""
-    endpoint = f"{TSDB_BASE}/lookup_all_teams.php?id={league_id}"
     teams_map = {} 
     
     try:
-        data = requests.get(endpoint, headers=HEADERS, timeout=5).json()
+        data = requests.get(endpoint, headers=HEADERS, timeout=10).json()
+        
+        # Check if we got teams back
         if data and data.get('teams'):
             for t in data['teams']:
                 if t.get('strTeamBadge'):
-                    # Create a normalized key for matching later
+                    # Save local map: "arsenal" -> URL
                     key = normalize_filename(t['strTeam'])
                     teams_map[key] = t['strTeamBadge']
-    except: pass
+                    
+                    # Also map alternate names if available
+                    if t.get('strAlternate'):
+                        key_alt = normalize_filename(t['strAlternate'])
+                        teams_map[key_alt] = t['strTeamBadge']
+                        
+        else:
+            # Debug: Print why it failed
+            print(f"     [-] No teams found for '{tsdb_name}'. (Check spelling?)")
+
+    except Exception as e:
+        pass
+        
     return teams_map
 
 # ==========================================
 # 4. MAIN
 # ==========================================
 def main():
-    # 1. ROBUST DIRECTORY CREATION (Fixes your error)
-    print("--- 1. Setting up Directories ---")
-    for path in DIRS.values():
-        ensure_dir(path)
+    for path in DIRS.values(): ensure_dir(path)
 
-    print("--- 2. Getting Match Data ---")
+    print("--- 1. Getting Match Data ---")
     try:
         data = requests.get(MATCH_SOURCE_URL, headers=HEADERS).json()
         matches = data.get('matches', [])
-    except Exception as e:
-        print(f"Error fetching matches: {e}")
-        return
+    except: return
 
-    # 2. Analyze which leagues we need
+    # 1. Filter Valid Leagues
     needed_leagues = set()
     all_target_teams = set()
     
     for m in matches:
         lg = m.get('tournament') or m.get('league')
-        if lg: needed_leagues.add(lg)
+        if lg:
+            # FILTER: Remove garbage entries that are actually Matches or Sports
+            lg_lower = lg.lower()
+            if " - " in lg or " @ " in lg or " vs " in lg: continue # Skip "Chelsea - Aston Villa"
+            if lg_lower in ["baseball", "basketball", "football", "fight", "other", "rugby", "cricket"]: continue
+            
+            needed_leagues.add(lg)
         
         if m.get('team_a'): all_target_teams.add(normalize_filename(m['team_a']))
         if m.get('team_b'): all_target_teams.add(normalize_filename(m['team_b']))
 
-    print(f"--- 3. Identified {len(needed_leagues)} Leagues & {len(all_target_teams)} Teams ---")
+    print(f"--- 2. Identified {len(needed_leagues)} Valid Leagues & {len(all_target_teams)} Teams ---")
 
-    # 3. Build a Local Database of Logos
+    # 2. Build Logo Database
     local_logo_db = {} 
 
     for i, lg_name in enumerate(needed_leagues):
-        print(f" > [{i+1}/{len(needed_leagues)}] Processing League: {lg_name}")
+        print(f" > [{i+1}/{len(needed_leagues)}] Fetching: {lg_name}")
         
-        lid = get_league_id(lg_name)
-        if lid:
-            # Get all teams in this league
-            teams = fetch_teams_by_league(lid)
+        # Call the "List All Teams" endpoint
+        teams = fetch_league_teams(lg_name)
+        
+        if teams:
             local_logo_db.update(teams)
-            print(f"   [+] Found {len(teams)} teams in {lg_name}")
-        else:
-            print(f"   [-] League ID not found for '{lg_name}'")
+            print(f"   [+] Cached {len(teams)} logos")
         
-        time.sleep(1.2) # Sleep to avoid rate limits
+        # DOCS: "Free users 30 requests per minute" -> Sleep 2s
+        time.sleep(2.0) 
 
-    # 4. Match & Download
-    print(f"--- 4. Matching & Downloading Logos ---")
-    download_count = 0
-    
+    # 3. Match & Download
+    print(f"--- 3. Saving Images ---")
+    count = 0
     for target_slug in all_target_teams:
         save_path = os.path.join(DIRS['teams'], f"{target_slug}.webp")
-        
         if os.path.exists(save_path): continue
 
-        # Try exact match
         img_url = local_logo_db.get(target_slug)
         
-        # Try fuzzy match
+        # Fuzzy Match Fallback
         if not img_url:
             keys = list(local_logo_db.keys())
-            matches = get_close_matches(target_slug, keys, n=1, cutoff=0.7)
-            if matches:
-                img_url = local_logo_db[matches[0]]
+            matches = get_close_matches(target_slug, keys, n=1, cutoff=0.8)
+            if matches: img_url = local_logo_db[matches[0]]
 
-        if img_url:
-            if save_image(img_url, save_path):
-                print(f"   [+] Saved: {target_slug}")
-                download_count += 1
-        else:
-            # Silent fail is fine, we can't find everything
-            pass 
+        if img_url and save_image(img_url, save_path):
+            print(f"   [+] Saved: {target_slug}")
+            count += 1
 
-    print(f"--- DONE. Downloaded {download_count} new logos. ---")
+    print(f"--- DONE. New logos: {count} ---")
 
 if __name__ == "__main__":
     main()
