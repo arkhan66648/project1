@@ -16,43 +16,18 @@ DIRS = {
     'sports': os.path.join(BASE_DIR, 'sports')
 }
 
+# Mimic a real browser to avoid 403 Forbidden errors on images
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Accept': 'application/json'
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Referer': 'https://www.thesportsdb.com/'
 }
 
-# CORRECTED TSDB LEAGUE NAMES
-# These must match exactly what is in TheSportsDB database
 TARGET_LEAGUES = {
-    # Soccer
     "Premier League": "English Premier League",
-    "Championship": "English League Championship",
-    "La Liga": "Spanish La Liga",
-    "Bundesliga": "German Bundesliga",
-    "Serie A": "Italian Serie A",
-    "Ligue 1": "French Ligue 1",
-    "Eredivisie": "Dutch Eredivisie",
-    "Primeira Liga": "Portuguese Primeira Liga",
-    "Champions League": "UEFA Champions League",
-    "Europa League": "UEFA Europa League",
-    "MLS": "American Major League Soccer",
-    "Saudi Pro League": "Saudi Arabian Pro League",
-    "Belgian Pro League": "Belgian Jupiler League",
-    
-    # US Sports
     "NBA": "NBA",
     "NFL": "NFL",
-    "NHL": "NHL",
-    "MLB": "MLB", # FIXED: Was "Major League Baseball"
-    "NCAA Football": "NCAA Division 1", # Note: TSDB data is sparse here
-    
-    # Others
-    "Big Bash League": "Australian Big Bash League",
-    "SA20": "South African SA20", # Note: Might be missing in Free Tier
-    "United Rugby Championship": "United Rugby Championship",
-    "Top 14": "French Top 14",
-    "Premiership Rugby": "English Premiership Rugby",
-    "UFC": "UFC",
+    "La Liga": "Spanish La Liga",
     "F1": "Formula 1"
 }
 
@@ -60,34 +35,36 @@ TARGET_LEAGUES = {
 # 2. UTILS
 # ==========================================
 def normalize_filename(name):
-    """Clean filename: 'Man City' -> 'man-city'"""
     if not name: return "unknown"
     clean = str(name).strip().replace("_", " ").replace(".", "")
     return "".join([c for c in clean.lower() if c.isalnum() or c == '-']).strip()
 
 def process_and_save_image(url, save_path):
-    """Downloads, Resizes to 60x60, Converts to WEBP"""
-    # Check if file exists to save bandwidth
+    # Skip if exists
     if os.path.exists(save_path): 
         return False 
     
     try:
+        # Download with timeout
         resp = requests.get(url, headers=HEADERS, timeout=10)
-        if resp.status_code == 200:
-            img = Image.open(BytesIO(resp.content))
-            
-            if img.mode != 'RGBA': 
-                img = img.convert('RGBA')
-            
-            # High Quality Resize
-            img = img.resize((60, 60), Image.Resampling.LANCZOS)
-            
-            # Save
-            img.save(save_path, 'WEBP', quality=90)
-            return True
-    except Exception:
-        pass
-    return False
+        
+        # DEBUG: Print if image download fails
+        if resp.status_code != 200:
+            print(f"       [!] Image Download Failed: {resp.status_code} for {url}")
+            return False
+
+        img = Image.open(BytesIO(resp.content))
+        
+        if img.mode != 'RGBA': 
+            img = img.convert('RGBA')
+        
+        img = img.resize((60, 60), Image.Resampling.LANCZOS)
+        img.save(save_path, 'WEBP', quality=90)
+        return True
+
+    except Exception as e:
+        print(f"       [!] Image Error: {e}")
+        return False
 
 # ==========================================
 # 3. HARVESTERS
@@ -97,76 +74,76 @@ def fetch_sports_logos():
     try:
         data = requests.get(f"{TSDB_BASE}/all_sports.php", headers=HEADERS).json()
         if data.get('sports'):
+            count = 0
             for s in data['sports']:
                 name = s['strSport']
-                # Safely get URL
                 url = s.get('strSportIconGreen') or s.get('strSportThumb')
-                
                 if url:
                     path = os.path.join(DIRS['sports'], f"{normalize_filename(name)}.webp")
-                    process_and_save_image(url, path)
-    except: pass
+                    if process_and_save_image(url, path): count += 1
+            print(f"   [+] Saved {count} sport icons.")
+    except Exception as e: 
+        print(f"   [!] Sport Error: {e}")
 
 def fetch_league_and_teams(tsdb_name):
     encoded = urllib.parse.quote(tsdb_name)
     url = f"{TSDB_BASE}/search_all_teams.php?l={encoded}"
     
     try:
-        data = requests.get(url, headers=HEADERS, timeout=10).json()
+        # Request API
+        resp = requests.get(url, headers=HEADERS, timeout=10)
         
-        # KEY FIX: Check if 'teams' is None before iterating
+        # DEBUG: Check if API blocked us
+        if resp.status_code != 200:
+            print(f"   [!] API BLOCKED: Status {resp.status_code}")
+            return
+
+        data = resp.json()
+        
         if data and data.get('teams'):
+            teams = data['teams']
+            print(f"   [i] Found {len(teams)} teams in {tsdb_name}. Downloading...")
+            
             new_count = 0
-            for t in data['teams']:
-                # KEY FIX: Use .get() to avoid crashing if key is missing
+            for t in teams:
                 team_name = t.get('strTeam')
                 badge_url = t.get('strTeamBadge')
                 
-                if team_name and badge_url:
-                    slug = normalize_filename(team_name)
-                    path = os.path.join(DIRS['teams'], f"{slug}.webp")
-                    
-                    if process_and_save_image(badge_url, path):
-                        new_count += 1
-                        
-                    # Save Alternate name if exists
-                    alt_name = t.get('strAlternate')
-                    if alt_name:
-                        slug_alt = normalize_filename(alt_name)
-                        path_alt = os.path.join(DIRS['teams'], f"{slug_alt}.webp")
-                        process_and_save_image(badge_url, path_alt)
+                # DEBUG: Warn if badge is missing
+                if not badge_url:
+                    print(f"       [?] No badge URL for {team_name}")
+                    continue
 
-            if new_count > 0:
-                print(f"   [+] {tsdb_name}: Downloaded {new_count} new logos.")
-            else:
-                print(f"   [OK] {tsdb_name}: Logos up to date.")
+                slug = normalize_filename(team_name)
+                path = os.path.join(DIRS['teams'], f"{slug}.webp")
+                
+                if process_and_save_image(badge_url, path):
+                    new_count += 1
+                    # print(f"       [+] Saved {slug}") # Uncomment to see every file
+            
+            print(f"   [+] Finished: {new_count} new logos saved for {tsdb_name}.")
         else:
-            print(f"   [-] {tsdb_name}: No teams found (or league name invalid).")
+            print(f"   [-] API returned 0 teams for {tsdb_name} (Data is null).")
 
     except Exception as e:
-        print(f"   [!] Connection Error for {tsdb_name}: {e}")
+        print(f"   [!] Critical Error {tsdb_name}: {e}")
 
 # ==========================================
 # 4. MAIN
 # ==========================================
 def main():
-    # Setup Directories
     for d in DIRS.values():
         os.makedirs(d, exist_ok=True)
 
     print("--- 1. Harvesting Sports ---")
     fetch_sports_logos()
 
-    print("--- 2. Harvesting Leagues & Teams ---")
+    print("\n--- 2. Harvesting Leagues (Debug Mode) ---")
     
-    leagues = list(TARGET_LEAGUES.values())
-    total = len(leagues)
-    
-    for i, tsdb_name in enumerate(leagues):
-        print(f" > [{i+1}/{total}] Checking: {tsdb_name}")
-        fetch_league_and_teams(tsdb_name)
-        
-        # Rate limit protection (Free Tier is strict)
+    # We loop through leagues
+    for common, tsdb in TARGET_LEAGUES.items():
+        print(f" > Checking: {tsdb}")
+        fetch_league_and_teams(tsdb)
         time.sleep(1.5)
 
 if __name__ == "__main__":
