@@ -4,42 +4,54 @@ import requests
 from difflib import get_close_matches
 
 BACKEND_URL = "https://vercelapi-olive.vercel.app/api/sync-nodes?country=us"
-DIRS = {'teams': 'assets/logos/teams', 'sports': 'assets/logos/sports'}
-OUTPUT_FILE = 'assets/data/image_map.json'
+TEAMS_DIR = "assets/logos/teams"
+OUTPUT_FILE = "assets/data/image_map.json"
+
+def normalize(name):
+    return "".join(c for c in name.lower() if c.isalnum())
 
 def main():
-    if not os.path.exists(DIRS['teams']): os.makedirs(DIRS['teams'])
-    
-    # Get local files
-    local_teams = {f.replace('.webp', ''): f for f in os.listdir(DIRS['teams']) if f.endswith('.webp')}
-    print(f"--- Map Generator: Found {len(local_teams)} local team logos ---")
+    os.makedirs(TEAMS_DIR, exist_ok=True)
 
-    try:
-        data = requests.get(BACKEND_URL).json()
-        matches = data.get('matches', [])
-    except:
+    local_files = {
+        f.replace(".webp", ""): f
+        for f in os.listdir(TEAMS_DIR)
+        if f.endswith(".webp")
+    }
+
+    print(f"--- Map Generator: Found {len(local_files)} local team logos ---")
+
+    if not local_files:
+        print("[!] No logos found. Map will be empty.")
         return
 
-    image_map = {"teams": {}, "sports": {}}
-    team_keys = list(local_teams.keys())
+    try:
+        data = requests.get(BACKEND_URL, timeout=15).json()
+        matches = data.get("matches", [])
+    except:
+        print("[!] Failed to fetch backend data.")
+        return
 
-    for m in matches:
-        for t in ['team_a', 'team_b']:
-            name = m.get(t)
-            if not name: continue
-            
-            # Normalize
-            target = "".join([c for c in name.lower() if c.isalnum()])
-            
-            # Match
-            match = get_close_matches(target, team_keys, n=1, cutoff=0.6)
-            if match:
-                image_map["teams"][name] = local_teams[match[0]]
+    image_map = {"teams": {}}
+    local_keys = list(local_files.keys())
+
+    for match in matches:
+        for side in ["team_a", "team_b"]:
+            name = match.get(side)
+            if not name:
+                continue
+
+            key = normalize(name)
+            found = get_close_matches(key, local_keys, n=1, cutoff=0.6)
+
+            if found:
+                image_map["teams"][name] = local_files[found[0]]
 
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
-    with open(OUTPUT_FILE, 'w') as f:
+    with open(OUTPUT_FILE, "w") as f:
         json.dump(image_map, f, indent=2)
-    print("--- Map Saved ---")
+
+    print("--- Map Saved Successfully ---")
 
 if __name__ == "__main__":
     main()
