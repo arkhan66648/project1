@@ -143,7 +143,11 @@
         .league-tag { font-size: 0.6rem; color: var(--accent-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         .team-name { font-size: 0.7rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
         @media (min-width: 768px) { .team-name { font-size: 0.9rem; } }
-        .t-logo { width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); flex-shrink: 0; }
+        
+        /* UPDATED LOGO STYLES (Supports Image + Fallback) */
+        .logo-box { width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; }
+        .t-img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; }
+        .t-logo { width: 100%; height: 100%; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); position: absolute; top: 0; left: 0; }
         
         .col-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; justify-content: center; }
         .meta-top { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); white-space: nowrap; }
@@ -574,6 +578,26 @@
             const div = document.createElement('div');
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
+            // ============================================
+            // 1. SAFE LOGO GENERATOR (NEW ADDITION)
+            // ============================================
+            const BADGE_BASE = "https://streamed.pk/api/images/badge/";
+            
+            const renderLogo = (badgeId, letter) => {
+                // If backend provides a logo ID, construct image with error handling
+                if (badgeId) {
+                    return `
+                    <div class="logo-box">
+                        <img src="${BADGE_BASE}${badgeId}.webp" class="t-img" loading="lazy" alt="${letter}" 
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                        <span class="t-logo" style="background:${getColor(letter)}; display:none;">${letter}</span>
+                    </div>`;
+                }
+                // Fallback: Use original colored letter circle
+                return `<span class="logo-box"><span class="t-logo" style="background:${getColor(letter)}">${letter}</span></span>`;
+            };
+            // ============================================
+
             let timeCol;
             if (m.is_live) {
                 timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
@@ -585,13 +609,16 @@
             let teamsHtml = '';
             const tA = m.team_a; const tB = m.team_b;
             const matchTitle = tB ? `${tA} vs ${tB}` : tA;
+            
+            // --- UPDATED TEAM HTML GENERATION ---
             if (!tB) {
-                teamsHtml = `<div class="team-name"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tA}</div>`;
+                teamsHtml = `<div class="team-name">${renderLogo(m.team_a_logo, m.team_a_letter||'T')} ${tA}</div>`;
             } else {
                 teamsHtml = `
-                <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_a_letter||'T')}">${m.team_a_letter||'T'}</span> ${tA}</div>
-                <div class="team-name"><span class="t-logo" style="background:${getColor(m.team_b_letter||'T')}">${m.team_b_letter||'T'}</span> ${tB}</div>`;
+                <div class="team-name">${renderLogo(m.team_a_logo, m.team_a_letter||'T')} ${tA}</div>
+                <div class="team-name">${renderLogo(m.team_b_logo, m.team_b_letter||'T')} ${tB}</div>`;
             }
+            // ------------------------------------
             
             let metaHtml = '';
             if (m.is_live) {
