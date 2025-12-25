@@ -8,9 +8,9 @@ from io import BytesIO
 # ==========================================
 # 1. CONFIGURATION
 # ==========================================
-# We use the 'all' endpoint or 'US' to get maximum coverage
 API_URL = "https://vercelapi-olive.vercel.app/api/sync-nodes?country=us" 
 
+# Directory Setup
 BASE_DIR = 'assets/logos'
 DIRS = {
     'teams': os.path.join(BASE_DIR, 'teams'),
@@ -18,12 +18,18 @@ DIRS = {
     'sports': os.path.join(BASE_DIR, 'sports')
 }
 
-# TheSportsDB API
-TSDB_SEARCH_TEAM = "https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t="
-TSDB_SEARCH_LEAGUE = "https://www.thesportsdb.com/api/v1/json/3/searchleagues.php?l="
-TSDB_SEARCH_SPORT = "https://www.thesportsdb.com/api/v1/json/3/all_sports.php" # We will filter this list
+# V2 API BASE URL (Using the structure you provided)
+# Note: Usually TSDB requires a key. We assume '3' (Free) or try direct path.
+# We will use the standard V1/V2 hybrid path which is most reliable for free tier users:
+# https://www.thesportsdb.com/api/v2/json/3/search/team/NAME
+TSDB_BASE = "https://www.thesportsdb.com/api/v2/json/3"
 
-# MAPPING: Your JSON 'sport' slug -> TheSportsDB 'strSport' name
+# Headers to prevent 403 Forbidden errors
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+}
+
+# Mapping specific sport slugs to TSDB names
 SPORT_MAPPING = {
     "americanfootball": "American Football",
     "basketball": "Basketball",
@@ -40,78 +46,95 @@ SPORT_MAPPING = {
 }
 
 # ==========================================
-# 2. DATA CLEANING ENGINE
+# 2. NAME CLEANING & FORMATTING
 # ==========================================
-def clean_team_name(name):
+def clean_name(name):
     """
-    Input: "NBA: Charlotte Hornets" -> Output: "Charlotte Hornets"
-    Input: "Northwestern" -> Output: "Northwestern"
+    1. Removes prefixes like 'NBA:', 'NHL:', 'Serie A:'.
+    2. Removes specific garbage suffixes.
     """
     if not name: return ""
     name = str(name).strip()
     
-    # Regex: Remove any prefix ending in a colon (e.g., "NBA: ", "Serie A: ")
-    # This matches characters at the start until ': '
-    cleaned = re.sub(r'^.*?: ', '', name)
+    # Remove "NBA: ", "NHL: " pattern
+    name = re.sub(r'^[A-Za-z0-9\s-]{2,15}:\s*', '', name)
     
-    # Remove common garbage like ' U20' or ' W' if not part of the core name
-    # (Optional, be careful not to remove real parts)
+    # Remove common suffixes that confuse search
+    name = name.replace(" U20", "").replace(" W", "")
     
-    return cleaned.strip()
+    return name.strip()
+
+def format_for_v2_api(name):
+    """
+    V2 requires underscores: 'Los Angeles Lakers' -> 'Los_Angeles_Lakers'
+    """
+    clean = clean_name(name)
+    return re.sub(r'\s+', '_', clean)
 
 def normalize_filename(name):
     """
-    Input: "Charlotte Hornets" -> Output: "charlotte-hornets"
+    Filename safe: 'Los Angeles Lakers' -> 'los-angeles-lakers'
     """
-    if not name: return "unknown"
-    return re.sub(r'[^a-z0-9]', '-', name.lower().strip())
+    clean = clean_name(name)
+    return re.sub(r'[^a-z0-9]', '-', clean.lower().strip())
 
 # ==========================================
 # 3. IMAGE PROCESSING
 # ==========================================
 def save_image_optimized(url, save_path):
     try:
-        resp = requests.get(url, timeout=10)
+        resp = requests.get(url, headers=HEADERS, timeout=10)
         if resp.status_code == 200:
             img = Image.open(BytesIO(resp.content))
             
-            # Ensure transparency support
+            # Convert to RGBA (Transparency)
             if img.mode != 'RGBA': 
                 img = img.convert('RGBA')
             
-            # RESIZE: 60x60px (Retina ready for your 20px CSS letters)
+            # Resize to 60x60px (Perfect for 20px CSS display @ 3x Retina)
             img.thumbnail((60, 60), Image.Resampling.LANCZOS)
             
             img.save(save_path, 'WEBP', quality=90)
             return True
-    except Exception:
-        pass # Fail silently
+    except Exception as e:
+        # print(f"Img Error: {e}") 
+        pass
     return False
 
 # ==========================================
-# 4. FETCHING LOGIC
+# 4. API FETCHING (V2 STRUCTURE)
 # ==========================================
-def fetch_api_logo(endpoint, query_name, extract_key):
-    """Generic fetcher for TSDB"""
+def fetch_logo_v2(category, query_name):
+    """
+    category: 'team' or 'league'
+    query_name: 'Manchester_United' (underscored)
+    """
+    endpoint = f"{TSDB_BASE}/search/{category}/{query_name}"
+    
     try:
-        res = requests.get(f"{endpoint}{query_name}", timeout=5).json()
+        res = requests.get(endpoint, headers=HEADERS, timeout=5)
+        if res.status_code != 200: return None
         
-        # Teams
-        if 'searchteams' in endpoint and res.get('teams'):
-            return res['teams'][0].get(extract_key)
+        data = res.json()
         
-        # Leagues
-        elif 'searchleagues' in endpoint and res.get('leagues'):
-            return res['leagues'][0].get(extract_key)
+        # Handle TEAM response
+        if category == 'team' and data.get('teams'):
+            # V2 usually returns a list. Take the first one.
+            return data['teams'][0].get('strTeamBadge')
             
+        # Handle LEAGUE response
+        elif category == 'league' and data.get('leagues'):
+            return data['leagues'][0].get('strBadge')
+
     except Exception:
         pass
     return None
 
 def fetch_sport_thumb(sport_name):
-    """Fetches sport thumbnail from 'all_sports.php'"""
+    """Fetches sport icon from all_sports endpoint"""
     try:
-        res = requests.get(TSDB_SEARCH_SPORT, timeout=5).json()
+        endpoint = f"{TSDB_BASE}/all/sports"
+        res = requests.get(endpoint, headers=HEADERS, timeout=5).json()
         if res.get('sports'):
             for s in res['sports']:
                 if s.get('strSport') == sport_name:
@@ -120,95 +143,88 @@ def fetch_sport_thumb(sport_name):
     return None
 
 # ==========================================
-# 5. MAIN HARVESTER
+# 5. MAIN EXECUTION
 # ==========================================
 def main():
-    # 1. Setup Directories
+    # 1. Setup Dirs
     for path in DIRS.values():
         if not os.path.exists(path): os.makedirs(path)
 
     print("--- 1. Fetching Backend Data ---")
     try:
-        # Your API returns { "country": "...", "matches": [ ... ] }
-        data = requests.get(API_URL).json()
+        data = requests.get(API_URL, headers=HEADERS, timeout=15).json()
         matches = data.get('matches', [])
     except Exception as e:
-        print(f"CRITICAL: Failed to load backend. {e}")
+        print(f"CRITICAL: {e}")
         return
 
     unique_teams = set()
     unique_leagues = set()
     unique_sports = set()
 
-    # 2. Extract Data from JSON
     for m in matches:
-        # TEAMS
+        # Collect Teams (Use your specific fields)
         if m.get('team_a'): unique_teams.add(m['team_a'])
         if m.get('team_b'): unique_teams.add(m['team_b'])
         
-        # LEAGUES (Prioritize 'tournament', fallback to 'league')
+        # Collect Leagues
         lg = m.get('tournament') or m.get('league')
-        if lg and lg.lower() not in ['undefined', 'general', 'other']:
+        if lg and 'other' not in lg.lower():
             unique_leagues.add(lg)
             
-        # SPORTS
+        # Collect Sports
         sp = m.get('sport')
         if sp: unique_sports.add(sp)
 
-    print(f"--- Found: {len(unique_teams)} Teams, {len(unique_leagues)} Leagues, {len(unique_sports)} Sports ---")
-
-    # 3. Process TEAMS
-    new_teams = 0
+    print(f"--- 2. Processing {len(unique_teams)} Teams ---")
+    new_count = 0
+    
     for raw_name in unique_teams:
-        clean = clean_team_name(raw_name)     # e.g., "Charlotte Hornets"
-        slug = normalize_filename(clean)      # e.g., "charlotte-hornets"
-        
+        # 1. Prepare names
+        v2_query = format_for_v2_api(raw_name)  # e.g. "Charlotte_Hornets"
+        slug = normalize_filename(raw_name)     # e.g. "charlotte-hornets"
         path = os.path.join(DIRS['teams'], f"{slug}.webp")
         
+        # 2. Check if missing
         if not os.path.exists(path):
-            print(f"   > Searching Team: '{clean}'...")
-            url = fetch_api_logo(TSDB_SEARCH_TEAM, clean, 'strTeamBadge')
+            print(f"   > Searching Team: {v2_query} ...")
+            url = fetch_logo_v2('team', v2_query)
             
             if url and save_image_optimized(url, path):
                 print(f"     [+] SAVED: {slug}.webp")
-                new_teams += 1
+                new_count += 1
             else:
-                # Fallback: Try searching only the last word if it's long? 
-                # (Optional optimization, skipping for safety)
-                print(f"     [-] Not found")
-            time.sleep(0.2) # Rate limit
+                print(f"     [-] Not Found")
+            
+            time.sleep(0.2) # Respect API limits
 
-    # 4. Process LEAGUES
-    new_leagues = 0
-    for lg_name in unique_leagues:
-        slug = normalize_filename(lg_name)
+    print(f"--- 3. Processing {len(unique_leagues)} Leagues ---")
+    for raw_name in unique_leagues:
+        v2_query = format_for_v2_api(raw_name)
+        slug = normalize_filename(raw_name)
         path = os.path.join(DIRS['leagues'], f"{slug}.webp")
         
         if not os.path.exists(path):
-            print(f"   > Searching League: '{lg_name}'...")
-            url = fetch_api_logo(TSDB_SEARCH_LEAGUE, lg_name, 'strBadge')
+            print(f"   > Searching League: {v2_query} ...")
+            url = fetch_logo_v2('league', v2_query)
             
             if url and save_image_optimized(url, path):
                 print(f"     [+] SAVED: {slug}.webp")
-                new_leagues += 1
             time.sleep(0.2)
 
-    # 5. Process SPORTS
+    print(f"--- 4. Processing {len(unique_sports)} Sports ---")
     for sp_slug in unique_sports:
-        # Use Mapping: 'americanfootball' -> 'American Football'
-        search_name = SPORT_MAPPING.get(sp_slug.lower(), sp_slug.capitalize())
-        
-        # We save it as the SLUG so the frontend can find it easily
-        # e.g. assets/logos/sports/americanfootball.webp
+        # Map "basketball" -> "Basketball"
+        pretty_name = SPORT_MAPPING.get(sp_slug.lower(), sp_slug.capitalize())
         path = os.path.join(DIRS['sports'], f"{sp_slug}.webp")
         
         if not os.path.exists(path):
-            print(f"   > Searching Sport: '{search_name}'...")
-            url = fetch_sport_thumb(search_name)
+            print(f"   > Searching Sport: {pretty_name} ...")
+            url = fetch_sport_thumb(pretty_name)
             if url and save_image_optimized(url, path):
                 print(f"     [+] SAVED: {sp_slug}.webp")
 
-    print(f"--- DONE. New Teams: {new_teams}, New Leagues: {new_leagues} ---")
+    print(f"--- DONE. Downloaded {new_count} new logos. ---")
 
 if __name__ == "__main__":
     main()
