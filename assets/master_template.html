@@ -57,7 +57,7 @@
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif; background: var(--bg-body); color: var(--text-main); font-size: 14px; overflow-x: hidden; padding-bottom: 80px; } /* Increased padding for mobile footer */
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif; background: var(--bg-body); color: var(--text-main); font-size: 14px; overflow-x: hidden; padding-bottom: 80px; }
         a { text-decoration: none; color: inherit; transition: 0.2s; }
         button { cursor: pointer; border: none; font-family: inherit; }
         ul { list-style: none; padding: 0; margin: 0; }
@@ -71,7 +71,6 @@
         @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
 
         /* HEADER & NAV */
-        /* Changed: Relative on mobile (scrolls away), Fixed on desktop */
         header { background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); height: 60px; width: 100%; position: relative; z-index: 100; }
         @media (min-width: 900px) { header { position: fixed; top: 0; } body { padding-top: 60px; } }
 
@@ -92,7 +91,7 @@
         .mobile-menu a.active { color: var(--brand-primary); border-left: 4px solid var(--brand-primary); }
         @media (min-width: 900px) { .nav-links { display: flex; } .hamburger { display: none; } }
 
-        /* SOCIAL SIDEBAR (Desktop Only) */
+        /* SOCIAL SIDEBAR (Desktop) */
         .social-sidebar { position: fixed; left: 0; top: 50%; transform: translateY(-50%); z-index: 90; display: flex; flex-direction: column; gap: 8px; background: rgba(10,10,10,0.95); border: 1px solid var(--border); border-left: none; padding: 12px 8px; border-radius: 0 8px 8px 0; box-shadow: 4px 0 15px rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
         .social-btn { width: 44px; padding: 6px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #9aa0a6; background: transparent; border: 1px solid #1f1f1f; border-radius: 6px; will-change: transform; transition: transform 0.2s ease, color 0.2s ease, background 0.2s ease; }
         .social-btn svg { width: 20px; height: 20px; fill: currentColor; display: block; }
@@ -106,10 +105,11 @@
         
         @media (max-width: 1024px) { .social-sidebar { display: none; } }
 
-        /* MOBILE STICKY FOOTER */
-        .mobile-sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--border); padding: 10px; display: none; justify-content: space-around; align-items: center; z-index: 900; }
-        .mobile-sticky-footer .social-btn { border: none; width: auto; flex: 1; height: 40px; }
-        .mobile-sticky-footer .s-count { display: none; }
+        /* MOBILE STICKY FOOTER (Fixed & Centered Copy Button) */
+        .mobile-sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(10,10,10,0.98); backdrop-filter: blur(10px); border-top: 1px solid var(--border); padding: 0 5px; display: none; justify-content: space-evenly; align-items: center; z-index: 900; height: 60px; }
+        .mobile-sticky-footer .social-btn { border: none; flex: 1; height: 100%; padding: 5px 0; border-radius: 0; transform: none !important; }
+        .mobile-sticky-footer .social-btn:active { background: #1a1a1a; }
+        .mobile-sticky-footer .s-count { display: block !important; margin-top: 2px; font-size: 0.6rem; color: #666; }
         @media (max-width: 1024px) { .mobile-sticky-footer { display: flex; } }
         
         .copy-toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: #111; border: 1px solid #333; color: #fff; padding: 8px 14px; font-size: 0.75rem; border-radius: 6px; z-index: 9999; opacity: 0; animation: fadeToast 1.6s ease forwards; }
@@ -119,6 +119,7 @@
         /* HERO & CONTENT */
         .hero { padding: 40px 15px 15px 15px; text-align: center; background: radial-gradient(circle at top, #1a0505 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); display: {{DISPLAY_HERO}}; }
         @media (min-width: 900px) { .hero { padding-top: 60px; } }
+        
         .sys-status { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 230, 118, 0.08); border: 1px solid rgba(0, 230, 118, 0.2); padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; font-size: 0.75rem; font-weight: 700; color: var(--status-green); }
         .dot { width: 6px; height: 6px; background: var(--status-green); border-radius: 50%; box-shadow: 0 0 8px var(--status-green); animation: pulse 2s infinite; }
         h1 { margin: 0 0 20px 0; font-size: 1.8rem; line-height: 1.2; color: white; font-weight: 800; }
@@ -272,7 +273,7 @@
         <div class="copyright">{{FOOTER_COPYRIGHT}}</div>
     </footer>
 
-    <!-- NEW MOBILE STICKY FOOTER -->
+    <!-- MOBILE STICKY FOOTER -->
     <div id="mobileFooter" class="mobile-sticky-footer"></div>
 
     <button id="backToTop" class="back-to-top" onclick="window.scrollTo(0,0)">
@@ -387,10 +388,20 @@
             document.getElementById('live-skeleton').style.display = 'none';
             document.getElementById('upcoming-skeleton').style.display = 'none';
             
+            // 1. Get Live Matches (Trending Live)
             const liveMatches = matches.filter(m => m.is_live);
+            
+            // 2. Track Rendered IDs to prevent duplicates
+            const renderedIds = new Set(liveMatches.map(m => m.id));
+            
+            // 3. Get Upcoming Matches (Filter out any that are already in Live section)
             const now = Date.now();
             const oneDay = 24 * 60 * 60 * 1000;
-            const upcomingMatches = matches.filter(m => !m.is_live && (m.startTimeUnix - now) < oneDay);
+            const upcomingMatches = matches.filter(m => 
+                !m.is_live && 
+                !renderedIds.has(m.id) && // Deduplication
+                (m.startTimeUnix - now) < oneDay
+            );
             
             renderLiveSection(liveMatches);
             renderUpcomingGrouped(upcomingMatches);
@@ -543,20 +554,14 @@
             const div = document.createElement('div');
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
-            let timeCol;
-            if (m.is_live) {
-                timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
-            } else { 
-                const parts = m.formatted_date.split('•'); 
-                timeCol = `<span class="time-main">${parts[1] || ''}</span><span class="time-sub">${parts[0]}</span>`; 
-            }
+            // ============================================
+            // 1. LOGO GENERATOR (Using Image Map)
+            // ============================================
             
-            // --- LOGO RENDER LOGIC START ---
             const getLogoHtml = (teamName, letter) => {
-                // Check if we have a valid logo in the map
+                // Check map for logo
                 if (imageMap.teams && imageMap.teams[teamName]) {
                     const logoPath = imageMap.teams[teamName];
-                    // Ensure the path is correct (add leading slash if needed)
                     const fullPath = logoPath.startsWith('/') ? logoPath : '/' + logoPath;
                     return `
                     <div class="logo-box">
@@ -565,20 +570,27 @@
                         <span class="t-logo" style="background:${getColor(letter)}; display:none;">${letter}</span>
                     </div>`;
                 }
-                // Fallback: Use the standard colored circle
+                // Fallback
                 return `<div class="logo-box"><span class="t-logo" style="background:${getColor(letter)}">${letter}</span></div>`;
             };
-            // --- LOGO RENDER LOGIC END ---
+            // ============================================
 
+            let timeCol;
+            if (m.is_live) {
+                timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
+            } else { 
+                const parts = m.formatted_date.split('•'); 
+                timeCol = `<span class="time-main">${parts[1] || ''}</span><span class="time-sub">${parts[0]}</span>`; 
+            }
+            
             let teamsHtml = '';
             const tA = m.team_a; const tB = m.team_b;
             const matchTitle = tB ? `${tA} vs ${tB}` : tA;
             
+            // Render Logos
             if (!tB) {
-                // Single Competitor (e.g. MMA/F1)
                 teamsHtml = `<div class="team-name">${getLogoHtml(tA, m.team_a_letter||'T')} ${tA}</div>`;
             } else {
-                // Two Teams
                 teamsHtml = `
                 <div class="team-name">${getLogoHtml(tA, m.team_a_letter||'T')} ${tA}</div>
                 <div class="team-name">${getLogoHtml(tB, m.team_b_letter||'T')} ${tB}</div>`;
@@ -596,7 +608,7 @@
                  `;
             }
 
-            // === UPDATED ACTION LOGIC ===
+            // ACTIONS
             let actionHtml = '';
             const slug = m.slug || `match-${m.id}`;
             const infoLink = `${SITE_DOMAIN}/watch/?v=${slug}`;
@@ -662,9 +674,7 @@
             const currentSlug = window.location.pathname.replace(/\//g, '');
             if(SHARE_CONFIG.excluded.includes(currentSlug)) return;
 
-            // Render Desktop Sidebar
-            const sb = document.getElementById('socialSidebar');
-            
+            // Define Actions and Icons
             const actions = {
                 telegram: `https://t.me/share/url?url=${encodeURIComponent(SITE_DOMAIN)}`,
                 whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(SITE_DOMAIN)}`,
@@ -680,22 +690,29 @@
                 copy: '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>'
             };
             
-            let html = '';
+            // 1. Desktop HTML Generation (Standard Order)
+            let htmlDesktop = '';
             ['telegram', 'whatsapp', 'reddit', 'twitter', 'copy'].forEach(p => {
-                let onclick = '';
-                if (p === 'copy') {
-                    onclick = `onclick="copyText('${SITE_DOMAIN}')"`;
-                } else {
-                    onclick = `onclick="window.open('${actions[p]}', '_blank')"`;
-                }
-                const countHtml = p === 'copy' ? '' : `<span class="s-count">${formatCount(SHARE_CONFIG.counts[p])}</span>`;
-                html += `<div class="social-btn ${p}" ${onclick}>${icons[p]}${countHtml}</div>`;
+                let onclick = (p === 'copy') ? `onclick="copyText('${SITE_DOMAIN}')"` : `onclick="window.open('${actions[p]}', '_blank')"`;
+                const countHtml = (p === 'copy') ? '' : `<span class="s-count">${formatCount(SHARE_CONFIG.counts[p])}</span>`;
+                htmlDesktop += `<div class="social-btn ${p}" ${onclick}>${icons[p]}${countHtml}</div>`;
             });
-            sb.innerHTML = html;
+            
+            const sb = document.getElementById('socialSidebar');
+            if (sb) sb.innerHTML = htmlDesktop;
 
-            // Render Mobile Sticky Footer
+            // 2. Mobile HTML Generation (Centered Copy Button)
+            // Order: Telegram, Whatsapp, COPY, Twitter, Reddit
+            let htmlMobile = '';
+            ['telegram', 'whatsapp', 'copy', 'twitter', 'reddit'].forEach(p => {
+                let onclick = (p === 'copy') ? `onclick="copyText('${SITE_DOMAIN}')"` : `onclick="window.open('${actions[p]}', '_blank')"`;
+                // Force count display for mobile footer
+                const countHtml = (p === 'copy') ? '' : `<span class="s-count">${formatCount(SHARE_CONFIG.counts[p])}</span>`;
+                htmlMobile += `<div class="social-btn ${p}" ${onclick}>${icons[p]}${countHtml}</div>`;
+            });
+
             const mf = document.getElementById('mobileFooter');
-            if (mf) mf.innerHTML = html;
+            if (mf) mf.innerHTML = htmlMobile;
         }
 
         function copyText(text) {
