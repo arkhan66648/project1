@@ -106,12 +106,12 @@
         
         @media (max-width: 1024px) { .social-sidebar { display: none; } }
 
-        /* MOBILE STICKY FOOTER */
-        .mobile-sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(10,10,10,0.98); backdrop-filter: blur(10px); border-top: 1px solid var(--border); padding: 0; display: none; justify-content: space-between; align-items: center; z-index: 900; height: 65px; box-shadow: 0 -4px 20px rgba(0,0,0,0.8); }
-        .mobile-sticky-footer .social-btn { border: none; flex: 1; height: 100%; padding: 0; border-radius: 0; transform: none !important; background: transparent; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; }
+        /* MOBILE STICKY FOOTER (Fixed & Centered Copy Button) */
+        .mobile-sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(10,10,10,0.98); backdrop-filter: blur(10px); border-top: 1px solid var(--border); padding: 0 5px; display: none; justify-content: space-between; align-items: center; z-index: 900; height: 60px; box-shadow: 0 -4px 20px rgba(0,0,0,0.8); }
+        .mobile-sticky-footer .social-btn { border: none; flex: 1; height: 100%; padding: 0; border-radius: 0; transform: none !important; background: transparent; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px; }
         .mobile-sticky-footer .social-btn:active { background: #1a1a1a; }
         .mobile-sticky-footer .s-count { display: block !important; font-size: 0.65rem; color: #aaa; margin: 0; line-height: 1; }
-        .mobile-sticky-footer svg { width: 22px; height: 22px; }
+        .mobile-sticky-footer svg { width: 20px; height: 20px; }
         @media (max-width: 1024px) { .mobile-sticky-footer { display: flex; } }
         
         .copy-toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: #111; border: 1px solid #333; color: #fff; padding: 8px 14px; font-size: 0.75rem; border-radius: 6px; z-index: 9999; opacity: 0; animation: fadeToast 1.6s ease forwards; }
@@ -395,7 +395,8 @@
         };
 
         let allMatches = [];
-        let imageMap = { teams: {} }; // Stores the logo mapping
+        let imageMap = { teams: {} }; 
+        let leagueMap = {}; // Stores League Mappings
         let scrollTimeout;
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -419,15 +420,21 @@
 
         async function loadMatches() {
             try {
-                // Fetch Matches and Image Map in parallel
-                const [resMatches, resMap] = await Promise.allSettled([
+                // Parallel Fetch: Matches, Image Map, League Map
+                const [resMatches, resImages, resLeagues] = await Promise.allSettled([
                     fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`),
-                    fetch('/assets/data/image_map.json')
+                    fetch('/assets/data/image_map.json'),
+                    fetch('/assets/data/league_map.json')
                 ]);
 
                 // Handle Image Map
-                if (resMap.status === 'fulfilled' && resMap.value.ok) {
-                    imageMap = await resMap.value.json();
+                if (resImages.status === 'fulfilled' && resImages.value.ok) {
+                    imageMap = await resImages.value.json();
+                }
+
+                // Handle League Map
+                if (resLeagues.status === 'fulfilled' && resLeagues.value.ok) {
+                    leagueMap = await resLeagues.value.json();
                 }
 
                 // Handle Matches
@@ -435,8 +442,11 @@
                     const data = await resMatches.value.json();
                     allMatches = data.matches;
                     
+                    // --- NEW: SAFE DATA ENRICHMENT ---
+                    enrichMatchData(allMatches, leagueMap);
+
                     if(data.seo && data.seo !== "nill" && Object.keys(data.seo).length > 0) {
-                        injectDynamicSchema(data.seo); // Schema Injection Logic Updated inside this function
+                        injectDynamicSchema(data.seo); 
                     }
                     
                     renderApp(data.matches);
@@ -446,23 +456,65 @@
             } catch(e) { console.error(e); }
         }
 
+        // ============================================
+        //  SAFE DATA ENRICHMENT LOGIC (New Feature)
+        // ============================================
+        function enrichMatchData(matches, lMap) {
+            if (!lMap) return;
+
+            // Helper to slugify team name like Python script
+            const toKey = (name) => {
+                if(!name) return "";
+                return name.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+            };
+
+            const generics = ['football', 'soccer', 'basketball', 'general', 'live', 'sport', 'undefined', 'match', 'test', 'others', 'cricket', 'hockey', 'rugby', 'fighting'];
+
+            matches.forEach(m => {
+                const currentLeague = (m.league || "").toLowerCase();
+                const currentTourn = (m.tournament || "").toLowerCase();
+                const currentSport = (m.sport || "").toLowerCase();
+
+                // 1. Check if current label is "Generic"
+                const isWeak = generics.includes(currentLeague) || 
+                               generics.includes(currentTourn) || 
+                               currentLeague === currentSport;
+
+                if (isWeak) {
+                    const keyA = toKey(m.team_a);
+                    const keyB = toKey(m.team_b);
+
+                    const leagueA = lMap[keyA];
+                    const leagueB = lMap[keyB];
+
+                    // 2. Strict Double-Check: Both teams must belong to same league
+                    if (leagueA && leagueB && leagueA === leagueB) {
+                        m.league = leagueA;
+                        m.tournament = leagueA;
+                    }
+                    // 3. Exception for Single Competitor Sports (where Team B is null)
+                    else if (!m.team_b && leagueA) {
+                         m.league = leagueA;
+                         m.tournament = leagueA;
+                    }
+                }
+            });
+        }
+        // ============================================
+
         function renderApp(matches) {
             document.getElementById('live-sk-head').style.display = 'none';
             document.getElementById('live-skeleton').style.display = 'none';
             document.getElementById('upcoming-skeleton').style.display = 'none';
             
-            // 1. Get Live Matches (Trending Live)
             const liveMatches = matches.filter(m => m.is_live);
-            
-            // 2. Track Rendered IDs to prevent duplicates
             const renderedIds = new Set(liveMatches.map(m => m.id));
             
-            // 3. Get Upcoming Matches (Strictly Filter out any that are in Live section)
             const now = Date.now();
             const oneDay = 24 * 60 * 60 * 1000;
             const upcomingMatches = matches.filter(m => 
                 !m.is_live && 
-                !renderedIds.has(m.id) && // Deduplication
+                !renderedIds.has(m.id) && 
                 (m.startTimeUnix - now) < oneDay
             );
             
@@ -621,7 +673,6 @@
             // 1. LOGO GENERATOR (Using Image Map)
             // ============================================
             const getLogoHtml = (teamName, letter) => {
-                // Check map for logo
                 if (imageMap.teams && imageMap.teams[teamName]) {
                     const logoPath = imageMap.teams[teamName];
                     const fullPath = logoPath.startsWith('/') ? logoPath : '/' + logoPath;
@@ -632,10 +683,8 @@
                         <span class="t-logo" style="background:${getColor(letter)}; display:none;">${letter}</span>
                     </div>`;
                 }
-                // Fallback
                 return `<div class="logo-box"><span class="t-logo" style="background:${getColor(letter)}">${letter}</span></div>`;
             };
-            // ============================================
 
             let timeCol;
             if (m.is_live) {
@@ -649,7 +698,6 @@
             const tA = m.team_a; const tB = m.team_b;
             const matchTitle = tB ? `${tA} vs ${tB}` : tA;
             
-            // Render Logos
             if (!tB) {
                 teamsHtml = `<div class="team-name">${getLogoHtml(tA, m.team_a_letter||'T')} ${tA}</div>`;
             } else {
@@ -695,7 +743,7 @@
                 }
             }
             
-            // TAGS - Updated Priority
+            // TAGS
             let tagText = "";
             if (context.isTrendingLive) {
                 // Strictly prioritize specific tournament/league over sport
@@ -710,7 +758,6 @@
                 tagText = m.league || m.tournament;
             }
             
-            // Only apply standard formatting if it's not a direct tournament name from live section
             if (!context.isTrendingLive || (!m.tournament && !m.league)) {
                  tagText = formatSportName(tagText || "General");
             }
@@ -727,24 +774,19 @@
             });
         }
 
-        // --- UPDATED SCHEMA INJECTION ---
         function injectDynamicSchema(seoData) {
-            // Helper to inject local logos into Schema objects
             const injectLogos = (items) => {
                 if(!items) return;
                 items.forEach(node => {
                     const event = node['@type'] === 'ListItem' ? node.item : node;
                     
-                    // Check Home Team
                     if(event.homeTeam && event.homeTeam.name && imageMap.teams && imageMap.teams[event.homeTeam.name]) {
                         const localPath = imageMap.teams[event.homeTeam.name];
-                        // Construct Absolute URL
                         event.homeTeam.logo = SITE_DOMAIN + (localPath.startsWith('/') ? localPath : '/' + localPath);
                     } else if (event.homeTeam) {
-                        delete event.homeTeam.logo; // Remove invalid/backend logo
+                        delete event.homeTeam.logo; 
                     }
 
-                    // Check Away Team
                     if(event.awayTeam && event.awayTeam.name && imageMap.teams && imageMap.teams[event.awayTeam.name]) {
                         const localPath = imageMap.teams[event.awayTeam.name];
                         event.awayTeam.logo = SITE_DOMAIN + (localPath.startsWith('/') ? localPath : '/' + localPath);
@@ -754,11 +796,9 @@
                 });
             };
 
-            // Process both lists
             if(seoData.live_broadcast) injectLogos(seoData.live_broadcast);
             if(seoData.upcoming_list && seoData.upcoming_list.itemListElement) injectLogos(seoData.upcoming_list.itemListElement);
 
-            // Standard injection logic
             const jsonStr = JSON.stringify(seoData).replace(/https:\/\/example\.com/g, SITE_DOMAIN);
             const parsed = JSON.parse(jsonStr);
             Object.values(parsed).forEach(schema => {
@@ -773,7 +813,6 @@
             const currentSlug = window.location.pathname.replace(/\//g, '');
             if(SHARE_CONFIG.excluded.includes(currentSlug)) return;
 
-            // Define Actions and Icons
             const actions = {
                 telegram: `https://t.me/share/url?url=${encodeURIComponent(SITE_DOMAIN)}`,
                 whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(SITE_DOMAIN)}`,
@@ -789,23 +828,21 @@
                 copy: '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>'
             };
             
-            // 1. Desktop HTML Generation (Standard Order)
+            // 1. Desktop
             let htmlDesktop = '';
             ['telegram', 'whatsapp', 'reddit', 'twitter', 'copy'].forEach(p => {
                 let onclick = (p === 'copy') ? `onclick="copyText('${SITE_DOMAIN}')"` : `onclick="window.open('${actions[p]}', '_blank')"`;
                 const countHtml = (p === 'copy') ? '' : `<span class="s-count">${formatCount(SHARE_CONFIG.counts[p])}</span>`;
                 htmlDesktop += `<div class="social-btn ${p}" ${onclick}>${icons[p]}${countHtml}</div>`;
             });
-            
             const sb = document.getElementById('socialSidebar');
             if (sb) sb.innerHTML = htmlDesktop;
 
-            // 2. Mobile HTML Generation (Centered Copy Button)
-            // Order: Telegram, Whatsapp, COPY, Twitter, Reddit
+            // 2. Mobile (Centered Copy Button)
             let htmlMobile = '';
             ['telegram', 'whatsapp', 'copy', 'twitter', 'reddit'].forEach(p => {
                 let onclick = (p === 'copy') ? `onclick="copyText('${SITE_DOMAIN}')"` : `onclick="window.open('${actions[p]}', '_blank')"`;
-                // Force count display for mobile footer
+                // Forced display block for counts
                 const countHtml = `<span class="s-count">${formatCount(SHARE_CONFIG.counts[p] || 0)}</span>`;
                 htmlMobile += `<div class="social-btn ${p}" ${onclick}>${icons[p]}${countHtml}</div>`;
             });
