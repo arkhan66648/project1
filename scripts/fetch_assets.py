@@ -15,9 +15,12 @@ LEAGUES = {
     "NBA": "NBA",
     "MLB": "MLB",
     "NHL": "NHL",
+
+    # FIXED
     "MLS": "Major League Soccer",
+    "Championship": "English League Championship",
+
     "English Premier League": "English Premier League",
-    "Championship": "EFL Championship",
     "Scottish Premiership": "Scottish Premiership",
     "Spanish La Liga": "Spanish La Liga",
     "German Bundesliga": "German Bundesliga",
