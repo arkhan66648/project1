@@ -33,7 +33,7 @@ LEAGUES = {
     "UEFA Europa League": "UEFA Europa League",
     "American Major League Soccer": "American Major League Soccer",
     "Saudi Pro League": "Saudi Arabian Pro League",
-    "Belgian Pro League": "Belgian Jupiler League",
+    "Belgian Pro League": "Belgian Pro League",
     "NBA": "NBA",
     "NFL": "NFL",
     "NHL": "NHL",
