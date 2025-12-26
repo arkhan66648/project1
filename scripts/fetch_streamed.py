@@ -28,17 +28,29 @@ def slugify(name):
     clean = re.sub(r"\s+", "-", clean)
     return clean.strip("-")
 
-def save_image(url, save_path):
+def save_image_optimized(url, save_path):
+    """
+    Downloads image, Resizes to 60x60, Converts to WEBP
+    """
     if os.path.exists(save_path): return False
+    
     try:
         resp = requests.get(url, headers=HEADERS, timeout=10)
         if resp.status_code == 200:
             img = Image.open(BytesIO(resp.content))
-            if img.mode != 'RGBA': img = img.convert('RGBA')
+            
+            # 1. Convert to RGBA
+            if img.mode != 'RGBA': 
+                img = img.convert('RGBA')
+            
+            # 2. High Quality Resize to 60x60
             img = img.resize((60, 60), Image.Resampling.LANCZOS)
-            img.save(save_path, "WEBP", quality=90)
+            
+            # 3. Save as WebP
+            img.save(save_path, "WEBP", quality=90, method=6)
             return True
-    except: pass
+    except: 
+        pass
     return False
 
 # ==========================================
@@ -46,8 +58,7 @@ def save_image(url, save_path):
 # ==========================================
 def main():
     os.makedirs(STREAMED_DIR, exist_ok=True)
-    
-    print("--- Starting Gap-Filler Harvester ---")
+    print("--- Starting Gap-Filler Harvester (60x60 Optimized) ---")
     
     try:
         data = requests.get(BACKEND_URL, headers=HEADERS).json()
@@ -56,7 +67,7 @@ def main():
         print("CRITICAL: Backend unavailable")
         return
 
-    # Gather tasks (Team Name -> Badge ID)
+    # Gather needed teams
     tasks = {}
     for m in matches:
         if m.get('team_a') and m.get('team_a_logo'):
@@ -69,24 +80,23 @@ def main():
         slug = slugify(team_name)
         if not slug: continue
 
-        # 1. CHECK TSDB (Priority 1)
+        # 1. CHECK TSDB (Priority 1) - If we have high quality logo, skip.
         tsdb_path = os.path.join(TSDB_DIR, f"{slug}.webp")
         if os.path.exists(tsdb_path):
-            continue # Already have a high-quality logo
+            continue 
 
-        # 2. CHECK STREAMED (Priority 2 - Don't re-download)
+        # 2. CHECK STREAMED (Priority 2) - If we already saved it, skip.
         streamed_path = os.path.join(STREAMED_DIR, f"{slug}.webp")
         if os.path.exists(streamed_path):
             continue
 
-        # 3. DOWNLOAD & RENAME
-        # If ID contains http, use it, otherwise construct URL
+        # 3. DOWNLOAD & RESIZE
         if "http" in badge_id:
             src_url = badge_id
         else:
             src_url = f"{STREAMED_BASE}{badge_id}.webp"
             
-        if save_image(src_url, streamed_path):
+        if save_image_optimized(src_url, streamed_path):
             print(f"   [+] Filled Gap: {slug}.webp")
             count += 1
             time.sleep(0.2)
