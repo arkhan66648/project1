@@ -16,7 +16,7 @@
     <meta property="og:title" content="dgdfgd">
     <meta property="og:description" content="dgdfgdgdgd">
     
-    <!-- OG IMAGE (Falls back to Logo) -->
+    <!-- OG IMAGE -->
     <meta property="og:image" content="https://crackstreams.help/assets/test-logo.webp">
     <meta property="og:image:secure_url" content="https://crackstreams.help/assets/test-logo.webp">
     <meta property="og:image:type" content="image/webp">
@@ -71,6 +71,7 @@
         @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
 
         /* HEADER & NAV */
+        /* Relative on mobile to allow scrolling away, Fixed on desktop */
         header { background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); height: 60px; width: 100%; position: relative; z-index: 100; }
         @media (min-width: 900px) { header { position: fixed; top: 0; } body { padding-top: 60px; } }
 
@@ -105,16 +106,17 @@
         
         @media (max-width: 1024px) { .social-sidebar { display: none; } }
 
-        /* MOBILE STICKY FOOTER (Fixed & Centered Copy Button) */
-        .mobile-sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(10,10,10,0.98); backdrop-filter: blur(10px); border-top: 1px solid var(--border); padding: 0 5px; display: none; justify-content: space-evenly; align-items: center; z-index: 900; height: 60px; }
-        .mobile-sticky-footer .social-btn { border: none; flex: 1; height: 100%; padding: 5px 0; border-radius: 0; transform: none !important; }
+        /* MOBILE STICKY FOOTER */
+        .mobile-sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(10,10,10,0.98); backdrop-filter: blur(10px); border-top: 1px solid var(--border); padding: 0; display: none; justify-content: space-between; align-items: center; z-index: 900; height: 65px; box-shadow: 0 -4px 20px rgba(0,0,0,0.8); }
+        .mobile-sticky-footer .social-btn { border: none; flex: 1; height: 100%; padding: 0; border-radius: 0; transform: none !important; background: transparent; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; }
         .mobile-sticky-footer .social-btn:active { background: #1a1a1a; }
-        .mobile-sticky-footer .s-count { display: block !important; margin-top: 2px; font-size: 0.6rem; color: #94a3b8; }
+        .mobile-sticky-footer .s-count { display: block !important; font-size: 0.65rem; color: #aaa; margin: 0; line-height: 1; }
+        .mobile-sticky-footer svg { width: 22px; height: 22px; }
         @media (max-width: 1024px) { .mobile-sticky-footer { display: flex; } }
         
         .copy-toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: #111; border: 1px solid #333; color: #fff; padding: 8px 14px; font-size: 0.75rem; border-radius: 6px; z-index: 9999; opacity: 0; animation: fadeToast 1.6s ease forwards; }
         @keyframes fadeToast { 0% { opacity: 0; transform: translate(-50%, 10px); } 20% { opacity: 1; transform: translate(-50%, 0); } 80% { opacity: 1; } 100% { opacity: 0; } }
-        @media (max-width: 768px) { .copy-toast { bottom: 70px; } }
+        @media (max-width: 768px) { .copy-toast { bottom: 85px; } }
 
         /* HERO & CONTENT */
         .hero { padding: 40px 15px 15px 15px; text-align: center; background: radial-gradient(circle at top, #1a0505 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); display: none; }
@@ -434,7 +436,7 @@
                     allMatches = data.matches;
                     
                     if(data.seo && data.seo !== "nill" && Object.keys(data.seo).length > 0) {
-                        injectDynamicSchema(data.seo);
+                        injectDynamicSchema(data.seo); // Schema Injection Logic Updated inside this function
                     }
                     
                     renderApp(data.matches);
@@ -455,7 +457,7 @@
             // 2. Track Rendered IDs to prevent duplicates
             const renderedIds = new Set(liveMatches.map(m => m.id));
             
-            // 3. Get Upcoming Matches (Filter out any that are already in Live section)
+            // 3. Get Upcoming Matches (Strictly Filter out any that are in Live section)
             const now = Date.now();
             const oneDay = 24 * 60 * 60 * 1000;
             const upcomingMatches = matches.filter(m => 
@@ -618,7 +620,6 @@
             // ============================================
             // 1. LOGO GENERATOR (Using Image Map)
             // ============================================
-            
             const getLogoHtml = (teamName, letter) => {
                 // Check map for logo
                 if (imageMap.teams && imageMap.teams[teamName]) {
@@ -694,9 +695,11 @@
                 }
             }
             
+            // TAGS - Updated Priority
             let tagText = "";
             if (context.isTrendingLive) {
-                tagText = m.league || m.tournament || m.sport;
+                // Strictly prioritize specific tournament/league over sport
+                tagText = m.tournament || m.league || m.sport;
             } else if (context.isUpcoming) {
                 if (context.isLeague) {
                     tagText = m.sport;
@@ -707,7 +710,11 @@
                 tagText = m.league || m.tournament;
             }
             
-            tagText = formatSportName(tagText || "General").toUpperCase();
+            // Only apply standard formatting if it's not a direct tournament name from live section
+            if (!context.isTrendingLive || (!m.tournament && !m.league)) {
+                 tagText = formatSportName(tagText || "General");
+            }
+            tagText = tagText.toUpperCase();
             
             div.innerHTML = `<div class="col-time">${timeCol}</div><div class="teams-wrapper"><div class="league-tag">${tagText}</div>${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${actionHtml}</div>`;
             return div;
@@ -720,7 +727,38 @@
             });
         }
 
+        // --- UPDATED SCHEMA INJECTION ---
         function injectDynamicSchema(seoData) {
+            // Helper to inject local logos into Schema objects
+            const injectLogos = (items) => {
+                if(!items) return;
+                items.forEach(node => {
+                    const event = node['@type'] === 'ListItem' ? node.item : node;
+                    
+                    // Check Home Team
+                    if(event.homeTeam && event.homeTeam.name && imageMap.teams && imageMap.teams[event.homeTeam.name]) {
+                        const localPath = imageMap.teams[event.homeTeam.name];
+                        // Construct Absolute URL
+                        event.homeTeam.logo = SITE_DOMAIN + (localPath.startsWith('/') ? localPath : '/' + localPath);
+                    } else if (event.homeTeam) {
+                        delete event.homeTeam.logo; // Remove invalid/backend logo
+                    }
+
+                    // Check Away Team
+                    if(event.awayTeam && event.awayTeam.name && imageMap.teams && imageMap.teams[event.awayTeam.name]) {
+                        const localPath = imageMap.teams[event.awayTeam.name];
+                        event.awayTeam.logo = SITE_DOMAIN + (localPath.startsWith('/') ? localPath : '/' + localPath);
+                    } else if (event.awayTeam) {
+                        delete event.awayTeam.logo;
+                    }
+                });
+            };
+
+            // Process both lists
+            if(seoData.live_broadcast) injectLogos(seoData.live_broadcast);
+            if(seoData.upcoming_list && seoData.upcoming_list.itemListElement) injectLogos(seoData.upcoming_list.itemListElement);
+
+            // Standard injection logic
             const jsonStr = JSON.stringify(seoData).replace(/https:\/\/example\.com/g, SITE_DOMAIN);
             const parsed = JSON.parse(jsonStr);
             Object.values(parsed).forEach(schema => {
@@ -768,7 +806,7 @@
             ['telegram', 'whatsapp', 'copy', 'twitter', 'reddit'].forEach(p => {
                 let onclick = (p === 'copy') ? `onclick="copyText('${SITE_DOMAIN}')"` : `onclick="window.open('${actions[p]}', '_blank')"`;
                 // Force count display for mobile footer
-                const countHtml = (p === 'copy') ? '' : `<span class="s-count">${formatCount(SHARE_CONFIG.counts[p])}</span>`;
+                const countHtml = `<span class="s-count">${formatCount(SHARE_CONFIG.counts[p] || 0)}</span>`;
                 htmlMobile += `<div class="social-btn ${p}" ${onclick}>${icons[p]}${countHtml}</div>`;
             });
 
