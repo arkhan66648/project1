@@ -86,6 +86,11 @@ def save_image_optimized(url, save_path):
 # ==========================================
 def main():
     os.makedirs(SAVE_DIR, exist_ok=True)
+    
+    # 1. Create folder for data and Initialize Map
+    os.makedirs(os.path.dirname(LEAGUE_MAP_FILE), exist_ok=True)
+    league_map = {} 
+
     print("--- Starting TSDB Harvester (60x60 Optimized) ---")
 
     for display_name, tsdb_name in LEAGUES.items():
@@ -99,14 +104,14 @@ def main():
                 count = 0
                 for t in data['teams']:
                     name = t.get('strTeam')
-                    # --- NEW ADDITION: Map Team to League ---
+                    
+                    # 2. Map Team to League
                     if name:
-                        # We use the slug as key because frontend converts names to slugs
-                        # We save 'display_name' (e.g. "NBA") as the value
                         team_key = slugify(name)
                         if team_key:
                             league_map[team_key] = display_name
-                    # Check both badge keys
+
+                    # 3. Process Images
                     badge = t.get('strTeamBadge') or t.get('strBadge')
                     
                     if name and badge:
@@ -123,8 +128,11 @@ def main():
             print(f"   [!] Error: {e}")
         
         time.sleep(1.5) # Rate limit safety
-        with open(LEAGUE_MAP_FILE, 'w') as f:
+
+    # 4. Save the Map (OUTSIDE the loop)
+    with open(LEAGUE_MAP_FILE, 'w') as f:
         json.dump(league_map, f, indent=2)
+    
     print(f"--- League Map Saved ({len(league_map)} teams) ---")
 
 if __name__ == "__main__":
