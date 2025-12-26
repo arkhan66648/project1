@@ -80,7 +80,7 @@
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif; background: var(--bg-body); color: var(--text-main); font-size: 14px; overflow-x: hidden; padding-bottom: 60px; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif; background: var(--bg-body); color: var(--text-main); font-size: 14px; overflow-x: hidden; padding-bottom: 80px; } /* Increased padding for mobile footer */
         a { text-decoration: none; color: inherit; transition: 0.2s; }
         button { cursor: pointer; border: none; font-family: inherit; }
         ul { list-style: none; padding: 0; margin: 0; }
@@ -94,7 +94,10 @@
         @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
 
         /* HEADER & NAV */
-        header { background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); height: 60px; width: 100%; position: fixed; top: 0; z-index: 100; }
+        /* Changed: Relative on mobile (scrolls away), Fixed on desktop */
+        header { background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); height: 60px; width: 100%; position: relative; z-index: 100; }
+        @media (min-width: 900px) { header { position: fixed; top: 0; } body { padding-top: 60px; } }
+
         .header-container { max-width: 1200px; margin: 0 auto; height: 100%; padding: 0 15px; display: flex; align-items: center; justify-content: space-between; }
         .logo-link { display: flex; align-items: center; gap: 10px; }
         .logo-img { height: 35px; width: 35px; border-radius: 6px; object-fit: cover; box-shadow: 0 0 10px rgba(208,0,0,0.3); }
@@ -106,13 +109,13 @@
         .nav-links a:hover, .nav-links a.active { color: white; border-bottom-color: var(--brand-primary); }
         
         .hamburger { display: block; font-size: 1.4rem; color: white; background: none; }
-        .mobile-menu { position: fixed; top: 60px; left: 0; width: 100%; background: #0f0f0f; border-bottom: 1px solid var(--border); display: none; flex-direction: column; z-index: 99; }
+        .mobile-menu { position: absolute; top: 60px; left: 0; width: 100%; background: #0f0f0f; border-bottom: 1px solid var(--border); display: none; flex-direction: column; z-index: 99; }
         .mobile-menu.active { display: flex; }
         .mobile-menu a { padding: 15px 20px; border-bottom: 1px solid #1f1f1f; font-weight: 600; color: #ccc; }
         .mobile-menu a.active { color: var(--brand-primary); border-left: 4px solid var(--brand-primary); }
         @media (min-width: 900px) { .nav-links { display: flex; } .hamburger { display: none; } }
 
-        /* SOCIAL SIDEBAR */
+        /* SOCIAL SIDEBAR (Desktop Only) */
         .social-sidebar { position: fixed; left: 0; top: 50%; transform: translateY(-50%); z-index: 90; display: flex; flex-direction: column; gap: 8px; background: rgba(10,10,10,0.95); border: 1px solid var(--border); border-left: none; padding: 12px 8px; border-radius: 0 8px 8px 0; box-shadow: 4px 0 15px rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
         .social-btn { width: 44px; padding: 6px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #9aa0a6; background: transparent; border: 1px solid #1f1f1f; border-radius: 6px; will-change: transform; transition: transform 0.2s ease, color 0.2s ease, background 0.2s ease; }
         .social-btn svg { width: 20px; height: 20px; fill: currentColor; display: block; }
@@ -124,17 +127,21 @@
         .social-btn:hover { background: #141414; border-color: #2a2a2a; transform: translateX(2px) scale(1.04); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         .s-count { font-size: 0.65rem; font-weight: 700; color: #94a3b8; letter-spacing: 0.3px; }
         
-        /* NOTE: Sidebar hides on screens smaller than 1024px. This matches your request. */
-        @media (max-width: 1024px) {
-            .social-sidebar { display: none; }
-        }
+        @media (max-width: 1024px) { .social-sidebar { display: none; } }
+
+        /* MOBILE STICKY FOOTER */
+        .mobile-sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--border); padding: 10px; display: none; justify-content: space-around; align-items: center; z-index: 900; }
+        .mobile-sticky-footer .social-btn { border: none; width: auto; flex: 1; height: 40px; }
+        .mobile-sticky-footer .s-count { display: none; }
+        @media (max-width: 1024px) { .mobile-sticky-footer { display: flex; } }
         
         .copy-toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: #111; border: 1px solid #333; color: #fff; padding: 8px 14px; font-size: 0.75rem; border-radius: 6px; z-index: 9999; opacity: 0; animation: fadeToast 1.6s ease forwards; }
         @keyframes fadeToast { 0% { opacity: 0; transform: translate(-50%, 10px); } 20% { opacity: 1; transform: translate(-50%, 0); } 80% { opacity: 1; } 100% { opacity: 0; } }
         @media (max-width: 768px) { .copy-toast { bottom: 70px; } }
 
         /* HERO & CONTENT */
-        .hero { padding: 90px 15px 15px 15px; text-align: center; background: radial-gradient(circle at top, #1a0505 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); display: block; }
+        .hero { padding: 40px 15px 15px 15px; text-align: center; background: radial-gradient(circle at top, #1a0505 0%, var(--bg-body) 80%); border-bottom: 1px solid var(--border); display: block; }
+        @media (min-width: 900px) { .hero { padding-top: 60px; } }
         .sys-status { display: inline-flex; align-items: center; gap: 8px; background: rgba(0, 230, 118, 0.08); border: 1px solid rgba(0, 230, 118, 0.2); padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; font-size: 0.75rem; font-weight: 700; color: var(--status-green); }
         .dot { width: 6px; height: 6px; background: var(--status-green); border-radius: 50%; box-shadow: 0 0 8px var(--status-green); animation: pulse 2s infinite; }
         h1 { margin: 0 0 20px 0; font-size: 1.8rem; line-height: 1.2; color: white; font-weight: 800; }
@@ -167,8 +174,8 @@
         .team-name { font-size: 0.7rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
         @media (min-width: 768px) { .team-name { font-size: 0.9rem; } }
         
-        /* UPDATED LOGO STYLES (Supports Image + Fallback) */
-        .logo-box { width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; }
+        /* LOGO STYLES */
+        .logo-box { width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; margin-right: 4px; }
         .t-img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; }
         .t-logo { width: 100%; height: 100%; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); position: absolute; top: 0; left: 0; }
         
@@ -352,6 +359,9 @@
         <div class="copyright">Copyright</div>
     </footer>
 
+    <!-- NEW MOBILE STICKY FOOTER -->
+    <div id="mobileFooter" class="mobile-sticky-footer"></div>
+
     <button id="backToTop" class="back-to-top" onclick="window.scrollTo(0,0)">
         <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
     </button>
@@ -405,6 +415,7 @@
         };
 
         let allMatches = [];
+        let imageMap = { teams: {} }; // Stores the logo mapping
         let scrollTimeout;
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -428,15 +439,30 @@
 
         async function loadMatches() {
             try {
-                const res = await fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`);
-                const data = await res.json();
-                allMatches = data.matches;
-                
-                if(data.seo && data.seo !== "nill" && Object.keys(data.seo).length > 0) {
-                    injectDynamicSchema(data.seo);
+                // Fetch Matches and Image Map in parallel
+                const [resMatches, resMap] = await Promise.allSettled([
+                    fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`),
+                    fetch('/assets/data/image_map.json')
+                ]);
+
+                // Handle Image Map
+                if (resMap.status === 'fulfilled' && resMap.value.ok) {
+                    imageMap = await resMap.value.json();
                 }
-                
-                renderApp(data.matches);
+
+                // Handle Matches
+                if (resMatches.status === 'fulfilled' && resMatches.value.ok) {
+                    const data = await resMatches.value.json();
+                    allMatches = data.matches;
+                    
+                    if(data.seo && data.seo !== "nill" && Object.keys(data.seo).length > 0) {
+                        injectDynamicSchema(data.seo);
+                    }
+                    
+                    renderApp(data.matches);
+                } else {
+                    console.error("Failed to load matches");
+                }
             } catch(e) { console.error(e); }
         }
 
@@ -601,26 +627,6 @@
             const div = document.createElement('div');
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
-            // ============================================
-            // 1. SAFE LOGO GENERATOR (NEW ADDITION)
-            // ============================================
-            const BADGE_BASE = "https://streamed.pk/api/images/badge/";
-            
-            const renderLogo = (badgeId, letter) => {
-                // If backend provides a logo ID, construct image with error handling
-                if (badgeId) {
-                    return `
-                    <div class="logo-box">
-                        <img src="${BADGE_BASE}${badgeId}.webp" class="t-img" loading="lazy" alt="${letter}" 
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                        <span class="t-logo" style="background:${getColor(letter)}; display:none;">${letter}</span>
-                    </div>`;
-                }
-                // Fallback: Use original colored letter circle
-                return `<span class="logo-box"><span class="t-logo" style="background:${getColor(letter)}">${letter}</span></span>`;
-            };
-            // ============================================
-
             let timeCol;
             if (m.is_live) {
                 timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
@@ -629,19 +635,38 @@
                 timeCol = `<span class="time-main">${parts[1] || ''}</span><span class="time-sub">${parts[0]}</span>`; 
             }
             
+            // --- LOGO RENDER LOGIC START ---
+            const getLogoHtml = (teamName, letter) => {
+                // Check if we have a valid logo in the map
+                if (imageMap.teams && imageMap.teams[teamName]) {
+                    const logoPath = imageMap.teams[teamName];
+                    // Ensure the path is correct (add leading slash if needed)
+                    const fullPath = logoPath.startsWith('/') ? logoPath : '/' + logoPath;
+                    return `
+                    <div class="logo-box">
+                        <img src="${fullPath}" class="t-img" alt="${teamName} Logo" loading="lazy"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                        <span class="t-logo" style="background:${getColor(letter)}; display:none;">${letter}</span>
+                    </div>`;
+                }
+                // Fallback: Use the standard colored circle
+                return `<div class="logo-box"><span class="t-logo" style="background:${getColor(letter)}">${letter}</span></div>`;
+            };
+            // --- LOGO RENDER LOGIC END ---
+
             let teamsHtml = '';
             const tA = m.team_a; const tB = m.team_b;
             const matchTitle = tB ? `${tA} vs ${tB}` : tA;
             
-            // --- UPDATED TEAM HTML GENERATION ---
             if (!tB) {
-                teamsHtml = `<div class="team-name">${renderLogo(m.team_a_logo, m.team_a_letter||'T')} ${tA}</div>`;
+                // Single Competitor (e.g. MMA/F1)
+                teamsHtml = `<div class="team-name">${getLogoHtml(tA, m.team_a_letter||'T')} ${tA}</div>`;
             } else {
+                // Two Teams
                 teamsHtml = `
-                <div class="team-name">${renderLogo(m.team_a_logo, m.team_a_letter||'T')} ${tA}</div>
-                <div class="team-name">${renderLogo(m.team_b_logo, m.team_b_letter||'T')} ${tB}</div>`;
+                <div class="team-name">${getLogoHtml(tA, m.team_a_letter||'T')} ${tA}</div>
+                <div class="team-name">${getLogoHtml(tB, m.team_b_letter||'T')} ${tB}</div>`;
             }
-            // ------------------------------------
             
             let metaHtml = '';
             if (m.is_live) {
@@ -655,16 +680,10 @@
                  `;
             }
 
-            // === UPDATED ACTION LOGIC FOR SEO & USER EXPERIENCE ===
+            // === UPDATED ACTION LOGIC ===
             let actionHtml = '';
-            
-            // 1. Fallback for Slug (Prevents "No Match" Error if backend is outdated)
             const slug = m.slug || `match-${m.id}`;
-            
-            // 2. Safe URL (For Google/Info) -> ?v=
             const infoLink = `${SITE_DOMAIN}/watch/?v=${slug}`;
-            
-            // 3. Stream URL (For Users) -> ?stream=
             const streamLink = `${SITE_DOMAIN}/watch/?stream=${slug}`;
             
             const liveWatchBtn = `<a href="${streamLink}" title="Watch ${matchTitle}" class="btn-watch">WATCH <span class="hd-badge">HD</span></a>`;
@@ -685,7 +704,6 @@
                     actionHtml = notifyBtn + copyBtn;
                 }
             }
-            // =======================================================
             
             let tagText = "";
             if (context.isTrendingLive) {
@@ -728,6 +746,7 @@
             const currentSlug = window.location.pathname.replace(/\//g, '');
             if(SHARE_CONFIG.excluded.includes(currentSlug)) return;
 
+            // Render Desktop Sidebar
             const sb = document.getElementById('socialSidebar');
             
             const actions = {
@@ -757,6 +776,10 @@
                 html += `<div class="social-btn ${p}" ${onclick}>${icons[p]}${countHtml}</div>`;
             });
             sb.innerHTML = html;
+
+            // Render Mobile Sticky Footer
+            const mf = document.getElementById('mobileFooter');
+            if (mf) mf.innerHTML = html;
         }
 
         function copyText(text) {
