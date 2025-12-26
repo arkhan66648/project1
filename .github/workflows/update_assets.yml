@@ -2,6 +2,7 @@ name: Update Sports Assets
 
 on:
   schedule:
+    # Run every 6 hours
     - cron: '0 */6 * * *'
   workflow_dispatch:
 
@@ -23,10 +24,13 @@ jobs:
       - name: Install Dependencies
         run: pip install -r scripts/requirements.txt
 
-      - name: 1. Fetch & Resize Logos
-        run: python scripts/fetch_assets.py
+      - name: 1. Fetch TSDB (Primary)
+        run: python scripts/fetch_tsdb.py
 
-      - name: 2. Generate Map
+      - name: 2. Fetch Streamed (Gap Filler)
+        run: python scripts/fetch_streamed.py
+
+      - name: 3. Generate Map
         run: python scripts/generate_map.py
 
       - name: Commit & Push Changes
