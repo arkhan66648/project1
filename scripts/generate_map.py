@@ -1,6 +1,5 @@
 import os
 import json
-import re
 
 LOGO_DIR = "assets/logos/tsdb"
 OUTPUT = "assets/data/image_map.json"
@@ -13,13 +12,13 @@ map_data = {}
 if not os.path.exists(LOGO_DIR):
     print("[!] Logo directory not found.")
 else:
-    files = os.listdir(LOGO_DIR)
+    files = [f for f in os.listdir(LOGO_DIR) if f.endswith(".webp")]
     print(f"--- Map Generator: Found {len(files)} logos ---")
 
     for file in files:
-        name, _ = os.path.splitext(file)
-        team_name = unslug(name)
-        map_data[team_name] = f"assets/logos/tsdb/{name}"
+        slug = file.replace(".webp", "")
+        team_name = unslug(slug)
+        map_data[team_name] = f"assets/logos/tsdb/{slug}"
 
 os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
 
