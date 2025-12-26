@@ -17,7 +17,7 @@ LEAGUES = {
     "NHL": "NHL",
 
     # FIXED
-    "MLS": "Major League Soccer",
+    "MLS": "American Major League Soccer",
     "Championship": "English League Championship",
 
     "English Premier League": "English Premier League",
