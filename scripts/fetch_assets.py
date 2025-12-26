@@ -9,20 +9,20 @@ from PIL import Image
 API_KEY = "123"
 BASE_URL = "https://www.thesportsdb.com/api/v1/json"
 
-LEAGUES = [
-    "NFL",
-    "NBA",
-    "MLB",
-    "NHL",
-    "MLS",
-    "English Premier League",
-    "Championship",
-    "Scottish Premiership",
-    "Spanish La Liga",
-    "German Bundesliga",
-    "Italian Serie A",
-    "French Ligue 1"
-]
+LEAGUES = {
+    "NFL": "NFL",
+    "NBA": "NBA",
+    "MLB": "MLB",
+    "NHL": "NHL",
+    "MLS": "Major League Soccer",
+    "English Premier League": "English Premier League",
+    "Championship": "EFL Championship",
+    "Scottish Premiership": "Scottish Premiership",
+    "Spanish La Liga": "Spanish La Liga",
+    "German Bundesliga": "German Bundesliga",
+    "Italian Serie A": "Italian Serie A",
+    "French Ligue 1": "French Ligue 1"
+}
 
 LOGO_DIR = "assets/logos/tsdb"
 MAP_FILE = "assets/data/image_map.json"
