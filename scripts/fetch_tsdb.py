@@ -9,17 +9,16 @@ from io import BytesIO
 # ==========================================
 # 1. CONFIGURATION
 # ==========================================
-# Public Free Test Key
 API_KEY = "123"
 BASE_URL = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}"
-
 SAVE_DIR = "assets/logos/tsdb"
 
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
 }
 
-# The Leagues we want to cover (Name must match TSDB exactly)
+# Supported Leagues
 LEAGUES = {
     "English Premier League": "English Premier League",
     "English League Championship": "English League Championship",
@@ -35,14 +34,12 @@ LEAGUES = {
     "American Major League Soccer": "American Major League Soccer",
     "Saudi Pro League": "Saudi Arabian Pro League",
     "Belgian Pro League": "Belgian Jupiler League",
-    
     "NBA": "NBA",
     "NFL": "NFL",
     "NHL": "NHL",
     "MLB": "MLB",
     "F1": "Formula 1",
     "UFC": "UFC",
-    
     "Australian Big Bash League": "Australian Big Bash League",
     "United Rugby Championship": "United Rugby Championship"
 }
@@ -51,24 +48,35 @@ LEAGUES = {
 # 2. UTILS
 # ==========================================
 def slugify(name):
-    """ 'Arsenal FC' -> 'arsenal-fc' """
     if not name: return None
     clean = str(name).lower()
     clean = re.sub(r"[^\w\s-]", "", clean)
     clean = re.sub(r"\s+", "-", clean)
     return clean.strip("-")
 
-def save_image(url, save_path):
+def save_image_optimized(url, save_path):
+    """
+    Downloads image, Resizes to 60x60, Converts to WEBP
+    """
     if os.path.exists(save_path): return False
+    
     try:
         resp = requests.get(url, headers=HEADERS, timeout=10)
         if resp.status_code == 200:
             img = Image.open(BytesIO(resp.content))
-            if img.mode != 'RGBA': img = img.convert('RGBA')
+            
+            # 1. Convert to RGBA (Preserve Transparency)
+            if img.mode != 'RGBA': 
+                img = img.convert('RGBA')
+            
+            # 2. High Quality Resize to 60x60
             img = img.resize((60, 60), Image.Resampling.LANCZOS)
-            img.save(save_path, "WEBP", quality=90)
+            
+            # 3. Save as WebP (Optimized)
+            img.save(save_path, "WEBP", quality=90, method=6)
             return True
-    except: pass
+    except: 
+        pass
     return False
 
 # ==========================================
@@ -76,11 +84,10 @@ def save_image(url, save_path):
 # ==========================================
 def main():
     os.makedirs(SAVE_DIR, exist_ok=True)
-    print("--- Starting TSDB Harvester ---")
+    print("--- Starting TSDB Harvester (60x60 Optimized) ---")
 
     for display_name, tsdb_name in LEAGUES.items():
         print(f" > Checking: {display_name}")
-        
         encoded = urllib.parse.quote(tsdb_name)
         url = f"{BASE_URL}/search_all_teams.php?l={encoded}"
         
@@ -90,13 +97,13 @@ def main():
                 count = 0
                 for t in data['teams']:
                     name = t.get('strTeam')
-                    # TRY BOTH KEYS (Critical Fix)
+                    # Check both badge keys
                     badge = t.get('strTeamBadge') or t.get('strBadge')
                     
                     if name and badge:
                         slug = slugify(name)
                         path = os.path.join(SAVE_DIR, f"{slug}.webp")
-                        if save_image(badge, path):
+                        if save_image_optimized(badge, path):
                             count += 1
                 
                 if count > 0: print(f"   [+] Saved {count} new logos.")
