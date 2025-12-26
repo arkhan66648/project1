@@ -3,6 +3,8 @@ import json
 import requests
 import urllib.parse
 import re
+from io import BytesIO
+from PIL import Image
 
 API_KEY = "123"
 BASE_URL = "https://www.thesportsdb.com/api/v1/json"
@@ -34,14 +36,14 @@ def slugify(name):
     name = re.sub(r"\s+", "-", name)
     return name.strip("-")
 
-# Load existing map (for strict dedupe)
+# Load existing map (strict dedupe)
 if os.path.exists(MAP_FILE):
     with open(MAP_FILE, "r") as f:
         image_map = json.load(f)
 else:
     image_map = {}
 
-print("\n--- Starting TSDB Logo Harvester ---")
+print("\n--- Starting TSDB Logo Harvester (60x60 WEBP) ---")
 
 for idx, league in enumerate(LEAGUES, start=1):
     print(f" > [{idx}/{len(LEAGUES)}] {league}")
@@ -70,31 +72,33 @@ for idx, league in enumerate(LEAGUES, start=1):
         if not team_name or not badge_url:
             continue
 
-        slug = slugify(team_name)
-
-        # STRICT 100% MATCH DEDUPE
+        # STRICT 100% MATCH CHECK
         if team_name in image_map:
             continue
 
-        ext = badge_url.split(".")[-1].split("?")[0].lower()
-        if ext not in ["png", "jpg", "jpeg", "webp"]:
-            continue
+        slug = slugify(team_name)
+        output_path = os.path.join(LOGO_DIR, f"{slug}.webp")
 
-        filename = f"{slug}.{ext}"
-        filepath = os.path.join(LOGO_DIR, filename)
-
-        if os.path.exists(filepath):
+        if os.path.exists(output_path):
             image_map[team_name] = f"assets/logos/tsdb/{slug}"
             continue
 
         try:
-            img = requests.get(badge_url, timeout=15)
-            if img.status_code == 200:
-                with open(filepath, "wb") as f:
-                    f.write(img.content)
+            img_res = requests.get(badge_url, timeout=15)
+            if img_res.status_code != 200:
+                continue
 
-                image_map[team_name] = f"assets/logos/tsdb/{slug}"
-                saved += 1
+            img = Image.open(BytesIO(img_res.content)).convert("RGBA")
+
+            # Resize to EXACT 60x60
+            img = img.resize((60, 60), Image.LANCZOS)
+
+            # Save as WEBP
+            img.save(output_path, "WEBP", quality=90, method=6)
+
+            image_map[team_name] = f"assets/logos/tsdb/{slug}"
+            saved += 1
+
         except Exception:
             continue
 
