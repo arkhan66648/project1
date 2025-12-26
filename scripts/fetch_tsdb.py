@@ -3,6 +3,7 @@ import requests
 import urllib.parse
 import re
 import time
+import json
 from PIL import Image
 from io import BytesIO
 
@@ -12,6 +13,7 @@ from io import BytesIO
 API_KEY = "123"
 BASE_URL = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}"
 SAVE_DIR = "assets/logos/tsdb"
+LEAGUE_MAP_FILE = "assets/data/league_map.json"
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -97,6 +99,13 @@ def main():
                 count = 0
                 for t in data['teams']:
                     name = t.get('strTeam')
+                    # --- NEW ADDITION: Map Team to League ---
+                    if name:
+                        # We use the slug as key because frontend converts names to slugs
+                        # We save 'display_name' (e.g. "NBA") as the value
+                        team_key = slugify(name)
+                        if team_key:
+                            league_map[team_key] = display_name
                     # Check both badge keys
                     badge = t.get('strTeamBadge') or t.get('strBadge')
                     
@@ -114,6 +123,9 @@ def main():
             print(f"   [!] Error: {e}")
         
         time.sleep(1.5) # Rate limit safety
+        with open(LEAGUE_MAP_FILE, 'w') as f:
+        json.dump(league_map, f, indent=2)
+    print(f"--- League Map Saved ({len(league_map)} teams) ---")
 
 if __name__ == "__main__":
     main()
