@@ -19,11 +19,11 @@ def main():
     # 1. Load Local Files
     logos = {} # { "slug": "full_path" }
     
-    # Load TSDB first (Higher Priority)
+    # Load TSDB first (Highest Priority)
     if os.path.exists(DIRS['tsdb']):
         for f in os.listdir(DIRS['tsdb']):
             if f.endswith('.webp'):
-                logos[f.replace('.webp', '')] = f"{DIRS['tsdb']}/{f}"
+                logos[f.replace('.webp', '')] = f"/{DIRS['tsdb']}/{f}"
 
     # Load Streamed second (Gap fillers)
     if os.path.exists(DIRS['streamed']):
@@ -31,7 +31,7 @@ def main():
             if f.endswith('.webp'):
                 slug = f.replace('.webp', '')
                 if slug not in logos: # Don't overwrite TSDB
-                    logos[slug] = f"{DIRS['streamed']}/{f}"
+                    logos[slug] = f"/{DIRS['streamed']}/{f}"
 
     print(f"--- Map Generator: Found {len(logos)} unique logos ---")
 
@@ -51,9 +51,7 @@ def main():
             team_name = m.get(t_key)
             if not team_name: continue
             
-            # A. Try Exact Match (Slugified)
-            # "Man City" -> "man-city"
-            # "Denver Nuggets" -> "denver-nuggets"
+            # Target Slug
             target_slug = "".join([c for c in team_name.lower() if c.isalnum() or c == '-']).strip('-')
             
             match_found = None
@@ -62,7 +60,7 @@ def main():
             if target_slug in logos:
                 match_found = logos[target_slug]
             
-            # 2. Fuzzy Check
+            # 2. Fuzzy Check (High confidence only)
             else:
                 norm_search = normalize(team_name)
                 matches_fuzzy = get_close_matches(norm_search, available_slugs, n=1, cutoff=0.7)
@@ -75,7 +73,7 @@ def main():
     # 4. Save
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
     
-    # Save simple format: { "teams": { ... } }
+    # Format for Frontend: { "teams": { "Arsenal": "/path/to/logo.webp" } }
     final_json = { "teams": team_map }
     
     with open(OUTPUT_FILE, 'w') as f:
