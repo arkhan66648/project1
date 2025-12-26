@@ -9,6 +9,7 @@ from PIL import Image
 API_KEY = "123"
 BASE_URL = "https://www.thesportsdb.com/api/v1/json"
 
+# Display name => TSDB exact league name
 LEAGUES = {
     "NFL": "NFL",
     "NBA": "NBA",
@@ -36,19 +37,19 @@ def slugify(name):
     name = re.sub(r"\s+", "-", name)
     return name.strip("-")
 
-# Load existing map (strict dedupe)
+# Load existing image map (STRICT matching)
 if os.path.exists(MAP_FILE):
-    with open(MAP_FILE, "r") as f:
+    with open(MAP_FILE, "r", encoding="utf-8") as f:
         image_map = json.load(f)
 else:
     image_map = {}
 
 print("\n--- Starting TSDB Logo Harvester (60x60 WEBP) ---")
 
-for idx, league in enumerate(LEAGUES, start=1):
-    print(f" > [{idx}/{len(LEAGUES)}] {league}")
+for idx, (display_name, tsdb_name) in enumerate(LEAGUES.items(), start=1):
+    print(f" > [{idx}/{len(LEAGUES)}] {display_name}")
 
-    league_q = urllib.parse.quote(league)
+    league_q = urllib.parse.quote(tsdb_name)
     url = f"{BASE_URL}/{API_KEY}/search_all_teams.php?l={league_q}"
 
     try:
@@ -60,7 +61,7 @@ for idx, league in enumerate(LEAGUES, start=1):
 
     teams = data.get("teams")
     if not teams:
-        print(f"   [-] {league}: No teams returned")
+        print(f"   [-] {display_name}: No teams returned")
         continue
 
     saved = 0
@@ -72,7 +73,7 @@ for idx, league in enumerate(LEAGUES, start=1):
         if not team_name or not badge_url:
             continue
 
-        # STRICT 100% MATCH CHECK
+        # STRICT 100% match check
         if team_name in image_map:
             continue
 
@@ -90,10 +91,9 @@ for idx, league in enumerate(LEAGUES, start=1):
 
             img = Image.open(BytesIO(img_res.content)).convert("RGBA")
 
-            # Resize to EXACT 60x60
+            # EXACT resize to 60x60
             img = img.resize((60, 60), Image.LANCZOS)
 
-            # Save as WEBP
             img.save(output_path, "WEBP", quality=90, method=6)
 
             image_map[team_name] = f"assets/logos/tsdb/{slug}"
@@ -102,10 +102,10 @@ for idx, league in enumerate(LEAGUES, start=1):
         except Exception:
             continue
 
-    print(f"   [+] {league}: Saved {saved} logos")
+    print(f"   [+] {display_name}: Saved {saved} logos")
 
-# Save updated map
-with open(MAP_FILE, "w") as f:
-    json.dump(image_map, f, indent=2)
+# Save updated image map
+with open(MAP_FILE, "w", encoding="utf-8") as f:
+    json.dump(image_map, f, indent=2, ensure_ascii=False)
 
 print("\n--- Done ---\n")
