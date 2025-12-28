@@ -11,7 +11,78 @@ DIRS = {
     'leagues': 'assets/logos/leagues'
 }
 OUTPUT_FILE = 'assets/data/image_map.json'
-FUZZY_CUTOFF = 0.85 # High strictness to avoid wrong logo assignment
+FUZZY_CUTOFF = 0.85 
+
+# STRICT BLOCKLIST (Prevent Generic Categories in Output)
+GENERIC_SPORTS = {
+    "soccer",
+  "football",
+
+  "ice hockey", "ice-hockey",
+  "field hockey", "field-hockey",
+
+  "cricket",
+  "basketball",
+  "baseball",
+
+  "rugby",
+  "rugby union", "rugby-union",
+  "rugby league", "rugby-league",
+
+  "tennis",
+  "golf",
+
+  "motorsport", "motorsports",
+
+  "volleyball",
+  "handball",
+
+  "table tennis", "table-tennis",
+  "badminton",
+
+  "boxing",
+  "mma",
+  "wrestling",
+
+  "snooker",
+  "pool",
+  "billiards",
+  "darts",
+
+  "cycling",
+
+  "american football", "american-football",
+  "aussie rules", "aussie-rules",
+
+  "esports",
+  "futsal",
+  "netball",
+
+  "kabaddi",
+  "athletics",
+  "swimming",
+  "weightlifting",
+  "gymnastics",
+
+  "judo",
+  "taekwondo",
+  "karate",
+
+  "lacrosse",
+  "water polo", "water-polo",
+  "softball",
+  "floorball",
+
+  "formula 1", "formula-1", "f1",
+  "nascar",
+  "motogp",
+
+  "skiing",
+  "snowboarding",
+  "curling",
+
+  "chess"
+}
 
 def main():
     print("--- Generating Image Map ---")
@@ -61,19 +132,23 @@ def main():
             team_name = m.get(t_key)
             if not team_name: continue
             
-            # Slugify
             slug = "".join([c for c in team_name.lower() if c.isalnum() or c == '-']).strip('-')
             
             if slug in team_paths:
                 final_teams[team_name] = team_paths[slug]
             else:
-                # Safe Fuzzy Match
                 fuzzy = get_close_matches(slug, avail_teams, n=1, cutoff=FUZZY_CUTOFF)
                 if fuzzy:
                     final_teams[team_name] = team_paths[fuzzy[0]]
 
         # Map Leagues
         league_name = m.get('league')
+        
+        # --- STRICT CHECK: Skip Generic Sports ---
+        if league_name and league_name.lower().strip() in GENERIC_SPORTS:
+            continue
+        # -----------------------------------------
+
         if league_name:
             slug = "".join([c for c in league_name.lower() if c.isalnum() or c == '-']).strip('-')
             
