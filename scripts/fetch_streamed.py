@@ -23,76 +23,16 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
-# STRICT BLOCKLIST (Filter input & clean existing)
-GENERIC_SPORTS = {
-    "soccer",
-  "football",
-
-  "ice hockey", "ice-hockey",
-  "field hockey", "field-hockey",
-
-  "cricket",
-  "basketball",
-  "baseball",
-
-  "rugby",
-  "rugby union", "rugby-union",
-  "rugby league", "rugby-league",
-
-  "tennis",
-  "golf",
-
-  "motorsport", "motorsports",
-
-  "volleyball",
-  "handball",
-
-  "table tennis", "table-tennis",
-  "badminton",
-
-  "boxing",
-  "mma",
-  "wrestling",
-
-  "snooker",
-  "pool",
-  "billiards",
-  "darts",
-
-  "cycling",
-
-  "american football", "american-football",
-  "aussie rules", "aussie-rules",
-
-  "esports",
-  "futsal",
-  "netball",
-
-  "kabaddi",
-  "athletics",
-  "swimming",
-  "weightlifting",
-  "gymnastics",
-
-  "judo",
-  "taekwondo",
-  "karate",
-
-  "lacrosse",
-  "water polo", "water-polo",
-  "softball",
-  "floorball",
-
-  "formula 1", "formula-1", "f1",
-  "nascar",
-  "motogp",
-
-  "skiing",
-  "snowboarding",
-  "curling",
-
-  "chess"
-}
+# --- WHITELIST CONFIGURATION ---
+ALLOWED_LEAGUES_INPUT = """
+NFL, NBA, MLB, NHL, College Football, College-Football, College Basketball, College-Basketball, 
+NCAAB, NCAAF, NCAA Men, NCAA-Men, NCAA Women, NCAA-Women, Premier League, Premier-League, 
+Champions League, Champions-League, MLS, Bundesliga, Serie-A, Serie A, American Football, 
+Ice Hockey, Ice-Hockey, Championship, Scottish Premiership, Scottish-Premiership, 
+Europa League, Europa-League
+"""
+# Set of lowercased allowed names
+VALID_LEAGUES = {x.strip().lower() for x in ALLOWED_LEAGUES_INPUT.split(',') if x.strip()}
 
 # ==========================================
 # 2. UTILS
@@ -116,7 +56,6 @@ def should_download(path):
     return file_age_days > REFRESH_DAYS
 
 def download_multi_source(source_obj, save_path):
-    """Tries multiple sources. Only saves if successful."""
     if not should_download(save_path): return False
     
     urls = []
@@ -143,7 +82,7 @@ def download_multi_source(source_obj, save_path):
                 
                 with open(save_path, "wb") as f:
                     f.write(temp_buffer.getvalue())
-                return True 
+                return True
         except:
             continue
     return False
@@ -164,15 +103,19 @@ def main():
                 league_map = json.load(f)
         except: pass
 
-    # --- AUTO CLEANER: Remove existing generic sports ---
+    # 2. CLEAN UP: Remove entries not in VALID_LEAGUES
+    # This ensures we delete teams whose league is generic or not in our new whitelist
     cleaned_count = 0
-    keys_to_delete = [k for k, v in league_map.items() if str(v).lower().strip() in GENERIC_SPORTS]
+    keys_to_delete = [
+        k for k, v in league_map.items() 
+        if str(v).lower().strip() not in VALID_LEAGUES
+    ]
     for k in keys_to_delete:
         del league_map[k]
         cleaned_count += 1
+    
     if cleaned_count > 0:
-        print(f"--- Purged {cleaned_count} generic entries (e.g., Soccer, Football) from map ---")
-    # ----------------------------------------------------
+        print(f"--- Auto-Cleaned {cleaned_count} items not in Whitelist ---")
 
     print("--- Starting Backend Asset Sync ---")
     
@@ -189,16 +132,16 @@ def main():
     for m in matches:
         home = m.get('home_team')
         away = m.get('away_team')
-        league = m.get('league') # Tournament name OR Generic Sport
-
-        # --- STRICT CHECK: Filter Incoming Data ---
-        if league and league.lower().strip() in GENERIC_SPORTS:
-            league = None # Ignore this league entirely
-        # ------------------------------------------
-
+        league = m.get('league') # Can be None, Generic, or Valid
+        
         home_imgs = m.get('home_team_image')
         away_imgs = m.get('away_team_image')
         league_imgs = m.get('league_image')
+
+        # Check if incoming league is valid
+        is_valid_league = False
+        if league and league.strip().lower() in VALID_LEAGUES:
+            is_valid_league = True
 
         # ---------------------------
         # PROCESS TEAMS
@@ -207,30 +150,35 @@ def main():
             slug = slugify(name)
             if not slug: continue
 
-            # A. Update League Map (Priority: Backend)
-            # Only update if we have a valid, non-generic league
-            if league:
-                league_map[slug] = league
+            # LOGIC:
+            # 1. If incoming league is VALID, update map (Priority: New Data)
+            # 2. If incoming league is INVALID/MISSING, check if we already have it in map.
+            # 3. If neither, we DO NOT add it to the map (Strict Whitelist).
 
-            # B. Download Image (Gap Fill)
-            tsdb_path = os.path.join(TSDB_DIR, f"{slug}.webp")
+            if is_valid_league:
+                league_map[slug] = league # Update with fresh valid data
             
-            if not os.path.exists(tsdb_path):
-                streamed_path = os.path.join(STREAMED_DIR, f"{slug}.webp")
-                if img_obj and download_multi_source(img_obj, streamed_path):
-                    team_count += 1
+            # Decide if we download the image:
+            # We download if we have a valid league recorded (either just now or previously)
+            if slug in league_map:
+                # Check TSDB first
+                tsdb_path = os.path.join(TSDB_DIR, f"{slug}.webp")
+                if not os.path.exists(tsdb_path):
+                    streamed_path = os.path.join(STREAMED_DIR, f"{slug}.webp")
+                    if img_obj and download_multi_source(img_obj, streamed_path):
+                        team_count += 1
 
         # ---------------------------
         # PROCESS LEAGUE IMAGE
         # ---------------------------
-        if league and league_imgs:
+        if is_valid_league and league_imgs:
             l_slug = slugify(league)
             if l_slug:
                 l_path = os.path.join(LEAGUE_DIR, f"{l_slug}.webp")
                 if download_multi_source(league_imgs, l_path):
                     league_count += 1
 
-    # 2. Save Updated Map
+    # 3. Save Updated Map
     with open(LEAGUE_MAP_FILE, 'w') as f:
         json.dump(league_map, f, indent=2)
 
