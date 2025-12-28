@@ -10,17 +10,17 @@ from io import BytesIO
 # ==========================================
 # 1. CONFIGURATION
 # ==========================================
-API_KEY = "123" # Use '3' for testing or your real key
+API_KEY = "123" # Replace with valid key if available
 BASE_URL = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}"
 SAVE_DIR = "assets/logos/tsdb"
 LEAGUE_MAP_FILE = "assets/data/league_map.json"
+REFRESH_DAYS = 60  # Redownload image if older than 60 days (Handles rebrands)
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
 }
 
-# Only fetching teams for these to build the base map
 LEAGUES = {
     "English Premier League": "English Premier League",
     "English League Championship": "English League Championship",
@@ -56,15 +56,32 @@ def slugify(name):
     clean = re.sub(r"\s+", "-", clean)
     return clean.strip("-")
 
+def should_download(path):
+    """Returns True if file missing OR file is too old."""
+    if not os.path.exists(path): return True
+    
+    # Check Age
+    file_age_days = (time.time() - os.path.getmtime(path)) / (24 * 3600)
+    if file_age_days > REFRESH_DAYS:
+        return True
+    return False
+
 def save_image_optimized(url, save_path):
-    if os.path.exists(save_path): return False
+    """Safe save: Only overwrites if download succeeds."""
     try:
         resp = requests.get(url, headers=HEADERS, timeout=10)
         if resp.status_code == 200:
             img = Image.open(BytesIO(resp.content))
             if img.mode != 'RGBA': img = img.convert('RGBA')
             img = img.resize((60, 60), Image.Resampling.LANCZOS)
-            img.save(save_path, "WEBP", quality=90, method=6)
+            
+            # Save to temporary buffer first to ensure integrity
+            temp_buffer = BytesIO()
+            img.save(temp_buffer, "WEBP", quality=90, method=6)
+            
+            # Write to disk
+            with open(save_path, "wb") as f:
+                f.write(temp_buffer.getvalue())
             return True
     except: 
         pass
@@ -77,7 +94,7 @@ def main():
     os.makedirs(SAVE_DIR, exist_ok=True)
     os.makedirs(os.path.dirname(LEAGUE_MAP_FILE), exist_ok=True)
     
-    # 1. Load Existing Map (Preserve data)
+    # Load Map
     league_map = {}
     if os.path.exists(LEAGUE_MAP_FILE):
         try:
@@ -85,7 +102,7 @@ def main():
                 league_map = json.load(f)
         except: pass
 
-    print("--- Starting TSDB Harvester ---")
+    print("--- Starting TSDB Harvester (Smart Refresh) ---")
 
     for display_name, tsdb_name in LEAGUES.items():
         print(f" > Checking: {display_name}")
@@ -99,26 +116,25 @@ def main():
                 for t in data['teams']:
                     name = t.get('strTeam')
                     if name:
-                        # Map Team
                         slug = slugify(name)
                         if slug:
-                            # Only set if not set (Backend has priority later)
-                            if slug not in league_map:
-                                league_map[slug] = display_name
+                            # 1. Always update map (Fixes League Shift Issue)
+                            league_map[slug] = display_name
 
-                        # Save Image
-                        badge = t.get('strTeamBadge') or t.get('strBadge')
-                        if badge:
-                            path = os.path.join(SAVE_DIR, f"{slug}.webp")
-                            if save_image_optimized(badge, path):
-                                count += 1
-                if count > 0: print(f"   [+] Saved {count} new logos.")
+                            # 2. Check Image
+                            badge = t.get('strTeamBadge') or t.get('strBadge')
+                            if badge:
+                                path = os.path.join(SAVE_DIR, f"{slug}.webp")
+                                if should_download(path):
+                                    if save_image_optimized(badge, path):
+                                        count += 1
+                
+                if count > 0: print(f"   [+] Processed {count} updates/downloads.")
         except Exception as e:
             print(f"   [!] Error: {e}")
         
         time.sleep(1.2)
 
-    # Save Map
     with open(LEAGUE_MAP_FILE, 'w') as f:
         json.dump(league_map, f, indent=2)
     
