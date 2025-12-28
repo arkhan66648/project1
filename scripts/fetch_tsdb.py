@@ -14,11 +14,20 @@ API_KEY = "123" # Replace with valid key if available
 BASE_URL = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}"
 SAVE_DIR = "assets/logos/tsdb"
 LEAGUE_MAP_FILE = "assets/data/league_map.json"
-REFRESH_DAYS = 60  # Redownload image if older than 60 days (Handles rebrands)
+REFRESH_DAYS = 60
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+}
+
+# STRICT BLOCKLIST (Used to clean existing bad data)
+GENERIC_SPORTS = {
+    "soccer", "football", "ice hockey", "ice-hockey", "field hockey", "field-hockey",
+    "cricket", "basketball", "baseball", "rugby", "rugby union", "rugby league",
+    "tennis", "golf", "motorsport", "motorsports", "volleyball", "handball",
+    "table tennis", "badminton", "boxing", "mma", "snooker", "darts", "cycling",
+    "american football", "aussie rules", "esports", "futsal", "netball"
 }
 
 LEAGUES = {
@@ -57,17 +66,11 @@ def slugify(name):
     return clean.strip("-")
 
 def should_download(path):
-    """Returns True if file missing OR file is too old."""
     if not os.path.exists(path): return True
-    
-    # Check Age
     file_age_days = (time.time() - os.path.getmtime(path)) / (24 * 3600)
-    if file_age_days > REFRESH_DAYS:
-        return True
-    return False
+    return file_age_days > REFRESH_DAYS
 
 def save_image_optimized(url, save_path):
-    """Safe save: Only overwrites if download succeeds."""
     try:
         resp = requests.get(url, headers=HEADERS, timeout=10)
         if resp.status_code == 200:
@@ -75,11 +78,9 @@ def save_image_optimized(url, save_path):
             if img.mode != 'RGBA': img = img.convert('RGBA')
             img = img.resize((60, 60), Image.Resampling.LANCZOS)
             
-            # Save to temporary buffer first to ensure integrity
             temp_buffer = BytesIO()
             img.save(temp_buffer, "WEBP", quality=90, method=6)
             
-            # Write to disk
             with open(save_path, "wb") as f:
                 f.write(temp_buffer.getvalue())
             return True
@@ -102,6 +103,16 @@ def main():
                 league_map = json.load(f)
         except: pass
 
+    # --- AUTO CLEANER: Remove existing generic sports ---
+    cleaned_count = 0
+    keys_to_delete = [k for k, v in league_map.items() if str(v).lower().strip() in GENERIC_SPORTS]
+    for k in keys_to_delete:
+        del league_map[k]
+        cleaned_count += 1
+    if cleaned_count > 0:
+        print(f"--- Purged {cleaned_count} generic entries (e.g., Soccer, Football) from map ---")
+    # ----------------------------------------------------
+
     print("--- Starting TSDB Harvester (Smart Refresh) ---")
 
     for display_name, tsdb_name in LEAGUES.items():
@@ -118,7 +129,7 @@ def main():
                     if name:
                         slug = slugify(name)
                         if slug:
-                            # 1. Always update map (Fixes League Shift Issue)
+                            # 1. Update map (Safe because 'display_name' comes from our whitelist)
                             league_map[slug] = display_name
 
                             # 2. Check Image
