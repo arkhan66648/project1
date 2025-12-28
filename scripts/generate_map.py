@@ -13,76 +13,15 @@ DIRS = {
 OUTPUT_FILE = 'assets/data/image_map.json'
 FUZZY_CUTOFF = 0.85 
 
-# STRICT BLOCKLIST (Prevent Generic Categories in Output)
-GENERIC_SPORTS = {
-    "soccer",
-  "football",
-
-  "ice hockey", "ice-hockey",
-  "field hockey", "field-hockey",
-
-  "cricket",
-  "basketball",
-  "baseball",
-
-  "rugby",
-  "rugby union", "rugby-union",
-  "rugby league", "rugby-league",
-
-  "tennis",
-  "golf",
-
-  "motorsport", "motorsports",
-
-  "volleyball",
-  "handball",
-
-  "table tennis", "table-tennis",
-  "badminton",
-
-  "boxing",
-  "mma",
-  "wrestling",
-
-  "snooker",
-  "pool",
-  "billiards",
-  "darts",
-
-  "cycling",
-
-  "american football", "american-football",
-  "aussie rules", "aussie-rules",
-
-  "esports",
-  "futsal",
-  "netball",
-
-  "kabaddi",
-  "athletics",
-  "swimming",
-  "weightlifting",
-  "gymnastics",
-
-  "judo",
-  "taekwondo",
-  "karate",
-
-  "lacrosse",
-  "water polo", "water-polo",
-  "softball",
-  "floorball",
-
-  "formula 1", "formula-1", "f1",
-  "nascar",
-  "motogp",
-
-  "skiing",
-  "snowboarding",
-  "curling",
-
-  "chess"
-}
+# --- WHITELIST CONFIGURATION ---
+ALLOWED_LEAGUES_INPUT = """
+NFL, NBA, MLB, NHL, College Football, College-Football, College Basketball, College-Basketball, 
+NCAAB, NCAAF, NCAA Men, NCAA-Men, NCAA Women, NCAA-Women, Premier League, Premier-League, 
+Champions League, Champions-League, MLS, Bundesliga, Serie-A, Serie A, American Football, 
+Ice Hockey, Ice-Hockey, Championship, Scottish Premiership, Scottish-Premiership, 
+Europa League, Europa-League
+"""
+VALID_LEAGUES = {x.strip().lower() for x in ALLOWED_LEAGUES_INPUT.split(',') if x.strip()}
 
 def main():
     print("--- Generating Image Map ---")
@@ -127,6 +66,14 @@ def main():
     avail_leagues = list(league_paths.keys())
 
     for m in matches:
+        league_name = m.get('league')
+        
+        # --- STRICT CHECK: Skip if league is not in Whitelist ---
+        # This prevents generic "Soccer" or "Football" from grouping teams in the output
+        if not league_name or league_name.strip().lower() not in VALID_LEAGUES:
+            continue
+        # --------------------------------------------------------
+
         # Map Teams
         for t_key in ['home_team', 'away_team']:
             team_name = m.get(t_key)
@@ -141,14 +88,7 @@ def main():
                 if fuzzy:
                     final_teams[team_name] = team_paths[fuzzy[0]]
 
-        # Map Leagues
-        league_name = m.get('league')
-        
-        # --- STRICT CHECK: Skip Generic Sports ---
-        if league_name and league_name.lower().strip() in GENERIC_SPORTS:
-            continue
-        # -----------------------------------------
-
+        # Map League
         if league_name:
             slug = "".join([c for c in league_name.lower() if c.isalnum() or c == '-']).strip('-')
             
