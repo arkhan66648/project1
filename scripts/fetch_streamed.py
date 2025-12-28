@@ -15,8 +15,9 @@ STREAMED_HASH_BASE = "https://streamed.pk/api/images/badge/"
 # Directories
 TSDB_DIR = "assets/logos/tsdb"
 STREAMED_DIR = "assets/logos/streamed"
-LEAGUE_DIR = "assets/logos/leagues" # Inside logos folder
+LEAGUE_DIR = "assets/logos/leagues"
 LEAGUE_MAP_FILE = "assets/data/league_map.json"
+REFRESH_DAYS = 60
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -34,18 +35,19 @@ def slugify(name):
 
 def resolve_url(source_val):
     if not source_val: return None
-    # If it's a full URL
     if source_val.startswith("http"):
         return source_val
-    # If it's a hash (Streamed)
     return f"{STREAMED_HASH_BASE}{source_val}.webp"
 
+def should_download(path):
+    if not os.path.exists(path): return True
+    # Refresh if old
+    file_age_days = (time.time() - os.path.getmtime(path)) / (24 * 3600)
+    return file_age_days > REFRESH_DAYS
+
 def download_multi_source(source_obj, save_path):
-    """
-    Tries multiple image sources. Returns True if any succeed.
-    source_obj example: { "streamed": "hash", "sofascore": "url" }
-    """
-    if os.path.exists(save_path): return False
+    """Tries multiple sources. Only saves if successful."""
+    if not should_download(save_path): return False
     
     urls = []
     if isinstance(source_obj, dict):
@@ -65,23 +67,27 @@ def download_multi_source(source_obj, save_path):
                 img = Image.open(BytesIO(resp.content))
                 if img.mode != 'RGBA': img = img.convert('RGBA')
                 img = img.resize((60, 60), Image.Resampling.LANCZOS)
-                img.save(save_path, "WEBP", quality=90, method=6)
-                return True # Stop after first success
+                
+                # Save buffer
+                temp_buffer = BytesIO()
+                img.save(temp_buffer, "WEBP", quality=90, method=6)
+                
+                with open(save_path, "wb") as f:
+                    f.write(temp_buffer.getvalue())
+                return True # Stop after success
         except:
-            continue # Try next source
-
+            continue
     return False
 
 # ==========================================
 # 3. MAIN EXECUTION
 # ==========================================
 def main():
-    # Ensure dirs exist
     os.makedirs(STREAMED_DIR, exist_ok=True)
     os.makedirs(LEAGUE_DIR, exist_ok=True)
     os.makedirs(os.path.dirname(LEAGUE_MAP_FILE), exist_ok=True)
 
-    # 1. Load League Map
+    # 1. Load Map
     league_map = {}
     if os.path.exists(LEAGUE_MAP_FILE):
         try:
@@ -111,7 +117,7 @@ def main():
         league_imgs = m.get('league_image')
 
         # ---------------------------
-        # PROCESS TEAMS & MAP LEAGUE
+        # PROCESS TEAMS
         # ---------------------------
         for name, img_obj in [(home, home_imgs), (away, away_imgs)]:
             slug = slugify(name)
@@ -119,15 +125,16 @@ def main():
 
             # A. Update League Map (Priority: Backend)
             if league:
-                # This ensures backend overrides TSDB or fills missing data
                 league_map[slug] = league
 
             # B. Download Image (Gap Fill)
+            # Check TSDB first
             tsdb_path = os.path.join(TSDB_DIR, f"{slug}.webp")
+            
+            # If TSDB missing OR we want to verify streamed existence
             if not os.path.exists(tsdb_path):
                 streamed_path = os.path.join(STREAMED_DIR, f"{slug}.webp")
                 if img_obj and download_multi_source(img_obj, streamed_path):
-                    print(f"   [Team] Saved: {slug}")
                     team_count += 1
 
         # ---------------------------
@@ -138,7 +145,6 @@ def main():
             if l_slug:
                 l_path = os.path.join(LEAGUE_DIR, f"{l_slug}.webp")
                 if download_multi_source(league_imgs, l_path):
-                    print(f"   [League] Saved: {l_slug}")
                     league_count += 1
 
     # 2. Save Updated Map
