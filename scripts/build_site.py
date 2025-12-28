@@ -3,6 +3,7 @@ import os
 import re
 
 CONFIG_PATH = 'data/config.json'
+LEAGUE_MAP_PATH = 'assets/data/league_map.json' # Added new path
 TEMPLATE_PATH = 'assets/master_template.html'
 WATCH_TEMPLATE_PATH = 'assets/watch_template.html' 
 OUTPUT_DIR = '.' 
@@ -139,11 +140,8 @@ def render_page(template, config, page_data):
         html = html.replace('{{META_TITLE}}', '')
         html = html.replace('{{META_DESC}}', '')
         html = html.replace('<link rel="canonical" href="{{CANONICAL_URL}}">', '')
-        # --- MODIFICATION START ---
-        # Also render H1 and Hero Text as empty for the watch page
         html = html.replace('{{H1_TITLE}}', '')
         html = html.replace('{{HERO_TEXT}}', '')
-        # --- MODIFICATION END ---
     else:
         html = html.replace('{{META_TITLE}}', page_data.get('meta_title') or f"{site_name} - {page_data.get('title')}")
         html = html.replace('{{META_DESC}}', page_data.get('meta_desc', ''))
@@ -170,14 +168,21 @@ def render_page(template, config, page_data):
     html = html.replace('{{ARTICLE_CONTENT}}', page_data.get('content', ''))
 
     # --- 6. JS Injections ---
+    # Inject Priorities
     html = html.replace('{{JS_PRIORITIES}}', json.dumps(priorities))
     
+    # Inject Social Config
     social_data = config.get('social_sharing', {})
     excluded_list = [x.strip() for x in social_data.get('excluded_pages', '').split(',') if x.strip()]
     js_social_object = {"excluded": excluded_list, "counts": social_data.get('counts', {})}
     social_json = json.dumps(js_social_object)
     if 'const SHARE_CONFIG' in html:
       html = re.sub(r'const SHARE_CONFIG = \{.*?\};', f'const SHARE_CONFIG = {social_json};', html, flags=re.DOTALL)
+
+    # --- NEW: Inject League Map ---
+    # Loads the map created by fetch scripts/Admin panel and injects it for frontend use
+    league_map_data = load_json(LEAGUE_MAP_PATH)
+    html = html.replace('{{JS_LEAGUE_MAP}}', json.dumps(league_map_data))
 
     # --- 7. STATIC SCHEMA GENERATION ---
     schemas = []
