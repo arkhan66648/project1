@@ -7,7 +7,8 @@ from difflib import get_close_matches
 BACKEND_URL = "https://vercelapi-olive.vercel.app/api/sync-nodes?country=us"
 DIRS = {
     'tsdb': 'assets/logos/tsdb',
-    'streamed': 'assets/logos/streamed'
+    'streamed': 'assets/logos/streamed',
+    'leagues': 'assets/logos/leagues'
 }
 OUTPUT_FILE = 'assets/data/image_map.json'
 
@@ -16,70 +17,82 @@ def normalize(name):
     return "".join([c for c in name.lower() if c.isalnum()])
 
 def main():
-    # 1. Load Local Files
-    logos = {} # { "slug": "full_path" }
-    
-    # Load TSDB first (Highest Priority)
+    # 1. Index Local Files
+    team_paths = {}   
+    league_paths = {} 
+
+    # Load TSDB (Priority 1 for Teams)
     if os.path.exists(DIRS['tsdb']):
         for f in os.listdir(DIRS['tsdb']):
             if f.endswith('.webp'):
-                logos[f.replace('.webp', '')] = f"/{DIRS['tsdb']}/{f}"
+                team_paths[f.replace('.webp', '')] = f"/{DIRS['tsdb']}/{f}"
 
-    # Load Streamed second (Gap fillers)
+    # Load Streamed (Priority 2 for Teams)
     if os.path.exists(DIRS['streamed']):
         for f in os.listdir(DIRS['streamed']):
             if f.endswith('.webp'):
                 slug = f.replace('.webp', '')
-                if slug not in logos: # Don't overwrite TSDB
-                    logos[slug] = f"/{DIRS['streamed']}/{f}"
+                if slug not in team_paths:
+                    team_paths[slug] = f"/{DIRS['streamed']}/{f}"
 
-    print(f"--- Map Generator: Found {len(logos)} unique logos ---")
+    # Load Leagues
+    if os.path.exists(DIRS['leagues']):
+        for f in os.listdir(DIRS['leagues']):
+            if f.endswith('.webp'):
+                slug = f.replace('.webp', '')
+                league_paths[slug] = f"/{DIRS['leagues']}/{f}"
 
-    # 2. Fetch Backend
+    print(f"--- Map Gen: {len(team_paths)} Teams, {len(league_paths)} Leagues Indexed ---")
+
+    # 2. Fetch Backend Matches
     try:
         data = requests.get(BACKEND_URL).json()
         matches = data.get('matches', [])
     except:
-        return
+        matches = []
 
-    # 3. Create Map
-    team_map = {}
-    available_slugs = list(logos.keys())
+    # 3. Create Frontend Map
+    # Structure: { "teams": { "Arsenal": "/path..." }, "leagues": { "EPL": "/path..." } }
+    final_teams = {}
+    final_leagues = {}
+    
+    avail_teams = list(team_paths.keys())
+    avail_leagues = list(league_paths.keys())
 
     for m in matches:
-        for t_key in ['team_a', 'team_b']:
+        # Map Teams
+        for t_key in ['home_team', 'away_team']:
             team_name = m.get(t_key)
             if not team_name: continue
             
-            # Target Slug
-            target_slug = "".join([c for c in team_name.lower() if c.isalnum() or c == '-']).strip('-')
+            slug = "".join([c for c in team_name.lower() if c.isalnum() or c == '-']).strip('-')
             
-            match_found = None
-            
-            # 1. Exact Check
-            if target_slug in logos:
-                match_found = logos[target_slug]
-            
-            # 2. Fuzzy Check (High confidence only)
+            # Find Image Path
+            if slug in team_paths:
+                final_teams[team_name] = team_paths[slug]
             else:
-                norm_search = normalize(team_name)
-                matches_fuzzy = get_close_matches(norm_search, available_slugs, n=1, cutoff=0.7)
-                if matches_fuzzy:
-                    match_found = logos[matches_fuzzy[0]]
+                fuzzy = get_close_matches(slug, avail_teams, n=1, cutoff=0.75)
+                if fuzzy:
+                    final_teams[team_name] = team_paths[fuzzy[0]]
 
-            if match_found:
-                team_map[team_name] = match_found
+        # Map Leagues
+        league_name = m.get('league')
+        if league_name:
+            slug = "".join([c for c in league_name.lower() if c.isalnum() or c == '-']).strip('-')
+            
+            if slug in league_paths:
+                final_leagues[league_name] = league_paths[slug]
+            else:
+                fuzzy = get_close_matches(slug, avail_leagues, n=1, cutoff=0.7)
+                if fuzzy:
+                    final_leagues[league_name] = league_paths[fuzzy[0]]
 
     # 4. Save
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
-    
-    # Format for Frontend: { "teams": { "Arsenal": "/path/to/logo.webp" } }
-    final_json = { "teams": team_map }
-    
     with open(OUTPUT_FILE, 'w') as f:
-        json.dump(final_json, f, indent=2)
+        json.dump({ "teams": final_teams, "leagues": final_leagues }, f, indent=2)
         
-    print(f"--- Map Saved with {len(team_map)} teams ---")
+    print(f"--- Map Saved: {len(final_teams)} Teams, {len(final_leagues)} Leagues ---")
 
 if __name__ == "__main__":
     main()
