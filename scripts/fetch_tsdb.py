@@ -10,7 +10,7 @@ from io import BytesIO
 # ==========================================
 # 1. CONFIGURATION
 # ==========================================
-API_KEY = "123" # Replace with valid key if available
+API_KEY = "123" # Replace with valid key
 BASE_URL = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}"
 SAVE_DIR = "assets/logos/tsdb"
 LEAGUE_MAP_FILE = "assets/data/league_map.json"
@@ -21,100 +21,38 @@ HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
 }
 
-# STRICT BLOCKLIST (Used to clean existing bad data)
-GENERIC_SPORTS = {
-    "soccer",
-  "football",
+# --- WHITELIST CONFIGURATION ---
+# Normalized list of allowed leagues (Lowercased for comparison)
+ALLOWED_LEAGUES_INPUT = """
+NFL, NBA, MLB, NHL, College Football, College-Football, College Basketball, College-Basketball, 
+NCAAB, NCAAF, NCAA Men, NCAA-Men, NCAA Women, NCAA-Women, Premier League, Premier-League, 
+Champions League, Champions-League, MLS, Bundesliga, Serie-A, Serie A, American Football, 
+Ice Hockey, Ice-Hockey, Championship, Scottish Premiership, Scottish-Premiership, 
+Europa League, Europa-League
+"""
+VALID_LEAGUES = {x.strip().lower() for x in ALLOWED_LEAGUES_INPUT.split(',') if x.strip()}
 
-  "ice hockey", "ice-hockey",
-  "field hockey", "field-hockey",
-
-  "cricket",
-  "basketball",
-  "baseball",
-
-  "rugby",
-  "rugby union", "rugby-union",
-  "rugby league", "rugby-league",
-
-  "tennis",
-  "golf",
-
-  "motorsport", "motorsports",
-
-  "volleyball",
-  "handball",
-
-  "table tennis", "table-tennis",
-  "badminton",
-
-  "boxing",
-  "mma",
-  "wrestling",
-
-  "snooker",
-  "pool",
-  "billiards",
-  "darts",
-
-  "cycling",
-
-  "american football", "american-football",
-  "aussie rules", "aussie-rules",
-
-  "esports",
-  "futsal",
-  "netball",
-
-  "kabaddi",
-  "athletics",
-  "swimming",
-  "weightlifting",
-  "gymnastics",
-
-  "judo",
-  "taekwondo",
-  "karate",
-
-  "lacrosse",
-  "water polo", "water-polo",
-  "softball",
-  "floorball",
-
-  "formula 1", "formula-1", "f1",
-  "nascar",
-  "motogp",
-
-  "skiing",
-  "snowboarding",
-  "curling",
-
-  "chess"
-}
-
+# Map Display Name -> TSDB Search Query
 LEAGUES = {
-    "English Premier League": "English Premier League",
-    "English League Championship": "English League Championship",
+    "Premier League": "English Premier League",
+    "Championship": "English League Championship",
     "Scottish Premiership": "Scottish Premiership",
-    "Spanish La Liga": "Spanish La Liga",
-    "German Bundesliga": "German Bundesliga",
-    "Italian Serie A": "Italian Serie A",
-    "French Ligue 1": "French Ligue 1",
-    "Dutch Eredivisie": "Dutch Eredivisie",
-    "Portuguese Primeira Liga": "Portuguese Primeira Liga",
-    "UEFA Champions League": "UEFA Champions League",
-    "UEFA Europa League": "UEFA Europa League",
-    "American Major League Soccer": "American Major League Soccer",
+    "La Liga": "Spanish La Liga",
+    "Bundesliga": "German Bundesliga",
+    "Serie A": "Italian Serie A",
+    "Ligue 1": "French Ligue 1",
+    "Eredivisie": "Dutch Eredivisie",
+    "Primeira Liga": "Portuguese Primeira Liga",
+    "Champions League": "UEFA Champions League",
+    "Europa League": "UEFA Europa League",
+    "MLS": "American Major League Soccer",
     "Saudi Pro League": "Saudi Arabian Pro League",
-    "Belgian Pro League": "Belgian Pro League",
     "NBA": "NBA",
     "NFL": "NFL",
     "NHL": "NHL",
     "MLB": "MLB",
     "F1": "Formula 1",
-    "UFC": "UFC",
-    "Australian Big Bash League": "Australian Big Bash League",
-    "United Rugby Championship": "United Rugby Championship"
+    "UFC": "UFC"
 }
 
 # ==========================================
@@ -165,19 +103,29 @@ def main():
                 league_map = json.load(f)
         except: pass
 
-    # --- AUTO CLEANER: Remove existing generic sports ---
+    # --- VALIDATOR: Remove teams not in Whitelist ---
     cleaned_count = 0
-    keys_to_delete = [k for k, v in league_map.items() if str(v).lower().strip() in GENERIC_SPORTS]
+    keys_to_delete = [
+        k for k, v in league_map.items() 
+        if str(v).lower().strip() not in VALID_LEAGUES
+    ]
     for k in keys_to_delete:
         del league_map[k]
         cleaned_count += 1
+    
     if cleaned_count > 0:
-        print(f"--- Purged {cleaned_count} generic entries (e.g., Soccer, Football) from map ---")
-    # ----------------------------------------------------
+        print(f"--- Removed {cleaned_count} teams with non-whitelisted leagues ---")
 
-    print("--- Starting TSDB Harvester (Smart Refresh) ---")
+    print("--- Starting TSDB Harvester ---")
 
     for display_name, tsdb_name in LEAGUES.items():
+        # Only process if this league is actually in our whitelist (fuzzy check)
+        # We check if the display_name is loosely in our valid set to avoid saving unwanted leagues
+        if display_name.lower() not in VALID_LEAGUES:
+            # You might want to skip, or proceed if you trust LEAGUES dict.
+            # For safety, we will proceed but map strict naming.
+            pass
+
         print(f" > Checking: {display_name}")
         encoded = urllib.parse.quote(tsdb_name)
         url = f"{BASE_URL}/search_all_teams.php?l={encoded}"
@@ -191,10 +139,11 @@ def main():
                     if name:
                         slug = slugify(name)
                         if slug:
-                            # 1. Update map (Safe because 'display_name' comes from our whitelist)
+                            # Update Map: Always prioritize latest fetch
+                            # We use 'display_name' from LEAGUES dict as the clean name
                             league_map[slug] = display_name
 
-                            # 2. Check Image
+                            # Download Image
                             badge = t.get('strTeamBadge') or t.get('strBadge')
                             if badge:
                                 path = os.path.join(SAVE_DIR, f"{slug}.webp")
@@ -202,7 +151,7 @@ def main():
                                     if save_image_optimized(badge, path):
                                         count += 1
                 
-                if count > 0: print(f"   [+] Processed {count} updates/downloads.")
+                if count > 0: print(f"   [+] Processed {count} updates.")
         except Exception as e:
             print(f"   [!] Error: {e}")
         
