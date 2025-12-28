@@ -666,6 +666,12 @@
         function toTitleCase(str) { return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()); }
         function getSportIcon(n) { n=(n||"").toLowerCase(); if(n.includes('soccer')||n.includes('premier')) return '⚽'; if(n.includes('basket')||n.includes('nba')) return '🏀'; if(n.includes('football')||n.includes('nfl')) return '🏈'; if(n.includes('baseball')||n.includes('mlb')) return '⚾'; if(n.includes('fight')||n.includes('ufc')||n.includes('box')||n.includes('mma')) return '🥊'; if(n.includes('motor')||n.includes('f1')) return '🏎️'; return '🏆'; }
         function getColor(char) { const c = ['#e53935','#d81b60','#8e24aa','#5e35b1','#3949ab','#1e88e5','#039be5','#00897b','#43a047','#7cb342','#c0ca33','#fdd835','#fb8c00']; return c[(char||'A').charCodeAt(0) % c.length]; }
+        function highlightActiveMenu() {
+    const path = window.location.pathname;
+    document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(link => {
+        if(link.getAttribute('href') === path) link.classList.add('active');
+    });
+}
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
         function setNotify(btn) {
             btn.classList.add('active'); btn.innerHTML = '✓ Set'; btn.disabled = true;
