@@ -23,6 +23,77 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
+# STRICT BLOCKLIST (Filter input & clean existing)
+GENERIC_SPORTS = {
+    "soccer",
+  "football",
+
+  "ice hockey", "ice-hockey",
+  "field hockey", "field-hockey",
+
+  "cricket",
+  "basketball",
+  "baseball",
+
+  "rugby",
+  "rugby union", "rugby-union",
+  "rugby league", "rugby-league",
+
+  "tennis",
+  "golf",
+
+  "motorsport", "motorsports",
+
+  "volleyball",
+  "handball",
+
+  "table tennis", "table-tennis",
+  "badminton",
+
+  "boxing",
+  "mma",
+  "wrestling",
+
+  "snooker",
+  "pool",
+  "billiards",
+  "darts",
+
+  "cycling",
+
+  "american football", "american-football",
+  "aussie rules", "aussie-rules",
+
+  "esports",
+  "futsal",
+  "netball",
+
+  "kabaddi",
+  "athletics",
+  "swimming",
+  "weightlifting",
+  "gymnastics",
+
+  "judo",
+  "taekwondo",
+  "karate",
+
+  "lacrosse",
+  "water polo", "water-polo",
+  "softball",
+  "floorball",
+
+  "formula 1", "formula-1", "f1",
+  "nascar",
+  "motogp",
+
+  "skiing",
+  "snowboarding",
+  "curling",
+
+  "chess"
+}
+
 # ==========================================
 # 2. UTILS
 # ==========================================
@@ -41,7 +112,6 @@ def resolve_url(source_val):
 
 def should_download(path):
     if not os.path.exists(path): return True
-    # Refresh if old
     file_age_days = (time.time() - os.path.getmtime(path)) / (24 * 3600)
     return file_age_days > REFRESH_DAYS
 
@@ -68,13 +138,12 @@ def download_multi_source(source_obj, save_path):
                 if img.mode != 'RGBA': img = img.convert('RGBA')
                 img = img.resize((60, 60), Image.Resampling.LANCZOS)
                 
-                # Save buffer
                 temp_buffer = BytesIO()
                 img.save(temp_buffer, "WEBP", quality=90, method=6)
                 
                 with open(save_path, "wb") as f:
                     f.write(temp_buffer.getvalue())
-                return True # Stop after success
+                return True 
         except:
             continue
     return False
@@ -95,6 +164,16 @@ def main():
                 league_map = json.load(f)
         except: pass
 
+    # --- AUTO CLEANER: Remove existing generic sports ---
+    cleaned_count = 0
+    keys_to_delete = [k for k, v in league_map.items() if str(v).lower().strip() in GENERIC_SPORTS]
+    for k in keys_to_delete:
+        del league_map[k]
+        cleaned_count += 1
+    if cleaned_count > 0:
+        print(f"--- Purged {cleaned_count} generic entries (e.g., Soccer, Football) from map ---")
+    # ----------------------------------------------------
+
     print("--- Starting Backend Asset Sync ---")
     
     try:
@@ -110,7 +189,12 @@ def main():
     for m in matches:
         home = m.get('home_team')
         away = m.get('away_team')
-        league = m.get('league') # Tournament name
+        league = m.get('league') # Tournament name OR Generic Sport
+
+        # --- STRICT CHECK: Filter Incoming Data ---
+        if league and league.lower().strip() in GENERIC_SPORTS:
+            league = None # Ignore this league entirely
+        # ------------------------------------------
 
         home_imgs = m.get('home_team_image')
         away_imgs = m.get('away_team_image')
@@ -124,14 +208,13 @@ def main():
             if not slug: continue
 
             # A. Update League Map (Priority: Backend)
+            # Only update if we have a valid, non-generic league
             if league:
                 league_map[slug] = league
 
             # B. Download Image (Gap Fill)
-            # Check TSDB first
             tsdb_path = os.path.join(TSDB_DIR, f"{slug}.webp")
             
-            # If TSDB missing OR we want to verify streamed existence
             if not os.path.exists(tsdb_path):
                 streamed_path = os.path.join(STREAMED_DIR, f"{slug}.webp")
                 if img_obj and download_multi_source(img_obj, streamed_path):
