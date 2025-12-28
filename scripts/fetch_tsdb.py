@@ -23,11 +23,73 @@ HEADERS = {
 
 # STRICT BLOCKLIST (Used to clean existing bad data)
 GENERIC_SPORTS = {
-    "soccer", "football", "ice hockey", "ice-hockey", "field hockey", "field-hockey",
-    "cricket", "basketball", "baseball", "rugby", "rugby union", "rugby league",
-    "tennis", "golf", "motorsport", "motorsports", "volleyball", "handball",
-    "table tennis", "badminton", "boxing", "mma", "snooker", "darts", "cycling",
-    "american football", "aussie rules", "esports", "futsal", "netball"
+    "soccer",
+  "football",
+
+  "ice hockey", "ice-hockey",
+  "field hockey", "field-hockey",
+
+  "cricket",
+  "basketball",
+  "baseball",
+
+  "rugby",
+  "rugby union", "rugby-union",
+  "rugby league", "rugby-league",
+
+  "tennis",
+  "golf",
+
+  "motorsport", "motorsports",
+
+  "volleyball",
+  "handball",
+
+  "table tennis", "table-tennis",
+  "badminton",
+
+  "boxing",
+  "mma",
+  "wrestling",
+
+  "snooker",
+  "pool",
+  "billiards",
+  "darts",
+
+  "cycling",
+
+  "american football", "american-football",
+  "aussie rules", "aussie-rules",
+
+  "esports",
+  "futsal",
+  "netball",
+
+  "kabaddi",
+  "athletics",
+  "swimming",
+  "weightlifting",
+  "gymnastics",
+
+  "judo",
+  "taekwondo",
+  "karate",
+
+  "lacrosse",
+  "water polo", "water-polo",
+  "softball",
+  "floorball",
+
+  "formula 1", "formula-1", "f1",
+  "nascar",
+  "motogp",
+
+  "skiing",
+  "snowboarding",
+  "curling",
+
+  "chess"
 }
 
 LEAGUES = {
