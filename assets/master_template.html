@@ -559,25 +559,27 @@
 
             // 5. ACTION COLUMN
             let actionHtml = '';
-            // For buttons
-            const liveLink = `${SITE_DOMAIN}/watch/?stream=${m.id}`;
-            const infoLink = `${SITE_DOMAIN}/watch/?info=${m.id}`;
-            const notifyLink = `${SITE_DOMAIN}/watch/?v=${m.id}`;
-
+            
+            // Define Standard Links
+            const infoLink = `${SITE_DOMAIN}/watch/?info=${m.id}`; // Used for ALL copy buttons and Upcoming (<30m) Watch
+            
             if (m.is_live) {
                 actionHtml = `<button onclick="openMatch('${m.id}', 'live')" class="btn-watch" title="Watch ${m.home_team}">WATCH <span class="hd-badge">HD</span></button>`;
             } else {
                 const now = Date.now();
                 const diffMin = (m.startTimeUnix - now) / 60000;
                 
+                // Copy Button (ALWAYS uses ?info=)
+                const copyBtn = `<button class="btn-copy-link" onclick="copyText('${infoLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
+
                 if (diffMin <= 30) {
-                     // STARTS WITHIN 30 MINS: Use ?info=matchid
-                     actionHtml = `<button onclick="openMatch('${m.id}', 'info')" class="btn-watch">WATCH <span class="hd-badge">HD</span></button>`;
-                     actionHtml += `<button class="btn-copy-link" onclick="copyText('${infoLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
+                     // STARTS WITHIN 30 MINS: Watch opens ?info=
+                     const watchBtn = `<button onclick="openMatch('${m.id}', 'info')" class="btn-watch">WATCH <span class="hd-badge">HD</span></button>`;
+                     actionHtml = watchBtn + copyBtn;
                 } else {
-                     // STARTS LATER: Use ?v=matchid
-                     actionHtml = `<button onclick="openMatch('${m.id}', 'v')" class="btn-watch" style="background:transparent; border:1px solid #333; color:#888;">🔔 INFO</button>`;
-                     actionHtml += `<button class="btn-copy-link" onclick="copyText('${notifyLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
+                     // STARTS LATER: Notify Button (Opens ?v= via 'v' param)
+                     const notifyBtn = `<button onclick="openMatch('${m.id}', 'v')" class="btn-watch" style="background:transparent; border:1px solid #333; color:#888;">🔔 INFO</button>`;
+                     actionHtml = notifyBtn + copyBtn;
                 }
             }
             
