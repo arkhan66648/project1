@@ -10,7 +10,7 @@ from io import BytesIO
 # ==========================================
 # 1. CONFIGURATION
 # ==========================================
-API_KEY = "123"
+API_KEY = "123" # Use '3' for testing or your real key
 BASE_URL = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}"
 SAVE_DIR = "assets/logos/tsdb"
 LEAGUE_MAP_FILE = "assets/data/league_map.json"
@@ -20,7 +20,7 @@ HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
 }
 
-# Supported Leagues
+# Only fetching teams for these to build the base map
 LEAGUES = {
     "English Premier League": "English Premier League",
     "English League Championship": "English League Championship",
@@ -57,24 +57,13 @@ def slugify(name):
     return clean.strip("-")
 
 def save_image_optimized(url, save_path):
-    """
-    Downloads image, Resizes to 60x60, Converts to WEBP
-    """
     if os.path.exists(save_path): return False
-    
     try:
         resp = requests.get(url, headers=HEADERS, timeout=10)
         if resp.status_code == 200:
             img = Image.open(BytesIO(resp.content))
-            
-            # 1. Convert to RGBA (Preserve Transparency)
-            if img.mode != 'RGBA': 
-                img = img.convert('RGBA')
-            
-            # 2. High Quality Resize to 60x60
+            if img.mode != 'RGBA': img = img.convert('RGBA')
             img = img.resize((60, 60), Image.Resampling.LANCZOS)
-            
-            # 3. Save as WebP (Optimized)
             img.save(save_path, "WEBP", quality=90, method=6)
             return True
     except: 
@@ -86,12 +75,17 @@ def save_image_optimized(url, save_path):
 # ==========================================
 def main():
     os.makedirs(SAVE_DIR, exist_ok=True)
-    
-    # 1. Create folder for data and Initialize Map
     os.makedirs(os.path.dirname(LEAGUE_MAP_FILE), exist_ok=True)
-    league_map = {} 
+    
+    # 1. Load Existing Map (Preserve data)
+    league_map = {}
+    if os.path.exists(LEAGUE_MAP_FILE):
+        try:
+            with open(LEAGUE_MAP_FILE, 'r') as f:
+                league_map = json.load(f)
+        except: pass
 
-    print("--- Starting TSDB Harvester (60x60 Optimized) ---")
+    print("--- Starting TSDB Harvester ---")
 
     for display_name, tsdb_name in LEAGUES.items():
         print(f" > Checking: {display_name}")
@@ -104,32 +98,27 @@ def main():
                 count = 0
                 for t in data['teams']:
                     name = t.get('strTeam')
-                    
-                    # 2. Map Team to League
                     if name:
-                        team_key = slugify(name)
-                        if team_key:
-                            league_map[team_key] = display_name
-
-                    # 3. Process Images
-                    badge = t.get('strTeamBadge') or t.get('strBadge')
-                    
-                    if name and badge:
+                        # Map Team
                         slug = slugify(name)
-                        path = os.path.join(SAVE_DIR, f"{slug}.webp")
-                        if save_image_optimized(badge, path):
-                            count += 1
-                
+                        if slug:
+                            # Only set if not set (Backend has priority later)
+                            if slug not in league_map:
+                                league_map[slug] = display_name
+
+                        # Save Image
+                        badge = t.get('strTeamBadge') or t.get('strBadge')
+                        if badge:
+                            path = os.path.join(SAVE_DIR, f"{slug}.webp")
+                            if save_image_optimized(badge, path):
+                                count += 1
                 if count > 0: print(f"   [+] Saved {count} new logos.")
-            else:
-                print(f"   [-] No teams found.")
-                
         except Exception as e:
             print(f"   [!] Error: {e}")
         
-        time.sleep(1.5) # Rate limit safety
+        time.sleep(1.2)
 
-    # 4. Save the Map (OUTSIDE the loop)
+    # Save Map
     with open(LEAGUE_MAP_FILE, 'w') as f:
         json.dump(league_map, f, indent=2)
     
