@@ -331,27 +331,23 @@
                 if (resMatches.status === 'fulfilled' && resMatches.value.ok) {
                     const data = await resMatches.value.json();
                     
-                    // --- FIX FOR MISSING STARTTIMEUNIX ---
-                    // Backend returns 'timestamp' (ISO string). We MUST polyfill startTimeUnix for filtering/sorting.
                     data.matches.forEach(m => {
                         if (!m.startTimeUnix && m.timestamp) {
                             m.startTimeUnix = new Date(m.timestamp).getTime();
                         }
                     });
-                    
-                    allMatches = data.matches;
+
+                    // FILTER OUT TBA vs TBA MATCHES
+                    allMatches = data.matches.filter(m => !(m.home_team === 'TBA' && m.away_team === 'TBA'));
                     
                     enrichMatchData(allMatches, leagueMap);
-                    renderApp(data.matches);
+                    renderApp(allMatches);
                 } else {
                     console.error("Failed to load matches");
                 }
             } catch(e) { console.error(e); }
         }
 
-        // ============================================
-        // 1. DATA ENRICHMENT & GENERIC FIX
-        // ============================================
         function enrichMatchData(matches, lMap) {
             if (!lMap) return;
             const toKey = (name) => name ? name.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-') : "";
@@ -395,12 +391,9 @@
             renderLiveSection(liveMatches);
             renderUpcomingGrouped(upcomingMatches);
             
-            generateDynamicSchema(liveMatches.slice(0, 5), upcomingMatches.slice(0, 15));
+            generateDynamicSchema(liveMatches, upcomingMatches);
         }
 
-        // ============================================
-        // 2. TIMEZONE FORMATTER (US vs UK)
-        // ============================================
         function formatMatchTime(unix) {
             const isUK = TARGET_COUNTRY === 'UK';
             const timeZone = isUK ? 'Europe/London' : 'America/New_York';
@@ -417,12 +410,12 @@
             return { time: timeStr + suffix, date: dateStr };
         }
 
-        // ============================================
-        // 3. WATCH BUTTON LOGIC (SEO SAFE)
-        // ============================================
-        window.openMatch = (slug, type) => {
-            const param = type === 'live' ? 'stream' : 'v';
-            const url = `${SITE_DOMAIN}/watch/?${param}=${slug}`;
+        window.openMatch = (id, type) => {
+            let param = 'v';
+            if (type === 'live') param = 'stream';
+            else if (type === 'info') param = 'info'; 
+            
+            const url = `${SITE_DOMAIN}/watch/?${param}=${id}`;
             window.location.assign(url);
         };
 
@@ -566,45 +559,76 @@
 
             // 5. ACTION COLUMN
             let actionHtml = '';
-            const slug = m.id;
-            const infoLink = `${SITE_DOMAIN}/watch/?v=${slug}`;
-            
+            // For buttons
+            const liveLink = `${SITE_DOMAIN}/watch/?stream=${m.id}`;
+            const infoLink = `${SITE_DOMAIN}/watch/?info=${m.id}`;
+            const notifyLink = `${SITE_DOMAIN}/watch/?v=${m.id}`;
+
             if (m.is_live) {
                 actionHtml = `<button onclick="openMatch('${m.id}', 'live')" class="btn-watch" title="Watch ${m.home_team}">WATCH <span class="hd-badge">HD</span></button>`;
             } else {
                 const now = Date.now();
                 const diffMin = (m.startTimeUnix - now) / 60000;
-                const btn = `<button onclick="openMatch('${m.id}', 'upcoming')" class="btn-watch" ${diffMin > 30 ? 'style="background:transparent; border:1px solid #333; color:#888;"' : ''}>${diffMin > 30 ? '🔔 INFO' : 'WATCH'}</button>`;
-                const copy = `<button class="btn-copy-link" onclick="copyText('${infoLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
-                actionHtml = btn + copy;
+                
+                if (diffMin <= 30) {
+                     // STARTS WITHIN 30 MINS: Use ?info=matchid
+                     actionHtml = `<button onclick="openMatch('${m.id}', 'info')" class="btn-watch">WATCH <span class="hd-badge">HD</span></button>`;
+                     actionHtml += `<button class="btn-copy-link" onclick="copyText('${infoLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
+                } else {
+                     // STARTS LATER: Use ?v=matchid
+                     actionHtml = `<button onclick="openMatch('${m.id}', 'v')" class="btn-watch" style="background:transparent; border:1px solid #333; color:#888;">🔔 INFO</button>`;
+                     actionHtml += `<button class="btn-copy-link" onclick="copyText('${notifyLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
+                }
             }
             
             div.innerHTML = `<div class="col-time">${timeCol}</div><div class="teams-wrapper"><div class="league-tag">${tagText.toUpperCase()}</div>${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${actionHtml}</div>`;
             return div;
         }
 
-        // ============================================
-        // 4. DYNAMIC SCHEMA GENERATOR
-        // ============================================
         function generateDynamicSchema(liveList, upcomingList) {
             const schemas = [];
+            
+            // 1. BROADCAST EVENT (Live)
+            const now = Date.now();
+            
+            // Filter live matches for schema: must not be past strict duration cutoff
+            const validLiveMatches = liveList.filter(m => {
+                const sportDurationMin = m.sport_duration || 120; // Default 120 min if missing
+                const matchEndTime = m.startTimeUnix + (sportDurationMin * 60 * 1000);
+                const schemaCutoff = matchEndTime - (20 * 60 * 1000); // 20 mins before end
+                return now < schemaCutoff;
+            }).slice(0, 5); // Max 5 live schemas
+
             const makeEvent = (m, type) => {
-                const logoA = imageMap.teams[m.home_team] ? `${SITE_DOMAIN}/${imageMap.teams[m.home_team]}` : undefined;
-                const logoB = imageMap.teams[m.away_team] ? `${SITE_DOMAIN}/${imageMap.teams[m.away_team]}` : undefined;
+                let logoA = undefined;
+                let logoB = undefined;
+                
+                // Only add logos if BOTH exist
+                if (imageMap.teams[m.home_team] && imageMap.teams[m.away_team]) {
+                    logoA = `${SITE_DOMAIN}/${imageMap.teams[m.home_team]}`;
+                    logoB = `${SITE_DOMAIN}/${imageMap.teams[m.away_team]}`;
+                }
+
+                let urlParam = 'v';
+                if(type === 'live') urlParam = 'stream';
+                // Note: For schema URL, we keep standard unless you want specific SEO urls
+                
                 return {
                     "@context": "https://schema.org",
                     "@type": type === 'live' ? "BroadcastEvent" : "SportsEvent",
                     "name": `${m.home_team} vs ${m.away_team}`,
                     "startDate": new Date(m.startTimeUnix).toISOString(),
-                    "url": `${SITE_DOMAIN}/watch/?v=${m.id}`,
+                    "url": `${SITE_DOMAIN}/watch/?${urlParam}=${m.id}`,
                     "competitor": [
                         { "@type": "SportsTeam", "name": m.home_team, "logo": logoA },
                         { "@type": "SportsTeam", "name": m.away_team, "logo": logoB }
                     ]
                 };
             };
-            liveList.forEach(m => schemas.push(makeEvent(m, 'live')));
-            upcomingList.forEach(m => schemas.push(makeEvent(m, 'upcoming')));
+
+            validLiveMatches.forEach(m => schemas.push(makeEvent(m, 'live')));
+            upcomingList.slice(0, 15).forEach(m => schemas.push(makeEvent(m, 'upcoming')));
+            
             if(schemas.length > 0) {
                 const script = document.createElement('script');
                 script.type = 'application/ld+json';
@@ -613,9 +637,6 @@
             }
         }
 
-        // ============================================
-        // 5. UNIFIED SOCIALS
-        // ============================================
         function renderSocials() {
             const currentSlug = window.location.pathname.replace(/\//g, '');
             if(SHARE_CONFIG.excluded.includes(currentSlug)) return;
@@ -666,12 +687,14 @@
         function toTitleCase(str) { return str.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()); }
         function getSportIcon(n) { n=(n||"").toLowerCase(); if(n.includes('soccer')||n.includes('premier')) return '⚽'; if(n.includes('basket')||n.includes('nba')) return '🏀'; if(n.includes('football')||n.includes('nfl')) return '🏈'; if(n.includes('baseball')||n.includes('mlb')) return '⚾'; if(n.includes('fight')||n.includes('ufc')||n.includes('box')||n.includes('mma')) return '🥊'; if(n.includes('motor')||n.includes('f1')) return '🏎️'; return '🏆'; }
         function getColor(char) { const c = ['#e53935','#d81b60','#8e24aa','#5e35b1','#3949ab','#1e88e5','#039be5','#00897b','#43a047','#7cb342','#c0ca33','#fdd835','#fb8c00']; return c[(char||'A').charCodeAt(0) % c.length]; }
+        
         function highlightActiveMenu() {
-    const path = window.location.pathname;
-    document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(link => {
-        if(link.getAttribute('href') === path) link.classList.add('active');
-    });
-}
+            const path = window.location.pathname;
+            document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(link => {
+                if(link.getAttribute('href') === path) link.classList.add('active');
+            });
+        }
+        
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
         function setNotify(btn) {
             btn.classList.add('active'); btn.innerHTML = '✓ Set'; btn.disabled = true;
