@@ -16,6 +16,7 @@
                 <button class="nav-btn active" onclick="switchTab('general')">⚙️ General & SEO</button>
                 <button class="nav-btn" onclick="switchTab('pages')">📄 Pages & Content</button>
                 <button class="nav-btn" onclick="switchTab('priorities')">📊 Priorities</button>
+                <button class="nav-btn" onclick="switchTab('leagues')">🏆 Leagues & Teams</button>
                 <button class="nav-btn" onclick="switchTab('menus')">🔗 Menus</button>
                 <button class="nav-btn" onclick="switchTab('social')">💬 Social Sharing</button>
             </nav>
@@ -110,6 +111,24 @@
                 </div>
             </section>
 
+            <!-- LEAGUES & TEAMS (NEW) -->
+            <section id="tab-leagues" class="tab-content">
+                <div class="header-box">
+                    <h1>Leagues & Teams Map</h1>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-secondary" onclick="copyAllLeaguesData()" title="Copy all leagues and teams to clipboard for AI verification">📋 Copy All Data</button>
+                        <button class="btn-primary" onclick="openLeagueModal()">+ Add League</button>
+                    </div>
+                </div>
+                <div class="desc" style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 6px; border: 1px solid rgba(59, 130, 246, 0.3);">
+                    <strong>💡 Info:</strong> Teams are comma-separated. The system uses this map to assign logos and categories correctly. 
+                    Changes here update <code>league_map.json</code>.
+                </div>
+                <div id="leaguesContainer" class="grid-2">
+                    <!-- Dynamic Content populated by JS -->
+                </div>
+            </section>
+
             <!-- MENUS -->
             <section id="tab-menus" class="tab-content">
                 <div class="header-box"><h1>Menus</h1></div>
@@ -153,10 +172,22 @@
             <input type="hidden" id="menuTargetSection">
             <label>Title</label><input type="text" id="menuTitleItem">
             <label>URL</label><input type="text" id="menuUrlItem">
-            <!-- Header Checkbox Injected by JS -->
             <div class="modal-actions">
                 <button class="btn-secondary" onclick="document.getElementById('menuModal').style.display='none'">Cancel</button>
                 <button class="btn-primary" onclick="saveMenuItem()">Add</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW LEAGUE MODAL -->
+    <div id="leagueModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3>Add New League</h3>
+            <label>League Name (e.g. Premier League)</label>
+            <input type="text" id="newLeagueNameInput" placeholder="Enter league name...">
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="document.getElementById('leagueModal').style.display='none'">Cancel</button>
+                <button class="btn-primary" onclick="saveNewLeague()">Add League</button>
             </div>
         </div>
     </div>
