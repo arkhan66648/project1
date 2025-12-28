@@ -4,66 +4,49 @@
 const REPO_OWNER = 'arkhan66648'; 
 const REPO_NAME = 'project1';     
 const FILE_PATH = 'data/config.json';
+const LEAGUE_FILE_PATH = 'assets/data/league_map.json'; // New Path
 const BRANCH = 'main'; 
 
 // ==========================================
-// 2. DEFAULT DATA (Perfected for Entity Stacking)
+// 2. DEFAULT DATA
 // ==========================================
 const DEFAULT_PRIORITIES = {
     US: {
-        _HIDE_OTHERS: false, // Keep false to catch minor sports at the bottom
-        
-        // --- TIER 1: THE BIG 4 (Massive Traffic) ---
+        _HIDE_OTHERS: false,
         "NFL": { score: 100, isLeague: true, hasLink: true, isHidden: false },
         "NBA": { score: 99, isLeague: true, hasLink: true, isHidden: false },
         "MLB": { score: 98, isLeague: true, hasLink: true, isHidden: false },
         "NHL": { score: 97, isLeague: true, hasLink: true, isHidden: false },
-        
-        // --- TIER 2: FIGHTING & RACING (High CPM/Value) ---
         "UFC": { score: 95, isLeague: true, hasLink: true, isHidden: false }, 
         "Boxing": { score: 94, isLeague: false, hasLink: true, isHidden: false }, 
         "Formula 1": { score: 93, isLeague: true, hasLink: true, isHidden: false },
-
-        // --- TIER 3: COLLEGE SPORTS (Specific Entities) ---
         "College Football": { score: 90, isLeague: true, hasLink: true, isHidden: false }, 
         "College Basketball": { score: 89, isLeague: true, hasLink: true, isHidden: false }, 
-
-        // --- TIER 4: GLOBAL SOCCER (Specific Leagues > "Soccer") ---
         "Premier League": { score: 85, isLeague: true, hasLink: true, isHidden: false },
         "Champions League": { score: 84, isLeague: true, hasLink: true, isHidden: false },
         "MLS": { score: 83, isLeague: true, hasLink: true, isHidden: false },
         "LaLiga": { score: 82, isLeague: true, hasLink: true, isHidden: false },
         "Bundesliga": { score: 81, isLeague: true, hasLink: true, isHidden: false },
         "Serie A": { score: 80, isLeague: true, hasLink: true, isHidden: false },
-
-        // --- TIER 5: LOW PRIORITY / CATCH-ALL ---
         "Tennis": { score: 40, isLeague: false, hasLink: true, isHidden: false }, 
         "Golf": { score: 30, isLeague: false, hasLink: false, isHidden: false }
     },
     UK: {
         _HIDE_OTHERS: false,
-
-        // --- TIER 1: FOOTBALL IS KING ---
         "Premier League": { score: 100, isLeague: true, hasLink: true, isHidden: false },
         "Champions League": { score: 99, isLeague: true, hasLink: true, isHidden: false },
         "Championship": { score: 98, isLeague: true, hasLink: true, isHidden: false }, 
         "Scottish Premiership": { score: 97, isLeague: true, hasLink: true, isHidden: false }, 
         "Europa League": { score: 96, isLeague: true, hasLink: true, isHidden: false },
-
-        // --- TIER 2: TRADITIONAL UK SPORTS ---
         "Boxing": { score: 90, isLeague: false, hasLink: true, isHidden: false }, 
         "Formula 1": { score: 88, isLeague: true, hasLink: true, isHidden: false },
         "Cricket": { score: 85, isLeague: false, hasLink: true, isHidden: false }, 
         "Rugby": { score: 84, isLeague: false, hasLink: true, isHidden: false }, 
         "Darts": { score: 82, isLeague: false, hasLink: true, isHidden: false }, 
         "Snooker": { score: 80, isLeague: false, hasLink: true, isHidden: false },
-
-        // --- TIER 3: US IMPORTS ---
         "NFL": { score: 70, isLeague: true, hasLink: true, isHidden: false },
         "NBA": { score: 65, isLeague: true, hasLink: true, isHidden: false },
         "UFC": { score: 60, isLeague: true, hasLink: true, isHidden: false },
-
-        // --- TIER 4: CATCH-ALL ---
         "Tennis": { score: 40, isLeague: false, hasLink: false, isHidden: false }
     }
 };
@@ -82,7 +65,6 @@ const DEMO_CONFIG = {
         bg_body: "#050505", hero_gradient_start: "#1a0505", font_family: "system-ui"
     },
     sport_priorities: JSON.parse(JSON.stringify(DEFAULT_PRIORITIES)), 
-    // MODIFICATION: Removed 'footer_leagues'
     menus: { header: [], hero: [], footer_static: [] },
     pages: [
         { id: "p_home", title: "Home", slug: "home", layout: "home", meta_title: "Live Sports", content: "Welcome", schemas: { org: true, website: true } }
@@ -90,7 +72,9 @@ const DEMO_CONFIG = {
 };
 
 let configData = {};
+let leagueMapData = {}; // Stores the fetched league_map.json
 let currentSha = null;
+let leagueMapSha = null; // SHA for league_map.json
 let currentEditingPageId = null;
 let isBuilding = false;
 
@@ -135,19 +119,31 @@ window.saveToken = async () => {
 
 async function verifyAndLoad(token) {
     try {
-        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?ref=${BRANCH}`, {
-            headers: { 'Authorization': `token ${token}` }
-        });
+        const headers = { 'Authorization': `token ${token}` };
         
-        if(res.status === 404) {
+        // Fetch BOTH Config and League Map
+        const [resConfig, resLeague] = await Promise.all([
+            fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?ref=${BRANCH}`, { headers }),
+            fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${LEAGUE_FILE_PATH}?ref=${BRANCH}`, { headers })
+        ]);
+
+        // Process Config
+        if(resConfig.status === 404) {
             configData = JSON.parse(JSON.stringify(DEMO_CONFIG));
-            populateUI();
-            return;
+        } else {
+            const data = await resConfig.json();
+            currentSha = data.sha;
+            configData = JSON.parse(decodeURIComponent(escape(atob(data.content))));
         }
 
-        const data = await res.json();
-        currentSha = data.sha;
-        configData = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+        // Process League Map
+        if(resLeague.status === 404) {
+            leagueMapData = {}; // Empty map if not found
+        } else {
+            const lData = await resLeague.json();
+            leagueMapSha = lData.sha;
+            leagueMapData = JSON.parse(decodeURIComponent(escape(atob(lData.content))));
+        }
         
         // --- DATA NORMALIZATION ---
         if(!configData.pages) configData.pages = DEMO_CONFIG.pages;
@@ -160,8 +156,6 @@ async function verifyAndLoad(token) {
         if(!configData.sport_priorities) configData.sport_priorities = JSON.parse(JSON.stringify(DEFAULT_PRIORITIES));
         if(!configData.sport_priorities.US) configData.sport_priorities.US = { _HIDE_OTHERS: false };
         if(!configData.sport_priorities.UK) configData.sport_priorities.UK = { _HIDE_OTHERS: false };
-
-        // MODIFICATION: Removed check for 'footer_leagues'
         if(!configData.social_sharing) configData.social_sharing = DEMO_CONFIG.social_sharing;
         
         populateUI();
@@ -183,9 +177,6 @@ function populateUI() {
     setVal('footerDisclaimer', s.footer_disclaimer);
     setVal('targetCountry', s.target_country || 'US');
 
-    const t = configData.theme || {};
-    // Removed theme settings as they are not in the provided HTML
-    
     const soc = configData.social_sharing || { counts: {} };
     setVal('socialTelegram', soc.counts?.telegram || 0);
     setVal('socialWhatsapp', soc.counts?.whatsapp || 0);
@@ -196,10 +187,11 @@ function populateUI() {
     renderPriorities();
     renderMenus();
     renderPageList();
+    renderLeagues(); // New call
 }
 
 // ==========================================
-// 5. PRIORITIES (With Hide Others)
+// 5. PRIORITIES
 // ==========================================
 function renderPriorities() {
     const c = getVal('targetCountry') || 'US';
@@ -289,7 +281,7 @@ window.deletePriority = (c, name) => {
 };
 
 // ==========================================
-// 6. PAGES SYSTEM (New Schema & FAQ UI)
+// 6. PAGES SYSTEM
 // ==========================================
 function renderPageList() {
     const tbody = document.querySelector('#pagesTable tbody');
@@ -325,7 +317,7 @@ window.editPage = (id) => {
     setVal('pageMetaKeywords', p.meta_keywords); 
     setVal('pageCanonical', p.canonical_url); 
     
-    // --- RENDER DYNAMIC SCHEMA UI ---
+    // Schema UI
     if(!p.schemas) p.schemas = {};
     if(!p.schemas.faq_list) p.schemas.faq_list = [];
 
@@ -442,7 +434,6 @@ window.deletePage = (id) => {
 // 7. MENUS
 // ==========================================
 function renderMenus() {
-    // MODIFICATION: Removed 'footer_leagues' from this array
     ['header', 'hero', 'footer_static'].forEach(sec => {
         const div = document.getElementById(`menu-${sec}`);
         if(div) {
@@ -490,12 +481,105 @@ window.saveMenuItem = () => {
 window.deleteMenuItem = (sec, idx) => { configData.menus[sec].splice(idx, 1); renderMenus(); };
 
 // ==========================================
-// 8. SAVE & UTILS
+// 8. LEAGUES & TEAMS MAP (NEW)
+// ==========================================
+// Helper: Group flat map by League
+function getGroupedLeagues() {
+    const grouped = {};
+    for (const [slug, leagueName] of Object.entries(leagueMapData)) {
+        if (!grouped[leagueName]) grouped[leagueName] = [];
+        grouped[leagueName].push(slug);
+    }
+    return grouped;
+}
+
+// Render the UI
+function renderLeagues() {
+    const container = document.getElementById('leaguesContainer');
+    if(!container) return;
+
+    const grouped = getGroupedLeagues();
+    const sortedLeagues = Object.keys(grouped).sort();
+
+    container.innerHTML = sortedLeagues.map(league => {
+        const teams = grouped[league].join(', ');
+        return `
+        <div class="card">
+            <div class="league-card-header">
+                <h3>${league}</h3>
+                <span style="font-size:0.8rem; color:#64748b;">${grouped[league].length} Teams</span>
+            </div>
+            <label>Teams (comma separated slugs)</label>
+            <textarea class="team-list-editor" rows="6" data-league="${league}">${teams}</textarea>
+        </div>
+        `;
+    }).join('');
+}
+
+// Copy All for AI
+window.copyAllLeaguesData = () => {
+    const grouped = getGroupedLeagues();
+    let output = "--- LEAGUES AND TEAMS DATA ---\n\n";
+    for(const [league, teams] of Object.entries(grouped)) {
+        output += `LEAGUE: ${league}\n`;
+        output += `TEAMS: ${teams.join(', ')}\n`;
+        output += `--------------------------------\n`;
+    }
+    navigator.clipboard.writeText(output).then(() => {
+        const btn = document.querySelector('#tab-leagues .btn-secondary');
+        const originalText = btn.innerText;
+        btn.innerText = "✅ Copied!";
+        setTimeout(() => btn.innerText = originalText, 2000);
+    });
+};
+
+// Add New League Modal
+window.openLeagueModal = () => {
+    document.getElementById('leagueModal').style.display = 'flex';
+};
+
+window.saveNewLeague = () => {
+    const name = document.getElementById('newLeagueNameInput').value.trim();
+    if(name) {
+        // Add a dummy entry so it appears in the grouped list
+        // We use a dummy slug that is unlikely to conflict
+        const dummySlug = "new-team-placeholder";
+        leagueMapData[dummySlug] = name;
+        
+        renderLeagues();
+        document.getElementById('leagueModal').style.display = 'none';
+        document.getElementById('newLeagueNameInput').value = '';
+    }
+};
+
+// Helper to reconstruct the flat map from UI inputs
+function rebuildLeagueMapFromUI() {
+    const textareas = document.querySelectorAll('.team-list-editor');
+    const newMap = {};
+
+    textareas.forEach(txt => {
+        const leagueName = txt.getAttribute('data-league');
+        const rawTeams = txt.value.split(',');
+        
+        rawTeams.forEach(t => {
+            const slug = t.trim().toLowerCase().replace(/\s+/g, '-'); // Simple slug clean
+            if(slug) {
+                newMap[slug] = leagueName;
+            }
+        });
+    });
+    return newMap;
+}
+
+
+// ==========================================
+// 9. SAVE & UTILS
 // ==========================================
 document.getElementById('saveBtn').onclick = async () => {
     if(isBuilding) return;
     saveEditorContentToMemory(); 
     
+    // --- 1. Prepare Config Data ---
     configData.site_settings = {
         title_part_1: getVal('titleP1'), title_part_2: getVal('titleP2'),
         domain: getVal('siteDomain'), logo_url: getVal('logoUrl'),
@@ -505,9 +589,6 @@ document.getElementById('saveBtn').onclick = async () => {
         target_country: getVal('targetCountry')
     };
     
-    // Theme object is not in the HTML, so this is removed to avoid errors
-    // configData.theme = { ... };
-
     configData.social_sharing = {
         counts: {
             telegram: parseInt(getVal('socialTelegram')) || 0,
@@ -518,27 +599,75 @@ document.getElementById('saveBtn').onclick = async () => {
         excluded_pages: getVal('socialExcluded')
     };
 
+    // --- 2. Prepare League Map Data ---
+    // Reconstruct map from the UI textareas to capture edits
+    if(document.getElementById('tab-leagues').classList.contains('active')) {
+        // Only rebuild if tab was viewed/edited, otherwise use memory
+        // Actually, safer to always rebuild if elements exist, or just use current memory if not rendered
+        if(document.querySelector('.team-list-editor')) {
+            leagueMapData = rebuildLeagueMapFromUI();
+        }
+    } else {
+        // If user didn't open the tab, we might assume memory is stale? 
+        // No, renderLeagues() reads from memory. The textareas are the source of truth only if displayed.
+        // To be safe: we render unseen changes implicitly? No.
+        // If the user hasn't opened the tab, leagueMapData is untouched.
+        // But if they opened it, edited, then switched tabs? The textareas are hidden but exist.
+        if(document.querySelector('.team-list-editor')) {
+             leagueMapData = rebuildLeagueMapFromUI();
+        }
+    }
+
+    // UI Updates
     document.getElementById('saveBtn').innerText = "Saving...";
     document.getElementById('saveBtn').disabled = true;
 
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(configData, null, 2))));
     const token = localStorage.getItem('gh_token');
-
+    
     try {
-        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+        // --- SAVE 1: LEAGUE MAP ---
+        const leagueContent = btoa(unescape(encodeURIComponent(JSON.stringify(leagueMapData, null, 2))));
+        const resLeague = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${LEAGUE_FILE_PATH}`, {
             method: 'PUT',
             headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: "CMS Update", content, sha: currentSha, branch: BRANCH })
+            body: JSON.stringify({ 
+                message: "Admin: Update League Map", 
+                content: leagueContent, 
+                sha: leagueMapSha, 
+                branch: BRANCH 
+            })
         });
-        if(res.ok) {
-            const d = await res.json();
+
+        if(resLeague.ok) {
+            const d = await resLeague.json();
+            leagueMapSha = d.content.sha;
+        } else {
+            console.error("League Map Save Failed");
+        }
+
+        // --- SAVE 2: CONFIG ---
+        const configContent = btoa(unescape(encodeURIComponent(JSON.stringify(configData, null, 2))));
+        const resConfig = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+            method: 'PUT',
+            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                message: "Admin: Update Config", 
+                content: configContent, 
+                sha: currentSha, 
+                branch: BRANCH 
+            })
+        });
+
+        if(resConfig.ok) {
+            const d = await resConfig.json();
             currentSha = d.content.sha;
             startPolling();
         } else {
-             alert("Save failed. Check console.");
+             alert("Save failed for Config. Check console.");
              document.getElementById('saveBtn').innerText = "💾 Save & Build Site";
              document.getElementById('saveBtn').disabled = false;
         }
+
     } catch(e) { 
         alert("Error: " + e.message); 
         document.getElementById('saveBtn').innerText = "💾 Save & Build Site";
@@ -557,12 +686,12 @@ function startPolling() {
         const token = localStorage.getItem('gh_token');
         try {
             const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/runs?per_page=1`, { headers: { 'Authorization': `token ${token}` } });
-            if (!res.ok) { // Stop polling on API error
+            if (!res.ok) { 
                 clearInterval(iv);
                 throw new Error(`GitHub API error: ${res.status}`);
             }
             const d = await res.json();
-            if (!d.workflow_runs || d.workflow_runs.length === 0) return; // No runs yet, continue polling
+            if (!d.workflow_runs || d.workflow_runs.length === 0) return; 
             
             const run = d.workflow_runs[0];
             
