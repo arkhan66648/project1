@@ -122,6 +122,48 @@
         "isLeague": false,
         "hasLink": false,
         "isHidden": false
+      },
+      "Soccer": {
+        "score": 58,
+        "isLeague": false,
+        "hasLink": false,
+        "isHidden": false
+      },
+      "American Football": {
+        "score": 60,
+        "isLeague": false,
+        "hasLink": false,
+        "isHidden": false
+      },
+      "Ice Hockey": {
+        "score": 59,
+        "isLeague": false,
+        "hasLink": false,
+        "isHidden": false
+      },
+      "Basketball": {
+        "score": 57,
+        "isLeague": false,
+        "hasLink": false,
+        "isHidden": false
+      },
+      "Volleyball": {
+        "score": 53,
+        "isLeague": false,
+        "hasLink": false,
+        "isHidden": false
+      },
+      "Cricket": {
+        "score": 52,
+        "isLeague": false,
+        "hasLink": false,
+        "isHidden": false
+      },
+      "Darts": {
+        "score": 54,
+        "isLeague": false,
+        "hasLink": false,
+        "isHidden": false
       }
     },
     "UK": {
