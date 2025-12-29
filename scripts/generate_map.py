@@ -1,9 +1,12 @@
 import os
 import json
 import requests
+import re
 from difflib import get_close_matches
 
-# CONFIG
+# ==========================================
+# 1. CONFIGURATION
+# ==========================================
 BACKEND_URL = "https://vercelapi-olive.vercel.app/api/sync-nodes?country=us"
 DIRS = {
     'tsdb': 'assets/logos/tsdb',
@@ -17,87 +20,144 @@ FUZZY_CUTOFF = 0.85
 ALLOWED_LEAGUES_INPUT = """
 NFL, NBA, MLB, NHL, College Football, College-Football, College Basketball, College-Basketball, 
 NCAAB, NCAAF, NCAA Men, NCAA-Men, NCAA Women, NCAA-Women, Premier League, Premier-League, 
-Champions League, Champions-League, MLS, Bundesliga, Serie-A, Serie A, American Football, 
+Champions League, Champions-League, MLS, Bundesliga, Serie-A, Serie A, American-Football, American Football, 
 Ice Hockey, Ice-Hockey, Championship, Scottish Premiership, Scottish-Premiership, 
 Europa League, Europa-League
 """
 VALID_LEAGUES = {x.strip().lower() for x in ALLOWED_LEAGUES_INPUT.split(',') if x.strip()}
 
+# ==========================================
+# 2. HELPER FUNCTIONS
+# ==========================================
+def clean_display_name(name):
+    """
+    Sanitizer:
+    1. PRIORITY RULE: If a colon (:) is found, assume format "League: Team" 
+       and strip everything before the first colon.
+    2. FALLBACK: Check whitelist for prefixes (e.g. "NBA - Team") if no colon exists.
+    """
+    if not name: return None
+    
+    # --- RULE 1: Generic Colon Stripper ---
+    if ':' in name:
+        parts = name.split(':', 1)
+        if len(parts) > 1:
+            cleaned = parts[1].strip()
+            if cleaned and len(cleaned) > 1:
+                return cleaned
+
+    # --- RULE 2: Whitelist Fallback ---
+    lower_name = name.lower()
+    for league in VALID_LEAGUES:
+        if lower_name.startswith(league):
+            remainder = name[len(league):]
+            # Remove separator characters (spaces, hyphens) from the start
+            clean_remainder = re.sub(r"^[\s-]+", "", remainder)
+            if clean_remainder and len(clean_remainder.strip()) > 1:
+                return clean_remainder.strip()
+    return name.strip()
+
+def make_pretty_name(slug):
+    """
+    Converts a filename slug back to a human-readable title.
+    Ex: "manchester-united" -> "Manchester United"
+    """
+    return slug.replace('-', ' ').title()
+
+# ==========================================
+# 3. MAIN EXECUTION
+# ==========================================
 def main():
-    print("--- Generating Image Map ---")
+    print("--- Generating Full Image Map ---")
 
-    # 1. Index Local Files
-    team_paths = {}   
-    league_paths = {} 
-
+    # 1. Index Local Files (The "Source of Truth")
+    slug_to_path = {}
+    
     # Load TSDB (Priority 1)
     if os.path.exists(DIRS['tsdb']):
         for f in os.listdir(DIRS['tsdb']):
             if f.endswith('.webp'):
-                team_paths[f.replace('.webp', '')] = f"/{DIRS['tsdb']}/{f}"
+                slug = f.replace('.webp', '')
+                slug_to_path[slug] = f"/{DIRS['tsdb']}/{f}"
 
     # Load Streamed (Priority 2)
     if os.path.exists(DIRS['streamed']):
         for f in os.listdir(DIRS['streamed']):
             if f.endswith('.webp'):
                 slug = f.replace('.webp', '')
-                if slug not in team_paths:
-                    team_paths[slug] = f"/{DIRS['streamed']}/{f}"
+                if slug not in slug_to_path:
+                    slug_to_path[slug] = f"/{DIRS['streamed']}/{f}"
 
     # Load Leagues
+    league_paths = {}
     if os.path.exists(DIRS['leagues']):
         for f in os.listdir(DIRS['leagues']):
             if f.endswith('.webp'):
                 slug = f.replace('.webp', '')
                 league_paths[slug] = f"/{DIRS['leagues']}/{f}"
 
-    # 2. Fetch Backend Matches
-    try:
-        data = requests.get(BACKEND_URL).json()
-        matches = data.get('matches', [])
-    except:
-        matches = []
-
-    # 3. Create Frontend Map
+    # 2. Build Initial Map from Files
     final_teams = {}
     final_leagues = {}
-    
-    avail_teams = list(team_paths.keys())
-    avail_leagues = list(league_paths.keys())
+
+    for slug, path in slug_to_path.items():
+        pretty_key = make_pretty_name(slug)
+        final_teams[pretty_key] = path
+
+    for slug, path in league_paths.items():
+        pretty_key = make_pretty_name(slug)
+        final_leagues[pretty_key] = path
+
+    print(f" > Indexed {len(final_teams)} images from local folders.")
+
+    # 3. Fetch Backend Matches (To map specific API names)
+    print(" > Fetching backend matches to map live names...")
+    try:
+        data = requests.get(BACKEND_URL, timeout=10).json()
+        matches = data.get('matches', [])
+    except Exception as e:
+        print(f"   [!] Backend fetch failed: {e}")
+        matches = []
+
+    avail_slugs = list(slug_to_path.keys())
 
     for m in matches:
         league_name = m.get('league')
         
-        # --- STRICT CHECK: Skip if league is not in Whitelist ---
-        # This prevents generic "Soccer" or "Football" from grouping teams in the output
+        # Skip if league not valid
         if not league_name or league_name.strip().lower() not in VALID_LEAGUES:
             continue
-        # --------------------------------------------------------
 
         # Map Teams
         for t_key in ['home_team', 'away_team']:
-            team_name = m.get(t_key)
-            if not team_name: continue
+            raw_name = m.get(t_key)
+            if not raw_name: continue
             
-            slug = "".join([c for c in team_name.lower() if c.isalnum() or c == '-']).strip('-')
+            # A. Clean the name (USING COLON RULE OR WHITELIST)
+            clean_name = clean_display_name(raw_name)
             
-            if slug in team_paths:
-                final_teams[team_name] = team_paths[slug]
+            # B. Generate Slug from Clean Name
+            search_slug = "".join([c for c in clean_name.lower() if c.isalnum() or c == '-']).strip('-')
+            
+            # C. Try to match file
+            if search_slug in slug_to_path:
+                # Perfect Match
+                final_teams[clean_name] = slug_to_path[search_slug]
+                # Also Map "Raw Name" (just in case)
+                if raw_name != clean_name:
+                    final_teams[raw_name] = slug_to_path[search_slug]
             else:
-                fuzzy = get_close_matches(slug, avail_teams, n=1, cutoff=FUZZY_CUTOFF)
+                # Fuzzy Match
+                fuzzy = get_close_matches(search_slug, avail_slugs, n=1, cutoff=FUZZY_CUTOFF)
                 if fuzzy:
-                    final_teams[team_name] = team_paths[fuzzy[0]]
+                    matched_slug = fuzzy[0]
+                    final_teams[clean_name] = slug_to_path[matched_slug]
 
         # Map League
         if league_name:
-            slug = "".join([c for c in league_name.lower() if c.isalnum() or c == '-']).strip('-')
-            
-            if slug in league_paths:
-                final_leagues[league_name] = league_paths[slug]
-            else:
-                fuzzy = get_close_matches(slug, avail_leagues, n=1, cutoff=FUZZY_CUTOFF)
-                if fuzzy:
-                    final_leagues[league_name] = league_paths[fuzzy[0]]
+            l_slug = "".join([c for c in league_name.lower() if c.isalnum() or c == '-']).strip('-')
+            if l_slug in league_paths:
+                final_leagues[league_name] = league_paths[l_slug]
 
     # 4. Save
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
