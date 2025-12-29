@@ -24,14 +24,13 @@ HEADERS = {
 }
 
 # --- WHITELIST FOR CLEANING ONLY ---
-# We use this list ONLY to remove prefixes from names (e.g. "NBA - Team Name")
-# We do NOT use this to stop downloads. We download everything.
 ALLOWED_LEAGUES_INPUT = """
 NFL, NBA, MLB, NHL, College Football, College-Football, College Basketball, College-Basketball, 
 NCAAB, NCAAF, NCAA Men, NCAA-Men, NCAA Women, NCAA-Women, Premier League, Premier-League, 
 Champions League, Champions-League, MLS, Bundesliga, Serie-A, Serie A, American-Football, American Football, 
 Ice Hockey, Ice-Hockey, Championship, Scottish Premiership, Scottish-Premiership, 
-Europa League, Europa-League, A League, A-League, A League Men, A League Women
+Europa League, Europa-League, A League, A-League, A League Men, A League Women, 
+Ligue 1, La Liga, Eredivisie, Primeira Liga, Saudi Pro League, F1, UFC, Rugby
 """
 VALID_LEAGUES = {x.strip().lower() for x in ALLOWED_LEAGUES_INPUT.split(',') if x.strip()}
 
@@ -47,14 +46,11 @@ def slugify(name):
 
 def clean_display_name(name):
     """
-    Sanitizer: 
-    1. PRIORITY: Colon Rule (Remove "League: " prefix)
-    2. FALLBACK: Whitelist prefix removal
+    Sanitizer: Priority Colon Rule -> Whitelist Fallback
     """
     if not name: return None
     
-    # --- RULE 1: Generic Colon Stripper ---
-    # This ensures "Premier League: Arsenal" becomes "Arsenal"
+    # Rule 1: Colon
     if ':' in name:
         parts = name.split(':', 1)
         if len(parts) > 1:
@@ -62,13 +58,11 @@ def clean_display_name(name):
             if cleaned and len(cleaned) > 1:
                 return cleaned
 
-    # --- RULE 2: Whitelist Prefix Fallback ---
-    # This handles "NBA - Celtics" -> "Celtics"
+    # Rule 2: Whitelist
     lower_name = name.lower()
     for league in VALID_LEAGUES:
         if lower_name.startswith(league):
             remainder = name[len(league):]
-            # Remove separator characters (spaces, hyphens)
             clean_remainder = re.sub(r"^[\s-]+", "", remainder)
             if clean_remainder and len(clean_remainder.strip()) > 1:
                 return clean_remainder.strip()
@@ -138,38 +132,28 @@ def main():
     league_count = 0
 
     for m in matches:
-        # Get Raw Data
         home_raw = m.get('home_team')
         away_raw = m.get('away_team')
-        league_raw = m.get('league') # We use this only for league images, not filtering
+        league_raw = m.get('league') 
         
         home_imgs = m.get('home_team_image')
         away_imgs = m.get('away_team_image')
         league_imgs = m.get('league_image')
 
-        # ---------------------------
-        # PROCESS TEAMS (ALL MATCHES)
-        # ---------------------------
+        # PROCESS TEAMS
         for raw_name, img_obj in [(home_raw, home_imgs), (away_raw, away_imgs)]:
-            # 1. Clean Name (Remove prefixes)
             name = clean_display_name(raw_name)
-            
-            # 2. Slugify
             slug = slugify(name)
             if not slug: continue
 
-            # 3. Download (No restrictions!)
-            # Check TSDB first to avoid duplicates/overwriting high-quality images
+            # Check TSDB first
             tsdb_path = os.path.join(TSDB_DIR, f"{slug}.webp")
             if not os.path.exists(tsdb_path):
                 streamed_path = os.path.join(STREAMED_DIR, f"{slug}.webp")
                 if img_obj and download_multi_source(img_obj, streamed_path):
                     team_count += 1
 
-        # ---------------------------
         # PROCESS LEAGUE IMAGE
-        # ---------------------------
-        # We download the league logo if provided, regardless of whitelist
         if league_raw and league_imgs:
             l_slug = slugify(league_raw)
             if l_slug:
