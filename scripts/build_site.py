@@ -98,7 +98,7 @@ def render_page(template, config, page_data):
     html = html.replace('{{HERO_GRADIENT}}', t.get('hero_gradient_start', '#1a0505'))
     html = html.replace('{{FONT_FAMILY}}', t.get('font_family', 'system-ui'))
     api_url = s.get('api_url', 'https://vercelapi-olive.vercel.app/api/sync-nodes')
-html = html.replace('{{API_URL}}', api_url)
+    html = html.replace('{{API_URL}}', api_url)
     
     country = s.get('target_country', 'US')
     html = html.replace('{{TARGET_COUNTRY}}', country)
