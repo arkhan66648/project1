@@ -7,6 +7,7 @@ import re
 # ==========================================
 CONFIG_PATH = 'data/config.json'
 LEAGUE_MAP_PATH = 'assets/data/league_map.json' 
+IMAGE_MAP_PATH = 'assets/data/image_map.json'  # Added
 TEMPLATE_PATH = 'assets/master_template.html'
 WATCH_TEMPLATE_PATH = 'assets/watch_template.html' 
 OUTPUT_DIR = '.' 
@@ -59,6 +60,8 @@ def build_menu_html(menu_items, section):
             elif "cricket" in t_low: icon = "🏏"
             elif "rugby" in t_low: icon = "🏉"
             elif "tennis" in t_low: icon = "🎾"
+            elif "golf" in t_low: icon = "⛳"
+            elif "hockey" in t_low or "nhl" in t_low: icon = "🏒"
             
             html += f'''
             <a href="{url}" class="league-card">
@@ -212,10 +215,12 @@ def render_page(template, config, page_data):
         html = re.sub(r'const SHARE_CONFIG = \{.*?\};', f'const SHARE_CONFIG = {social_json};', html, flags=re.DOTALL)
 
     # --- NEW: Inject League Map ---
-    # This now handles both old structure (Team->League) and new structure (League->[Teams])
-    # The JSON is passed as-is to the frontend.
     league_map_data = load_json(LEAGUE_MAP_PATH)
     html = html.replace('{{JS_LEAGUE_MAP}}', json.dumps(league_map_data))
+
+    # --- NEW: Inject Image Map ---
+    image_map_data = load_json(IMAGE_MAP_PATH)
+    html = html.replace('{{JS_IMAGE_MAP}}', json.dumps(image_map_data))
 
     # --- 7. STATIC SCHEMA GENERATION ---
     schemas = []
