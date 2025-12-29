@@ -2,21 +2,41 @@ import json
 import os
 import re
 
+# ==========================================
+# 1. CONFIGURATION
+# ==========================================
 CONFIG_PATH = 'data/config.json'
-LEAGUE_MAP_PATH = 'assets/data/league_map.json' # Added new path
+LEAGUE_MAP_PATH = 'assets/data/league_map.json' 
 TEMPLATE_PATH = 'assets/master_template.html'
 WATCH_TEMPLATE_PATH = 'assets/watch_template.html' 
 OUTPUT_DIR = '.' 
 
+# ==========================================
+# 2. UTILS
+# ==========================================
 def load_json(path):
+    """
+    Safely loads a JSON file. Returns empty dict if file is missing or invalid.
+    """
     if os.path.exists(path):
-        with open(path, 'r', encoding='utf-8') as f: return json.load(f)
+        try:
+            with open(path, 'r', encoding='utf-8') as f: 
+                return json.load(f)
+        except json.JSONDecodeError:
+            print(f"⚠️ Warning: {path} contains invalid JSON. Returning empty dict.")
+            return {}
     return {}
 
 def normalize_key(s):
+    """
+    Creates a clean slug for URLs (e.g. "Premier League" -> "premierleague")
+    """
     return re.sub(r'[^a-z0-9]', '', s.lower())
 
 def build_menu_html(menu_items, section):
+    """
+    Generates HTML links for menus (Header, Hero, Footer).
+    """
     html = ""
     for item in menu_items:
         title = item.get('title', 'Link')
@@ -29,12 +49,16 @@ def build_menu_html(menu_items, section):
         elif section == 'footer_leagues':
             icon = "🏆"
             t_low = title.lower()
-            if "soccer" in t_low or "premier" in t_low: icon = "⚽"
+            # Simple icon mapping based on league name
+            if "soccer" in t_low or "premier" in t_low or "liga" in t_low: icon = "⚽"
             elif "nba" in t_low or "basket" in t_low: icon = "🏀"
             elif "nfl" in t_low or "football" in t_low: icon = "🏈"
             elif "mlb" in t_low or "baseball" in t_low: icon = "⚾"
             elif "ufc" in t_low or "boxing" in t_low: icon = "🥊"
             elif "f1" in t_low or "motor" in t_low: icon = "🏎️"
+            elif "cricket" in t_low: icon = "🏏"
+            elif "rugby" in t_low: icon = "🏉"
+            elif "tennis" in t_low: icon = "🎾"
             
             html += f'''
             <a href="{url}" class="league-card">
@@ -53,6 +77,9 @@ def build_menu_html(menu_items, section):
             
     return html
 
+# ==========================================
+# 3. PAGE RENDERER
+# ==========================================
 def render_page(template, config, page_data):
     s = config.get('site_settings', {})
     t = config.get('theme', {})
@@ -60,7 +87,7 @@ def render_page(template, config, page_data):
     
     html = template
     
-    # --- 1. Basic Config & Theme ---
+    # --- 1. Basic Config & Theme Replacements ---
     html = html.replace('{{BRAND_PRIMARY}}', t.get('brand_primary', '#D00000'))
     html = html.replace('{{BRAND_DARK}}', t.get('brand_dark', '#8a0000'))
     html = html.replace('{{ACCENT_GOLD}}', t.get('accent_gold', '#FFD700'))
@@ -82,6 +109,7 @@ def render_page(template, config, page_data):
     site_name = f"{p1}{p2}"
     html = html.replace('{{SITE_NAME}}', site_name)
     
+    # --- Logo & OG Image ---
     raw_logo = s.get('logo_url', '')
     og_image = ""
     og_mime = "image/png"
@@ -110,11 +138,12 @@ def render_page(template, config, page_data):
     html = html.replace('{{DOMAIN}}', domain)
     html = html.replace('{{FAVICON}}', s.get('favicon_url', ''))
 
-    # --- 2. Menus ---
+    # --- 2. Menus Injection ---
     html = html.replace('{{HEADER_MENU}}', build_menu_html(m.get('header', []), 'header'))
     html = html.replace('{{HERO_PILLS}}', build_menu_html(m.get('hero', []), 'hero'))
     html = html.replace('{{FOOTER_STATIC}}', build_menu_html(m.get('footer_static', []), 'footer_static'))
     
+    # Auto-generate footer league links based on priorities
     auto_footer_leagues = []
     priorities = config.get('sport_priorities', {}).get(country, {})
     if priorities:
@@ -158,16 +187,17 @@ def render_page(template, config, page_data):
     if keywords: html = html.replace('{{META_KEYWORDS}}', f'<meta name="keywords" content="{keywords}">')
     else: html = html.replace('{{META_KEYWORDS}}', '')
 
-    # --- 5. Layout Logic (for master_template only) ---
+    # --- 5. Layout Logic ---
     if layout == 'home':
         html = html.replace('{{DISPLAY_HERO}}', 'block')
     elif '{{DISPLAY_HERO}}' in html:
         html = html.replace('{{DISPLAY_HERO}}', 'none')
+        # Hide live sections on non-home pages if template has them
         html = html.replace('</head>', '<style>#live-section, #upcoming-container { display: none !important; }</style></head>')
 
     html = html.replace('{{ARTICLE_CONTENT}}', page_data.get('content', ''))
 
-    # --- 6. JS Injections ---
+    # --- 6. JS Injections (Dynamic Data) ---
     # Inject Priorities
     html = html.replace('{{JS_PRIORITIES}}', json.dumps(priorities))
     
@@ -176,11 +206,14 @@ def render_page(template, config, page_data):
     excluded_list = [x.strip() for x in social_data.get('excluded_pages', '').split(',') if x.strip()]
     js_social_object = {"excluded": excluded_list, "counts": social_data.get('counts', {})}
     social_json = json.dumps(js_social_object)
+    
+    # Safe replacement for Social Config using regex
     if 'const SHARE_CONFIG' in html:
-      html = re.sub(r'const SHARE_CONFIG = \{.*?\};', f'const SHARE_CONFIG = {social_json};', html, flags=re.DOTALL)
+        html = re.sub(r'const SHARE_CONFIG = \{.*?\};', f'const SHARE_CONFIG = {social_json};', html, flags=re.DOTALL)
 
     # --- NEW: Inject League Map ---
-    # Loads the map created by fetch scripts/Admin panel and injects it for frontend use
+    # This now handles both old structure (Team->League) and new structure (League->[Teams])
+    # The JSON is passed as-is to the frontend.
     league_map_data = load_json(LEAGUE_MAP_PATH)
     html = html.replace('{{JS_LEAGUE_MAP}}', json.dumps(league_map_data))
 
@@ -204,6 +237,9 @@ def render_page(template, config, page_data):
 
     return html
 
+# ==========================================
+# 4. MAIN BUILD PROCESS
+# ==========================================
 def build_site():
     print("--- 🔨 Starting Build Process ---")
     config = load_json(CONFIG_PATH)
