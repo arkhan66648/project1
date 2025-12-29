@@ -21,7 +21,7 @@
   "sport_priorities": {
     "US": {
       "_HIDE_OTHERS": false,
-      "_BOOST": "NCAA, Soccer",
+      "_BOOST": "Ice Hockey",
       "NFL": {
         "score": 100,
         "isLeague": true,
