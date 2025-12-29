@@ -15,7 +15,7 @@
             <nav>
                 <button class="nav-btn active" onclick="switchTab('general')">⚙️ General & SEO</button>
                 <button class="nav-btn" onclick="switchTab('pages')">📄 Pages & Content</button>
-                <button class="nav-btn" onclick="switchTab('priorities')">📊 Priorities</button>
+                <button class="nav-btn" onclick="switchTab('priorities')">📊 Priorities & Boost</button>
                 <button class="nav-btn" onclick="switchTab('leagues')">🏆 Leagues & Teams</button>
                 <button class="nav-btn" onclick="switchTab('menus')">🔗 Menus</button>
                 <button class="nav-btn" onclick="switchTab('social')">💬 Social Sharing</button>
@@ -96,15 +96,24 @@
                 </div>
             </section>
 
-            <!-- PRIORITIES -->
+            <!-- PRIORITIES & BOOST -->
             <section id="tab-priorities" class="tab-content">
                 <div class="header-box">
-                    <h1>Priorities</h1>
+                    <h1>Priorities & Boost</h1>
                 </div>
+                
+                <!-- NEW: BOOST SECTION -->
+                <div class="card" style="border-color: #eab308;">
+                    <h3 style="color: #facc15;">🚀 Category Boost</h3>
+                    <p class="desc">Matches in these categories will appear immediately after the "Top 15 Upcoming" section, before any other league.</p>
+                    <label>Boost Categories (Comma separated)</label>
+                    <input type="text" id="prioBoost" placeholder="e.g. FIFA World Cup, Playoffs, Super Bowl">
+                </div>
+
                 <div class="card">
                     <h3>Sorting for: <span id="prioLabel">US</span></h3>
                     <div class="input-group">
-                        <input type="text" id="newSportName" placeholder="Name">
+                        <input type="text" id="newSportName" placeholder="Name (e.g. Ice Hockey)">
                         <button class="btn-primary" onclick="addPriorityRow()">Add</button>
                     </div>
                     <div id="priorityListContainer" class="menu-list"></div>
