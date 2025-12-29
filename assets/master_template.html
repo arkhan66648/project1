@@ -249,11 +249,9 @@
         
         <!-- 1. LIVE SECTION -->
         <div id="live-section">
-            <!-- Header Skeleton -->
             <div id="live-sk-head" class="skeleton skeleton-header">
                 <div class="sk-title"></div><div class="sk-count"></div>
             </div>
-            <!-- Rows Skeleton: 5 rows to match Top 5 -->
             <div id="live-skeleton">
                 <div class="skeleton skeleton-box"></div>
                 <div class="skeleton skeleton-box"></div>
@@ -273,7 +271,6 @@
         </div>
         
         <!-- 2. TOP 5 UPCOMING -->
-        <!-- Header Skeleton + 5 Rows Skeleton to match Top 5 logic -->
         <div id="upcoming-skeleton">
              <div class="skeleton skeleton-header"><div class="sk-title"></div></div>
              <div class="skeleton skeleton-box"></div>
@@ -323,19 +320,12 @@
         const PRIORITIES = {{JS_PRIORITIES}}; 
         const SITE_DOMAIN = "https://{{DOMAIN}}";
         
-        // HARDCODED DATA INJECTION
         const RAW_LEAGUE_MAP = {{JS_LEAGUE_MAP}}; 
         const IMAGE_MAP = {{JS_IMAGE_MAP}};       
 
         const SHARE_CONFIG = {
             excluded: ['dmca', 'about', 'contact', 'privacy'],
             counts: { telegram: 1240, whatsapp: 850, reddit: 340, twitter: 510 } 
-        };
-
-        const GENERIC_SCORES = {
-            "Soccer": 100, "Football": 100, "Cricket": 95, "Tennis": 90, "Rugby": 85,
-            "American Football": 80, "Basketball": 75, "Ice Hockey": 70, "Baseball": 65,
-            "Fighting": 60, "MMA": 60, "Boxing": 60, "Motorsport": 55, "Golf": 50
         };
 
         // Flatten the league map for O(1) lookup
@@ -470,11 +460,16 @@
                 score += 2000; 
             }
 
+            // Check if exact League Name is in Priorities
             if (PRIORITIES[leagueName]) {
                 score += PRIORITIES[leagueName].score * 10;
-            } else {
+            } 
+            // Fallback: Check if generic Sport is in Priorities (e.g. "Soccer")
+            else {
                 const sport = m.sport || "General";
-                score += (GENERIC_SCORES[sport] || 0);
+                if(PRIORITIES[sport]) {
+                    score += PRIORITIES[sport].score; 
+                }
             }
 
             if (m.is_live) {
@@ -506,7 +501,8 @@
             // RENDER TOP 5 VISUALLY
             const top5Display = upcomingMatches.slice(0, 5);
             if (top5Display.length > 0) {
-                createSection(document.getElementById('top-upcoming-container'), "Top Matches in Next 24h", top5Display, false, false, "🔥");
+                // Pass NULL as title so it displays full league names for mixed matches
+                createSection(document.getElementById('top-upcoming-container'), "Top Matches in Next 24h", top5Display, false, false, "🔥", null);
             } else {
                 document.getElementById('top-upcoming-container').innerHTML = '<div style="padding:15px;color:#666;text-align:center;">No upcoming matches in next 24h.</div>';
             }
@@ -587,26 +583,26 @@
 
             // RENDER ORDER: Boost -> Leagues -> Sports -> Other
             
-            // Boost
+            // Boost (Pass key as sectionTitle)
             Object.keys(buckets.boost).forEach(key => {
-                if(buckets.boost[key].length) createSection(container, key, buckets.boost[key], true, true);
+                if(buckets.boost[key].length) createSection(container, key, buckets.boost[key], true, true, null, key);
             });
 
             // Leagues (Sorted by Score)
             const sortedLeagues = Object.keys(buckets.leagues).sort((a,b) => PRIORITIES[b].score - PRIORITIES[a].score);
             sortedLeagues.forEach(key => {
-                if(buckets.leagues[key].length) createSection(container, key, buckets.leagues[key], true, true);
+                if(buckets.leagues[key].length) createSection(container, key, buckets.leagues[key], true, true, null, key);
             });
 
             // Generic Sports (Sorted by Score)
             const sortedSports = Object.keys(buckets.generic).sort((a,b) => PRIORITIES[b].score - PRIORITIES[a].score);
             sortedSports.forEach(key => {
-                if(buckets.generic[key].length) createSection(container, key, buckets.generic[key], false, false);
+                if(buckets.generic[key].length) createSection(container, key, buckets.generic[key], false, false, null, key);
             });
 
-            // Other
+            // Other (Pass null as sectionTitle so tag shows League Name)
             if(buckets.other.length) {
-                createSection(container, "Upcoming Other Matches", buckets.other, false, false);
+                createSection(container, "Upcoming Other Matches", buckets.other, false, false, null, null);
             }
         }
 
@@ -626,16 +622,17 @@
             
             document.getElementById('live-count').innerText = `● ${matches.length} Live Matches`;
             
-            matches.slice(0, 5).forEach(m => topList.appendChild(createMatchRow(m, { isLive: true })));
+            // Pass null for sectionTitle so live matches always show full league name
+            matches.slice(0, 5).forEach(m => topList.appendChild(createMatchRow(m, { isLive: true }, null)));
             
             if (matches.length > 5) {
-                matches.slice(5).forEach(m => hiddenList.appendChild(createMatchRow(m, { isLive: true })));
+                matches.slice(5).forEach(m => hiddenList.appendChild(createMatchRow(m, { isLive: true }, null)));
                 btn.style.display = 'block'; btn.innerText = `Show ${matches.length - 5} More Matches ▼`;
                 btn.onclick = () => { hiddenList.style.display='block'; btn.style.display='none'; };
             }
         }
 
-        function createSection(container, title, matches, hasLink, isLeague, customIcon) {
+        function createSection(container, title, matches, hasLink, isLeague, customIcon, sectionTitle) {
             const section = document.createElement('div');
             section.style.marginBottom = '30px';
             
@@ -661,13 +658,13 @@
             
             const list = document.createElement('div');
             matches.sort((a,b) => a.startTimeUnix - b.startTimeUnix).forEach(m => {
-                list.appendChild(createMatchRow(m, { isLive: false }));
+                list.appendChild(createMatchRow(m, { isLive: false }, sectionTitle));
             });
             section.appendChild(list);
             container.appendChild(section);
         }
 
-        function createMatchRow(m, context) {
+        function createMatchRow(m, context, sectionTitle) {
             const div = document.createElement('div');
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
@@ -693,7 +690,18 @@
                 teamsHtml += `<div class="team-name">${getLogo(m.displayAway)} ${m.displayAway}</div>`;
             }
             
+            // TAG LOGIC
             let tagText = m.finalLeague;
+            
+            // If we are in a defined section (not live, not top 5)
+            if (sectionTitle) {
+                // If the match league matches the section title exactly (e.g. Section "NFL", Match "NFL")
+                // Show the Sport (or "General")
+                if (m.finalLeague === sectionTitle) {
+                    tagText = m.sport || "General";
+                } 
+                // Otherwise keep league name (e.g. Section "Soccer", Match "Premier League")
+            }
             
             let metaHtml = '';
             if (m.is_live) {
