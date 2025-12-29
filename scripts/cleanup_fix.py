@@ -16,7 +16,7 @@ DIRS = {
 ALLOWED_LEAGUES_INPUT = """
 NFL, NBA, MLB, NHL, College Football, College-Football, College Basketball, College-Basketball, 
 NCAAB, NCAAF, NCAA Men, NCAA-Men, NCAA Women, NCAA-Women, Premier League, Premier-League, 
-Champions League, Champions-League, MLS, Bundesliga, Serie-A, Serie A, American Football, American-Football, 
+Champions League, Champions-League, MLS, Bundesliga, Serie-A, Serie A, American-Football, American Football, 
 Ice Hockey, Ice-Hockey, Championship, Scottish Premiership, Scottish-Premiership, 
 Europa League, Europa-League
 """
@@ -60,16 +60,21 @@ def clean_display_name(name):
     for league in VALID_LEAGUES:
         # Check for 'League Name:' or 'League Name ' at start
         # We check loose matching to catch variations
-        if lower_name.startswith(league):
+        if lower_name.startswith(league.lower()): # Ensure league comparison is also lowercase
             # Check what follows the league name
             remainder = name[len(league):]
-            # Remove separator characters (:, -, spaces) from the start of remainder
-            clean_remainder = re.sub(r"^[:\s-াধিক]+", "", remainder)
+            
+            # FIX: Corrected regex to safely match separators (colon, space, hyphen)
+            # The hyphen '-' is placed at the end to avoid creating a range.
+            # We also include common separators like ':' and whitespace.
+            clean_remainder = re.sub(r"^[:\s-]+", "", remainder) 
             
             # Safety: Only return if we actually stripped something and have text left
-            if clean_remainder and len(clean_remainder) > 1:
-                return clean_remainder
-    return name
+            # Also, ensure the stripped part is not just whitespace itself if it's very short.
+            if clean_remainder and len(clean_remainder.strip()) > 1: 
+                return clean_remainder.strip() # Strip any remaining whitespace from the result
+
+    return name.strip() # Ensure original name is also stripped if no prefix found
 
 # ==========================================
 # 3. MAIN EXECUTION
@@ -103,12 +108,12 @@ def main():
                     # We can safely delete the dirty file (duplicate).
                     os.remove(old_path)
                     deleted_count += 1
-                    # print(f"  [DEL] Duplicate merged: {filename} -> (kept existing) {new_slug}.webp")
+                    print(f"  [DEL] Duplicate merged: {filename} -> (kept existing) {new_slug}.webp")
                 else:
                     # Rename
                     os.rename(old_path, new_path)
                     renamed_count += 1
-                    # print(f"  [MOV] Renamed: {filename} -> {new_slug}.webp")
+                    print(f"  [MOV] Renamed: {filename} -> {new_slug}.webp")
         
         print(f"   > Files Renamed: {renamed_count}")
         print(f"   > Duplicates Removed: {deleted_count}")
@@ -119,26 +124,33 @@ def main():
     print("\n[2/3] Fixing League Map...")
     if os.path.exists(DIRS['league_map']):
         # Backup
-        shutil.copy(DIRS['league_map'], DIRS['league_map'] + ".bak")
+        try:
+            shutil.copy(DIRS['league_map'], DIRS['league_map'] + ".bak")
+            print(f"   > Backup saved to: {DIRS['league_map']}.bak")
+        except Exception as e:
+            print(f"   [!] Warning: Could not create backup for {DIRS['league_map']}: {e}")
         
-        with open(DIRS['league_map'], 'r') as f:
-            old_map = json.load(f)
-        
-        new_map = {}
-        cleaned_keys = 0
-        
-        for k, v in old_map.items():
-            clean_key = clean_filename_slug(k, league_slugs)
-            # Add to new map (overwriting if clean_key exists is fine/desired)
-            new_map[clean_key] = v
-            if clean_key != k:
-                cleaned_keys += 1
-                
-        with open(DIRS['league_map'], 'w') as f:
-            json.dump(new_map, f, indent=2)
+        try:
+            with open(DIRS['league_map'], 'r') as f:
+                old_map = json.load(f)
             
-        print(f"   > Map Entries Cleaned: {cleaned_keys}")
-        print(f"   > Backup saved to: {DIRS['league_map']}.bak")
+            new_map = {}
+            cleaned_keys = 0
+            
+            for k, v in old_map.items():
+                clean_key = clean_filename_slug(k, league_slugs)
+                # Add to new map (overwriting if clean_key exists is fine/desired)
+                new_map[clean_key] = v
+                if clean_key != k:
+                    cleaned_keys += 1
+                    
+            with open(DIRS['league_map'], 'w') as f:
+                json.dump(new_map, f, indent=2)
+                
+            print(f"   > Map Entries Cleaned: {cleaned_keys}")
+        except Exception as e:
+            print(f"   [!] Error processing {DIRS['league_map']}: {e}")
+
 
     # -------------------------------------------------
     # STEP C: Fix 'image_map.json'
@@ -146,45 +158,51 @@ def main():
     print("\n[3/3] Fixing Image Map...")
     if os.path.exists(DIRS['image_map']):
         # Backup
-        shutil.copy(DIRS['image_map'], DIRS['image_map'] + ".bak")
-        
-        with open(DIRS['image_map'], 'r') as f:
-            img_data = json.load(f)
-            
-        teams_data = img_data.get('teams', {})
-        new_teams_data = {}
-        img_map_fixes = 0
-        
-        for name, path in teams_data.items():
-            # 1. Clean the Display Name (Key)
-            clean_name_key = clean_display_name(name)
-            
-            # 2. Clean the File Path (Value)
-            # Path looks like: "/assets/logos/streamed/nba-boston-celtics.webp"
-            clean_path_val = path
-            path_parts = path.split('/')
-            if path_parts:
-                filename = path_parts[-1]
-                if filename.endswith('.webp'):
-                    file_slug = filename.replace('.webp', '')
-                    clean_file_slug = clean_filename_slug(file_slug, league_slugs)
-                    # Reconstruct path
-                    path_parts[-1] = f"{clean_file_slug}.webp"
-                    clean_path_val = "/".join(path_parts)
-            
-            new_teams_data[clean_name_key] = clean_path_val
-            
-            if clean_name_key != name or clean_path_val != path:
-                img_map_fixes += 1
+        try:
+            shutil.copy(DIRS['image_map'], DIRS['image_map'] + ".bak")
+            print(f"   > Backup saved to: {DIRS['image_map']}.bak")
+        except Exception as e:
+            print(f"   [!] Warning: Could not create backup for {DIRS['image_map']}: {e}")
 
-        # Update data
-        img_data['teams'] = new_teams_data
-        
-        with open(DIRS['image_map'], 'w') as f:
-            json.dump(img_data, f, indent=2)
+        try:
+            with open(DIRS['image_map'], 'r') as f:
+                img_data = json.load(f)
+                
+            teams_data = img_data.get('teams', {})
+            new_teams_data = {}
+            img_map_fixes = 0
             
-        print(f"   > Image Map Entries Fixed: {img_map_fixes}")
-        print(f"   > Backup saved to: {DIRS['image_map']}.bak")
+            for name, path in teams_data.items():
+                # 1. Clean the Display Name (Key)
+                clean_name_key = clean_display_name(name)
+                
+                # 2. Clean the File Path (Value)
+                # Path looks like: "/assets/logos/streamed/nba-boston-celtics.webp"
+                clean_path_val = path
+                path_parts = path.split('/')
+                if path_parts:
+                    filename = path_parts[-1]
+                    if filename.endswith('.webp'):
+                        file_slug = filename.replace('.webp', '')
+                        clean_file_slug = clean_filename_slug(file_slug, league_slugs)
+                        # Reconstruct path
+                        path_parts[-1] = f"{clean_file_slug}.webp"
+                        clean_path_val = "/".join(path_parts)
+                
+                new_teams_data[clean_name_key] = clean_path_val
+                
+                if clean_name_key != name or clean_path_val != path:
+                    img_map_fixes += 1
+
+            # Update data
+            img_data['teams'] = new_teams_data
+            
+            with open(DIRS['image_map'], 'w') as f:
+                json.dump(img_data, f, indent=2)
+                
+            print(f"   > Image Map Entries Fixed: {img_map_fixes}")
+        except Exception as e:
+            print(f"   [!] Error processing {DIRS['image_map']}: {e}")
 
     print("\n--- Cleanup Complete ---")
     print("Next Step: Update your fetch_streamed.py and generate_map.py to handle prefixes automatically.")
