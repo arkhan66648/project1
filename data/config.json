@@ -51,18 +51,6 @@
         "hasLink": true,
         "isHidden": false
       },
-      "Boxing": {
-        "score": 94,
-        "isLeague": false,
-        "hasLink": true,
-        "isHidden": false
-      },
-      "Formula 1": {
-        "score": 93,
-        "isLeague": true,
-        "hasLink": true,
-        "isHidden": false
-      },
       "College Football": {
         "score": 90,
         "isLeague": true,
@@ -71,6 +59,12 @@
       },
       "College Basketball": {
         "score": 89,
+        "isLeague": true,
+        "hasLink": true,
+        "isHidden": false
+      },
+      "Formula 1": {
+        "score": 88,
         "isLeague": true,
         "hasLink": true,
         "isHidden": false
@@ -93,22 +87,40 @@
         "hasLink": true,
         "isHidden": false
       },
-      "LaLiga": {
-        "score": 82,
-        "isLeague": true,
-        "hasLink": true,
+      "Football": {
+        "score": 79,
+        "isLeague": false,
+        "hasLink": false,
         "isHidden": false
       },
-      "Bundesliga": {
-        "score": 81,
-        "isLeague": true,
-        "hasLink": true,
+      "Basketball": {
+        "score": 78,
+        "isLeague": false,
+        "hasLink": false,
         "isHidden": false
       },
-      "Serie A": {
-        "score": 80,
-        "isLeague": true,
-        "hasLink": true,
+      "Baseball": {
+        "score": 77,
+        "isLeague": false,
+        "hasLink": false,
+        "isHidden": false
+      },
+      "Fighting": {
+        "score": 76,
+        "isLeague": false,
+        "hasLink": false,
+        "isHidden": false
+      },
+      "Ice Hockey": {
+        "score": 75,
+        "isLeague": false,
+        "hasLink": false,
+        "isHidden": false
+      },
+      "Soccer": {
+        "score": 60,
+        "isLeague": false,
+        "hasLink": false,
         "isHidden": false
       },
       "Tennis": {
@@ -119,6 +131,12 @@
       },
       "Golf": {
         "score": 30,
+        "isLeague": false,
+        "hasLink": false,
+        "isHidden": false
+      },
+      "Motorsport": {
+        "score": 20,
         "isLeague": false,
         "hasLink": false,
         "isHidden": false
