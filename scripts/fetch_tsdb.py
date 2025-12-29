@@ -116,7 +116,7 @@ def main():
                     if name:
                         slug = slugify(name)
                         if slug:
-                            # Note: We NO LONGER update league_map.json here.
+                            # Note: NO league_map logic here.
                             
                             # Download Image
                             badge = t.get('strTeamBadge') or t.get('strBadge')
