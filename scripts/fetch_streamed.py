@@ -24,14 +24,14 @@ HEADERS = {
 }
 
 # --- WHITELIST CONFIGURATION ---
+# (Still used for 'is_valid_league' filtering logic)
 ALLOWED_LEAGUES_INPUT = """
 NFL, NBA, MLB, NHL, College Football, College-Football, College Basketball, College-Basketball, 
 NCAAB, NCAAF, NCAA Men, NCAA-Men, NCAA Women, NCAA-Women, Premier League, Premier-League, 
-Champions League, Champions-League, MLS, Bundesliga, Serie-A, Serie A, American Football, 
+Champions League, Champions-League, MLS, Bundesliga, Serie-A, Serie A, American-Football, American Football, 
 Ice Hockey, Ice-Hockey, Championship, Scottish Premiership, Scottish-Premiership, 
 Europa League, Europa-League
 """
-# Set of lowercased allowed names
 VALID_LEAGUES = {x.strip().lower() for x in ALLOWED_LEAGUES_INPUT.split(',') if x.strip()}
 
 # ==========================================
@@ -43,6 +43,38 @@ def slugify(name):
     clean = re.sub(r"[^\w\s-]", "", clean)
     clean = re.sub(r"\s+", "-", clean)
     return clean.strip("-")
+
+def clean_display_name(name):
+    """
+    Sanitizer:
+    1. PRIORITY RULE: If a colon (:) is found, assume format "League: Team" 
+       and strip everything before the first colon.
+    2. FALLBACK: Check whitelist for prefixes (e.g. "NBA - Team") if no colon exists.
+    """
+    if not name: return None
+    
+    # --- RULE 1: Generic Colon Stripper ---
+    # Works for ANY league, even if not in whitelist
+    if ':' in name:
+        parts = name.split(':', 1) # Split only on the first colon
+        if len(parts) > 1:
+            cleaned = parts[1].strip()
+            # Safety check: ensure we didn't end up with an empty string
+            if cleaned and len(cleaned) > 1:
+                return cleaned
+
+    # --- RULE 2: Whitelist Fallback ---
+    # Handles cases like "NBA - Celtics" (No colon)
+    lower_name = name.lower()
+    for league in VALID_LEAGUES:
+        if lower_name.startswith(league):
+            remainder = name[len(league):]
+            # Remove separator characters (spaces, hyphens) from the start
+            clean_remainder = re.sub(r"^[\s-]+", "", remainder)
+            if clean_remainder and len(clean_remainder.strip()) > 1:
+                return clean_remainder.strip()
+                
+    return name.strip()
 
 def resolve_url(source_val):
     if not source_val: return None
@@ -103,13 +135,9 @@ def main():
                 league_map = json.load(f)
         except: pass
 
-    # 2. CLEAN UP: Remove entries not in VALID_LEAGUES
-    # This ensures we delete teams whose league is generic or not in our new whitelist
+    # Clean Map (Legacy check)
     cleaned_count = 0
-    keys_to_delete = [
-        k for k, v in league_map.items() 
-        if str(v).lower().strip() not in VALID_LEAGUES
-    ]
+    keys_to_delete = [k for k, v in league_map.items() if str(v).lower().strip() not in VALID_LEAGUES]
     for k in keys_to_delete:
         del league_map[k]
         cleaned_count += 1
@@ -130,15 +158,14 @@ def main():
     league_count = 0
 
     for m in matches:
-        home = m.get('home_team')
-        away = m.get('away_team')
-        league = m.get('league') # Can be None, Generic, or Valid
+        home_raw = m.get('home_team')
+        away_raw = m.get('away_team')
+        league = m.get('league')
         
         home_imgs = m.get('home_team_image')
         away_imgs = m.get('away_team_image')
         league_imgs = m.get('league_image')
 
-        # Check if incoming league is valid
         is_valid_league = False
         if league and league.strip().lower() in VALID_LEAGUES:
             is_valid_league = True
@@ -146,20 +173,17 @@ def main():
         # ---------------------------
         # PROCESS TEAMS
         # ---------------------------
-        for name, img_obj in [(home, home_imgs), (away, away_imgs)]:
+        for raw_name, img_obj in [(home_raw, home_imgs), (away_raw, away_imgs)]:
+            # 1. CLEAN THE NAME (Prioritizing Colon Rule)
+            name = clean_display_name(raw_name)
+            
+            # 2. SLUGIFY CLEAN NAME
             slug = slugify(name)
             if not slug: continue
 
-            # LOGIC:
-            # 1. If incoming league is VALID, update map (Priority: New Data)
-            # 2. If incoming league is INVALID/MISSING, check if we already have it in map.
-            # 3. If neither, we DO NOT add it to the map (Strict Whitelist).
-
             if is_valid_league:
-                league_map[slug] = league # Update with fresh valid data
+                league_map[slug] = league
             
-            # Decide if we download the image:
-            # We download if we have a valid league recorded (either just now or previously)
             if slug in league_map:
                 # Check TSDB first
                 tsdb_path = os.path.join(TSDB_DIR, f"{slug}.webp")
