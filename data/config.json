@@ -21,7 +21,7 @@
   "sport_priorities": {
     "US": {
       "_HIDE_OTHERS": false,
-      "_BOOST": "NCAA",
+      "_BOOST": "NCAA, CRICKET",
       "NFL": {
         "score": 100,
         "isLeague": true,
