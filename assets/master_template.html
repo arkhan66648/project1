@@ -121,7 +121,7 @@
         
         .container { max-width: 1100px; margin: 0 auto; padding: 20px 15px; min-height: 60vh; }
         .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 40px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #1a1a1a; }
-        .sec-title { font-size: 1.2rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
+        .sec-title { font-size: 1.2rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 10px; text-transform: uppercase; margin: 0; }
         .sec-logo { width: 24px; height: 24px; object-fit: contain; }
         .live-dot { width: 8px; height: 8px; background: var(--brand-primary); border-radius: 50%; box-shadow: 0 0 10px var(--brand-primary); }
         .sec-right-link { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; text-decoration: none; }
@@ -226,7 +226,7 @@
             </div>
             <div id="live-content-wrapper" style="display:none;">
                 <div class="sec-head">
-                    <div class="sec-title"><div class="live-dot"></div> Trending Live</div>
+                    <h2 class="sec-title"><div class="live-dot"></div> Trending Live</h2>
                     <div class="sec-right-link" id="live-count"></div>
                 </div>
                 <div id="trending-list" class="match-list"></div>
@@ -235,7 +235,7 @@
             </div>
         </div>
         
-        <!-- 2. TOP 15 UPCOMING -->
+        <!-- 2. TOP 5 UPCOMING -->
         <div id="upcoming-skeleton" style="margin-top:40px;">
              <div class="skeleton skeleton-header"><div class="sk-title"></div></div>
              <div class="skeleton skeleton-box"></div>
@@ -243,13 +243,13 @@
         </div>
         <div id="top-upcoming-container"></div>
 
-        <!-- 3. BOOSTED & LEAGUES -->
+        <!-- 3. BOOSTED, LEAGUES & SPORTS -->
         <div id="grouped-container"></div>
         
         <div class="seo-box" style="margin-top:40px; color:#aaa; font-size:0.9rem; line-height:1.6;">{{ARTICLE_CONTENT}}</div>
 
         <div class="section-box" style="margin-top:50px;">
-            <div class="sec-head"><div class="sec-title">🏆 Popular Leagues</div></div>
+            <div class="sec-head"><h2 class="sec-title">🏆 Popular Leagues</h2></div>
             <div class="leagues-grid">{{FOOTER_LEAGUES}}</div>
         </div>
 
@@ -283,8 +283,8 @@
         const SITE_DOMAIN = "https://{{DOMAIN}}";
         
         // HARDCODED DATA INJECTION
-        const RAW_LEAGUE_MAP = {{JS_LEAGUE_MAP}}; // Format: { "League": ["team1", "team2"] }
-        const IMAGE_MAP = {{JS_IMAGE_MAP}};       // Format: { "teams": {...}, "leagues": {...} }
+        const RAW_LEAGUE_MAP = {{JS_LEAGUE_MAP}}; 
+        const IMAGE_MAP = {{JS_IMAGE_MAP}};       
 
         const SHARE_CONFIG = {
             excluded: ['dmca', 'about', 'contact', 'privacy'],
@@ -297,7 +297,7 @@
             "Fighting": 60, "MMA": 60, "Boxing": 60, "Motorsport": 55, "Golf": 50
         };
 
-        // Flatten the league map for O(1) lookup: { "team-slug": "League Name" }
+        // Flatten the league map for O(1) lookup
         let teamToLeagueMap = {};
         if (RAW_LEAGUE_MAP) {
             for (const [leagueName, teams] of Object.entries(RAW_LEAGUE_MAP)) {
@@ -345,7 +345,6 @@
                     // FILTER OUT TBA vs TBA MATCHES
                     allMatches = data.matches.filter(m => !(m.home_team === 'TBA' && m.away_team === 'TBA'));
                     
-                    // Process matches through resolution pipeline
                     const processedMatches = processMatches(allMatches);
                     renderApp(processedMatches);
                 } else {
@@ -354,30 +353,23 @@
             } catch(e) { console.error(e); }
         }
 
-        // ============================================
-        // 1. DATA RESOLUTION PIPELINE (Refined Logic)
-        // ============================================
         function processMatches(matches) {
             return matches.map(m => {
                 const homeSlug = slugify(m.home_team);
                 const awaySlug = slugify(m.away_team);
                 
                 // A. RESOLVE LEAGUE
-                // Priority: Admin Map (Strict 2-team) -> Admin Fix (Prefix) -> API
                 let finalLeague = (m.league || m.sport || "Other").trim();
                 let leagueSource = "API";
 
-                // Check Admin Map (Both teams must match same league)
                 if (teamToLeagueMap[homeSlug] && teamToLeagueMap[awaySlug] && teamToLeagueMap[homeSlug] === teamToLeagueMap[awaySlug]) {
                     finalLeague = teamToLeagueMap[homeSlug];
                     leagueSource = "Map";
                 } 
-                // Check Admin Map (Home team only - generic fallback)
                 else if (teamToLeagueMap[homeSlug]) {
                     finalLeague = teamToLeagueMap[homeSlug];
                     leagueSource = "MapHome";
                 }
-                // Check Priorities Prefix (Admin Fix)
                 else {
                     for (const pKey of Object.keys(PRIORITIES)) {
                         if (pKey.startsWith('_')) continue;
@@ -389,11 +381,11 @@
                     }
                 }
 
-                // B. CLEAN TEAM NAMES (Colon Rule + Map Lookup)
+                // B. CLEAN TEAM NAMES
                 const homeClean = getCleanTeamName(m.home_team, homeSlug, finalLeague);
                 const awayClean = getCleanTeamName(m.away_team, awaySlug, finalLeague);
 
-                // C. CALCULATE PRIORITY SCORE
+                // C. SCORE
                 const score = calculateScore(m, finalLeague);
 
                 return {
@@ -416,22 +408,15 @@
 
         function getCleanTeamName(rawName, slug, leagueName) {
             if (!rawName) return "TBA";
-            
-            // 1. If map has it, use slug to human-readable
             if (teamToLeagueMap[slug]) return unslugify(slug);
 
-            // 2. Colon Rule (League: Team -> Team)
             let clean = rawName;
             if (leagueName) {
-                // Escape special regex chars in league name
                 const safeLeague = leagueName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); 
                 const regex = new RegExp(`^${safeLeague}:\\s*`, 'i');
                 clean = clean.replace(regex, '');
             }
-            
-            // 3. Fallback Clean (Common Prefixes)
             clean = clean.replace(/^(NHL|NBA|NFL|MLB|UFC):\s*/i, '').trim();
-            
             return clean;
         }
 
@@ -440,26 +425,21 @@
             const boostCategories = (PRIORITIES._BOOST || "").toLowerCase().split(',').map(s => s.trim()).filter(Boolean);
             const leagueLower = leagueName.toLowerCase();
 
-            // 1. Boost Category Check
             if (boostCategories.some(b => leagueLower.includes(b))) {
-                score += 2000; // Massive boost
+                score += 2000; 
             }
 
-            // 2. Priority List Check
             if (PRIORITIES[leagueName]) {
                 score += PRIORITIES[leagueName].score * 10;
             } else {
-                // Generic Sport Check
                 const sport = m.sport || "General";
                 score += (GENERIC_SCORES[sport] || 0);
             }
 
-            // 3. Live Bonus
             if (m.is_live) {
                 score += 5000;
                 score += (m.live_viewers || 0);
             } else {
-                // Time decay (sooner = higher)
                 const hoursUntil = (m.startTimeUnix - Date.now()) / 3600000;
                 if (hoursUntil < 24) score += (24 - hoursUntil);
             }
@@ -468,11 +448,7 @@
 
         function normalizeKey(str) { return str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : ""; }
 
-        // ============================================
-        // 2. RENDERING LOGIC (Entity Stacking)
-        // ============================================
         function renderApp(matches) {
-            // Hide Skeletons
             document.getElementById('live-sk-head').style.display = 'none';
             document.getElementById('live-skeleton').style.display = 'none';
             document.getElementById('upcoming-skeleton').style.display = 'none';
@@ -480,31 +456,29 @@
             const now = Date.now();
             const oneDay = 24 * 60 * 60 * 1000;
 
-            // 1. SPLIT LIVE vs UPCOMING
             const liveMatches = matches.filter(m => m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
             const upcomingMatches = matches.filter(m => !m.is_live && (m.startTimeUnix - now) < oneDay)
                                            .sort((a,b) => b.priorityScore - a.priorityScore);
 
-            // 2. RENDER LIVE (Top 5)
             renderLiveSection(liveMatches);
 
-            // 3. RENDER TOP 15 UPCOMING (Mixed)
-            const top15 = upcomingMatches.slice(0, 15);
-            // FIX: Changed renderSection to createSection
-            if (top15.length > 0) {
-                createSection(document.getElementById('top-upcoming-container'), "Top Matches in Next 24h", top15, false, false, "🔥");
+            // RENDER TOP 5 VISUALLY
+            const top5Display = upcomingMatches.slice(0, 5);
+            if (top5Display.length > 0) {
+                createSection(document.getElementById('top-upcoming-container'), "Top Matches in Next 24h", top5Display, false, false, "🔥");
             } else {
                 document.getElementById('top-upcoming-container').innerHTML = '<div style="padding:15px;color:#666;text-align:center;">No upcoming matches in next 24h.</div>';
             }
 
-            // 4. GROUP REMAINDER (Entity Stacking)
-            const top15Ids = new Set(top15.map(m => m.id));
-            const remainingMatches = upcomingMatches.filter(m => !top15Ids.has(m.id));
+            // PASS TOP 15 TO SCHEMA (SEO Requirement)
+            const top15Schema = upcomingMatches.slice(0, 15);
+            generateDynamicSchema(liveMatches, top15Schema);
+
+            // FILTER REST: Exclude the visual Top 5 (so they don't duplicate below)
+            const top5Ids = new Set(top5Display.map(m => m.id));
+            const remainingMatches = upcomingMatches.filter(m => !top5Ids.has(m.id));
 
             renderGroupedSections(remainingMatches);
-
-            // 5. SCHEMA
-            generateDynamicSchema(liveMatches, top15);
         }
 
         function renderGroupedSections(matches) {
@@ -521,7 +495,7 @@
                 other: []
             };
 
-            // Initialize Buckets based on Admin Config
+            // Initialize Configured Buckets
             Object.keys(PRIORITIES).forEach(key => {
                 if(key.startsWith('_')) return;
                 const conf = PRIORITIES[key];
@@ -531,23 +505,22 @@
                 else buckets.generic[key] = [];
             });
 
-            // Distribute Matches
             matches.forEach(m => {
                 const leagueName = m.finalLeague;
                 const leagueLower = leagueName.toLowerCase();
                 const sport = m.sport || "General";
 
-                // Boost?
+                // 1. Boost
                 if (boostList.some(b => leagueLower.includes(b))) {
                     if (!buckets.boost[leagueName]) buckets.boost[leagueName] = [];
                     buckets.boost[leagueName].push(m);
                     return;
                 }
 
-                // Priority League?
-                // Check exact match or partial match with config keys
+                // 2. Priority League (e.g., NFL, NBA)
                 let placed = false;
                 for (const pKey of Object.keys(buckets.leagues)) {
+                    // Check exact or partial match with the priority key
                     if (leagueLower.includes(pKey.toLowerCase())) {
                         buckets.leagues[pKey].push(m);
                         placed = true;
@@ -556,11 +529,9 @@
                 }
                 if(placed) return;
 
-                // Priority Sport?
-                // Check against generic buckets
-                // Usually check if the *sport* matches, or if the league name indicates the sport
+                // 3. Priority Sport (e.g., Soccer, Cricket)
                 for (const pKey of Object.keys(buckets.generic)) {
-                    // Check if league name OR sport name matches the category
+                    // Check if league name OR sport matches the key (e.g., "Soccer")
                     if (leagueLower.includes(pKey.toLowerCase()) || sport.toLowerCase().includes(pKey.toLowerCase())) {
                         buckets.generic[pKey].push(m);
                         placed = true;
@@ -569,27 +540,27 @@
                 }
                 if(placed) return;
 
-                // Other
+                // 4. Other
                 if(!HIDE_OTHERS) buckets.other.push(m);
             });
 
-            // RENDER: Boost -> Leagues -> Sports -> Other
+            // RENDER ORDER: Boost -> Leagues -> Sports -> Other
             
-            // Boost Sections
+            // Boost
             Object.keys(buckets.boost).forEach(key => {
                 if(buckets.boost[key].length) createSection(container, key, buckets.boost[key], true, true);
             });
 
-            // Priority Leagues (Ordered by Score)
-            const sortedLeagueKeys = Object.keys(buckets.leagues).sort((a,b) => PRIORITIES[b].score - PRIORITIES[a].score);
-            sortedLeagueKeys.forEach(key => {
+            // Leagues (Sorted by Score)
+            const sortedLeagues = Object.keys(buckets.leagues).sort((a,b) => PRIORITIES[b].score - PRIORITIES[a].score);
+            sortedLeagues.forEach(key => {
                 if(buckets.leagues[key].length) createSection(container, key, buckets.leagues[key], true, true);
             });
 
-            // Generic Sports (Ordered by Score)
-            const sortedSportKeys = Object.keys(buckets.generic).sort((a,b) => PRIORITIES[b].score - PRIORITIES[a].score);
-            sortedSportKeys.forEach(key => {
-                if(buckets.generic[key].length) createSection(container, key, buckets.generic[key], false, false); // Generic usually has no league page link unless defined
+            // Generic Sports (Sorted by Score)
+            const sortedSports = Object.keys(buckets.generic).sort((a,b) => PRIORITIES[b].score - PRIORITIES[a].score);
+            sortedSports.forEach(key => {
+                if(buckets.generic[key].length) createSection(container, key, buckets.generic[key], false, false);
             });
 
             // Other
@@ -598,9 +569,6 @@
             }
         }
 
-        // ============================================
-        // 3. UI HELPERS
-        // ============================================
         function renderLiveSection(matches) {
             const wrapper = document.getElementById('live-content-wrapper');
             const topList = document.getElementById('trending-list');
@@ -630,16 +598,13 @@
             const section = document.createElement('div');
             section.style.marginBottom = '30px';
             
-            // View More Link Logic (-streams suffix)
             let linkHtml = '';
             if (PRIORITIES[title] && PRIORITIES[title].hasLink) {
                 const slug = normalizeKey(title);
                 linkHtml = `<a href="/${slug}-streams/" class="sec-right-link">View All ></a>`;
             }
 
-            // Header Logo Logic
             let iconHtml = customIcon ? `<span style="font-size:1.2rem; margin-right:8px;">${customIcon}</span>` : '';
-            // Try to find image map logo for this league
             if (IMAGE_MAP.leagues && IMAGE_MAP.leagues[title]) {
                 const logoUrl = IMAGE_MAP.leagues[title];
                 iconHtml = `<img src="${logoUrl}" class="sec-logo" alt="${title}" width="24" height="24">`;
@@ -649,7 +614,7 @@
 
             section.innerHTML = `
                 <div class="sec-head">
-                    <div class="sec-title">${iconHtml} ${title}</div>
+                    <h2 class="sec-title">${iconHtml} ${title}</h2>
                     ${linkHtml}
                 </div>`;
             
@@ -665,7 +630,6 @@
             const div = document.createElement('div');
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
-            // Time Column
             let timeCol;
             if (m.is_live) {
                 timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
@@ -674,7 +638,6 @@
                 timeCol = `<span class="time-main">${ft.time}</span><span class="time-sub">${ft.date}</span>`; 
             }
             
-            // Teams Column
             const getLogo = (name) => {
                 if (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) {
                     const p = IMAGE_MAP.teams[name];
@@ -689,10 +652,8 @@
                 teamsHtml += `<div class="team-name">${getLogo(m.displayAway)} ${m.displayAway}</div>`;
             }
             
-            // Tag Column (Accurate League Name)
             let tagText = m.finalLeague;
             
-            // Meta Column
             let metaHtml = '';
             if (m.is_live) {
                  metaHtml = `<div class="meta-top">👀 ${m.live_viewers || 'N/A'}</div>`;
@@ -704,7 +665,6 @@
                     </div>`;
             }
 
-            // Action Column
             let actionHtml = '';
             const infoLink = `${SITE_DOMAIN}/watch/?info=${m.id}`;
             const copyBtn = `<button class="btn-copy-link" onclick="copyText('${infoLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
@@ -713,8 +673,7 @@
                 actionHtml = `<button onclick="openMatch('${m.id}', 'live')" class="btn-watch" title="Watch ${m.displayHome}">WATCH <span class="hd-badge">HD</span></button>`;
             } else {
                 const now = Date.now();
-                // Safety: m.startTimeUnix is ensured in loadMatches, but check for NaN
-                const start = m.startTimeUnix || now; 
+                const start = m.startTimeUnix || now;
                 const diffMin = (start - now) / 60000;
                 
                 if (diffMin <= 30) {
@@ -730,13 +689,8 @@
             return div;
         }
 
-        // ============================================
-        // 4. UTILITIES & SCHEMA
-        // ============================================
         function formatMatchTime(unix) {
-            // Safety Check
             if (!unix || isNaN(unix)) return { time: "--:--", date: "Unknown" };
-
             const isUK = TARGET_COUNTRY === 'UK';
             const timeZone = isUK ? 'Europe/London' : 'America/New_York';
             const suffix = isUK ? ' GMT' : ' ET';
@@ -759,17 +713,14 @@
             const schemas = [];
             const now = Date.now();
             
-            // 1. Live Schema (Strict: Remove 20m before end)
             liveList.forEach(m => {
                 if (!m.startTimeUnix) return;
                 const duration = (m.sport_duration || 120) * 60 * 1000;
                 const endTime = m.startTimeUnix + duration;
-                if (now > endTime - (20 * 60 * 1000)) return; // Too close to end
-                
+                if (now > endTime - (20 * 60 * 1000)) return; 
                 schemas.push(createEventSchema(m, 'BroadcastEvent'));
             });
 
-            // 2. Upcoming Schema (Strict: Only next 24h)
             upcomingList.forEach(m => {
                 if (!m.startTimeUnix) return;
                 schemas.push(createEventSchema(m, 'SportsEvent'));
@@ -821,7 +772,7 @@
             const icons = {
                 telegram: '<svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.47-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.28L19.84 4c.75-.28 1.4.52 1.16 1.76l-2.8 13.2c-.2.9-1.09.9-1.8.6l-5.45-4.06-2.6 2.5c-.3.3-.55.55-1.1.55l.45-3.6z"/></svg>',
                 whatsapp: '<svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.33 4.97L2 22l5.25-1.38a9.86 9.86 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.51 2 12.04 2zm4.43-6.03c-.24-.12-1.41-.7-1.63-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.48-.4-.42-.54-.42h-.46c-.16 0-.42.06-.64.3C4.33 8.6 3.5 9.2 3.5 10.38c0 1.18.86 2.32.98 2.48.12.16 1.7 2.6 4.12 3.65.58.25 1.03.4 1.38.51.58.18 1.1.15 1.52.09.46-.07 1.41-.58 1.61-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg>',
-                reddit: '<svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.22 14.11c-.13.26-.35.45-.6.54-.25.09-.52.1-.78.01-.8-.28-1.76-.43-2.77-.43s-1.97.15-2.77.43c-.26.09-.53.08-.78-.01-.25-.09-.47-.28-.6-.54-.15-.3-.19-.64-.11-.96.08-.32.28-.59.56-.75.9-.53 2.05-.83 3.28-.88l.66-3.11 2.16.46c.04-.2.15-.38.31-.51s.36-.2.55-.17c.2.03.38.15.51.31.13.16.2.36.17.55l-2.16-.46-.66 3.11c1.23.05 2.38.35 3.28.88.28.16.48.43.56.75.08.32.04.66-.11.96zM12 11.25c-.97 0-1.75.78-1.75 1.75s.78 1.75 1.75 1.75 1.75-.78 1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78 1.75-1.75-1.75zm-3.25-2.5c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25zm6.5 0c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25z"/></svg>',
+                reddit: '<svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.22 14.11c-.13.26-.35.45-.6.54-.25.09-.52.1-.78.01-.8-.28-1.76-.43-2.77-.43s-1.97.15-2.77.43c-.26.09-.53.08-.78-.01-.25-.09-.47-.28-.6-.54-.15-.3-.19-.64-.11-.96.08-.32.28-.59.56-.75.9-.53 2.05-.83 3.28-.88l.66-3.11 2.16.46c.04-.2.15-.38.31-.51s.36-.2.55-.17c.2.03.38.15.51.31.13.16.2.36.17.55l-2.16-.46-.66 3.11c1.23.05 2.38.35 3.28.88.28.16.48.43.56.75.08.32.04.66-.11.96zM12 11.25c-.97 0-1.75.78-1.75 1.75s.78 1.75 1.75 1.75 1.75-.78 1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75zm-3.25-2.5c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25zm6.5 0c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25z"/></svg>',
                 twitter: '<svg viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>',
                 copy: '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>'
             };
