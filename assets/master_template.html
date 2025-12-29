@@ -315,7 +315,7 @@
     </button>
 
     <script>
-        const API_URL = "https://vercelapi-olive.vercel.app/api/sync-nodes";
+        const API_URL = "{{API_URL}}";
         const TARGET_COUNTRY = "{{TARGET_COUNTRY}}"; 
         const PRIORITIES = {{JS_PRIORITIES}}; 
         const SITE_DOMAIN = "https://{{DOMAIN}}";
@@ -373,8 +373,8 @@
                         }
                     });
 
-                    // FILTER OUT TBA vs TBA MATCHES
-                    allMatches = data.matches.filter(m => !(m.home_team === 'TBA' && m.away_team === 'TBA'));
+                    // FILTER OUT MATCHES WHERE BOTH TEAMS ARE TBA
+                    allMatches = data.matches.filter(m => !((m.home_team === 'TBA' || !m.home_team) && (m.away_team === 'TBA' || !m.away_team)));
                     
                     const processedMatches = processMatches(allMatches);
                     renderApp(processedMatches);
@@ -439,6 +439,9 @@
 
         function getCleanTeamName(rawName, slug, leagueName) {
             if (!rawName) return "TBA";
+            // Important: Return "TBA" explicitly if slug is TBA so we can filter in createMatchRow
+            if (rawName === "TBA" || slug === "tba") return "TBA";
+
             if (teamToLeagueMap[slug]) return unslugify(slug);
 
             let clean = rawName;
@@ -460,11 +463,9 @@
                 score += 2000; 
             }
 
-            // Check if exact League Name is in Priorities
             if (PRIORITIES[leagueName]) {
                 score += PRIORITIES[leagueName].score * 10;
             } 
-            // Fallback: Check if generic Sport is in Priorities (e.g. "Soccer")
             else {
                 const sport = m.sport || "General";
                 if(PRIORITIES[sport]) {
@@ -501,7 +502,6 @@
             // RENDER TOP 5 VISUALLY
             const top5Display = upcomingMatches.slice(0, 5);
             if (top5Display.length > 0) {
-                // Pass NULL as title so it displays full league names for mixed matches
                 createSection(document.getElementById('top-upcoming-container'), "Top Matches in Next 24h", top5Display, false, false, "🔥", null);
             } else {
                 document.getElementById('top-upcoming-container').innerHTML = '<div style="padding:15px;color:#666;text-align:center;">No upcoming matches in next 24h.</div>';
@@ -511,7 +511,7 @@
             const top15Schema = upcomingMatches.slice(0, 15);
             generateDynamicSchema(liveMatches, top15Schema);
 
-            // FILTER REST: Exclude the visual Top 5 (so they don't duplicate below)
+            // FILTER REST: Exclude the visual Top 5
             const top5Ids = new Set(top5Display.map(m => m.id));
             const remainingMatches = upcomingMatches.filter(m => !top5Ids.has(m.id));
 
@@ -532,7 +532,6 @@
                 other: []
             };
 
-            // Initialize Configured Buckets
             Object.keys(PRIORITIES).forEach(key => {
                 if(key.startsWith('_')) return;
                 const conf = PRIORITIES[key];
@@ -554,10 +553,9 @@
                     return;
                 }
 
-                // 2. Priority League (e.g., NFL, NBA)
+                // 2. Priority League
                 let placed = false;
                 for (const pKey of Object.keys(buckets.leagues)) {
-                    // Check exact or partial match with the priority key
                     if (leagueLower.includes(pKey.toLowerCase())) {
                         buckets.leagues[pKey].push(m);
                         placed = true;
@@ -566,9 +564,8 @@
                 }
                 if(placed) return;
 
-                // 3. Priority Sport (e.g., Soccer, Cricket)
+                // 3. Priority Sport
                 for (const pKey of Object.keys(buckets.generic)) {
-                    // Check if league name OR sport matches the key (e.g., "Soccer")
                     if (leagueLower.includes(pKey.toLowerCase()) || sport.toLowerCase().includes(pKey.toLowerCase())) {
                         buckets.generic[pKey].push(m);
                         placed = true;
@@ -581,26 +578,24 @@
                 if(!HIDE_OTHERS) buckets.other.push(m);
             });
 
-            // RENDER ORDER: Boost -> Leagues -> Sports -> Other
-            
-            // Boost (Pass key as sectionTitle)
+            // Boost
             Object.keys(buckets.boost).forEach(key => {
                 if(buckets.boost[key].length) createSection(container, key, buckets.boost[key], true, true, null, key);
             });
 
-            // Leagues (Sorted by Score)
+            // Leagues
             const sortedLeagues = Object.keys(buckets.leagues).sort((a,b) => PRIORITIES[b].score - PRIORITIES[a].score);
             sortedLeagues.forEach(key => {
                 if(buckets.leagues[key].length) createSection(container, key, buckets.leagues[key], true, true, null, key);
             });
 
-            // Generic Sports (Sorted by Score)
+            // Generic Sports
             const sortedSports = Object.keys(buckets.generic).sort((a,b) => PRIORITIES[b].score - PRIORITIES[a].score);
             sortedSports.forEach(key => {
                 if(buckets.generic[key].length) createSection(container, key, buckets.generic[key], false, false, null, key);
             });
 
-            // Other (Pass null as sectionTitle so tag shows League Name)
+            // Other
             if(buckets.other.length) {
                 createSection(container, "Upcoming Other Matches", buckets.other, false, false, null, null);
             }
@@ -622,7 +617,6 @@
             
             document.getElementById('live-count').innerText = `● ${matches.length} Live Matches`;
             
-            // Pass null for sectionTitle so live matches always show full league name
             matches.slice(0, 5).forEach(m => topList.appendChild(createMatchRow(m, { isLive: true }, null)));
             
             if (matches.length > 5) {
@@ -685,22 +679,21 @@
                 return `<div class="logo-box"><span class="t-logo" style="background:${getColor(name.charAt(0))}">${name.charAt(0)}</span></div>`;
             };
             
-            let teamsHtml = `<div class="team-name">${getLogo(m.displayHome)} ${m.displayHome}</div>`;
+            // LOGIC: HANDLE SINGLE TBA TEAMS
+            let teamsHtml = '';
+            // Only add Home team if it's NOT TBA
+            if (m.displayHome && m.displayHome !== 'TBA') {
+                teamsHtml += `<div class="team-name">${getLogo(m.displayHome)} ${m.displayHome}</div>`;
+            }
+            // Only add Away team if it's NOT TBA
             if (m.displayAway && m.displayAway !== 'TBA') {
                 teamsHtml += `<div class="team-name">${getLogo(m.displayAway)} ${m.displayAway}</div>`;
             }
             
             // TAG LOGIC
             let tagText = m.finalLeague;
-            
-            // If we are in a defined section (not live, not top 5)
-            if (sectionTitle) {
-                // If the match league matches the section title exactly (e.g. Section "NFL", Match "NFL")
-                // Show the Sport (or "General")
-                if (m.finalLeague === sectionTitle) {
-                    tagText = m.sport || "General";
-                } 
-                // Otherwise keep league name (e.g. Section "Soccer", Match "Premier League")
+            if (sectionTitle && m.finalLeague === sectionTitle) {
+                tagText = m.sport || "General";
             }
             
             let metaHtml = '';
