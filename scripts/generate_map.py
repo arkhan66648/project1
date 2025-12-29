@@ -22,7 +22,8 @@ NFL, NBA, MLB, NHL, College Football, College-Football, College Basketball, Coll
 NCAAB, NCAAF, NCAA Men, NCAA-Men, NCAA Women, NCAA-Women, Premier League, Premier-League, 
 Champions League, Champions-League, MLS, Bundesliga, Serie-A, Serie A, American-Football, American Football, 
 Ice Hockey, Ice-Hockey, Championship, Scottish Premiership, Scottish-Premiership, 
-Europa League, Europa-League
+Europa League, Europa-League, A League, A-League, A League Men, A League Women, 
+Ligue 1, La Liga, Eredivisie, Primeira Liga, Saudi Pro League, F1, UFC, Rugby
 """
 VALID_LEAGUES = {x.strip().lower() for x in ALLOWED_LEAGUES_INPUT.split(',') if x.strip()}
 
@@ -31,14 +32,11 @@ VALID_LEAGUES = {x.strip().lower() for x in ALLOWED_LEAGUES_INPUT.split(',') if 
 # ==========================================
 def clean_display_name(name):
     """
-    Sanitizer:
-    1. PRIORITY RULE: If a colon (:) is found, assume format "League: Team" 
-       and strip everything before the first colon.
-    2. FALLBACK: Check whitelist for prefixes (e.g. "NBA - Team") if no colon exists.
+    Sanitizer: Priority Colon Rule -> Whitelist Fallback
     """
     if not name: return None
     
-    # --- RULE 1: Generic Colon Stripper ---
+    # Rule 1: Colon
     if ':' in name:
         parts = name.split(':', 1)
         if len(parts) > 1:
@@ -46,12 +44,11 @@ def clean_display_name(name):
             if cleaned and len(cleaned) > 1:
                 return cleaned
 
-    # --- RULE 2: Whitelist Fallback ---
+    # Rule 2: Whitelist
     lower_name = name.lower()
     for league in VALID_LEAGUES:
         if lower_name.startswith(league):
             remainder = name[len(league):]
-            # Remove separator characters (spaces, hyphens) from the start
             clean_remainder = re.sub(r"^[\s-]+", "", remainder)
             if clean_remainder and len(clean_remainder.strip()) > 1:
                 return clean_remainder.strip()
@@ -60,7 +57,6 @@ def clean_display_name(name):
 def make_pretty_name(slug):
     """
     Converts a filename slug back to a human-readable title.
-    Ex: "manchester-united" -> "Manchester United"
     """
     return slug.replace('-', ' ').title()
 
@@ -133,21 +129,15 @@ def main():
             raw_name = m.get(t_key)
             if not raw_name: continue
             
-            # A. Clean the name (USING COLON RULE OR WHITELIST)
             clean_name = clean_display_name(raw_name)
-            
-            # B. Generate Slug from Clean Name
             search_slug = "".join([c for c in clean_name.lower() if c.isalnum() or c == '-']).strip('-')
             
-            # C. Try to match file
+            # Match
             if search_slug in slug_to_path:
-                # Perfect Match
                 final_teams[clean_name] = slug_to_path[search_slug]
-                # Also Map "Raw Name" (just in case)
                 if raw_name != clean_name:
                     final_teams[raw_name] = slug_to_path[search_slug]
             else:
-                # Fuzzy Match
                 fuzzy = get_close_matches(search_slug, avail_slugs, n=1, cutoff=FUZZY_CUTOFF)
                 if fuzzy:
                     matched_slug = fuzzy[0]
