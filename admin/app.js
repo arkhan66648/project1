@@ -593,6 +593,7 @@ document.getElementById('saveBtn').onclick = async () => {
     }
 
     configData.site_settings = {
+        api_url: getVal('apiUrl'),
         title_part_1: getVal('titleP1'), title_part_2: getVal('titleP2'),
         domain: getVal('siteDomain'), logo_url: getVal('logoUrl'),
         favicon_url: getVal('faviconUrl'),
