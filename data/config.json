@@ -1,5 +1,6 @@
 {
   "site_settings": {
+    "api_url": "https://vercelapi-olive.vercel.app/api/sync-nodes",
     "title_part_1": "Stream",
     "title_part_2": "East",
     "domain": "crackstreams.help",
