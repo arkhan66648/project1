@@ -1,0 +1,39 @@
+name: Fix Image Names & Maps
+
+on:
+  workflow_dispatch: # This allows you to trigger it manually
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Run Cleanup Script
+        run: |
+          python scripts/cleanup_fix.py
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Check if there are changes to commit
+          if [[ -n $(git status -s) ]]; then
+            git add assets/logos/streamed/* assets/data/*.json
+            git commit -m "chore: clean up league prefixes from images and maps"
+            git push
+            echo "Successfully pushed changes."
+          else
+            echo "No changes were made by the script."
+          fi
