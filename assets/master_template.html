@@ -33,8 +33,6 @@
     <link rel="icon" href="{{FAVICON}}">
     <link rel="canonical" href="{{CANONICAL_URL}}">
     {{LOGO_PRELOAD}}
-    <!-- STATIC SCHEMAS -->
-    {{SCHEMA_BLOCK}}
     
     <style>html { scroll-behavior: smooth; }</style>
 
@@ -364,7 +362,13 @@
 
         async function loadMatches() {
             try {
-                const resMatches = await fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`);
+                // FALLBACK URL if the shortcode is empty/not replaced
+                let urlToFetch = API_URL;
+                if(urlToFetch.includes("{{API_URL}}") || !urlToFetch) {
+                    urlToFetch = "https://vercelapi-olive.vercel.app/api/sync-nodes"; 
+                }
+
+                const resMatches = await fetch(`${urlToFetch}?country=${TARGET_COUNTRY.toLowerCase()}`);
                 
                 if (resMatches.ok) {
                     const data = await resMatches.json();
@@ -386,44 +390,56 @@
             } catch(e) { console.error(e); }
         }
 
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function resolveLeagueData(match) {
+            let apiLeague = (match.league || match.sport || "Other").trim();
+            const homeName = (match.home_team || "").toUpperCase();
+
+            // 1. AUTO-FIX: Check Priority List Prefix
+            // We iterate through our Configured PRIORITIES keys
+            for (const pKey of Object.keys(PRIORITIES)) {
+                if (pKey.startsWith('_')) continue;
+                const prefix = pKey.toUpperCase() + ":";
+                if (homeName.startsWith(prefix)) {
+                    return { name: pKey, source: "Fix" };
+                }
+            }
+
+            // 2. Strict Map Check
+            const hSlug = slugify(match.home_team);
+            const aSlug = slugify(match.away_team);
+            
+            if (teamToLeagueMap[hSlug] && teamToLeagueMap[aSlug] && teamToLeagueMap[hSlug] === teamToLeagueMap[aSlug]) {
+                return { name: teamToLeagueMap[hSlug], source: "Map" };
+            } 
+            else if (teamToLeagueMap[hSlug]) {
+                 return { name: teamToLeagueMap[hSlug], source: "MapHome" };
+            }
+
+            // 3. Fallback to API
+            return { name: apiLeague, source: "API" };
+        }
+
         function processMatches(matches) {
             return matches.map(m => {
                 const homeSlug = slugify(m.home_team);
                 const awaySlug = slugify(m.away_team);
                 
-                // A. RESOLVE LEAGUE
-                let finalLeague = (m.league || m.sport || "Other").trim();
-                let leagueSource = "API";
+                // NEW: Use Robust 3-Step Resolution
+                const resolved = resolveLeagueData(m);
 
-                if (teamToLeagueMap[homeSlug] && teamToLeagueMap[awaySlug] && teamToLeagueMap[homeSlug] === teamToLeagueMap[awaySlug]) {
-                    finalLeague = teamToLeagueMap[homeSlug];
-                    leagueSource = "Map";
-                } 
-                else if (teamToLeagueMap[homeSlug]) {
-                    finalLeague = teamToLeagueMap[homeSlug];
-                    leagueSource = "MapHome";
-                }
-                else {
-                    for (const pKey of Object.keys(PRIORITIES)) {
-                        if (pKey.startsWith('_')) continue;
-                        if (m.home_team.toUpperCase().startsWith(pKey.toUpperCase() + ":")) {
-                            finalLeague = pKey;
-                            leagueSource = "Fix";
-                            break;
-                        }
-                    }
-                }
+                // NEW: Use Robust Cleaning
+                const homeClean = getCleanTeamName(m.home_team, homeSlug, resolved.name);
+                const awayClean = getCleanTeamName(m.away_team, awaySlug, resolved.name);
 
-                // B. CLEAN TEAM NAMES
-                const homeClean = getCleanTeamName(m.home_team, homeSlug, finalLeague);
-                const awayClean = getCleanTeamName(m.away_team, awaySlug, finalLeague);
-
-                // C. SCORE
-                const score = calculateScore(m, finalLeague);
+                const score = calculateScore(m, resolved.name);
 
                 return {
                     ...m,
-                    finalLeague: finalLeague,
+                    finalLeague: resolved.name,
                     displayHome: homeClean,
                     displayAway: awayClean,
                     priorityScore: score
@@ -439,19 +455,24 @@
             return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
         }
 
-        function getCleanTeamName(rawName, slug, leagueName) {
+        function getCleanTeamName(rawName, slug, resolvedLeague) {
             if (!rawName) return "TBA";
-            // Important: Return "TBA" explicitly if slug is TBA so we can filter in createMatchRow
             if (rawName === "TBA" || slug === "tba") return "TBA";
 
+            // 1. Map-Based (Highest Quality)
             if (teamToLeagueMap[slug]) return unslugify(slug);
 
+            // 2. Context-Aware Regex Cleaning
             let clean = rawName;
-            if (leagueName) {
-                const safeLeague = leagueName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); 
-                const regex = new RegExp(`^${safeLeague}:\\s*`, 'i');
-                clean = clean.replace(regex, '');
+            if (resolvedLeague) {
+                try {
+                    const safeLeague = escapeRegExp(resolvedLeague);
+                    const regex = new RegExp(`^${safeLeague}:\\s*`, 'i');
+                    clean = clean.replace(regex, '');
+                } catch(e) {}
             }
+            
+            // 3. Hardcoded Fallback
             clean = clean.replace(/^(NHL|NBA|NFL|MLB|UFC):\s*/i, '').trim();
             return clean;
         }
@@ -465,9 +486,11 @@
                 score += 2000; 
             }
 
+            // Check if exact League Name is in Priorities
             if (PRIORITIES[leagueName]) {
                 score += PRIORITIES[leagueName].score * 10;
             } 
+            // Fallback: Check if generic Sport is in Priorities
             else {
                 const sport = m.sport || "General";
                 if(PRIORITIES[sport]) {
@@ -513,7 +536,7 @@
             const top15Schema = upcomingMatches.slice(0, 15);
             generateDynamicSchema(liveMatches, top15Schema);
 
-            // FILTER REST: Exclude the visual Top 5
+            // FILTER REST
             const top5Ids = new Set(top5Display.map(m => m.id));
             const remainingMatches = upcomingMatches.filter(m => !top5Ids.has(m.id));
 
@@ -681,19 +704,23 @@
                 return `<div class="logo-box"><span class="t-logo" style="background:${getColor(name.charAt(0))}">${name.charAt(0)}</span></div>`;
             };
             
-            // LOGIC: HANDLE SINGLE TBA TEAMS
+            // --- UPDATED SINGLE TEAM VISUALS ---
             let teamsHtml = '';
-            // Only add Home team if it's NOT TBA
-            if (m.displayHome && m.displayHome !== 'TBA') {
+            const isSingle = (m.displayAway === 'TBA');
+            
+            if (isSingle) {
+                // Single Team Display (F1, Golf)
+                teamsHtml = `<div class="team-name">${getLogo(m.displayHome)} ${m.displayHome}</div>`;
+            } else {
+                // Match Display
                 teamsHtml += `<div class="team-name">${getLogo(m.displayHome)} ${m.displayHome}</div>`;
-            }
-            // Only add Away team if it's NOT TBA
-            if (m.displayAway && m.displayAway !== 'TBA') {
                 teamsHtml += `<div class="team-name">${getLogo(m.displayAway)} ${m.displayAway}</div>`;
             }
             
-            // TAG LOGIC
+            // --- UPDATED TAG LOGIC ---
             let tagText = m.finalLeague;
+            // If in a specific league section, try showing the sport instead to avoid redundancy
+            // E.g. Section "NFL", Match "NFL" -> Show "Football" (or whatever m.sport is)
             if (sectionTitle && m.finalLeague === sectionTitle) {
                 tagText = m.sport || "General";
             }
