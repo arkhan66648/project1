@@ -481,16 +481,14 @@ window.saveMenuItem = () => {
 window.deleteMenuItem = (sec, idx) => { configData.menus[sec].splice(idx, 1); renderMenus(); };
 
 // ==========================================
-// 8. LEAGUES & TEAMS MAP (NEW)
+// 8. LEAGUES & TEAMS MAP (UPDATED)
 // ==========================================
-// Helper: Group flat map by League
+// Helper: getGroupedLeagues is essentially the raw data now
 function getGroupedLeagues() {
-    const grouped = {};
-    for (const [slug, leagueName] of Object.entries(leagueMapData)) {
-        if (!grouped[leagueName]) grouped[leagueName] = [];
-        grouped[leagueName].push(slug);
-    }
-    return grouped;
+    // If leagueMapData is null/undefined, return empty object
+    // If it's already in the new format { League: [teams] }, just return it.
+    // If it's effectively empty, we return empty.
+    return leagueMapData || {};
 }
 
 // Render the UI
@@ -499,18 +497,20 @@ function renderLeagues() {
     if(!container) return;
 
     const grouped = getGroupedLeagues();
+    // Sort keys alphabetically for the UI
     const sortedLeagues = Object.keys(grouped).sort();
 
     container.innerHTML = sortedLeagues.map(league => {
-        const teams = grouped[league].join(', ');
+        const teamsArray = grouped[league] || [];
+        const teamsString = teamsArray.join(', ');
         return `
         <div class="card">
             <div class="league-card-header">
                 <h3>${league}</h3>
-                <span style="font-size:0.8rem; color:#64748b;">${grouped[league].length} Teams</span>
+                <span style="font-size:0.8rem; color:#64748b;">${teamsArray.length} Teams</span>
             </div>
             <label>Teams (comma separated slugs)</label>
-            <textarea class="team-list-editor" rows="6" data-league="${league}">${teams}</textarea>
+            <textarea class="team-list-editor" rows="6" data-league="${league}">${teamsString}</textarea>
         </div>
         `;
     }).join('');
@@ -541,10 +541,10 @@ window.openLeagueModal = () => {
 window.saveNewLeague = () => {
     const name = document.getElementById('newLeagueNameInput').value.trim();
     if(name) {
-        // Add a dummy entry so it appears in the grouped list
-        // We use a dummy slug that is unlikely to conflict
-        const dummySlug = "new-team-placeholder";
-        leagueMapData[dummySlug] = name;
+        // Initialize with a placeholder or empty array
+        // We use an array now, instead of a single string key
+        if (!leagueMapData) leagueMapData = {};
+        leagueMapData[name] = ["new-team-placeholder"];
         
         renderLeagues();
         document.getElementById('leagueModal').style.display = 'none';
@@ -552,7 +552,8 @@ window.saveNewLeague = () => {
     }
 };
 
-// Helper to reconstruct the flat map from UI inputs
+// Helper to reconstruct the map from UI inputs
+// UPDATED: Builds { League: [team1, team2] } instead of flat map
 function rebuildLeagueMapFromUI() {
     const textareas = document.querySelectorAll('.team-list-editor');
     const newMap = {};
@@ -561,12 +562,11 @@ function rebuildLeagueMapFromUI() {
         const leagueName = txt.getAttribute('data-league');
         const rawTeams = txt.value.split(',');
         
-        rawTeams.forEach(t => {
-            const slug = t.trim().toLowerCase().replace(/\s+/g, '-'); // Simple slug clean
-            if(slug) {
-                newMap[slug] = leagueName;
-            }
-        });
+        const teamList = rawTeams
+            .map(t => t.trim().toLowerCase().replace(/\s+/g, '-')) // Slugify
+            .filter(t => t.length > 0); // Remove empty items
+
+        newMap[leagueName] = teamList;
     });
     return newMap;
 }
@@ -600,22 +600,9 @@ document.getElementById('saveBtn').onclick = async () => {
     };
 
     // --- 2. Prepare League Map Data ---
-    // Reconstruct map from the UI textareas to capture edits
-    if(document.getElementById('tab-leagues').classList.contains('active')) {
-        // Only rebuild if tab was viewed/edited, otherwise use memory
-        // Actually, safer to always rebuild if elements exist, or just use current memory if not rendered
-        if(document.querySelector('.team-list-editor')) {
-            leagueMapData = rebuildLeagueMapFromUI();
-        }
-    } else {
-        // If user didn't open the tab, we might assume memory is stale? 
-        // No, renderLeagues() reads from memory. The textareas are the source of truth only if displayed.
-        // To be safe: we render unseen changes implicitly? No.
-        // If the user hasn't opened the tab, leagueMapData is untouched.
-        // But if they opened it, edited, then switched tabs? The textareas are hidden but exist.
-        if(document.querySelector('.team-list-editor')) {
-             leagueMapData = rebuildLeagueMapFromUI();
-        }
+    // Always check for edits if the DOM elements exist
+    if(document.querySelector('.team-list-editor')) {
+        leagueMapData = rebuildLeagueMapFromUI();
     }
 
     // UI Updates
@@ -625,7 +612,7 @@ document.getElementById('saveBtn').onclick = async () => {
     const token = localStorage.getItem('gh_token');
     
     try {
-        // --- SAVE 1: LEAGUE MAP ---
+        // --- SAVE 1: LEAGUE MAP (New Structure) ---
         const leagueContent = btoa(unescape(encodeURIComponent(JSON.stringify(leagueMapData, null, 2))));
         const resLeague = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${LEAGUE_FILE_PATH}`, {
             method: 'PUT',
