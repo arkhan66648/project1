@@ -120,10 +120,11 @@
         .cat-pill:hover, .cat-pill.active { border-color: var(--brand-primary); color: white; background: rgba(208,0,0,0.1); }
         
         .container { max-width: 1100px; margin: 0 auto; padding: 20px 15px; min-height: 60vh; }
-        .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 30px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #1a1a1a; }
-        .sec-title { font-size: 1.1rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
+        .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 40px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #1a1a1a; }
+        .sec-title { font-size: 1.2rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
+        .sec-logo { width: 24px; height: 24px; object-fit: contain; }
         .live-dot { width: 8px; height: 8px; background: var(--brand-primary); border-radius: 50%; box-shadow: 0 0 10px var(--brand-primary); }
-        .sec-right-link { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; }
+        .sec-right-link { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; text-decoration: none; }
         .sec-right-link:hover { color: var(--brand-primary); text-decoration: underline; }
         
         /* MATCH ROW */
@@ -140,10 +141,10 @@
         
         .teams-wrapper { display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
         .league-tag { font-size: 0.6rem; color: var(--accent-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .team-name { font-size: 0.7rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
-        @media (min-width: 768px) { .team-name { font-size: 0.9rem; } }
+        .team-name { font-size: 0.75rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
+        @media (min-width: 768px) { .team-name { font-size: 0.95rem; } }
         
-        .logo-box { width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; margin-right: 4px; }
+        .logo-box { width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; margin-right: 4px; }
         .t-img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; }
         .t-logo { width: 100%; height: 100%; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); position: absolute; top: 0; left: 0; }
         
@@ -214,6 +215,7 @@
 
     <main class="container">
         
+        <!-- 1. LIVE SECTION -->
         <div id="live-section">
             <div id="live-sk-head" class="skeleton skeleton-header">
                 <div class="sk-title"></div><div class="sk-count"></div>
@@ -233,12 +235,16 @@
             </div>
         </div>
         
+        <!-- 2. TOP 15 UPCOMING -->
         <div id="upcoming-skeleton" style="margin-top:40px;">
              <div class="skeleton skeleton-header"><div class="sk-title"></div></div>
              <div class="skeleton skeleton-box"></div>
              <div class="skeleton skeleton-box"></div>
         </div>
-        <div id="upcoming-container"></div>
+        <div id="top-upcoming-container"></div>
+
+        <!-- 3. BOOSTED & LEAGUES -->
+        <div id="grouped-container"></div>
         
         <div class="seo-box" style="margin-top:40px; color:#aaa; font-size:0.9rem; line-height:1.6;"></div>
 
@@ -339,26 +345,32 @@
         const TARGET_COUNTRY = "US"; 
         const PRIORITIES = {"_HIDE_OTHERS": false, "NFL": {"score": 100, "isLeague": true, "hasLink": true, "isHidden": false}, "NBA": {"score": 99, "isLeague": true, "hasLink": true, "isHidden": false}, "MLB": {"score": 98, "isLeague": true, "hasLink": true, "isHidden": false}, "NHL": {"score": 97, "isLeague": true, "hasLink": true, "isHidden": false}, "UFC": {"score": 95, "isLeague": true, "hasLink": true, "isHidden": false}, "Boxing": {"score": 94, "isLeague": false, "hasLink": true, "isHidden": false}, "Formula 1": {"score": 93, "isLeague": true, "hasLink": true, "isHidden": false}, "College Football": {"score": 90, "isLeague": true, "hasLink": true, "isHidden": false}, "College Basketball": {"score": 89, "isLeague": true, "hasLink": true, "isHidden": false}, "Premier League": {"score": 85, "isLeague": true, "hasLink": true, "isHidden": false}, "Champions League": {"score": 84, "isLeague": true, "hasLink": true, "isHidden": false}, "MLS": {"score": 83, "isLeague": true, "hasLink": true, "isHidden": false}, "LaLiga": {"score": 82, "isLeague": true, "hasLink": true, "isHidden": false}, "Bundesliga": {"score": 81, "isLeague": true, "hasLink": true, "isHidden": false}, "Serie A": {"score": 80, "isLeague": true, "hasLink": true, "isHidden": false}, "Tennis": {"score": 40, "isLeague": false, "hasLink": true, "isHidden": false}, "Golf": {"score": 30, "isLeague": false, "hasLink": false, "isHidden": false}}; 
         const SITE_DOMAIN = "https://crackstreams.help";
+        
+        // HARDCODED DATA INJECTION
+        const RAW_LEAGUE_MAP = {"A-League Men": ["adelaide-united", "auckland-fc", "brisbane-roar", "central-coast-mariners", "macarthur-fc", "melbourne-city", "melbourne-victory", "newcastle-jets", "perth-glory", "sydney-fc", "wellington-phoenix", "western-sydney-wanderers", "western-united"], "A-League Women": ["adelaide-united", "brisbane-roar", "canberra-united", "central-coast-mariners", "melbourne-city", "melbourne-victory", "newcastle-jets", "perth-glory", "sydney-fc", "wellington-phoenix", "western-sydney-wanderers", "western-united"], "Bundesliga": ["bayer-leverkusen", "bayern-munich", "bochum", "borussia-dortmund", "borussia-monchengladbach", "eintracht-frankfurt", "fc-augsburg", "fc-heidenheim", "freiburg", "holstein-kiel", "mainz-05", "rb-leipzig", "st-pauli", "stuttgart", "tsg-hoffenheim", "union-berlin", "werder-bremen", "wolfsburg"], "Championship": ["blackburn-rovers", "bristol-city", "burnley", "cardiff-city", "coventry-city", "derby-county", "hull-city", "leeds-united", "luton-town", "middlesbrough", "millwall", "norwich-city", "oxford-united", "plymouth-argyle", "portsmouth", "preston-north-end", "queens-park-rangers", "sheffield-united", "sheffield-wednesday", "stoke-city", "sunderland", "swansea-city", "watford", "west-bromwich-albion"], "EUROLEAGUE": ["alba-berlin", "anadolu-efes", "as-monaco", "baskonia", "bayern-munich", "crvena-zvezda", "fc-barcelona", "fenerbahce", "ldlc-asvel", "maccabi-tel-aviv", "olimpia-milano", "olympiacos", "panathinaikos", "paris-basketball", "partizan", "real-madrid", "virtus-bologna", "zalgiris"], "Eredivisie": ["ajax", "almere-city", "az-alkmaar", "feyenoord", "fortuna-sittard", "go-ahead-eagles", "groningen", "heerenveen", "heracles-almelo", "nac-breda", "nec-nijmegen", "pec-zwolle", "psv-eindhoven", "rkc-waalwijk", "sparta-rotterdam", "twente", "utrecht", "willem-ii"], "FORMULA 1": ["alpine", "aston-martin", "ferrari", "haas", "kick-sauber", "mclaren", "mercedes", "rb", "red-bull-racing", "williams"], "La Liga": ["athletic-bilbao", "atletico-madrid", "barcelona", "celta-vigo", "deportivo-alaves", "espanyol", "getafe", "girona", "las-palmas", "leganes", "mallorca", "osasuna", "rayo-vallecano", "real-betis", "real-madrid", "real-sociedad", "real-valladolid", "sevilla", "valencia", "villarreal"], "Ligue 1": ["angers", "auxerre", "brest", "le-havre", "lens", "lille", "lyon", "marseille", "monaco", "montpellier", "nantes", "nice", "paris-saint-germain", "reims", "rennes", "saint-etienne", "strasbourg", "toulouse"], "MLB": ["arizona-diamondbacks", "atlanta-braves", "baltimore-orioles", "boston-red-sox", "chicago-cubs", "chicago-white-sox", "cincinnati-reds", "cleveland-guardians", "colorado-rockies", "detroit-tigers", "houston-astros", "kansas-city-royals", "los-angeles-angels", "los-angeles-dodgers", "miami-marlins", "milwaukee-brewers", "minnesota-twins", "new-york-mets", "new-york-yankees", "oakland-athletics", "philadelphia-phillies", "pittsburgh-pirates", "san-diego-padres", "san-francisco-giants", "seattle-mariners", "st-louis-cardinals", "tampa-bay-rays", "texas-rangers", "toronto-blue-jays", "washington-nationals"], "MLS": ["atlanta-united", "austin-fc", "charlotte-fc", "chicago-fire", "fc-cincinnati", "colorado-rapids", "columbus-crew", "dc-united", "fc-dallas", "houston-dynamo", "inter-miami", "la-galaxy", "lafc", "minnesota-united", "cf-montreal", "nashville-sc", "new-england-revolution", "new-york-city-fc", "new-york-red-bulls", "orlando-city", "philadelphia-union", "portland-timbers", "real-salt-lake", "san-diego-fc", "san-jose-earthquakes", "seattle-sounders", "sporting-kansas-city", "st-louis-city", "toronto-fc", "vancouver-whitecaps"], "NBA": ["atlanta-hawks", "boston-celtics", "brooklyn-nets", "charlotte-hornets", "chicago-bulls", "cleveland-cavaliers", "dallas-mavericks", "denver-nuggets", "detroit-pistons", "golden-state-warriors", "houston-rockets", "indiana-pacers", "los-angeles-clippers", "los-angeles-lakers", "memphis-grizzlies", "miami-heat", "milwaukee-bucks", "minnesota-timberwolves", "new-orleans-pelicans", "new-york-knicks", "oklahoma-city-thunder", "orlando-magic", "philadelphia-76ers", "phoenix-suns", "portland-trail-blazers", "sacramento-kings", "san-antonio-spurs", "toronto-raptors", "utah-jazz", "washington-wizards"], "NFL": ["arizona-cardinals", "atlanta-falcons", "baltimore-ravens", "buffalo-bills", "carolina-panthers", "chicago-bears", "cincinnati-bengals", "cleveland-browns", "dallas-cowboys", "denver-broncos", "detroit-lions", "green-bay-packers", "houston-texans", "indianapolis-colts", "jacksonville-jaguars", "kansas-city-chiefs", "las-vegas-raiders", "los-angeles-chargers", "los-angeles-rams", "miami-dolphins", "minnesota-vikings", "new-england-patriots", "new-orleans-saints", "new-york-giants", "new-york-jets", "philadelphia-eagles", "pittsburgh-steelers", "san-francisco-49ers", "seattle-seahawks", "tampa-bay-buccaneers", "tennessee-titans", "washington-commanders"], "NHL": ["anaheim-ducks", "boston-bruins", "buffalo-sabres", "calgary-flames", "carolina-hurricanes", "chicago-blackhawks", "colorado-avalanche", "columbus-blue-jackets", "dallas-stars", "detroit-red-wings", "edmonton-oilers", "florida-panthers", "los-angeles-kings", "minnesota-wild", "montreal-canadiens", "nashville-predators", "new-jersey-devils", "new-york-islanders", "new-york-rangers", "ottawa-senators", "philadelphia-flyers", "pittsburgh-penguins", "san-jose-sharks", "seattle-kraken", "st-louis-blues", "tampa-bay-lightning", "toronto-maple-leafs", "utah-hockey-club", "vancouver-canucks", "vegas-golden-knights", "washington-capitals", "winnipeg-jets"], "Premier League": ["arsenal", "aston-villa", "bournemouth", "brentford", "brighton-and-hove-albion", "chelsea", "crystal-palace", "everton", "fulham", "ipswich-town", "leicester-city", "liverpool", "manchester-city", "manchester-united", "newcastle-united", "nottingham-forest", "southampton", "tottenham-hotspur", "west-ham-united", "wolverhampton-wanderers"], "Primeira Liga": ["arouca", "avs", "benfica", "boavista", "braga", "casa-pia", "estoril-praia", "estrela-amadora", "famalicao", "farense", "gil-vicente", "moreirense", "nacional", "porto", "rio-ave", "santa-clara", "sporting-cp", "vitoria-guimaraes"], "Saudi Pro League": ["al-ahli", "al-akhdoud", "al-etifaq", "al-fateh", "al-fayha", "al-hilal", "al-ittihad", "al-khaleej", "al-kholood", "al-nassr", "al-orubah", "al-qadsiah", "al-raed", "al-riyadh", "al-shabab", "al-taawoun", "al-tai", "al-wehda", "damac"], "Scottish Premiership": ["aberdeen", "celtic", "dundee", "dundee-united", "heart-of-midlothian", "hibernian", "kilmarnock", "motherwell", "rangers", "ross-county", "st-johnstone", "st-mirren"], "Serie A": ["ac-milan", "atalanta", "bologna", "cagliari", "como", "empoli", "fiorentina", "genoa", "hellas-verona", "inter-milan", "juventus", "lazio", "lecce", "monza", "napoli", "parma", "roma", "torino", "udinese", "venezia"]}; // Format: { "League": ["team1", "team2"] }
+        const IMAGE_MAP = {"teams": {"Cincinnati Bengals": "/assets/logos/tsdb/cincinnati-bengals.webp", "Brisbane Roar Fc Women": "/assets/logos/tsdb/brisbane-roar-fc-women.webp", "Fc K\u00f6ln": "/assets/logos/tsdb/fc-k\u00f6ln.webp", "Edinburgh": "/assets/logos/tsdb/edinburgh.webp", "Anaheim Ducks": "/assets/logos/tsdb/anaheim-ducks.webp", "Chicago Cubs": "/assets/logos/tsdb/chicago-cubs.webp", "Brisbane Roar": "/assets/logos/tsdb/brisbane-roar.webp", "Hawick": "/assets/logos/tsdb/hawick.webp", "Buffalo Bills": "/assets/logos/tsdb/buffalo-bills.webp", "Bwt Alpine Formula One Team": "/assets/logos/tsdb/bwt-alpine-formula-one-team.webp", "Bournemouth": "/assets/logos/tsdb/bournemouth.webp", "Munster": "/assets/logos/tsdb/munster.webp", "Arsenal": "/assets/logos/tsdb/arsenal.webp", "Middlesbrough": "/assets/logos/tsdb/middlesbrough.webp", "Adelaide United Women": "/assets/logos/tsdb/adelaide-united-women.webp", "Ufc Heavyweight": "/assets/logos/tsdb/ufc-heavyweight.webp", "Burnley": "/assets/logos/tsdb/burnley.webp", "Ipswich Town": "/assets/logos/tsdb/ipswich-town.webp", "Club Brugge": "/assets/logos/tsdb/club-brugge.webp", "Jed Forest": "/assets/logos/tsdb/jed-forest.webp", "Girona": "/assets/logos/tsdb/girona.webp", "Fulham": "/assets/logos/tsdb/fulham.webp", "Bologna": "/assets/logos/tsdb/bologna.webp", "Lorient": "/assets/logos/tsdb/lorient.webp", "Casa Pia": "/assets/logos/tsdb/casa-pia.webp", "Marr": "/assets/logos/tsdb/marr.webp", "Scuderia Ferrari Hp": "/assets/logos/tsdb/scuderia-ferrari-hp.webp", "Dc United": "/assets/logos/tsdb/dc-united.webp", "Calgary Flames": "/assets/logos/tsdb/calgary-flames.webp", "Atalanta": "/assets/logos/tsdb/atalanta.webp", "Dallas Stars": "/assets/logos/tsdb/dallas-stars.webp", "Chicago Bears": "/assets/logos/tsdb/chicago-bears.webp", "Columbus Crew": "/assets/logos/tsdb/columbus-crew.webp", "Genoa": "/assets/logos/tsdb/genoa.webp", "Perth Glory": "/assets/logos/tsdb/perth-glory.webp", "Newcastle Jets Women": "/assets/logos/tsdb/newcastle-jets-women.webp", "Ufc Light Heavyweight": "/assets/logos/tsdb/ufc-light-heavyweight.webp", "Sydney Sixers": "/assets/logos/tsdb/sydney-sixers.webp", "Charlton Athletic": "/assets/logos/tsdb/charlton-athletic.webp", "Heracles Almelo": "/assets/logos/tsdb/heracles-almelo.webp", "Hobart Hurricanes": "/assets/logos/tsdb/hobart-hurricanes.webp", "Alverca": "/assets/logos/tsdb/alverca.webp", "Eintracht Frankfurt": "/assets/logos/tsdb/eintracht-frankfurt.webp", "Benfica": "/assets/logos/tsdb/benfica.webp", "Bulls": "/assets/logos/tsdb/bulls.webp", "Edinburgh Academicals": "/assets/logos/tsdb/edinburgh-academicals.webp", "Deportivo Alav\u00e9s": "/assets/logos/tsdb/deportivo-alav\u00e9s.webp", "Currie": "/assets/logos/tsdb/currie.webp", "Williams Racing": "/assets/logos/tsdb/williams-racing.webp", "Mclaren Formula 1 Team": "/assets/logos/tsdb/mclaren-formula-1-team.webp", "Canberra United Women": "/assets/logos/tsdb/canberra-united-women.webp", "Chicago Bulls": "/assets/logos/tsdb/chicago-bulls.webp", "Carolina Hurricanes": "/assets/logos/tsdb/carolina-hurricanes.webp", "Avs": "/assets/logos/tsdb/avs.webp", "Macarthur Fc": "/assets/logos/tsdb/macarthur-fc.webp", "Charlotte Hornets": "/assets/logos/tsdb/charlotte-hornets.webp", "Bayer Leverkusen": "/assets/logos/tsdb/bayer-leverkusen.webp", "Athletic Bilbao": "/assets/logos/tsdb/athletic-bilbao.webp", "Central Coast Mariners": "/assets/logos/tsdb/central-coast-mariners.webp", "Newcastle Jets": "/assets/logos/tsdb/newcastle-jets.webp", "Atl\u00e9tico Madrid": "/assets/logos/tsdb/atl\u00e9tico-madrid.webp", "Borussia M\u00f6nchengladbach": "/assets/logos/tsdb/borussia-m\u00f6nchengladbach.webp", "Heerenveen": "/assets/logos/tsdb/heerenveen.webp", "Perth Glory Women": "/assets/logos/tsdb/perth-glory-women.webp", "Lens": "/assets/logos/tsdb/lens.webp", "Ufc Bantamweight": "/assets/logos/tsdb/ufc-bantamweight.webp", "Atlanta Falcons": "/assets/logos/tsdb/atlanta-falcons.webp", "Columbus Blue Jackets": "/assets/logos/tsdb/columbus-blue-jackets.webp", "Bristol City": "/assets/logos/tsdb/bristol-city.webp", "Cremonese": "/assets/logos/tsdb/cremonese.webp", "Ac Milan": "/assets/logos/tsdb/ac-milan.webp", "Aston Villa": "/assets/logos/tsdb/aston-villa.webp", "Az Alkmaar": "/assets/logos/tsdb/az-alkmaar.webp", "Elche": "/assets/logos/tsdb/elche.webp", "Carolina Panthers": "/assets/logos/tsdb/carolina-panthers.webp", "Cincinnati Reds": "/assets/logos/tsdb/cincinnati-reds.webp", "Stake F1 Team Kick Sauber": "/assets/logos/tsdb/stake-f1-team-kick-sauber.webp", "Heriots Rugby Club": "/assets/logos/tsdb/heriots-rugby-club.webp", "Go Ahead Eagles": "/assets/logos/tsdb/go-ahead-eagles.webp", "Chicago White Sox": "/assets/logos/tsdb/chicago-white-sox.webp", "Dallas Cowboys": "/assets/logos/tsdb/dallas-cowboys.webp", "Cleveland Guardians": "/assets/logos/tsdb/cleveland-guardians.webp", "Melbourne City Fc Women": "/assets/logos/tsdb/melbourne-city-fc-women.webp", "Ufc Bantamweight Women": "/assets/logos/tsdb/ufc-bantamweight-women.webp", "Sydney Thunder": "/assets/logos/tsdb/sydney-thunder.webp", "Cleveland Cavaliers": "/assets/logos/tsdb/cleveland-cavaliers.webp", "Colorado Rockies": "/assets/logos/tsdb/colorado-rockies.webp", "Detroit Red Wings": "/assets/logos/tsdb/detroit-red-wings.webp", "Arizona Diamondbacks": "/assets/logos/tsdb/arizona-diamondbacks.webp", "Ufc Flyweight Women": "/assets/logos/tsdb/ufc-flyweight-women.webp", "Adelaide United": "/assets/logos/tsdb/adelaide-united.webp", "Fc Cincinnati": "/assets/logos/tsdb/fc-cincinnati.webp", "Lions": "/assets/logos/tsdb/lions.webp", "Sydney Fc Women": "/assets/logos/tsdb/sydney-fc-women.webp", "Feyenoord": "/assets/logos/tsdb/feyenoord.webp", "Baltimore Orioles": "/assets/logos/tsdb/baltimore-orioles.webp", "Musselburgh": "/assets/logos/tsdb/musselburgh.webp", "Selkirk": "/assets/logos/tsdb/selkirk.webp", "Bayern Munich": "/assets/logos/tsdb/bayern-munich.webp", "Charlotte Fc": "/assets/logos/tsdb/charlotte-fc.webp", "Moneygram Haas F1 Team": "/assets/logos/tsdb/moneygram-haas-f1-team.webp", "Buffalo Sabres": "/assets/logos/tsdb/buffalo-sabres.webp", "Athletics": "/assets/logos/tsdb/athletics.webp", "Cf Montr\u00e9al": "/assets/logos/tsdb/cf-montr\u00e9al.webp", "Hellas Verona": "/assets/logos/tsdb/hellas-verona.webp", "Dallas Mavericks": "/assets/logos/tsdb/dallas-mavericks.webp", "Hamburg": "/assets/logos/tsdb/hamburg.webp", "Inter Milan": "/assets/logos/tsdb/inter-milan.webp", "Borussia Dortmund": "/assets/logos/tsdb/borussia-dortmund.webp", "Ufc Featherweight": "/assets/logos/tsdb/ufc-featherweight.webp", "Braga": "/assets/logos/tsdb/braga.webp", "Melbourne Victory Women": "/assets/logos/tsdb/melbourne-victory-women.webp", "Coventry City": "/assets/logos/tsdb/coventry-city.webp", "Angers": "/assets/logos/tsdb/angers.webp", "Lyon": "/assets/logos/tsdb/lyon.webp", "Denver Nuggets": "/assets/logos/tsdb/denver-nuggets.webp", "Adelaide Strikers": "/assets/logos/tsdb/adelaide-strikers.webp", "Perth Scorchers": "/assets/logos/tsdb/perth-scorchers.webp", "Auxerre": "/assets/logos/tsdb/auxerre.webp", "Auckland Fc": "/assets/logos/tsdb/auckland-fc.webp", "Fc Dallas": "/assets/logos/tsdb/fc-dallas.webp", "Crystal Palace": "/assets/logos/tsdb/crystal-palace.webp", "Central Coast Mariners Women": "/assets/logos/tsdb/central-coast-mariners-women.webp", "Boston Bruins": "/assets/logos/tsdb/boston-bruins.webp", "Atlanta Hawks": "/assets/logos/tsdb/atlanta-hawks.webp", "Marseille": "/assets/logos/tsdb/marseille.webp", "Dender": "/assets/logos/tsdb/dender.webp", "Everton": "/assets/logos/tsdb/everton.webp", "Fortuna Sittard": "/assets/logos/tsdb/fortuna-sittard.webp", "Aston Martin Aramco Formula One Team": "/assets/logos/tsdb/aston-martin-aramco-formula-one-team.webp", "Fc Heidenheim": "/assets/logos/tsdb/fc-heidenheim.webp", "Getafe": "/assets/logos/tsdb/getafe.webp", "Brighton And Hove Albion": "/assets/logos/tsdb/brighton-and-hove-albion.webp", "Melbourne Stars": "/assets/logos/tsdb/melbourne-stars.webp", "Freiburg": "/assets/logos/tsdb/freiburg.webp", "Fc Augsburg": "/assets/logos/tsdb/fc-augsburg.webp", "Chicago Blackhawks": "/assets/logos/tsdb/chicago-blackhawks.webp", "Arouca": "/assets/logos/tsdb/arouca.webp", "Glasgow": "/assets/logos/tsdb/glasgow.webp", "Colorado Avalanche": "/assets/logos/tsdb/colorado-avalanche.webp", "Ufc Catchweight Women": "/assets/logos/tsdb/ufc-catchweight-women.webp", "Melbourne Victory": "/assets/logos/tsdb/melbourne-victory.webp", "Melbourne Renegades": "/assets/logos/tsdb/melbourne-renegades.webp", "Espanyol": "/assets/logos/tsdb/espanyol.webp", "Excelsior": "/assets/logos/tsdb/excelsior.webp", "Glasgow Hawks": "/assets/logos/tsdb/glasgow-hawks.webp", "Cagliari": "/assets/logos/tsdb/cagliari.webp", "Ufc Catchweight": "/assets/logos/tsdb/ufc-catchweight.webp", "Boston Celtics": "/assets/logos/tsdb/boston-celtics.webp", "Groningen": "/assets/logos/tsdb/groningen.webp", "Anderlecht": "/assets/logos/tsdb/anderlecht.webp", "Blackburn Rovers": "/assets/logos/tsdb/blackburn-rovers.webp", "Leicester City": "/assets/logos/tsdb/leicester-city.webp", "Levante": "/assets/logos/tsdb/levante.webp", "Estoril Praia": "/assets/logos/tsdb/estoril-praia.webp", "Derby County": "/assets/logos/tsdb/derby-county.webp", "Cardiff Rugby": "/assets/logos/tsdb/cardiff-rugby.webp", "Colorado Rapids": "/assets/logos/tsdb/colorado-rapids.webp", "Mechelen": "/assets/logos/tsdb/mechelen.webp", "Como": "/assets/logos/tsdb/como.webp", "Detroit Pistons": "/assets/logos/tsdb/detroit-pistons.webp", "Connacht": "/assets/logos/tsdb/connacht.webp", "Boston Red Sox": "/assets/logos/tsdb/boston-red-sox.webp", "Melbourne City": "/assets/logos/tsdb/melbourne-city.webp", "Baltimore Ravens": "/assets/logos/tsdb/baltimore-ravens.webp", "Leinster": "/assets/logos/tsdb/leinster.webp", "Metz": "/assets/logos/tsdb/metz.webp", "Denver Broncos": "/assets/logos/tsdb/denver-broncos.webp", "Estrela Amadora": "/assets/logos/tsdb/estrela-amadora.webp", "Gent": "/assets/logos/tsdb/gent.webp", "Sydney Fc": "/assets/logos/tsdb/sydney-fc.webp", "Genk": "/assets/logos/tsdb/genk.webp", "Fiorentina": "/assets/logos/tsdb/fiorentina.webp", "Cercle Brugge": "/assets/logos/tsdb/cercle-brugge.webp", "Dragons": "/assets/logos/tsdb/dragons.webp", "Lille": "/assets/logos/tsdb/lille.webp", "Birmingham City": "/assets/logos/tsdb/birmingham-city.webp", "Brooklyn Nets": "/assets/logos/tsdb/brooklyn-nets.webp", "Hull City": "/assets/logos/tsdb/hull-city.webp", "Charleroi": "/assets/logos/tsdb/charleroi.webp", "Benetton": "/assets/logos/tsdb/benetton.webp", "Ufc Flyweight": "/assets/logos/tsdb/ufc-flyweight.webp", "Celta Vigo": "/assets/logos/tsdb/celta-vigo.webp", "Brisbane Heat": "/assets/logos/tsdb/brisbane-heat.webp", "Famalicao": "/assets/logos/tsdb/famalicao.webp", "Ajax": "/assets/logos/tsdb/ajax.webp", "Visa Cash App Racing Bulls Formula One Team": "/assets/logos/tsdb/visa-cash-app-racing-bulls-formula-one-team.webp", "Le Havre": "/assets/logos/tsdb/le-havre.webp", "Chelsea": "/assets/logos/tsdb/chelsea.webp", "Barcelona": "/assets/logos/tsdb/barcelona.webp", "Oracle Red Bull Racing": "/assets/logos/tsdb/oracle-red-bull-racing.webp", "Atlanta United": "/assets/logos/tsdb/atlanta-united.webp", "Ufc Featherweight Women": "/assets/logos/tsdb/ufc-featherweight-women.webp", "Glasgow Hutchesons Aloysians": "/assets/logos/tsdb/glasgow-hutchesons-aloysians.webp", "Brentford": "/assets/logos/tsdb/brentford.webp", "Wellington Phoenix Women": "/assets/logos/tsdb/wellington-phoenix-women.webp", "Mercedes Amg Petronas Formula One Team": "/assets/logos/tsdb/mercedes-amg-petronas-formula-one-team.webp", "Golden State Warriors": "/assets/logos/tsdb/golden-state-warriors.webp", "Chicago Fire": "/assets/logos/tsdb/chicago-fire.webp", "Austin Fc": "/assets/logos/tsdb/austin-fc.webp", "Cleveland Browns": "/assets/logos/tsdb/cleveland-browns.webp", "Brest": "/assets/logos/tsdb/brest.webp", "Arizona Cardinals": "/assets/logos/tsdb/arizona-cardinals.webp", "Antwerp": "/assets/logos/tsdb/antwerp.webp", "Oud Heverlee Leuven": "/assets/logos/tsdb/oud-heverlee-leuven.webp", "Atlanta Braves": "/assets/logos/tsdb/atlanta-braves.webp", "Fc Volendam": "/assets/logos/tsdb/fc-volendam.webp", "Fc Porto": "/assets/logos/tsdb/fc-porto.webp", "Newcastle": "/assets/logos/streamed/newcastle.webp", "Nick Kyrgios": "/assets/logos/streamed/nick-kyrgios.webp", "Old Dominion": "/assets/logos/streamed/old-dominion.webp", "Pro League Al Ettifaq": "/assets/logos/streamed/pro-league-al-ettifaq.webp", "Harrogate Town": "/assets/logos/streamed/harrogate-town.webp", "Cornell": "/assets/logos/streamed/cornell.webp", "Morabanc Andorra": "/assets/logos/streamed/morabanc-andorra.webp", "Stockport County": "/assets/logos/streamed/stockport-county.webp", "San Francisco 49Ers": "/assets/logos/streamed/san-francisco-49ers.webp", "Burton Albion": "/assets/logos/streamed/burton-albion.webp", "Iserlohn Roosters": "/assets/logos/streamed/iserlohn-roosters.webp", "Cambodia": "/assets/logos/streamed/cambodia.webp", "Rangers": "/assets/logos/streamed/rangers.webp", "Hc Pustertal W\u00f6lfe": "/assets/logos/streamed/hc-pustertal-w\u00f6lfe.webp", "West Ham": "/assets/logos/streamed/west-ham.webp", "Army": "/assets/logos/streamed/army.webp", "West Bromwich Albion": "/assets/logos/streamed/west-bromwich-albion.webp", "Portsmouth": "/assets/logos/streamed/portsmouth.webp", "Latvia U20": "/assets/logos/streamed/latvia-u20.webp", "Al Shabab": "/assets/logos/streamed/al-shabab.webp", "Vancouver Canucks": "/assets/logos/streamed/vancouver-canucks.webp", "West Brom": "/assets/logos/streamed/west-brom.webp", "Marist": "/assets/logos/streamed/marist.webp", "Napoli": "/assets/logos/streamed/napoli.webp", "Cheshire Phoenix": "/assets/logos/streamed/cheshire-phoenix.webp", "Washington Wizards": "/assets/logos/streamed/washington-wizards.webp", "Gil Vicente": "/assets/logos/streamed/gil-vicente.webp", "Mali": "/assets/logos/streamed/mali.webp", "New Hampshire": "/assets/logos/streamed/new-hampshire.webp", "Leicester Tigers": "/assets/logos/streamed/leicester-tigers.webp", "Myanmar": "/assets/logos/streamed/myanmar.webp", "Butler": "/assets/logos/streamed/butler.webp", "Montreal Canadiens": "/assets/logos/streamed/montreal-canadiens.webp", "Tulane": "/assets/logos/streamed/tulane.webp", "North Carolina At": "/assets/logos/streamed/north-carolina-at.webp", "Ivory Coast": "/assets/logos/streamed/ivory-coast.webp", "Saratov": "/assets/logos/streamed/saratov.webp", "Los Angeles Lakers": "/assets/logos/streamed/los-angeles-lakers.webp", "Juve Stabia": "/assets/logos/streamed/juve-stabia.webp", "Brighton Hove Albion": "/assets/logos/streamed/brighton-hove-albion.webp", "Lsu": "/assets/logos/streamed/lsu.webp", "Germany U20": "/assets/logos/streamed/germany-u20.webp", "Crewe Alexandra": "/assets/logos/streamed/crewe-alexandra.webp", "Semen Padang": "/assets/logos/streamed/semen-padang.webp", "Mexico City Capitanes": "/assets/logos/streamed/mexico-city-capitanes.webp", "Edmonton Oilers": "/assets/logos/streamed/edmonton-oilers.webp", "Kac": "/assets/logos/streamed/kac.webp", "Wisconsin Herd": "/assets/logos/streamed/wisconsin-herd.webp", "Towson": "/assets/logos/streamed/towson.webp", "Baskonia": "/assets/logos/streamed/baskonia.webp", "San Jose State": "/assets/logos/streamed/san-jose-state.webp", "Il T20 Tba": "/assets/logos/streamed/il-t20-tba.webp", "New York Giants": "/assets/logos/streamed/new-york-giants.webp", "Oklahoma City Blue": "/assets/logos/streamed/oklahoma-city-blue.webp", "Scm Craiova": "/assets/logos/streamed/scm-craiova.webp", "Wisconsin": "/assets/logos/streamed/wisconsin.webp", "Fort Wayne Mad Ants": "/assets/logos/streamed/fort-wayne-mad-ants.webp", "Motherwell": "/assets/logos/streamed/motherwell.webp", "Al Okhdood": "/assets/logos/streamed/al-okhdood.webp", "Georgia Tech": "/assets/logos/streamed/georgia-tech.webp", "Al Hilal Saudi": "/assets/logos/streamed/al-hilal-saudi.webp", "S\u00fcdtirol": "/assets/logos/streamed/s\u00fcdtirol.webp", "Philadelphia Flyers": "/assets/logos/streamed/philadelphia-flyers.webp", "Albany": "/assets/logos/streamed/albany.webp", "Wrexham": "/assets/logos/streamed/wrexham.webp", "Northwestern": "/assets/logos/streamed/northwestern.webp", "Women Melbourne City W": "/assets/logos/streamed/women-melbourne-city-w.webp", "Ricky Evans": "/assets/logos/streamed/ricky-evans.webp", "Algeria": "/assets/logos/streamed/algeria.webp", "Oklahoma City Thunder": "/assets/logos/streamed/oklahoma-city-thunder.webp", "Erc Ingolstadt": "/assets/logos/streamed/erc-ingolstadt.webp", "Memphis Grizzlies": "/assets/logos/streamed/memphis-grizzlies.webp", "Murcia": "/assets/logos/streamed/murcia.webp", "Nottingham Forest": "/assets/logos/streamed/nottingham-forest.webp", "C\u00f4te Divoire": "/assets/logos/streamed/c\u00f4te-divoire.webp", "Women Central Coast Mariners W": "/assets/logos/streamed/women-central-coast-mariners-w.webp", "Peterborough United": "/assets/logos/streamed/peterborough-united.webp", "Exeter Chiefs": "/assets/logos/streamed/exeter-chiefs.webp", "Will Fleury": "/assets/logos/streamed/will-fleury.webp", "Switzerland": "/assets/logos/streamed/switzerland.webp", "Bath Rugby": "/assets/logos/streamed/bath-rugby.webp", "Barrow": "/assets/logos/streamed/barrow.webp", "Manchester Basketball": "/assets/logos/streamed/manchester-basketball.webp", "Central Stags": "/assets/logos/streamed/central-stags.webp", "Lyon Villeurbanne": "/assets/logos/streamed/lyon-villeurbanne.webp", "Cardiff City": "/assets/logos/streamed/cardiff-city.webp", "Forest Green Rovers": "/assets/logos/streamed/forest-green-rovers.webp", "Madura United": "/assets/logos/streamed/madura-united.webp", "Raptors 905": "/assets/logos/streamed/raptors-905.webp", "Tunisia": "/assets/logos/streamed/tunisia.webp", "Principia College": "/assets/logos/streamed/principia-college.webp", "Igdir": "/assets/logos/streamed/igdir.webp", "Wellington Phoenix": "/assets/logos/streamed/wellington-phoenix.webp", "Al Fateh": "/assets/logos/streamed/al-fateh.webp", "Washington Huskies": "/assets/logos/streamed/washington-huskies.webp", "Newport County": "/assets/logos/streamed/newport-county.webp", "Virginia Tech": "/assets/logos/streamed/virginia-tech.webp", "Byu": "/assets/logos/streamed/byu.webp", "Minnesota Timberwolves": "/assets/logos/streamed/minnesota-timberwolves.webp", "North Carolina": "/assets/logos/streamed/north-carolina.webp", "Miami Dolphins": "/assets/logos/streamed/miami-dolphins.webp", "Tamis": "/assets/logos/streamed/tamis.webp", "Finland": "/assets/logos/streamed/finland.webp", "Tampa Bay Buccaneers": "/assets/logos/streamed/tampa-bay-buccaneers.webp", "Maroussi": "/assets/logos/streamed/maroussi.webp", "Westchester Knicks": "/assets/logos/streamed/westchester-knicks.webp", "Frankfurt Lowen": "/assets/logos/streamed/frankfurt-lowen.webp", "Partizan Mozzart Bet Belgrade": "/assets/logos/streamed/partizan-mozzart-bet-belgrade.webp", "Djurgarden": "/assets/logos/streamed/djurgarden.webp", "Chesterfield": "/assets/logos/streamed/chesterfield.webp", "Tennessee": "/assets/logos/streamed/tennessee.webp", "Mantova": "/assets/logos/streamed/mantova.webp", "Bc Mures Targu": "/assets/logos/streamed/bc-mures-targu.webp", "Acroni Jesenice": "/assets/logos/streamed/acroni-jesenice.webp", "Forest Green": "/assets/logos/streamed/forest-green.webp", "Florida Panthers": "/assets/logos/streamed/florida-panthers.webp", "Seton Hall": "/assets/logos/streamed/seton-hall.webp", "Houston Texans": "/assets/logos/streamed/houston-texans.webp", "Tanzania": "/assets/logos/streamed/tanzania.webp", "Csm Oradea": "/assets/logos/streamed/csm-oradea.webp", "Bahcesehir Kol": "/assets/logos/streamed/bahcesehir-kol.webp", "Kk Partizan": "/assets/logos/streamed/kk-partizan.webp", "Neptunas": "/assets/logos/streamed/neptunas.webp", "Dundee United": "/assets/logos/streamed/dundee-united.webp", "Olimpia Milano": "/assets/logos/streamed/olimpia-milano.webp", "Eisbaren Berlin": "/assets/logos/streamed/eisbaren-berlin.webp", "Portland Trail Blazers": "/assets/logos/streamed/portland-trail-blazers.webp", "Syracuse": "/assets/logos/streamed/syracuse.webp", "Northampton Town": "/assets/logos/streamed/northampton-town.webp", "Exeter City": "/assets/logos/streamed/exeter-city.webp", "Ottawa Senators": "/assets/logos/streamed/ottawa-senators.webp", "Manchester United": "/assets/logos/streamed/manchester-united.webp", "New York Rangers": "/assets/logos/streamed/new-york-rangers.webp", "Hapoel M Jerusalem": "/assets/logos/streamed/hapoel-m-jerusalem.webp", "Missouri": "/assets/logos/streamed/missouri.webp", "Gloucester": "/assets/logos/streamed/gloucester.webp", "Torino": "/assets/logos/streamed/torino.webp", "Segunda Liga Torreense": "/assets/logos/streamed/segunda-liga-torreense.webp", "Segunda Liga Pacos Ferreira": "/assets/logos/streamed/segunda-liga-pacos-ferreira.webp", "Ankara Keciorengucu": "/assets/logos/streamed/ankara-keciorengucu.webp", "Newcastle United": "/assets/logos/streamed/newcastle-united.webp", "Creighton": "/assets/logos/streamed/creighton.webp", "Central Michigan": "/assets/logos/streamed/central-michigan.webp", "Valencia": "/assets/logos/streamed/valencia.webp", "Adana Demirspor": "/assets/logos/streamed/adana-demirspor.webp", "Unicaja": "/assets/logos/streamed/unicaja.webp", "Ole Mississippi": "/assets/logos/streamed/ole-mississippi.webp", "Barnsley": "/assets/logos/streamed/barnsley.webp", "Lazio": "/assets/logos/streamed/lazio.webp", "Al Ahli Jeddah": "/assets/logos/streamed/al-ahli-jeddah.webp", "Huddersfield Town": "/assets/logos/streamed/huddersfield-town.webp", "Nigeria": "/assets/logos/streamed/nigeria.webp", "Blackpool": "/assets/logos/streamed/blackpool.webp", "Gabon": "/assets/logos/streamed/gabon.webp", "Stony Brook": "/assets/logos/streamed/stony-brook.webp", "Denmark U20": "/assets/logos/streamed/denmark-u20.webp", "Al Khaleej": "/assets/logos/streamed/al-khaleej.webp", "Mi Emirates": "/assets/logos/streamed/mi-emirates.webp", "Dr Congo": "/assets/logos/streamed/dr-congo.webp", "Metallurg Mg": "/assets/logos/streamed/metallurg-mg.webp", "San Francisco": "/assets/logos/streamed/san-francisco.webp", "Switzerland U20": "/assets/logos/streamed/switzerland-u20.webp", "Virtus Entella": "/assets/logos/streamed/virtus-entella.webp", "Louisville": "/assets/logos/streamed/louisville.webp", "Tranmere Rovers": "/assets/logos/streamed/tranmere-rovers.webp", "Auckland": "/assets/logos/streamed/auckland.webp", "Sakhnin": "/assets/logos/streamed/sakhnin.webp", "Norwich City": "/assets/logos/streamed/norwich-city.webp", "Indianapolis Colts": "/assets/logos/streamed/indianapolis-colts.webp", "Morocco": "/assets/logos/streamed/morocco.webp", "L\u00f6wen Frankfurt": "/assets/logos/streamed/l\u00f6wen-frankfurt.webp", "Melbourne Boomers W": "/assets/logos/streamed/melbourne-boomers-w.webp", "Women Newcastle Jets W": "/assets/logos/streamed/women-newcastle-jets-w.webp", "Andrey Rublev": "/assets/logos/streamed/andrey-rublev.webp", "Brisbane Bullets": "/assets/logos/streamed/brisbane-bullets.webp", "Bahcesehir Koleji": "/assets/logos/streamed/bahcesehir-koleji.webp", "Abu Dhabi Knight Riders": "/assets/logos/streamed/abu-dhabi-knight-riders.webp", "Wake Forest": "/assets/logos/streamed/wake-forest.webp", "North Carolina State": "/assets/logos/streamed/north-carolina-state.webp", "Sporting Cp": "/assets/logos/streamed/sporting-cp.webp", "Canada U20": "/assets/logos/streamed/canada-u20.webp", "Falkirk": "/assets/logos/streamed/falkirk.webp", "Vcu Rams": "/assets/logos/streamed/vcu-rams.webp", "Saracens": "/assets/logos/streamed/saracens.webp", "Corum": "/assets/logos/streamed/corum.webp", "Port Vale": "/assets/logos/streamed/port-vale.webp", "Egypt": "/assets/logos/streamed/egypt.webp", "Al Arabi": "/assets/logos/streamed/al-arabi.webp", "Heart Of Midlothian": "/assets/logos/streamed/heart-of-midlothian.webp", "Newcastle Falcons": "/assets/logos/streamed/newcastle-falcons.webp", "Appalachian State": "/assets/logos/streamed/appalachian-state.webp", "Banska Bystrica": "/assets/logos/streamed/banska-bystrica.webp", "Southampton": "/assets/logos/streamed/southampton.webp", "Aryna Sabalenka": "/assets/logos/streamed/aryna-sabalenka.webp", "Millwall": "/assets/logos/streamed/millwall.webp", "Straubing Tigers": "/assets/logos/streamed/straubing-tigers.webp", "Olympiacos Bc": "/assets/logos/streamed/olympiacos-bc.webp", "Seattle Torrent": "/assets/logos/streamed/seattle-torrent.webp", "Los Angeles Kings": "/assets/logos/streamed/los-angeles-kings.webp", "Cremona": "/assets/logos/streamed/cremona.webp", "Basket Napoli": "/assets/logos/streamed/basket-napoli.webp", "Bhayangkara Presisi Lampung": "/assets/logos/streamed/bhayangkara-presisi-lampung.webp", "New Jersey Devils": "/assets/logos/streamed/new-jersey-devils.webp", "William Mary": "/assets/logos/streamed/william-mary.webp", "Skelleftea": "/assets/logos/streamed/skelleftea.webp", "Sudan": "/assets/logos/streamed/sudan.webp", "Wellington Phoenix W": "/assets/logos/streamed/wellington-phoenix-w.webp", "Brisbane Bandits": "/assets/logos/streamed/brisbane-bandits.webp", "Louisiana Tech": "/assets/logos/streamed/louisiana-tech.webp", "Premiership Motherwell": "/assets/logos/streamed/premiership-motherwell.webp", "Iowa": "/assets/logos/streamed/iowa.webp", "Luton Town": "/assets/logos/streamed/luton-town.webp", "Bristol Bears": "/assets/logos/streamed/bristol-bears.webp", "New Mexico Lobos": "/assets/logos/streamed/new-mexico-lobos.webp", "South Africa": "/assets/logos/streamed/south-africa.webp", "Fafe": "/assets/logos/streamed/fafe.webp", "Pro League Al Hilal Saudi": "/assets/logos/streamed/pro-league-al-hilal-saudi.webp", "Swindon Town": "/assets/logos/streamed/swindon-town.webp", "Erzurum Bb": "/assets/logos/streamed/erzurum-bb.webp", "Oldham Athletic": "/assets/logos/streamed/oldham-athletic.webp", "Hk Nitra": "/assets/logos/streamed/hk-nitra.webp", "Auckland Aces": "/assets/logos/streamed/auckland-aces.webp", "Hapoel Haifa": "/assets/logos/streamed/hapoel-haifa.webp", "Southside W": "/assets/logos/streamed/southside-w.webp", "New Orleans Pelicans": "/assets/logos/streamed/new-orleans-pelicans.webp", "Serikspor A\u015f": "/assets/logos/streamed/serikspor-a\u015f.webp", "Split": "/assets/logos/streamed/split.webp", "Green Bay Packers": "/assets/logos/streamed/green-bay-packers.webp", "Wurzburg": "/assets/logos/streamed/wurzburg.webp", "Houston Rockets": "/assets/logos/streamed/houston-rockets.webp", "Newcastle Jets W": "/assets/logos/streamed/newcastle-jets-w.webp", "Slask Wroclaw": "/assets/logos/streamed/slask-wroclaw.webp", "Virginia": "/assets/logos/streamed/virginia.webp", "Houston": "/assets/logos/streamed/houston.webp", "Utsa": "/assets/logos/streamed/utsa.webp", "Sheffield Sharks": "/assets/logos/streamed/sheffield-sharks.webp", "Crawley Town": "/assets/logos/streamed/crawley-town.webp", "Pittsburgh Steelers": "/assets/logos/streamed/pittsburgh-steelers.webp", "Pinar Karsiyaka": "/assets/logos/streamed/pinar-karsiyaka.webp", "North Texas": "/assets/logos/streamed/north-texas.webp", "Mi Cape Town": "/assets/logos/streamed/mi-cape-town.webp", "Parma": "/assets/logos/streamed/parma.webp", "Zadar": "/assets/logos/streamed/zadar.webp", "Qadisiya": "/assets/logos/streamed/qadisiya.webp", "Frosinone": "/assets/logos/streamed/frosinone.webp", "Oxford United": "/assets/logos/streamed/oxford-united.webp", "Botswana": "/assets/logos/streamed/botswana.webp", "Jacksonville Jaguars": "/assets/logos/streamed/jacksonville-jaguars.webp", "New Orleans Saints": "/assets/logos/streamed/new-orleans-saints.webp", "Nitra": "/assets/logos/streamed/nitra.webp", "Poitiers": "/assets/logos/streamed/poitiers.webp", "Bielsko Biala W": "/assets/logos/streamed/bielsko-biala-w.webp", "Uconn": "/assets/logos/streamed/uconn.webp", "Caledonia Gladiators": "/assets/logos/streamed/caledonia-gladiators.webp", "Basquet Girona": "/assets/logos/streamed/basquet-girona.webp", "Central Coast Mariners W": "/assets/logos/streamed/central-coast-mariners-w.webp", "Catanzaro": "/assets/logos/streamed/catanzaro.webp", "Aberdeen": "/assets/logos/streamed/aberdeen.webp", "Bromley": "/assets/logos/streamed/bromley.webp", "Motor City Cruise": "/assets/logos/streamed/motor-city-cruise.webp", "Al Kholood": "/assets/logos/streamed/al-kholood.webp", "Venezia": "/assets/logos/streamed/venezia.webp", "Mansfield Town": "/assets/logos/streamed/mansfield-town.webp", "Al Sadd": "/assets/logos/streamed/al-sadd.webp", "Sharjah Warriorz": "/assets/logos/streamed/sharjah-warriorz.webp", "Radom W": "/assets/logos/streamed/radom-w.webp", "Moadon Sport Ashdod": "/assets/logos/streamed/moadon-sport-ashdod.webp", "Avellino": "/assets/logos/streamed/avellino.webp", "New England Patriots": "/assets/logos/streamed/new-england-patriots.webp", "Al Khaleej Saihat": "/assets/logos/streamed/al-khaleej-saihat.webp", "Illinois": "/assets/logos/streamed/illinois.webp", "Zambia": "/assets/logos/streamed/zambia.webp", "Lusitano De \u00c9vora": "/assets/logos/streamed/lusitano-de-\u00e9vora.webp", "Kolner": "/assets/logos/streamed/kolner.webp", "Lecce": "/assets/logos/streamed/lecce.webp", "Tenerife": "/assets/logos/streamed/tenerife.webp", "Benfica B": "/assets/logos/streamed/benfica-b.webp", "Stanford": "/assets/logos/streamed/stanford.webp", "Melbourne City W": "/assets/logos/streamed/melbourne-city-w.webp", "Delaware State": "/assets/logos/streamed/delaware-state.webp", "Montpellier Herault Rc": "/assets/logos/streamed/montpellier-herault-rc.webp", "Eisbaren": "/assets/logos/streamed/eisbaren.webp", "Ldlc Asvel Villeurbanne": "/assets/logos/streamed/ldlc-asvel-villeurbanne.webp", "Stoke City": "/assets/logos/streamed/stoke-city.webp", "Umraniyespor": "/assets/logos/streamed/umraniyespor.webp", "St Louis Blues": "/assets/logos/streamed/st-louis-blues.webp", "Tulsa": "/assets/logos/streamed/tulsa.webp", "Dubai Capitals": "/assets/logos/streamed/dubai-capitals.webp", "Grizzly Wolfsburg": "/assets/logos/streamed/grizzly-wolfsburg.webp", "Igdir Fk": "/assets/logos/streamed/igdir-fk.webp", "Gy\u0151ri Audi Eto Kc": "/assets/logos/streamed/gy\u0151ri-audi-eto-kc.webp", "Orebro": "/assets/logos/streamed/orebro.webp", "Tennessee Volunteers": "/assets/logos/streamed/tennessee-volunteers.webp", "Reggiana": "/assets/logos/streamed/reggiana.webp", "Angola": "/assets/logos/streamed/angola.webp", "Feh\u00e9rv\u00e1r Av19": "/assets/logos/streamed/feh\u00e9rv\u00e1r-av19.webp", "Indonesia": "/assets/logos/streamed/indonesia.webp", "Al Nassr": "/assets/logos/streamed/al-nassr.webp", "Esenler Erokspor": "/assets/logos/streamed/esenler-erokspor.webp", "Benin": "/assets/logos/streamed/benin.webp", "South East Melbourne": "/assets/logos/streamed/south-east-melbourne.webp", "Sydney W": "/assets/logos/streamed/sydney-w.webp", "Al Ittihad": "/assets/logos/streamed/al-ittihad.webp", "Zilina": "/assets/logos/streamed/zilina.webp", "Amedspor": "/assets/logos/streamed/amedspor.webp", "Udinese": "/assets/logos/streamed/udinese.webp", "Duke": "/assets/logos/streamed/duke.webp", "Prem Rugby Bristol Bears": "/assets/logos/streamed/prem-rugby-bristol-bears.webp", "Canberra United W": "/assets/logos/streamed/canberra-united-w.webp", "Comoros": "/assets/logos/streamed/comoros.webp", "Cska Moscow": "/assets/logos/streamed/cska-moscow.webp", "Brisbane Roar W": "/assets/logos/streamed/brisbane-roar-w.webp", "Monmouth": "/assets/logos/streamed/monmouth.webp", "Metallurg Magnitogorsk": "/assets/logos/streamed/metallurg-magnitogorsk.webp", "Barcelona Basquet": "/assets/logos/streamed/barcelona-basquet.webp", "Padova": "/assets/logos/streamed/padova.webp", "Gulf Giants": "/assets/logos/streamed/gulf-giants.webp", "Sweden": "/assets/logos/streamed/sweden.webp", "Subotica": "/assets/logos/streamed/subotica.webp", "Sydney Blue Sox": "/assets/logos/streamed/sydney-blue-sox.webp", "Dinamo Bucharest": "/assets/logos/streamed/dinamo-bucharest.webp", "Slovakia U20": "/assets/logos/streamed/slovakia-u20.webp", "Minnesota Golden Gophers": "/assets/logos/streamed/minnesota-golden-gophers.webp", "Real Madrid": "/assets/logos/streamed/real-madrid.webp", "Winthrop": "/assets/logos/streamed/winthrop.webp", "Al Ettifaq": "/assets/logos/streamed/al-ettifaq.webp", "Wolves": "/assets/logos/streamed/wolves.webp", "Florida State": "/assets/logos/streamed/florida-state.webp", "Hercegovac": "/assets/logos/streamed/hercegovac.webp", "Liverpool": "/assets/logos/streamed/liverpool.webp", "Preston North End": "/assets/logos/streamed/preston-north-end.webp", "Los Angeles Chargers": "/assets/logos/streamed/los-angeles-chargers.webp", "Miami Heat": "/assets/logos/streamed/miami-heat.webp", "Campbell": "/assets/logos/streamed/campbell.webp", "Segunda Liga Academico Viseu": "/assets/logos/streamed/segunda-liga-academico-viseu.webp", "As Monaco": "/assets/logos/streamed/as-monaco.webp", "Gillingham": "/assets/logos/streamed/gillingham.webp", "Michigan State": "/assets/logos/streamed/michigan-state.webp", "Karlsruhe": "/assets/logos/streamed/karlsruhe.webp", "Al Rayyan": "/assets/logos/streamed/al-rayyan.webp", "Cambridge United": "/assets/logos/streamed/cambridge-united.webp", "N\u00fcrnberg Ice Tigers": "/assets/logos/streamed/n\u00fcrnberg-ice-tigers.webp", "Quinnipiac": "/assets/logos/streamed/quinnipiac.webp", "Seattle Seahawks": "/assets/logos/streamed/seattle-seahawks.webp", "Bradford City": "/assets/logos/streamed/bradford-city.webp", "Nurnberg Ice Tigers": "/assets/logos/streamed/nurnberg-ice-tigers.webp", "St Truiden": "/assets/logos/streamed/st-truiden.webp", "Porto": "/assets/logos/streamed/porto.webp", "Al Hazm": "/assets/logos/streamed/al-hazm.webp", "Miami Oh": "/assets/logos/streamed/miami-oh.webp", "Lokomotiv Kuban": "/assets/logos/streamed/lokomotiv-kuban.webp", "Al Duhail": "/assets/logos/streamed/al-duhail.webp", "Watford": "/assets/logos/streamed/watford.webp", "Ehc Red Bull M\u00fcnchen": "/assets/logos/streamed/ehc-red-bull-m\u00fcnchen.webp", "Cesena": "/assets/logos/streamed/cesena.webp", "New York W": "/assets/logos/streamed/new-york-w.webp", "Illawarra Hawks": "/assets/logos/streamed/illawarra-hawks.webp", "Tampa Bay Lightning": "/assets/logos/streamed/tampa-bay-lightning.webp", "Al Qadisiyah": "/assets/logos/streamed/al-qadisiyah.webp", "Bydgoszcz W": "/assets/logos/streamed/bydgoszcz-w.webp", "Primeira Liga Casa Pia": "/assets/logos/streamed/primeira-liga-casa-pia.webp", "Pittsburgh": "/assets/logos/streamed/pittsburgh.webp", "Charlie Manby": "/assets/logos/streamed/charlie-manby.webp", "Perth Lynx W": "/assets/logos/streamed/perth-lynx-w.webp", "Seattle": "/assets/logos/streamed/seattle.webp", "Klagenfurt": "/assets/logos/streamed/klagenfurt.webp", "Cameroon": "/assets/logos/streamed/cameroon.webp", "Fleetwood Town": "/assets/logos/streamed/fleetwood-town.webp", "Melbourne Victory W": "/assets/logos/streamed/melbourne-victory-w.webp", "South Carolina State": "/assets/logos/streamed/south-carolina-state.webp", "Minnesota Wild": "/assets/logos/streamed/minnesota-wild.webp", "Depaul": "/assets/logos/streamed/depaul.webp", "Dundee Utd": "/assets/logos/streamed/dundee-utd.webp", "Cheltenham Town": "/assets/logos/streamed/cheltenham-town.webp", "Czechia U20": "/assets/logos/streamed/czechia-u20.webp", "Pacos Ferreira": "/assets/logos/streamed/pacos-ferreira.webp", "Umass Lowell": "/assets/logos/streamed/umass-lowell.webp", "Fairleigh Dickinson": "/assets/logos/streamed/fairleigh-dickinson.webp", "Turk Telekom": "/assets/logos/streamed/turk-telekom.webp", "Rapid Bucuresti": "/assets/logos/streamed/rapid-bucuresti.webp", "Tennessee Titans": "/assets/logos/streamed/tennessee-titans.webp", "Section Paloise": "/assets/logos/streamed/section-paloise.webp", "Germany": "/assets/logos/streamed/germany.webp", "Sheffield United": "/assets/logos/streamed/sheffield-united.webp", "Prem Rugby Exeter Chiefs": "/assets/logos/streamed/prem-rugby-exeter-chiefs.webp", "Sporting": "/assets/logos/streamed/sporting.webp", "Torreense": "/assets/logos/streamed/torreense.webp", "Newcastle Red Bulls": "/assets/logos/streamed/newcastle-red-bulls.webp", "Milwaukee Bucks": "/assets/logos/streamed/milwaukee-bucks.webp", "Brugge": "/assets/logos/streamed/brugge.webp", "Philadelphia 76Ers": "/assets/logos/streamed/philadelphia-76ers.webp", "Fresno State": "/assets/logos/streamed/fresno-state.webp", "Borac": "/assets/logos/streamed/borac.webp", "Las Vegas Raiders": "/assets/logos/streamed/las-vegas-raiders.webp", "Martin Buday": "/assets/logos/streamed/martin-buday.webp", "Brighton": "/assets/logos/streamed/brighton.webp", "Maccabi Haifa": "/assets/logos/streamed/maccabi-haifa.webp", "Sydney": "/assets/logos/streamed/sydney.webp", "Australia": "/assets/logos/streamed/australia.webp", "Southern University": "/assets/logos/streamed/southern-university.webp", "Pittsburgh Penguins": "/assets/logos/streamed/pittsburgh-penguins.webp", "Nebraska": "/assets/logos/streamed/nebraska.webp", "Bhutan": "/assets/logos/streamed/bhutan.webp", "Cleveland Charge": "/assets/logos/streamed/cleveland-charge.webp", "Wolverhampton Wanderers": "/assets/logos/streamed/wolverhampton-wanderers.webp", "Penn State": "/assets/logos/streamed/penn-state.webp", "Munchen": "/assets/logos/streamed/munchen.webp", "Enisey": "/assets/logos/streamed/enisey.webp", "Philadelphia Eagles": "/assets/logos/streamed/philadelphia-eagles.webp", "Paris": "/assets/logos/streamed/paris.webp", "New Mexico": "/assets/logos/streamed/new-mexico.webp", "England": "/assets/logos/streamed/england.webp", "Sale Sharks": "/assets/logos/streamed/sale-sharks.webp", "Bremerhaven": "/assets/logos/streamed/bremerhaven.webp", "Truro City": "/assets/logos/streamed/truro-city.webp", "Academico Viseu": "/assets/logos/streamed/academico-viseu.webp", "Wycombe Wanderers": "/assets/logos/streamed/wycombe-wanderers.webp", "Perth Heat": "/assets/logos/streamed/perth-heat.webp", "Buducnost": "/assets/logos/streamed/buducnost.webp", "Durbans Super Giants": "/assets/logos/streamed/durbans-super-giants.webp", "Adelaide Giants": "/assets/logos/streamed/adelaide-giants.webp", "Winnipeg Jets": "/assets/logos/streamed/winnipeg-jets.webp", "La Rochelle": "/assets/logos/streamed/la-rochelle.webp", "Igokea": "/assets/logos/streamed/igokea.webp", "Lincoln City": "/assets/logos/streamed/lincoln-city.webp", "Hk Olimpija": "/assets/logos/streamed/hk-olimpija.webp", "Al Hilal": "/assets/logos/streamed/al-hilal.webp", "Farense": "/assets/logos/streamed/farense.webp", "Al Najma": "/assets/logos/streamed/al-najma.webp", "Desert Vipers": "/assets/logos/streamed/desert-vipers.webp", "Utah Mammoth": "/assets/logos/streamed/utah-mammoth.webp", "Neom": "/assets/logos/streamed/neom.webp", "Tasmania Jackjumpers": "/assets/logos/streamed/tasmania-jackjumpers.webp", "Jl Bourg": "/assets/logos/streamed/jl-bourg.webp", "St Bonaventure": "/assets/logos/streamed/st-bonaventure.webp", "Wichita State": "/assets/logos/streamed/wichita-state.webp", "Sheffield Wednesday": "/assets/logos/streamed/sheffield-wednesday.webp", "Vaxjo": "/assets/logos/streamed/vaxjo.webp", "Finland U20": "/assets/logos/streamed/finland-u20.webp", "Palermo": "/assets/logos/streamed/palermo.webp", "Walsall": "/assets/logos/streamed/walsall.webp", "Dartmouth": "/assets/logos/streamed/dartmouth.webp", "Florida International": "/assets/logos/streamed/florida-international.webp", "Plymouth Argyle": "/assets/logos/streamed/plymouth-argyle.webp", "Forca Lleida": "/assets/logos/streamed/forca-lleida.webp", "Tottenham Hotspur": "/assets/logos/streamed/tottenham-hotspur.webp", "Illinois Fighting Illini": "/assets/logos/streamed/illinois-fighting-illini.webp", "Guimaraes": "/assets/logos/streamed/guimaraes.webp", "Flavio Cobolli": "/assets/logos/streamed/flavio-cobolli.webp", "Florida International Panthers": "/assets/logos/streamed/florida-international-panthers.webp", "Adelaide United W": "/assets/logos/streamed/adelaide-united-w.webp", "Bristol Rovers": "/assets/logos/streamed/bristol-rovers.webp", "Doncaster Rovers": "/assets/logos/streamed/doncaster-rovers.webp", "Seattle Kraken": "/assets/logos/streamed/seattle-kraken.webp", "Maryland": "/assets/logos/streamed/maryland.webp", "Linkoping": "/assets/logos/streamed/linkoping.webp", "New York Islanders": "/assets/logos/streamed/new-york-islanders.webp", "Timra": "/assets/logos/streamed/timra.webp", "Rzeszow W": "/assets/logos/streamed/rzeszow-w.webp", "Siauliai": "/assets/logos/streamed/siauliai.webp", "Western Sydney Wanderers": "/assets/logos/streamed/western-sydney-wanderers.webp", "New York Pwhl": "/assets/logos/streamed/new-york-pwhl.webp", "Durban Super Giants": "/assets/logos/streamed/durban-super-giants.webp", "Long Island Nets": "/assets/logos/streamed/long-island-nets.webp", "Indiana Pacers": "/assets/logos/streamed/indiana-pacers.webp", "Rutgers": "/assets/logos/streamed/rutgers.webp", "San Diego State": "/assets/logos/streamed/san-diego-state.webp", "Vasas": "/assets/logos/streamed/vasas.webp", "Al Riyadh": "/assets/logos/streamed/al-riyadh.webp", "North Carolina Central": "/assets/logos/streamed/north-carolina-central.webp", "Latvia": "/assets/logos/streamed/latvia.webp", "Swansea City": "/assets/logos/streamed/swansea-city.webp", "Toronto Raptors": "/assets/logos/streamed/toronto-raptors.webp", "Notts County": "/assets/logos/streamed/notts-county.webp", "San Antonio Spurs": "/assets/logos/streamed/san-antonio-spurs.webp", "Manchester City": "/assets/logos/streamed/manchester-city.webp", "Celtic": "/assets/logos/streamed/celtic.webp", "Usa U20": "/assets/logos/streamed/usa-u20.webp", "Maccabi Tel Aviv Bc": "/assets/logos/streamed/maccabi-tel-aviv-bc.webp", "Trier": "/assets/logos/streamed/trier.webp", "Grand Rapids Gold": "/assets/logos/streamed/grand-rapids-gold.webp", "Otago Volts": "/assets/logos/streamed/otago-volts.webp", "Adler Mannheim": "/assets/logos/streamed/adler-mannheim.webp", "College Park Skyhawks": "/assets/logos/streamed/college-park-skyhawks.webp", "Hv 71": "/assets/logos/streamed/hv-71.webp", "Leyton Orient": "/assets/logos/streamed/leyton-orient.webp", "Lusitania Lourosa": "/assets/logos/streamed/lusitania-lourosa.webp", "Juventus": "/assets/logos/streamed/juventus.webp", "Schwenninger": "/assets/logos/streamed/schwenninger.webp", "Villanova": "/assets/logos/streamed/villanova.webp", "Chemnitz": "/assets/logos/streamed/chemnitz.webp", "Milton Keynes Dons": "/assets/logos/streamed/milton-keynes-dons.webp", "Orlando Magic": "/assets/logos/streamed/orlando-magic.webp", "Monza": "/assets/logos/streamed/monza.webp", "Luneburg": "/assets/logos/streamed/luneburg.webp", "Harlequins": "/assets/logos/streamed/harlequins.webp", "Al Ahli": "/assets/logos/streamed/al-ahli.webp", "Utah Utes": "/assets/logos/streamed/utah-utes.webp", "Spezia": "/assets/logos/streamed/spezia.webp", "Newcastle Eagles": "/assets/logos/streamed/newcastle-eagles.webp", "Schwenninger Wild Wings": "/assets/logos/streamed/schwenninger-wild-wings.webp", "Uganda": "/assets/logos/streamed/uganda.webp", "Tlaxcala": "/assets/logos/streamed/tlaxcala.webp", "Premiership Aberdeen": "/assets/logos/streamed/premiership-aberdeen.webp", "Leeds United": "/assets/logos/streamed/leeds-united.webp", "Memphis": "/assets/logos/streamed/memphis.webp", "Auburn": "/assets/logos/streamed/auburn.webp", "Ryan Meikle": "/assets/logos/streamed/ryan-meikle.webp", "Damac": "/assets/logos/streamed/damac.webp", "Panionios": "/assets/logos/streamed/panionios.webp", "Stade Toulousain": "/assets/logos/streamed/stade-toulousain.webp", "Utsa Roadrunners": "/assets/logos/streamed/utsa-roadrunners.webp", "Al Taawon": "/assets/logos/streamed/al-taawon.webp", "Dresdner Eislowen": "/assets/logos/streamed/dresdner-eislowen.webp", "Livingston": "/assets/logos/streamed/livingston.webp", "Washington Capitals": "/assets/logos/streamed/washington-capitals.webp", "Salford City": "/assets/logos/streamed/salford-city.webp", "Gran Canaria": "/assets/logos/streamed/gran-canaria.webp", "Paris Basketball": "/assets/logos/streamed/paris-basketball.webp", "St Louis": "/assets/logos/streamed/st-louis.webp", "Los Angeles Rams": "/assets/logos/streamed/los-angeles-rams.webp", "Surrey 89Ers": "/assets/logos/streamed/surrey-89ers.webp", "Canterbury Kings": "/assets/logos/streamed/canterbury-kings.webp", "Wimbledon": "/assets/logos/streamed/wimbledon.webp", "Miami Fl": "/assets/logos/streamed/miami-fl.webp", "Cluj Napoca": "/assets/logos/streamed/cluj-napoca.webp", "Minnesota": "/assets/logos/streamed/minnesota.webp", "Bilbao": "/assets/logos/streamed/bilbao.webp", "East Carolina": "/assets/logos/streamed/east-carolina.webp", "Zalgiris Kaunas": "/assets/logos/streamed/zalgiris-kaunas.webp", "Northampton Saints": "/assets/logos/streamed/northampton-saints.webp", "Ulm": "/assets/logos/streamed/ulm.webp", "Bari": "/assets/logos/streamed/bari.webp", "Women Western Sydney Wanderers W": "/assets/logos/streamed/women-western-sydney-wanderers-w.webp", "West Ham United": "/assets/logos/streamed/west-ham-united.webp", "Sheffield Utd": "/assets/logos/streamed/sheffield-utd.webp", "Nebraska O": "/assets/logos/streamed/nebraska-o.webp", "Birmingham Squadron": "/assets/logos/streamed/birmingham-squadron.webp", "Vegas Golden Knights": "/assets/logos/streamed/vegas-golden-knights.webp", "San Jose Sharks": "/assets/logos/streamed/san-jose-sharks.webp", "Qatar": "/assets/logos/streamed/qatar.webp", "Lulea": "/assets/logos/streamed/lulea.webp", "Nashville Predators": "/assets/logos/streamed/nashville-predators.webp", "Toronto Maple Leafs": "/assets/logos/streamed/toronto-maple-leafs.webp", "Vancouver Pwhl W": "/assets/logos/streamed/vancouver-pwhl-w.webp", "Pa\u00e7os De Ferreira": "/assets/logos/streamed/pa\u00e7os-de-ferreira.webp", "Wigan Athletic": "/assets/logos/streamed/wigan-athletic.webp", "Nc Wilmington": "/assets/logos/streamed/nc-wilmington.webp", "Real Madrid Baloncesto": "/assets/logos/streamed/real-madrid-baloncesto.webp", "Persija Jakarta": "/assets/logos/streamed/persija-jakarta.webp", "Breogan": "/assets/logos/streamed/breogan.webp", "Rotherham United": "/assets/logos/streamed/rotherham-united.webp", "Sampdoria": "/assets/logos/streamed/sampdoria.webp", "Los Angeles Clippers": "/assets/logos/streamed/los-angeles-clippers.webp", "Colchester United": "/assets/logos/streamed/colchester-united.webp", "Hibernian": "/assets/logos/streamed/hibernian.webp", "Empoli": "/assets/logos/streamed/empoli.webp", "Hapoel Ibi Tel Aviv": "/assets/logos/streamed/hapoel-ibi-tel-aviv.webp", "Macarthur": "/assets/logos/streamed/macarthur.webp", "Pescara": "/assets/logos/streamed/pescara.webp", "Union Saint Gilloise": "/assets/logos/streamed/union-saint-gilloise.webp", "Qpr": "/assets/logos/streamed/qpr.webp", "Justin Hood": "/assets/logos/streamed/justin-hood.webp", "Virtus Pallacanestro Bologna": "/assets/logos/streamed/virtus-pallacanestro-bologna.webp", "Sacramento Kings": "/assets/logos/streamed/sacramento-kings.webp", "Noblesville Boom": "/assets/logos/streamed/noblesville-boom.webp", "Women Adelaide United W": "/assets/logos/streamed/women-adelaide-united-w.webp", "Manresa": "/assets/logos/streamed/manresa.webp", "Valencia Basket": "/assets/logos/streamed/valencia-basket.webp", "Georgia Southern": "/assets/logos/streamed/georgia-southern.webp", "Hc Twk Innsbruck": "/assets/logos/streamed/hc-twk-innsbruck.webp", "Clemson": "/assets/logos/streamed/clemson.webp", "Mozambique": "/assets/logos/streamed/mozambique.webp", "Howard": "/assets/logos/streamed/howard.webp", "Dundee": "/assets/logos/streamed/dundee.webp", "Maine Celtics": "/assets/logos/streamed/maine-celtics.webp", "Ferreira Do Zezere": "/assets/logos/streamed/ferreira-do-zezere.webp", "Pretoria Capitals": "/assets/logos/streamed/pretoria-capitals.webp", "Corona Brasov": "/assets/logos/streamed/corona-brasov.webp", "Boluspor": "/assets/logos/streamed/boluspor.webp", "Hc Slovan Bratislava": "/assets/logos/streamed/hc-slovan-bratislava.webp", "Phoenix Suns": "/assets/logos/streamed/phoenix-suns.webp", "Notre Dame": "/assets/logos/streamed/notre-dame.webp", "Barnet": "/assets/logos/streamed/barnet.webp", "Perth Glory W": "/assets/logos/streamed/perth-glory-w.webp", "Coastal Carolina": "/assets/logos/streamed/coastal-carolina.webp", "Nebraska Cornhuskers": "/assets/logos/streamed/nebraska-cornhuskers.webp", "Shrewsbury Town": "/assets/logos/streamed/shrewsbury-town.webp", "Roma": "/assets/logos/streamed/roma.webp", "Sunrisers Eastern Cape": "/assets/logos/streamed/sunrisers-eastern-cape.webp", "New York Jets": "/assets/logos/streamed/new-york-jets.webp", "Tba": "/assets/logos/streamed/tba.webp", "Partizan": "/assets/logos/streamed/partizan.webp", "Oregon": "/assets/logos/streamed/oregon.webp", "Cantu": "/assets/logos/streamed/cantu.webp", "Aris": "/assets/logos/streamed/aris.webp", "Bnei Sakhnin": "/assets/logos/streamed/bnei-sakhnin.webp", "Panathinaikos": "/assets/logos/streamed/panathinaikos.webp", "Pachuca": "/assets/logos/streamed/pachuca.webp", "Sassuolo": "/assets/logos/streamed/sassuolo.webp", "Augsburger Panther": "/assets/logos/streamed/augsburger-panther.webp", "Wellington Firebirds": "/assets/logos/streamed/wellington-firebirds.webp", "Grizzlys Wolfsburg": "/assets/logos/streamed/grizzlys-wolfsburg.webp", "Sunderland": "/assets/logos/streamed/sunderland.webp", "California": "/assets/logos/streamed/california.webp", "Senegal": "/assets/logos/streamed/senegal.webp", "Congo Dr": "/assets/logos/streamed/congo-dr.webp", "Czech Republic U20": "/assets/logos/streamed/czech-republic-u20.webp", "Slovan Bratislava": "/assets/logos/streamed/slovan-bratislava.webp", "Brynas": "/assets/logos/streamed/brynas.webp", "Malmo": "/assets/logos/streamed/malmo.webp", "Pro League Neom": "/assets/logos/streamed/pro-league-neom.webp", "Marquette": "/assets/logos/streamed/marquette.webp", "Alcorn State": "/assets/logos/streamed/alcorn-state.webp", "Burkina Faso": "/assets/logos/streamed/burkina-faso.webp", "Boise State": "/assets/logos/streamed/boise-state.webp", "Washington": "/assets/logos/streamed/washington.webp", "Bolton Wanderers": "/assets/logos/streamed/bolton-wanderers.webp", "London Lions": "/assets/logos/streamed/london-lions.webp", "Equatorial Guinea": "/assets/logos/streamed/equatorial-guinea.webp", "Grimsby Town": "/assets/logos/streamed/grimsby-town.webp", "Traktor Chelyabinsk": "/assets/logos/streamed/traktor-chelyabinsk.webp", "Joburg Super Kings": "/assets/logos/streamed/joburg-super-kings.webp", "Tourcoing": "/assets/logos/streamed/tourcoing.webp", "Florida": "/assets/logos/streamed/florida.webp", "Al Fayha": "/assets/logos/streamed/al-fayha.webp", "Texas Tech": "/assets/logos/streamed/texas-tech.webp", "Cedevita Olimpija": "/assets/logos/streamed/cedevita-olimpija.webp", "Zimbabwe": "/assets/logos/streamed/zimbabwe.webp", "Rice": "/assets/logos/streamed/rice.webp", "Western Sydney Wanderers W": "/assets/logos/streamed/western-sydney-wanderers-w.webp", "St Mirren": "/assets/logos/streamed/st-mirren.webp", "Truro": "/assets/logos/streamed/truro.webp", "Paarl Royals": "/assets/logos/streamed/paarl-royals.webp", "Rio Ave": "/assets/logos/streamed/rio-ave.webp", "Cal State Northridge": "/assets/logos/streamed/cal-state-northridge.webp", "Bristol Flyers": "/assets/logos/streamed/bristol-flyers.webp", "Stevenage": "/assets/logos/streamed/stevenage.webp", "South Carolina": "/assets/logos/streamed/south-carolina.webp", "As Monaco Basket": "/assets/logos/streamed/as-monaco-basket.webp", "Reading": "/assets/logos/streamed/reading.webp", "Carrarese": "/assets/logos/streamed/carrarese.webp", "Traktor": "/assets/logos/streamed/traktor.webp", "Al Shamal": "/assets/logos/streamed/al-shamal.webp", "Accrington Stanley": "/assets/logos/streamed/accrington-stanley.webp", "Sweden U20": "/assets/logos/streamed/sweden-u20.webp", "Keciorengucu": "/assets/logos/streamed/keciorengucu.webp", "Standard Liege": "/assets/logos/streamed/standard-liege.webp", "Kilmarnock": "/assets/logos/streamed/kilmarnock.webp", "Queens Royals": "/assets/logos/streamed/queens-royals.webp", "New York Knicks": "/assets/logos/streamed/new-york-knicks.webp", "Leicester Riders": "/assets/logos/streamed/leicester-riders.webp", "Modena": "/assets/logos/streamed/modena.webp", "Utah Jazz": "/assets/logos/streamed/utah-jazz.webp", "Istanbulspor": "/assets/logos/streamed/istanbulspor.webp", "Pisa": "/assets/logos/streamed/pisa.webp", "Al-Khaleej": "/assets/logos/streamed/al-khaleej.webp", "Al-Fateh": "/assets/logos/streamed/al-fateh.webp", "Al-Sadd": "/assets/logos/streamed/al-sadd.webp", "TBA": "/assets/logos/streamed/tba.webp", "Philadelphia 76ers": "/assets/logos/streamed/philadelphia-76ers.webp", "Brighton and Hove Albion": "/assets/logos/tsdb/brighton-and-hove-albion.webp", "AVS": "/assets/logos/tsdb/avs.webp", "England tour of Australia: Australia": "/assets/logos/streamed/australia.webp", "St. Louis Blues": "/assets/logos/streamed/st-louis-blues.webp", "IL T20: TBA": "/assets/logos/streamed/tba.webp", "Durban's Super Giants": "/assets/logos/streamed/durbans-super-giants.webp", "Bahcesehir Kol.": "/assets/logos/streamed/bahcesehir-kol.webp", "Al-Ettifaq": "/assets/logos/streamed/al-ettifaq.webp", "Al-Nassr": "/assets/logos/streamed/al-nassr.webp", "Africa Cup of Nations: Botswana": "/assets/logos/streamed/botswana.webp", "Congo DR": "/assets/logos/streamed/congo-dr.webp", "Hapoel IBI Tel Aviv": "/assets/logos/streamed/hapoel-ibi-tel-aviv.webp", "DR Congo": "/assets/logos/streamed/dr-congo.webp", "LDLC ASVEL Villeurbanne": "/assets/logos/streamed/ldlc-asvel-villeurbanne.webp", "Surrey 89ers": "/assets/logos/streamed/surrey-89ers.webp", "AS Monaco Basket": "/assets/logos/streamed/as-monaco-basket.webp", "Segunda Liga: Torreense": "/assets/logos/streamed/torreense.webp", "NEOM": "/assets/logos/streamed/neom.webp", "Pro League: NEOM": "/assets/logos/streamed/neom.webp", "Al-Ittihad": "/assets/logos/streamed/al-ittihad.webp", "Al-Hilal Saudi": "/assets/logos/streamed/al-hilal-saudi.webp", "A-League: Auckland": "/assets/logos/streamed/auckland.webp", "AC Milan": "/assets/logos/tsdb/ac-milan.webp", "Brighton & Hove Albion": "/assets/logos/streamed/brighton-hove-albion.webp", "Athletic": "/assets/logos/tsdb/athletics.webp", "AS Monaco": "/assets/logos/streamed/as-monaco.webp", "AJ Auxerre": "/assets/logos/tsdb/auxerre.webp", "UMass Lowell": "/assets/logos/streamed/umass-lowell.webp", "William & Mary": "/assets/logos/streamed/william-mary.webp", "NC Wilmington": "/assets/logos/streamed/nc-wilmington.webp", "North Carolina A&T": "/assets/logos/streamed/north-carolina-at.webp", "Miami FL": "/assets/logos/streamed/miami-fl.webp", "DePaul": "/assets/logos/streamed/depaul.webp", "St. Bonaventure": "/assets/logos/streamed/st-bonaventure.webp", "VCU Rams": "/assets/logos/streamed/vcu-rams.webp", "SCM Craiova": "/assets/logos/streamed/scm-craiova.webp", "Gy\u0151ri Audi ETO KC": "/assets/logos/streamed/gy\u0151ri-audi-eto-kc.webp", "Al-Hazm": "/assets/logos/streamed/al-hazm.webp", "CSM Oradea": "/assets/logos/streamed/csm-oradea.webp", "QPR": "/assets/logos/streamed/qpr.webp", "USA U20": "/assets/logos/streamed/usa-u20.webp", "Al-Ahli": "/assets/logos/streamed/al-ahli.webp", "Al-Fayha": "/assets/logos/streamed/al-fayha.webp", "BC Mures Targu": "/assets/logos/streamed/bc-mures-targu.webp", "JL Bourg": "/assets/logos/streamed/jl-bourg.webp", "Hapoel M. Jerusalem": "/assets/logos/streamed/hapoel-m-jerusalem.webp", "Lyon-Villeurbanne": "/assets/logos/streamed/lyon-villeurbanne.webp", "HK Nitra": "/assets/logos/streamed/hk-nitra.webp", "HC Slovan Bratislava": "/assets/logos/streamed/hc-slovan-bratislava.webp", "HV 71": "/assets/logos/streamed/hv-71.webp", "HK Olimpija": "/assets/logos/streamed/hk-olimpija.webp", "KAC": "/assets/logos/streamed/kac.webp", "Ferreira do Zezere": "/assets/logos/streamed/ferreira-do-zezere.webp", "Tasmania JackJumpers": "/assets/logos/streamed/tasmania-jackjumpers.webp", "Vancouver PWHL W": "/assets/logos/streamed/vancouver-pwhl-w.webp"}, "leagues": {"Nhl Hockey": "/assets/logos/leagues/nhl-hockey.webp", "Acb": "/assets/logos/leagues/acb.webp", "Ncaa American Football": "/assets/logos/leagues/ncaa-american-football.webp", "Tipsport Liga": "/assets/logos/leagues/tipsport-liga.webp", "Euroleague": "/assets/logos/leagues/euroleague.webp", "S\u00fcper Ligi": "/assets/logos/leagues/s\u00fcper-ligi.webp", "Liga Portugal 2": "/assets/logos/leagues/liga-portugal-2.webp", "Liga Portugal Betclic": "/assets/logos/leagues/liga-portugal-betclic.webp", "Indonesia Super League": "/assets/logos/leagues/indonesia-super-league.webp", "Alps Hockey League": "/assets/logos/leagues/alps-hockey-league.webp", "Shl": "/assets/logos/leagues/shl.webp", "The Ashes": "/assets/logos/leagues/the-ashes.webp", "Ice Hockey": "/assets/logos/leagues/ice-hockey.webp", "Africa Cup Of Nations Group A": "/assets/logos/leagues/africa-cup-of-nations-group-a.webp", "Serie A": "/assets/logos/leagues/serie-a.webp", "Nhl": "/assets/logos/leagues/nhl.webp", "Africa Cup Of Nations Group E": "/assets/logos/leagues/africa-cup-of-nations-group-e.webp", "Top 14": "/assets/logos/leagues/top-14.webp", "Basket League": "/assets/logos/leagues/basket-league.webp", "Aba League": "/assets/logos/leagues/aba-league.webp", "Nfl": "/assets/logos/leagues/nfl.webp", "1 Bundesliga": "/assets/logos/leagues/1-bundesliga.webp", "Tff 1 Lig": "/assets/logos/leagues/tff-1-lig.webp", "Pdc World Championship 2026": "/assets/logos/leagues/pdc-world-championship-2026.webp", "Nba G League": "/assets/logos/leagues/nba-g-league.webp", "Saudi Professional League": "/assets/logos/leagues/saudi-professional-league.webp", "Premier League": "/assets/logos/leagues/premier-league.webp", "U20 World Championship Group B": "/assets/logos/leagues/u20-world-championship-group-b.webp", "Bbl": "/assets/logos/leagues/bbl.webp", "Ice Hockey League": "/assets/logos/leagues/ice-hockey-league.webp", "Africa Cup Of Nations Group D": "/assets/logos/leagues/africa-cup-of-nations-group-d.webp", "Khl": "/assets/logos/leagues/khl.webp", "Turkey Lig 1": "/assets/logos/leagues/turkey-lig-1.webp", "Africa Cup Of Nations Group B": "/assets/logos/leagues/africa-cup-of-nations-group-b.webp", "Eurocup": "/assets/logos/leagues/eurocup.webp", "World Tennis Continental Cup": "/assets/logos/leagues/world-tennis-continental-cup.webp", "Ligat Haal": "/assets/logos/leagues/ligat-haal.webp", "Nba": "/assets/logos/leagues/nba.webp", "Portugal   League 2": "/assets/logos/leagues/portugal---league-2.webp", "Pwhl": "/assets/logos/leagues/pwhl.webp", "Kls": "/assets/logos/leagues/kls.webp", "Saudi Pro League": "/assets/logos/leagues/saudi-pro-league.webp", "1 Lig": "/assets/logos/leagues/1-lig.webp", "Wnbl Women": "/assets/logos/leagues/wnbl-women.webp", "Liga Sportzone": "/assets/logos/leagues/liga-sportzone.webp", "Premiership": "/assets/logos/leagues/premiership.webp", "Oktagon": "/assets/logos/leagues/oktagon.webp", "Africa Cup Of Nations Group F": "/assets/logos/leagues/africa-cup-of-nations-group-f.webp", "Africa Cup Of Nations Group C": "/assets/logos/leagues/africa-cup-of-nations-group-c.webp", "Championship": "/assets/logos/leagues/championship.webp", "Lega A": "/assets/logos/leagues/lega-a.webp", "Ncaa": "/assets/logos/leagues/ncaa.webp", "Scottish Premiership": "/assets/logos/leagues/scottish-premiership.webp", "U20 World Championship Group A": "/assets/logos/leagues/u20-world-championship-group-a.webp", "Nbl": "/assets/logos/leagues/nbl.webp", "Sa20": "/assets/logos/leagues/sa20.webp", "Lkl": "/assets/logos/leagues/lkl.webp", "A League Men": "/assets/logos/leagues/a-league-men.webp", "Africa Cup Of Nations": "/assets/logos/leagues/africa-cup-of-nations.webp", "Orlen Liga Women": "/assets/logos/leagues/orlen-liga-women.webp", "Sweden Hockey Shl": "/assets/logos/leagues/sweden-hockey-shl.webp", "A League Women": "/assets/logos/leagues/a-league-women.webp", "World Championship U20": "/assets/logos/leagues/world-championship-u20.webp", "Vtb United League": "/assets/logos/leagues/vtb-united-league.webp", "National League": "/assets/logos/leagues/national-league.webp", "Football": "/assets/logos/leagues/football.webp", "Big Bash League": "/assets/logos/leagues/big-bash-league.webp", "Ligue A": "/assets/logos/leagues/ligue-a.webp", "Aviva Premiership Rugby": "/assets/logos/leagues/aviva-premiership-rugby.webp", "Stars League": "/assets/logos/leagues/stars-league.webp", "KHL": "/assets/logos/leagues/khl.webp", "NHL": "/assets/logos/leagues/nhl.webp", "NBA": "/assets/logos/leagues/nba.webp", "NFL": "/assets/logos/leagues/nfl.webp", "football": "/assets/logos/leagues/football.webp", "NCAA": "/assets/logos/leagues/ncaa.webp", "BBL": "/assets/logos/leagues/bbl.webp", "ACB": "/assets/logos/leagues/acb.webp", "NBL": "/assets/logos/leagues/nbl.webp", "SHL": "/assets/logos/leagues/shl.webp", "PWHL": "/assets/logos/leagues/pwhl.webp"}};       // Format: { "teams": {...}, "leagues": {...} }
+
         const SHARE_CONFIG = {"excluded": ["dmca", "contact", "about", "privacy"], "counts": {"telegram": 12000, "whatsapp": 14400, "reddit": 60077, "twitter": 5544}};
 
-        const NAME_FIXES = {
-            'americanfootball': 'American Football', 'collegefootball': 'College Football', 'ncaafootball': 'NCAA Football',
-            'icehockey': 'Ice Hockey', 'rugbyunion': 'Rugby Union', 'rugbyleague': 'Rugby League', 'formula1': 'Formula 1',
-            'premierleague': 'Premier League', 'championsleague': 'Champions League', 'europaleague': 'Europa League',
-            'superbowl': 'Super Bowl', 'mma': 'MMA' 
+        const GENERIC_SCORES = {
+            "Soccer": 100, "Football": 100, "Cricket": 95, "Tennis": 90, "Rugby": 85,
+            "American Football": 80, "Basketball": 75, "Ice Hockey": 70, "Baseball": 65,
+            "Fighting": 60, "MMA": 60, "Boxing": 60, "Motorsport": 55, "Golf": 50
         };
 
-        const SMART_ALIASES = {
-            'football': 'soccer', 'soccer': 'soccer', 'premierleague': 'soccer', 'championsleague': 'soccer', 
-            'nfl': 'americanfootball', 'americanfootball': 'americanfootball', 'superbowl': 'americanfootball',
-            'nba': 'basketball', 'basketball': 'basketball', 'mlb': 'baseball', 'baseball': 'baseball',
-            'nhl': 'icehockey', 'icehockey': 'icehockey', 'ufc': 'mma', 'mma': 'mma', 'boxing': 'boxing',
-            'f1': 'motorsport', 'formula1': 'motorsport', 'cricket': 'cricket', 'rugby': 'rugby', 'tennis': 'tennis', 'golf': 'golf'
-        };
+        // Flatten the league map for O(1) lookup: { "team-slug": "League Name" }
+        let teamToLeagueMap = {};
+        if (RAW_LEAGUE_MAP) {
+            for (const [leagueName, teams] of Object.entries(RAW_LEAGUE_MAP)) {
+                if (Array.isArray(teams)) {
+                    teams.forEach(slug => {
+                        teamToLeagueMap[slug] = leagueName;
+                    });
+                }
+            }
+        }
 
         let allMatches = [];
-        let imageMap = { teams: {} }; 
-        let leagueMap = {}; 
         let scrollTimeout;
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -380,17 +392,10 @@
 
         async function loadMatches() {
             try {
-                const [resMatches, resImages, resLeagues] = await Promise.allSettled([
-                    fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`),
-                    fetch('/assets/data/image_map.json'),
-                    fetch('/assets/data/league_map.json')
-                ]);
-
-                if (resImages.status === 'fulfilled' && resImages.value.ok) imageMap = await resImages.value.json();
-                if (resLeagues.status === 'fulfilled' && resLeagues.value.ok) leagueMap = await resLeagues.value.json();
-
-                if (resMatches.status === 'fulfilled' && resMatches.value.ok) {
-                    const data = await resMatches.value.json();
+                const resMatches = await fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`);
+                
+                if (resMatches.ok) {
+                    const data = await resMatches.json();
                     
                     data.matches.forEach(m => {
                         if (!m.startTimeUnix && m.timestamp) {
@@ -401,85 +406,261 @@
                     // FILTER OUT TBA vs TBA MATCHES
                     allMatches = data.matches.filter(m => !(m.home_team === 'TBA' && m.away_team === 'TBA'));
                     
-                    enrichMatchData(allMatches, leagueMap);
-                    renderApp(allMatches);
+                    // Process matches through resolution pipeline
+                    const processedMatches = processMatches(allMatches);
+                    renderApp(processedMatches);
                 } else {
                     console.error("Failed to load matches");
                 }
             } catch(e) { console.error(e); }
         }
 
-        function enrichMatchData(matches, lMap) {
-            if (!lMap) return;
-            const toKey = (name) => name ? name.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-') : "";
-            const generics = ['football', 'soccer', 'basketball', 'general', 'live', 'sport', 'match', 'test', 'others', 'cricket', 'hockey'];
+        // ============================================
+        // 1. DATA RESOLUTION PIPELINE (Refined Logic)
+        // ============================================
+        function processMatches(matches) {
+            return matches.map(m => {
+                const homeSlug = slugify(m.home_team);
+                const awaySlug = slugify(m.away_team);
+                
+                // A. RESOLVE LEAGUE
+                // Priority: Admin Map (Strict 2-team) -> Admin Fix (Prefix) -> API
+                let finalLeague = (m.league || m.sport || "Other").trim();
+                let leagueSource = "API";
 
-            matches.forEach(m => {
-                const currentLeague = (m.league || "").toLowerCase();
-                const isWeak = generics.includes(currentLeague) || !m.league;
-
-                if (isWeak) {
-                    const keyA = toKey(m.home_team);
-                    const keyB = toKey(m.away_team);
-                    const leagueA = lMap[keyA];
-                    const leagueB = lMap[keyB];
-
-                    if (leagueA && leagueB && leagueA === leagueB) {
-                        m.league = leagueA;
-                    } else if (!m.away_team && leagueA) {
-                         m.league = leagueA;
+                // Check Admin Map (Both teams must match same league)
+                if (teamToLeagueMap[homeSlug] && teamToLeagueMap[awaySlug] && teamToLeagueMap[homeSlug] === teamToLeagueMap[awaySlug]) {
+                    finalLeague = teamToLeagueMap[homeSlug];
+                    leagueSource = "Map";
+                } 
+                // Check Admin Map (Home team only - generic fallback)
+                else if (teamToLeagueMap[homeSlug]) {
+                    finalLeague = teamToLeagueMap[homeSlug];
+                    leagueSource = "MapHome";
+                }
+                // Check Priorities Prefix (Admin Fix)
+                else {
+                    for (const pKey of Object.keys(PRIORITIES)) {
+                        if (pKey.startsWith('_')) continue;
+                        if (m.home_team.toUpperCase().startsWith(pKey.toUpperCase() + ":")) {
+                            finalLeague = pKey;
+                            leagueSource = "Fix";
+                            break;
+                        }
                     }
                 }
+
+                // B. CLEAN TEAM NAMES (Colon Rule + Map Lookup)
+                const homeClean = getCleanTeamName(m.home_team, homeSlug, finalLeague);
+                const awayClean = getCleanTeamName(m.away_team, awaySlug, finalLeague);
+
+                // C. CALCULATE PRIORITY SCORE
+                const score = calculateScore(m, finalLeague);
+
+                return {
+                    ...m,
+                    finalLeague: finalLeague,
+                    displayHome: homeClean,
+                    displayAway: awayClean,
+                    priorityScore: score
+                };
             });
         }
 
+        function slugify(text) {
+            return text ? text.toString().toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/^-+|-+$/g, '') : "";
+        }
+
+        function unslugify(slug) {
+            return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }
+
+        function getCleanTeamName(rawName, slug, leagueName) {
+            if (!rawName) return "TBA";
+            
+            // 1. If map has it, use slug to human-readable
+            if (teamToLeagueMap[slug]) return unslugify(slug);
+
+            // 2. Colon Rule (League: Team -> Team)
+            let clean = rawName;
+            if (leagueName) {
+                // Escape special regex chars in league name
+                const safeLeague = leagueName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); 
+                const regex = new RegExp(`^${safeLeague}:\\s*`, 'i');
+                clean = clean.replace(regex, '');
+            }
+            
+            // 3. Fallback Clean (Common Prefixes)
+            clean = clean.replace(/^(NHL|NBA|NFL|MLB|UFC):\s*/i, '').trim();
+            
+            return clean;
+        }
+
+        function calculateScore(m, leagueName) {
+            let score = 0;
+            const boostCategories = (PRIORITIES._BOOST || "").toLowerCase().split(',').map(s => s.trim()).filter(Boolean);
+            const leagueLower = leagueName.toLowerCase();
+
+            // 1. Boost Category Check
+            if (boostCategories.some(b => leagueLower.includes(b))) {
+                score += 2000; // Massive boost
+            }
+
+            // 2. Priority List Check
+            if (PRIORITIES[leagueName]) {
+                score += PRIORITIES[leagueName].score * 10;
+            } else {
+                // Generic Sport Check
+                const sport = m.sport || "General";
+                score += (GENERIC_SCORES[sport] || 0);
+            }
+
+            // 3. Live Bonus
+            if (m.is_live) {
+                score += 5000;
+                score += (m.live_viewers || 0);
+            } else {
+                // Time decay (sooner = higher)
+                const hoursUntil = (m.startTimeUnix - Date.now()) / 3600000;
+                if (hoursUntil < 24) score += (24 - hoursUntil);
+            }
+            return score;
+        }
+
+        function normalizeKey(str) { return str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : ""; }
+
+        // ============================================
+        // 2. RENDERING LOGIC (Entity Stacking)
+        // ============================================
         function renderApp(matches) {
+            // Hide Skeletons
             document.getElementById('live-sk-head').style.display = 'none';
             document.getElementById('live-skeleton').style.display = 'none';
             document.getElementById('upcoming-skeleton').style.display = 'none';
-            
-            const liveMatches = matches.filter(m => m.is_live);
-            const renderedIds = new Set(liveMatches.map(m => m.id));
-            
+
             const now = Date.now();
             const oneDay = 24 * 60 * 60 * 1000;
-            const upcomingMatches = matches.filter(m => 
-                !m.is_live && 
-                !renderedIds.has(m.id) && 
-                (m.startTimeUnix - now) < oneDay
-            );
-            
+
+            // 1. SPLIT LIVE vs UPCOMING
+            const liveMatches = matches.filter(m => m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
+            const upcomingMatches = matches.filter(m => !m.is_live && (m.startTimeUnix - now) < oneDay)
+                                           .sort((a,b) => b.priorityScore - a.priorityScore);
+
+            // 2. RENDER LIVE (Top 5)
             renderLiveSection(liveMatches);
-            renderUpcomingGrouped(upcomingMatches);
-            
-            generateDynamicSchema(liveMatches, upcomingMatches);
+
+            // 3. RENDER TOP 15 UPCOMING (Mixed)
+            const top15 = upcomingMatches.slice(0, 15);
+            renderSection(document.getElementById('top-upcoming-container'), "Top Matches in Next 24h", top15, false, false, "🔥");
+
+            // 4. GROUP REMAINDER (Entity Stacking)
+            // Exclude matches already shown in Top 15 to avoid duplicates? 
+            // Standard approach: Show them again in categories or strict separation. 
+            // "Entity Stacking" usually implies separation. 
+            // Let's filter out Top 15 IDs from the grouped list.
+            const top15Ids = new Set(top15.map(m => m.id));
+            const remainingMatches = upcomingMatches.filter(m => !top15Ids.has(m.id));
+
+            renderGroupedSections(remainingMatches);
+
+            // 5. SCHEMA
+            generateDynamicSchema(liveMatches, top15);
         }
 
-        function formatMatchTime(unix) {
-            const isUK = TARGET_COUNTRY === 'UK';
-            const timeZone = isUK ? 'Europe/London' : 'America/New_York';
-            const suffix = isUK ? ' GMT' : ' ET';
+        function renderGroupedSections(matches) {
+            const container = document.getElementById('grouped-container');
+            container.innerHTML = '';
+
+            const boostList = (PRIORITIES._BOOST || "").toLowerCase().split(',').map(s=>s.trim()).filter(Boolean);
+            const HIDE_OTHERS = PRIORITIES._HIDE_OTHERS === true;
+
+            const buckets = {
+                boost: {},
+                leagues: {},
+                generic: {},
+                other: []
+            };
+
+            // Initialize Buckets based on Admin Config
+            Object.keys(PRIORITIES).forEach(key => {
+                if(key.startsWith('_')) return;
+                const conf = PRIORITIES[key];
+                if(conf.isHidden) return;
+                
+                if(conf.isLeague) buckets.leagues[key] = [];
+                else buckets.generic[key] = [];
+            });
+
+            // Distribute Matches
+            matches.forEach(m => {
+                const leagueName = m.finalLeague;
+                const leagueLower = leagueName.toLowerCase();
+                const sport = m.sport || "General";
+
+                // Boost?
+                if (boostList.some(b => leagueLower.includes(b))) {
+                    if (!buckets.boost[leagueName]) buckets.boost[leagueName] = [];
+                    buckets.boost[leagueName].push(m);
+                    return;
+                }
+
+                // Priority League?
+                // Check exact match or partial match with config keys
+                let placed = false;
+                for (const pKey of Object.keys(buckets.leagues)) {
+                    if (leagueLower.includes(pKey.toLowerCase())) {
+                        buckets.leagues[pKey].push(m);
+                        placed = true;
+                        break;
+                    }
+                }
+                if(placed) return;
+
+                // Priority Sport?
+                // Check against generic buckets
+                // Usually check if the *sport* matches, or if the league name indicates the sport
+                for (const pKey of Object.keys(buckets.generic)) {
+                    // Check if league name OR sport name matches the category
+                    if (leagueLower.includes(pKey.toLowerCase()) || sport.toLowerCase().includes(pKey.toLowerCase())) {
+                        buckets.generic[pKey].push(m);
+                        placed = true;
+                        break;
+                    }
+                }
+                if(placed) return;
+
+                // Other
+                if(!HIDE_OTHERS) buckets.other.push(m);
+            });
+
+            // RENDER: Boost -> Leagues -> Sports -> Other
             
-            const date = new Date(unix);
-            const timeStr = new Intl.DateTimeFormat('en-US', {
-                hour: 'numeric', minute: '2-digit', hour12: true, timeZone
-            }).format(date);
-            const dateStr = new Intl.DateTimeFormat('en-US', {
-                month: 'short', day: 'numeric', timeZone
-            }).format(date);
-            
-            return { time: timeStr + suffix, date: dateStr };
+            // Boost Sections
+            Object.keys(buckets.boost).forEach(key => {
+                if(buckets.boost[key].length) createSection(container, key, buckets.boost[key], true, true);
+            });
+
+            // Priority Leagues (Ordered by Score)
+            const sortedLeagueKeys = Object.keys(buckets.leagues).sort((a,b) => PRIORITIES[b].score - PRIORITIES[a].score);
+            sortedLeagueKeys.forEach(key => {
+                if(buckets.leagues[key].length) createSection(container, key, buckets.leagues[key], true, true);
+            });
+
+            // Generic Sports (Ordered by Score)
+            const sortedSportKeys = Object.keys(buckets.generic).sort((a,b) => PRIORITIES[b].score - PRIORITIES[a].score);
+            sortedSportKeys.forEach(key => {
+                if(buckets.generic[key].length) createSection(container, key, buckets.generic[key], false, false); // Generic usually has no league page link unless defined
+            });
+
+            // Other
+            if(buckets.other.length) {
+                createSection(container, "Upcoming Other Matches", buckets.other, false, false);
+            }
         }
 
-        window.openMatch = (id, type) => {
-            let param = 'v';
-            if (type === 'live') param = 'stream';
-            else if (type === 'info') param = 'info'; 
-            
-            const url = `${SITE_DOMAIN}/watch/?${param}=${id}`;
-            window.location.assign(url);
-        };
-
+        // ============================================
+        // 3. UI HELPERS
+        // ============================================
         function renderLiveSection(matches) {
             const wrapper = document.getElementById('live-content-wrapper');
             const topList = document.getElementById('trending-list');
@@ -496,81 +677,46 @@
             
             document.getElementById('live-count').innerText = `● ${matches.length} Live Matches`;
             
-            matches.slice(0, 5).forEach(m => topList.appendChild(createMatchRow(m, { isTrendingLive: true })));
+            matches.slice(0, 5).forEach(m => topList.appendChild(createMatchRow(m, { isLive: true })));
             
             if (matches.length > 5) {
-                matches.slice(5).forEach(m => hiddenList.appendChild(createMatchRow(m, { isTrendingLive: true })));
+                matches.slice(5).forEach(m => hiddenList.appendChild(createMatchRow(m, { isLive: true })));
                 btn.style.display = 'block'; btn.innerText = `Show ${matches.length - 5} More Matches ▼`;
                 btn.onclick = () => { hiddenList.style.display='block'; btn.style.display='none'; };
             }
         }
 
-        function normalizeKey(str) { return str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : ""; }
-        function formatSportName(raw) {
-            const key = normalizeKey(raw);
-            if(NAME_FIXES[key]) return NAME_FIXES[key];
-            return raw.charAt(0).toUpperCase() + raw.slice(1);
-        }
-
-        function renderUpcomingGrouped(matches) {
-            const container = document.getElementById('upcoming-container');
-            container.innerHTML = '';
-            const allGroups = {};
-            const HIDE_OTHERS = PRIORITIES._HIDE_OTHERS === true;
-            const groupConfigs = {};
-
-            Object.keys(PRIORITIES).forEach(pKey => {
-                if (pKey === '_HIDE_OTHERS') return;
-                const conf = PRIORITIES[pKey];
-                if (conf.isHidden) return;
-                const normPKey = normalizeKey(pKey);
-                const stackId = SMART_ALIASES[normPKey] || normPKey;
-
-                if (!groupConfigs[stackId] || conf.score > groupConfigs[stackId].score) {
-                    groupConfigs[stackId] = { score: conf.score, name: pKey, hasLink: conf.hasLink, isLeague: conf.isLeague, iconKey: pKey };
-                }
-            });
-
-            matches.forEach(m => {
-                const sportRaw = (m.sport || "General").trim();
-                const sportKey = normalizeKey(sportRaw);
-                const leagueKey = normalizeKey(m.league || "");
-                
-                let stackId = SMART_ALIASES[sportKey] || sportKey;
-                if (SMART_ALIASES[leagueKey]) stackId = SMART_ALIASES[leagueKey];
-
-                let groupName = "", groupScore = 0, hasLink = false, isLeague = false, iconKey = "";
-
-                if (groupConfigs[stackId]) {
-                    const conf = groupConfigs[stackId];
-                    groupName = conf.name; groupScore = conf.score; hasLink = conf.hasLink; isLeague = conf.isLeague; iconKey = conf.iconKey;
-                } else {
-                    if (HIDE_OTHERS) return;
-                    groupName = formatSportName(sportRaw);
-                    stackId = normalizeKey(groupName); 
-                    hasLink = false; isLeague = false; iconKey = groupName;
-                }
-
-                if (!allGroups[stackId]) {
-                    allGroups[stackId] = { name: groupName, score: groupScore, matches: [], hasLink, isLeague, iconKey: iconKey || groupName };
-                }
-                allGroups[stackId].matches.push(m);
-            });
-
-            const sortedGroups = Object.values(allGroups).sort((a,b) => b.score - a.score);
-            sortedGroups.forEach(group => {
-                group.matches.sort((a,b) => a.startTimeUnix - b.startTimeUnix);
-                createSection(container, group.name, group.matches, group.hasLink, group.iconKey, group.isLeague);
-            });
-        }
-
-        function createSection(container, title, matches, hasLink, iconKey, isLeague) {
+        function createSection(container, title, matches, hasLink, isLeague, customIcon) {
             const section = document.createElement('div');
             section.style.marginBottom = '30px';
-            let linkHtml = hasLink ? `<a href="/${normalizeKey(iconKey)}/" class="sec-right-link">View All ></a>` : '';
-            section.innerHTML = `<div class="sec-head"><div class="sec-title">${getSportIcon(iconKey)} Upcoming ${title}</div>${linkHtml}</div>`;
+            
+            // View More Link Logic (-streams suffix)
+            let linkHtml = '';
+            if (PRIORITIES[title] && PRIORITIES[title].hasLink) {
+                const slug = normalizeKey(title);
+                linkHtml = `<a href="/${slug}-streams/" class="sec-right-link">View All ></a>`;
+            }
+
+            // Header Logo Logic
+            let iconHtml = customIcon ? `<span style="font-size:1.2rem; margin-right:8px;">${customIcon}</span>` : '';
+            // Try to find image map logo for this league
+            if (IMAGE_MAP.leagues && IMAGE_MAP.leagues[title]) {
+                const logoUrl = IMAGE_MAP.leagues[title];
+                iconHtml = `<img src="${logoUrl}" class="sec-logo" alt="${title}" width="24" height="24">`;
+            } else if (!customIcon) {
+                iconHtml = `<span style="font-size:1.2rem; margin-right:8px;">${getSportIcon(title)}</span>`;
+            }
+
+            section.innerHTML = `
+                <div class="sec-head">
+                    <div class="sec-title">${iconHtml} ${title}</div>
+                    ${linkHtml}
+                </div>`;
+            
             const list = document.createElement('div');
-            matches.forEach(m => list.appendChild(createMatchRow(m, { isLive: false })));
+            matches.sort((a,b) => a.startTimeUnix - b.startTimeUnix).forEach(m => {
+                list.appendChild(createMatchRow(m, { isLive: false }));
+            });
             section.appendChild(list);
             container.appendChild(section);
         }
@@ -579,7 +725,7 @@
             const div = document.createElement('div');
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
-            // 1. TIME COLUMN
+            // Time Column
             let timeCol;
             if (m.is_live) {
                 timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
@@ -588,25 +734,25 @@
                 timeCol = `<span class="time-main">${ft.time}</span><span class="time-sub">${ft.date}</span>`; 
             }
             
-            // 2. TEAMS & LOGOS
+            // Teams Column
             const getLogo = (name) => {
-                if (imageMap.teams && imageMap.teams[name]) {
-                    const p = imageMap.teams[name];
+                if (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) {
+                    const p = IMAGE_MAP.teams[name];
                     const full = p.startsWith('/') ? p : '/' + p;
-                    return `<div class="logo-box"><img src="${full}" class="t-img" alt="${name}" loading="lazy"></div>`;
+                    return `<div class="logo-box"><img src="${full}" class="t-img" alt="${name}" loading="lazy" width="20" height="20"></div>`;
                 }
                 return `<div class="logo-box"><span class="t-logo" style="background:${getColor(name.charAt(0))}">${name.charAt(0)}</span></div>`;
             };
             
-            let teamsHtml = `<div class="team-name">${getLogo(m.home_team)} ${m.home_team}</div>`;
-            if (m.away_team) teamsHtml += `<div class="team-name">${getLogo(m.away_team)} ${m.away_team}</div>`;
+            let teamsHtml = `<div class="team-name">${getLogo(m.displayHome)} ${m.displayHome}</div>`;
+            if (m.displayAway && m.displayAway !== 'TBA') {
+                teamsHtml += `<div class="team-name">${getLogo(m.displayAway)} ${m.displayAway}</div>`;
+            }
             
-            // 3. BADGE LOGIC
-            let tagText = m.league || m.tournament || m.sport || "General";
-            const generics = ['soccer','football','basketball','hockey','cricket','rugby','tennis','match'];
-            if(generics.includes(tagText.toLowerCase()) && m.sport) tagText = m.sport;
+            // Tag Column (Accurate League Name)
+            let tagText = m.finalLeague;
             
-            // 4. META COLUMN
+            // Meta Column
             let metaHtml = '';
             if (m.is_live) {
                  metaHtml = `<div class="meta-top">👀 ${m.live_viewers || 'N/A'}</div>`;
@@ -618,27 +764,20 @@
                     </div>`;
             }
 
-            // 5. ACTION COLUMN
+            // Action Column
             let actionHtml = '';
-            
-            // Define Standard Links
-            const infoLink = `${SITE_DOMAIN}/watch/?info=${m.id}`; // Used for ALL copy buttons and Upcoming (<30m) Watch
-            
+            const infoLink = `${SITE_DOMAIN}/watch/?info=${m.id}`;
+            const copyBtn = `<button class="btn-copy-link" onclick="copyText('${infoLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
+
             if (m.is_live) {
-                actionHtml = `<button onclick="openMatch('${m.id}', 'live')" class="btn-watch" title="Watch ${m.home_team}">WATCH <span class="hd-badge">HD</span></button>`;
+                actionHtml = `<button onclick="openMatch('${m.id}', 'live')" class="btn-watch" title="Watch ${m.displayHome}">WATCH <span class="hd-badge">HD</span></button>`;
             } else {
                 const now = Date.now();
                 const diffMin = (m.startTimeUnix - now) / 60000;
-                
-                // Copy Button (ALWAYS uses ?info=)
-                const copyBtn = `<button class="btn-copy-link" onclick="copyText('${infoLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
-
                 if (diffMin <= 30) {
-                     // STARTS WITHIN 30 MINS: Watch opens ?info=
                      const watchBtn = `<button onclick="openMatch('${m.id}', 'info')" class="btn-watch">WATCH <span class="hd-badge">HD</span></button>`;
                      actionHtml = watchBtn + copyBtn;
                 } else {
-                     // STARTS LATER: Notify Button (Opens ?v= via 'v' param)
                      const notifyBtn = `<button onclick="openMatch('${m.id}', 'v')" class="btn-watch" style="background:transparent; border:1px solid #333; color:#888;">🔔 INFO</button>`;
                      actionHtml = notifyBtn + copyBtn;
                 }
@@ -648,49 +787,42 @@
             return div;
         }
 
+        // ============================================
+        // 4. UTILITIES & SCHEMA
+        // ============================================
+        function formatMatchTime(unix) {
+            const isUK = TARGET_COUNTRY === 'UK';
+            const timeZone = isUK ? 'Europe/London' : 'America/New_York';
+            const suffix = isUK ? ' GMT' : ' ET';
+            
+            const date = new Date(unix);
+            const timeStr = new Intl.DateTimeFormat('en-US', {
+                hour: 'numeric', minute: '2-digit', hour12: true, timeZone
+            }).format(date);
+            const dateStr = new Intl.DateTimeFormat('en-US', {
+                month: 'short', day: 'numeric', timeZone
+            }).format(date);
+            
+            return { time: timeStr + suffix, date: dateStr };
+        }
+
         function generateDynamicSchema(liveList, upcomingList) {
             const schemas = [];
-            
-            // 1. BROADCAST EVENT (Live)
             const now = Date.now();
             
-            // Filter live matches for schema: must not be past strict duration cutoff
-            const validLiveMatches = liveList.filter(m => {
-                const sportDurationMin = m.sport_duration || 120; // Default 120 min if missing
-                const matchEndTime = m.startTimeUnix + (sportDurationMin * 60 * 1000);
-                const schemaCutoff = matchEndTime - (20 * 60 * 1000); // 20 mins before end
-                return now < schemaCutoff;
-            }).slice(0, 5); // Max 5 live schemas
-
-            const makeEvent = (m, type) => {
-                let logoA = undefined;
-                let logoB = undefined;
+            // 1. Live Schema (Strict: Remove 20m before end)
+            liveList.forEach(m => {
+                const duration = (m.sport_duration || 120) * 60 * 1000;
+                const endTime = m.startTimeUnix + duration;
+                if (now > endTime - (20 * 60 * 1000)) return; // Too close to end
                 
-                // Only add logos if BOTH exist
-                if (imageMap.teams[m.home_team] && imageMap.teams[m.away_team]) {
-                    logoA = `${SITE_DOMAIN}/${imageMap.teams[m.home_team]}`;
-                    logoB = `${SITE_DOMAIN}/${imageMap.teams[m.away_team]}`;
-                }
+                schemas.push(createEventSchema(m, 'BroadcastEvent'));
+            });
 
-                let urlParam = 'v';
-                if(type === 'live') urlParam = 'stream';
-                // Note: For schema URL, we keep standard unless you want specific SEO urls
-                
-                return {
-                    "@context": "https://schema.org",
-                    "@type": type === 'live' ? "BroadcastEvent" : "SportsEvent",
-                    "name": `${m.home_team} vs ${m.away_team}`,
-                    "startDate": new Date(m.startTimeUnix).toISOString(),
-                    "url": `${SITE_DOMAIN}/watch/?${urlParam}=${m.id}`,
-                    "competitor": [
-                        { "@type": "SportsTeam", "name": m.home_team, "logo": logoA },
-                        { "@type": "SportsTeam", "name": m.away_team, "logo": logoB }
-                    ]
-                };
-            };
-
-            validLiveMatches.forEach(m => schemas.push(makeEvent(m, 'live')));
-            upcomingList.slice(0, 15).forEach(m => schemas.push(makeEvent(m, 'upcoming')));
+            // 2. Upcoming Schema (Strict: Only next 24h)
+            upcomingList.forEach(m => {
+                schemas.push(createEventSchema(m, 'SportsEvent'));
+            });
             
             if(schemas.length > 0) {
                 const script = document.createElement('script');
@@ -698,6 +830,28 @@
                 script.text = JSON.stringify(schemas);
                 document.head.appendChild(script);
             }
+        }
+
+        function createEventSchema(m, type) {
+            let logoA = undefined, logoB = undefined;
+            if (IMAGE_MAP.teams[m.displayHome] && IMAGE_MAP.teams[m.displayAway]) {
+                logoA = `${SITE_DOMAIN}${IMAGE_MAP.teams[m.displayHome]}`;
+                logoB = `${SITE_DOMAIN}${IMAGE_MAP.teams[m.displayAway]}`;
+            }
+            
+            const urlParam = type === 'BroadcastEvent' ? 'stream' : 'v';
+            
+            return {
+                "@context": "https://schema.org",
+                "@type": type,
+                "name": `${m.displayHome} vs ${m.displayAway}`,
+                "startDate": new Date(m.startTimeUnix).toISOString(),
+                "url": `${SITE_DOMAIN}/watch/?${urlParam}=${m.id}`,
+                "competitor": [
+                    { "@type": "SportsTeam", "name": m.displayHome, "logo": logoA },
+                    { "@type": "SportsTeam", "name": m.displayAway, "logo": logoB }
+                ]
+            };
         }
 
         function renderSocials() {
@@ -716,7 +870,7 @@
             const icons = {
                 telegram: '<svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.47-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.28L19.84 4c.75-.28 1.4.52 1.16 1.76l-2.8 13.2c-.2.9-1.09.9-1.8.6l-5.45-4.06-2.6 2.5c-.3.3-.55.55-1.1.55l.45-3.6z"/></svg>',
                 whatsapp: '<svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.33 4.97L2 22l5.25-1.38a9.86 9.86 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.51 2 12.04 2zm4.43-6.03c-.24-.12-1.41-.7-1.63-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.48-.4-.42-.54-.42h-.46c-.16 0-.42.06-.64.3C4.33 8.6 3.5 9.2 3.5 10.38c0 1.18.86 2.32.98 2.48.12.16 1.7 2.6 4.12 3.65.58.25 1.03.4 1.38.51.58.18 1.1.15 1.52.09.46-.07 1.41-.58 1.61-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg>',
-                reddit: '<svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.22 14.11c-.13.26-.35.45-.6.54-.25.09-.52.1-.78.01-.8-.28-1.76-.43-2.77-.43s-1.97.15-2.77.43c-.26.09-.53.08-.78-.01-.25-.09-.47-.28-.6-.54-.15-.3-.19-.64-.11-.96.08-.32.28-.59.56-.75.9-.53 2.05-.83 3.28-.88l.66-3.11 2.16.46c.04-.2.15-.38.31-.51s.36-.2.55-.17c.2.03.38.15.51.31.13.16.2.36.17.55l-2.16-.46-.66 3.11c1.23.05 2.38.35 3.28.88.28.16.48.43.56.75.08.32.04.66-.11.96zM12 11.25c-.97 0-1.75.78-1.75 1.75s.78 1.75 1.75 1.75 1.75-.78 1.75-1.75-.78-1.75-1.75-1.75zm-3.25-2.5c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25zm6.5 0c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25z"/></svg>',
+                reddit: '<svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.22 14.11c-.13.26-.35.45-.6.54-.25.09-.52.1-.78.01-.8-.28-1.76-.43-2.77-.43s-1.97.15-2.77.43c-.26.09-.53.08-.78-.01-.25-.09-.47-.28-.6-.54-.15-.3-.19-.64-.11-.96.08-.32.28-.59.56-.75.9-.53 2.05-.83 3.28-.88l.66-3.11 2.16.46c.04-.2.15-.38.31-.51s.36-.2.55-.17c.2.03.38.15.51.31.13.16.2.36.17.55l-2.16-.46-.66 3.11c1.23.05 2.38.35 3.28.88.28.16.48.43.56.75.08.32.04.66-.11.96zM12 11.25c-.97 0-1.75.78-1.75 1.75s.78 1.75 1.75 1.75 1.75-.78 1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75zm-3.25-2.5c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25zm6.5 0c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25z"/></svg>',
                 twitter: '<svg viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>',
                 copy: '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>'
             };
