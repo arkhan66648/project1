@@ -37,8 +37,8 @@ jobs:
           git config --global user.name "AssetBot"
           git config --global user.email "bot@noreply.github.com"
           
-          git add assets/logos/
-          git add assets/data/
+          # Use -A to stage new files AND deletions
+          git add -A
           
           if git diff --staged --quiet; then
             echo "No changes to assets."
