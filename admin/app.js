@@ -182,6 +182,7 @@ async function verifyAndLoad(token) {
 // ==========================================
 function populateUI() {
     const s = configData.site_settings || {};
+    setVal('apiUrl', s.api_url);
     setVal('titleP1', s.title_part_1);
     setVal('titleP2', s.title_part_2);
     setVal('siteDomain', s.domain);
