@@ -28,10 +28,12 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
+          # CRITICAL FIX: Use 'git add -A' to stage NEW files AND DELETIONS
+          git add -A
+          
           # Check if there are changes to commit
           if [[ -n $(git status -s) ]]; then
-            git add assets/logos/streamed/* assets/data/*.json
-            git commit -m "chore: clean up league prefixes from images and maps"
+            git commit -m "chore: clean up league prefixes and remove duplicates"
             git push
             echo "Successfully pushed changes."
           else
