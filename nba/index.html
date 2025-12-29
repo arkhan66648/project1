@@ -49,6 +49,10 @@
             --text-main: #ffffff;
             --text-muted: #888;
             --cms-hero-grad: ; 
+            
+            /* CLS FIXED HEIGHTS */
+            --row-h-mob: 76px;
+            --row-h-desk: 96px;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -57,12 +61,18 @@
         button { cursor: pointer; border: none; font-family: inherit; }
         ul { list-style: none; padding: 0; margin: 0; }
         
-        /* SKELETONS */
+        /* SKELETONS (CLS FIX) */
         .skeleton { background: #111; border-radius: 4px; animation: shimmer 1.5s infinite linear; background: linear-gradient(to right, #111 4%, #1a1a1a 25%, #111 36%); background-size: 1000px 100%; }
-        .skeleton-header { display: flex; justify-content: space-between; align-items: flex-end; margin: 30px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #1a1a1a; }
-        .sk-title { height: 20px; width: 140px; }
+        
+        /* Matches .sec-head dimensions exactly */
+        .skeleton-header { display: flex; justify-content: space-between; align-items: flex-end; margin: 40px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #1a1a1a; height: 38px; }
+        .sk-title { height: 22px; width: 140px; }
         .sk-count { height: 15px; width: 80px; }
-        .skeleton-box { height: 72px; width: 100%; margin-bottom: 8px; border-radius: 6px; border: 1px solid #1a1a1a; }
+        
+        /* Matches .match-row dimensions exactly */
+        .skeleton-box { height: var(--row-h-mob); width: 100%; margin-bottom: 8px; border-radius: 6px; border: 1px solid #1a1a1a; }
+        @media (min-width: 768px) { .skeleton-box { height: var(--row-h-desk); } }
+
         @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
 
         /* HEADER */
@@ -127,11 +137,33 @@
         .sec-right-link { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; text-decoration: none; }
         .sec-right-link:hover { color: var(--brand-primary); text-decoration: underline; }
         
-        /* MATCH ROW */
-        .match-row { display: grid; grid-template-columns: 45px 1fr 50px 75px; align-items: center; gap: 8px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 6px; padding: 10px 8px 5px 8px; margin-bottom: 8px; position: relative; transition: 0.2s; }
+        /* MATCH ROW - FIXED HEIGHT FOR CLS */
+        .match-row { 
+            display: grid; 
+            grid-template-columns: 45px 1fr 50px 75px; 
+            align-items: center; 
+            gap: 8px; 
+            background: var(--bg-glass); 
+            border: 1px solid var(--border); 
+            border-radius: 6px; 
+            padding: 10px 8px 5px 8px; 
+            margin-bottom: 8px; 
+            position: relative; 
+            transition: 0.2s;
+            height: var(--row-h-mob); 
+            overflow: hidden;
+        }
         .match-row:hover { border-color: #444; transform: translateY(-2px); }
         .match-row.live { border-left: 3px solid var(--brand-primary); background: linear-gradient(90deg, rgba(208,0,0,0.06) 0%, rgba(20,20,20,0.8) 100%); }
-        @media (min-width: 768px) { .match-row { grid-template-columns: 80px 1fr 100px 110px; padding: 15px 20px 10px 20px; gap: 20px; } }
+        
+        @media (min-width: 768px) { 
+            .match-row { 
+                grid-template-columns: 80px 1fr 100px 110px; 
+                padding: 15px 20px 10px 20px; 
+                gap: 20px; 
+                height: var(--row-h-desk);
+            } 
+        }
         
         .col-time { text-align: center; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
         .time-label { font-size: 0.55rem; color: #666; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
@@ -139,7 +171,7 @@
         .time-sub { font-size: 0.6rem; color: #94a3b8; }
         .live-txt { color: var(--brand-primary); font-weight: 900; animation: blink 1.5s infinite; font-size: 0.65rem; }
         
-        .teams-wrapper { display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
+        .teams-wrapper { display: flex; flex-direction: column; gap: 3px; overflow: hidden; justify-content: center; height: 100%; }
         .league-tag { font-size: 0.6rem; color: var(--accent-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         .team-name { font-size: 0.75rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
         @media (min-width: 768px) { .team-name { font-size: 0.95rem; } }
@@ -217,10 +249,15 @@
         
         <!-- 1. LIVE SECTION -->
         <div id="live-section">
+            <!-- Header Skeleton -->
             <div id="live-sk-head" class="skeleton skeleton-header">
                 <div class="sk-title"></div><div class="sk-count"></div>
             </div>
+            <!-- Rows Skeleton: 5 rows to match Top 5 -->
             <div id="live-skeleton">
+                <div class="skeleton skeleton-box"></div>
+                <div class="skeleton skeleton-box"></div>
+                <div class="skeleton skeleton-box"></div>
                 <div class="skeleton skeleton-box"></div>
                 <div class="skeleton skeleton-box"></div>
             </div>
@@ -236,8 +273,12 @@
         </div>
         
         <!-- 2. TOP 5 UPCOMING -->
-        <div id="upcoming-skeleton" style="margin-top:40px;">
+        <!-- Header Skeleton + 5 Rows Skeleton to match Top 5 logic -->
+        <div id="upcoming-skeleton">
              <div class="skeleton skeleton-header"><div class="sk-title"></div></div>
+             <div class="skeleton skeleton-box"></div>
+             <div class="skeleton skeleton-box"></div>
+             <div class="skeleton skeleton-box"></div>
              <div class="skeleton skeleton-box"></div>
              <div class="skeleton skeleton-box"></div>
         </div>
