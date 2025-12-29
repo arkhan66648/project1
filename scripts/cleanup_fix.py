@@ -17,7 +17,7 @@ ALLOWED_LEAGUES_INPUT = """
 NFL, NBA, MLB, NHL, College Football, College-Football, College Basketball, College-Basketball, 
 NCAAB, NCAAF, NCAA Men, NCAA-Men, NCAA Women, NCAA-Women, Premier League, Premier-League, 
 Champions League, Champions-League, MLS, Bundesliga, Serie-A, Serie A, American-Football, American Football, 
-Ice Hockey, Ice-Hockey, Championship, Scottish Premiership, Scottish-Premiership, 
+Ice Hockey, Ice-Hockey, Championship, Scottish Premiership, Scottish-Premiership, A League Women, A League Men, 
 Europa League, Europa-League
 """
 # Set of lowercased allowed names
