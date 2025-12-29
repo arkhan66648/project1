@@ -13,6 +13,7 @@ const BRANCH = 'main';
 const DEFAULT_PRIORITIES = {
     US: {
         _HIDE_OTHERS: false,
+        _BOOST: "", // New Boost Field
         "NFL": { score: 100, isLeague: true, hasLink: true, isHidden: false },
         "NBA": { score: 99, isLeague: true, hasLink: true, isHidden: false },
         "MLB": { score: 98, isLeague: true, hasLink: true, isHidden: false },
@@ -33,6 +34,7 @@ const DEFAULT_PRIORITIES = {
     },
     UK: {
         _HIDE_OTHERS: false,
+        _BOOST: "", // New Boost Field
         "Premier League": { score: 100, isLeague: true, hasLink: true, isHidden: false },
         "Champions League": { score: 99, isLeague: true, hasLink: true, isHidden: false },
         "Championship": { score: 98, isLeague: true, hasLink: true, isHidden: false }, 
@@ -154,8 +156,8 @@ async function verifyAndLoad(token) {
         });
         
         if(!configData.sport_priorities) configData.sport_priorities = JSON.parse(JSON.stringify(DEFAULT_PRIORITIES));
-        if(!configData.sport_priorities.US) configData.sport_priorities.US = { _HIDE_OTHERS: false };
-        if(!configData.sport_priorities.UK) configData.sport_priorities.UK = { _HIDE_OTHERS: false };
+        if(!configData.sport_priorities.US) configData.sport_priorities.US = { _HIDE_OTHERS: false, _BOOST: "" };
+        if(!configData.sport_priorities.UK) configData.sport_priorities.UK = { _HIDE_OTHERS: false, _BOOST: "" };
         if(!configData.social_sharing) configData.social_sharing = DEMO_CONFIG.social_sharing;
         
         populateUI();
@@ -187,23 +189,27 @@ function populateUI() {
     renderPriorities();
     renderMenus();
     renderPageList();
-    renderLeagues(); // New call
+    renderLeagues(); 
 }
 
 // ==========================================
-// 5. PRIORITIES
+// 5. PRIORITIES & BOOST
 // ==========================================
 function renderPriorities() {
     const c = getVal('targetCountry') || 'US';
     const container = document.getElementById('priorityListContainer');
     if(document.getElementById('prioLabel')) document.getElementById('prioLabel').innerText = c;
     
-    if(!configData.sport_priorities[c]) configData.sport_priorities[c] = { _HIDE_OTHERS: false };
+    // Safety check for priorities object
+    if(!configData.sport_priorities[c]) configData.sport_priorities[c] = { _HIDE_OTHERS: false, _BOOST: "" };
 
     const isHideOthers = !!configData.sport_priorities[c]._HIDE_OTHERS;
     
+    // NEW: Set Boost Input Value
+    setVal('prioBoost', configData.sport_priorities[c]._BOOST || "");
+
     const items = Object.entries(configData.sport_priorities[c])
-        .filter(([name]) => name !== '_HIDE_OTHERS')
+        .filter(([name]) => name !== '_HIDE_OTHERS' && name !== '_BOOST')
         .map(([name, data]) => ({ name, ...data }))
         .sort((a,b) => b.score - a.score);
 
@@ -258,7 +264,7 @@ window.addPriorityRow = () => {
     const c = getVal('targetCountry');
     const name = getVal('newSportName');
     if(name) {
-        if(!configData.sport_priorities[c]) configData.sport_priorities[c] = { _HIDE_OTHERS: false };
+        if(!configData.sport_priorities[c]) configData.sport_priorities[c] = { _HIDE_OTHERS: false, _BOOST: "" };
         const isLikelyLeague = name.toLowerCase().includes('league') || name.toLowerCase().includes('nba') || name.toLowerCase().includes('nfl');
         configData.sport_priorities[c][name] = { score: 50, isLeague: isLikelyLeague, hasLink: false, isHidden: false };
         setVal('newSportName', '');
@@ -483,21 +489,15 @@ window.deleteMenuItem = (sec, idx) => { configData.menus[sec].splice(idx, 1); re
 // ==========================================
 // 8. LEAGUES & TEAMS MAP (UPDATED)
 // ==========================================
-// Helper: getGroupedLeagues is essentially the raw data now
 function getGroupedLeagues() {
-    // If leagueMapData is null/undefined, return empty object
-    // If it's already in the new format { League: [teams] }, just return it.
-    // If it's effectively empty, we return empty.
     return leagueMapData || {};
 }
 
-// Render the UI
 function renderLeagues() {
     const container = document.getElementById('leaguesContainer');
     if(!container) return;
 
     const grouped = getGroupedLeagues();
-    // Sort keys alphabetically for the UI
     const sortedLeagues = Object.keys(grouped).sort();
 
     container.innerHTML = sortedLeagues.map(league => {
@@ -516,7 +516,6 @@ function renderLeagues() {
     }).join('');
 }
 
-// Copy All for AI
 window.copyAllLeaguesData = () => {
     const grouped = getGroupedLeagues();
     let output = "--- LEAGUES AND TEAMS DATA ---\n\n";
@@ -533,7 +532,6 @@ window.copyAllLeaguesData = () => {
     });
 };
 
-// Add New League Modal
 window.openLeagueModal = () => {
     document.getElementById('leagueModal').style.display = 'flex';
 };
@@ -541,19 +539,14 @@ window.openLeagueModal = () => {
 window.saveNewLeague = () => {
     const name = document.getElementById('newLeagueNameInput').value.trim();
     if(name) {
-        // Initialize with a placeholder or empty array
-        // We use an array now, instead of a single string key
         if (!leagueMapData) leagueMapData = {};
         leagueMapData[name] = ["new-team-placeholder"];
-        
         renderLeagues();
         document.getElementById('leagueModal').style.display = 'none';
         document.getElementById('newLeagueNameInput').value = '';
     }
 };
 
-// Helper to reconstruct the map from UI inputs
-// UPDATED: Builds { League: [team1, team2] } instead of flat map
 function rebuildLeagueMapFromUI() {
     const textareas = document.querySelectorAll('.team-list-editor');
     const newMap = {};
@@ -563,8 +556,8 @@ function rebuildLeagueMapFromUI() {
         const rawTeams = txt.value.split(',');
         
         const teamList = rawTeams
-            .map(t => t.trim().toLowerCase().replace(/\s+/g, '-')) // Slugify
-            .filter(t => t.length > 0); // Remove empty items
+            .map(t => t.trim().toLowerCase().replace(/\s+/g, '-')) 
+            .filter(t => t.length > 0); 
 
         newMap[leagueName] = teamList;
     });
@@ -580,6 +573,12 @@ document.getElementById('saveBtn').onclick = async () => {
     saveEditorContentToMemory(); 
     
     // --- 1. Prepare Config Data ---
+    // Capture Boost Category Input
+    const country = getVal('targetCountry') || 'US';
+    if(configData.sport_priorities[country]) {
+        configData.sport_priorities[country]._BOOST = getVal('prioBoost');
+    }
+
     configData.site_settings = {
         title_part_1: getVal('titleP1'), title_part_2: getVal('titleP2'),
         domain: getVal('siteDomain'), logo_url: getVal('logoUrl'),
@@ -600,7 +599,6 @@ document.getElementById('saveBtn').onclick = async () => {
     };
 
     // --- 2. Prepare League Map Data ---
-    // Always check for edits if the DOM elements exist
     if(document.querySelector('.team-list-editor')) {
         leagueMapData = rebuildLeagueMapFromUI();
     }
@@ -612,7 +610,7 @@ document.getElementById('saveBtn').onclick = async () => {
     const token = localStorage.getItem('gh_token');
     
     try {
-        // --- SAVE 1: LEAGUE MAP (New Structure) ---
+        // --- SAVE 1: LEAGUE MAP ---
         const leagueContent = btoa(unescape(encodeURIComponent(JSON.stringify(leagueMapData, null, 2))));
         const resLeague = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${LEAGUE_FILE_PATH}`, {
             method: 'PUT',
