@@ -18,7 +18,7 @@ NFL, NBA, MLB, NHL, College Football, College-Football, College Basketball, Coll
 NCAAB, NCAAF, NCAA Men, NCAA-Men, NCAA Women, NCAA-Women, Premier League, Premier-League, 
 Champions League, Champions-League, MLS, Bundesliga, Serie-A, Serie A, American-Football, American Football, 
 Ice Hockey, Ice-Hockey, Championship, Scottish Premiership, Scottish-Premiership, A League Women, A League Men, 
-Europa League, Europa-League
+Europa League, Europa-League, A League, A League Women, A League Men, A-League, A-League-Men, A-League-Women, africa-cup-of-nations, Africa cup of nations, cambodia-tour-of-Indonesia, Cambodia tour of Indonesia, england-tour-of-Australia, England tour of Australia, euroleague, g-league, g league, jupiler-pro-league, jupiler pro league, myanmar-tour-of-Bhutan, Myanmar tour of Bhutan, nba-g-league
 """
 # Set of lowercased allowed names
 VALID_LEAGUES = {x.strip().lower() for x in ALLOWED_LEAGUES_INPUT.split(',') if x.strip()}
