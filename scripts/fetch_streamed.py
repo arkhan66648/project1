@@ -2,7 +2,6 @@ import os
 import requests
 import re
 import time
-import json
 from PIL import Image
 from io import BytesIO
 
@@ -16,21 +15,23 @@ STREAMED_HASH_BASE = "https://streamed.pk/api/images/badge/"
 TSDB_DIR = "assets/logos/tsdb"
 STREAMED_DIR = "assets/logos/streamed"
 LEAGUE_DIR = "assets/logos/leagues"
-LEAGUE_MAP_FILE = "assets/data/league_map.json"
+
+# REFRESH SETTINGS
 REFRESH_DAYS = 60
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
-# --- WHITELIST CONFIGURATION ---
-# (Still used for 'is_valid_league' filtering logic)
+# --- WHITELIST FOR CLEANING ONLY ---
+# We use this list ONLY to remove prefixes from names (e.g. "NBA - Team Name")
+# We do NOT use this to stop downloads. We download everything.
 ALLOWED_LEAGUES_INPUT = """
 NFL, NBA, MLB, NHL, College Football, College-Football, College Basketball, College-Basketball, 
 NCAAB, NCAAF, NCAA Men, NCAA-Men, NCAA Women, NCAA-Women, Premier League, Premier-League, 
 Champions League, Champions-League, MLS, Bundesliga, Serie-A, Serie A, American-Football, American Football, 
 Ice Hockey, Ice-Hockey, Championship, Scottish Premiership, Scottish-Premiership, 
-Europa League, Europa-League
+Europa League, Europa-League, A League, A-League, A League Men, A League Women
 """
 VALID_LEAGUES = {x.strip().lower() for x in ALLOWED_LEAGUES_INPUT.split(',') if x.strip()}
 
@@ -46,30 +47,28 @@ def slugify(name):
 
 def clean_display_name(name):
     """
-    Sanitizer:
-    1. PRIORITY RULE: If a colon (:) is found, assume format "League: Team" 
-       and strip everything before the first colon.
-    2. FALLBACK: Check whitelist for prefixes (e.g. "NBA - Team") if no colon exists.
+    Sanitizer: 
+    1. PRIORITY: Colon Rule (Remove "League: " prefix)
+    2. FALLBACK: Whitelist prefix removal
     """
     if not name: return None
     
     # --- RULE 1: Generic Colon Stripper ---
-    # Works for ANY league, even if not in whitelist
+    # This ensures "Premier League: Arsenal" becomes "Arsenal"
     if ':' in name:
-        parts = name.split(':', 1) # Split only on the first colon
+        parts = name.split(':', 1)
         if len(parts) > 1:
             cleaned = parts[1].strip()
-            # Safety check: ensure we didn't end up with an empty string
             if cleaned and len(cleaned) > 1:
                 return cleaned
 
-    # --- RULE 2: Whitelist Fallback ---
-    # Handles cases like "NBA - Celtics" (No colon)
+    # --- RULE 2: Whitelist Prefix Fallback ---
+    # This handles "NBA - Celtics" -> "Celtics"
     lower_name = name.lower()
     for league in VALID_LEAGUES:
         if lower_name.startswith(league):
             remainder = name[len(league):]
-            # Remove separator characters (spaces, hyphens) from the start
+            # Remove separator characters (spaces, hyphens)
             clean_remainder = re.sub(r"^[\s-]+", "", remainder)
             if clean_remainder and len(clean_remainder.strip()) > 1:
                 return clean_remainder.strip()
@@ -125,27 +124,8 @@ def download_multi_source(source_obj, save_path):
 def main():
     os.makedirs(STREAMED_DIR, exist_ok=True)
     os.makedirs(LEAGUE_DIR, exist_ok=True)
-    os.makedirs(os.path.dirname(LEAGUE_MAP_FILE), exist_ok=True)
-
-    # 1. Load Map
-    league_map = {}
-    if os.path.exists(LEAGUE_MAP_FILE):
-        try:
-            with open(LEAGUE_MAP_FILE, 'r') as f:
-                league_map = json.load(f)
-        except: pass
-
-    # Clean Map (Legacy check)
-    cleaned_count = 0
-    keys_to_delete = [k for k, v in league_map.items() if str(v).lower().strip() not in VALID_LEAGUES]
-    for k in keys_to_delete:
-        del league_map[k]
-        cleaned_count += 1
     
-    if cleaned_count > 0:
-        print(f"--- Auto-Cleaned {cleaned_count} items not in Whitelist ---")
-
-    print("--- Starting Backend Asset Sync ---")
+    print("--- Starting Backend Asset Sync (All Teams) ---")
     
     try:
         data = requests.get(BACKEND_URL, headers=HEADERS).json()
@@ -158,56 +138,46 @@ def main():
     league_count = 0
 
     for m in matches:
+        # Get Raw Data
         home_raw = m.get('home_team')
         away_raw = m.get('away_team')
-        league = m.get('league')
+        league_raw = m.get('league') # We use this only for league images, not filtering
         
         home_imgs = m.get('home_team_image')
         away_imgs = m.get('away_team_image')
         league_imgs = m.get('league_image')
 
-        is_valid_league = False
-        if league and league.strip().lower() in VALID_LEAGUES:
-            is_valid_league = True
-
         # ---------------------------
-        # PROCESS TEAMS
+        # PROCESS TEAMS (ALL MATCHES)
         # ---------------------------
         for raw_name, img_obj in [(home_raw, home_imgs), (away_raw, away_imgs)]:
-            # 1. CLEAN THE NAME (Prioritizing Colon Rule)
+            # 1. Clean Name (Remove prefixes)
             name = clean_display_name(raw_name)
             
-            # 2. SLUGIFY CLEAN NAME
+            # 2. Slugify
             slug = slugify(name)
             if not slug: continue
 
-            if is_valid_league:
-                league_map[slug] = league
-            
-            if slug in league_map:
-                # Check TSDB first
-                tsdb_path = os.path.join(TSDB_DIR, f"{slug}.webp")
-                if not os.path.exists(tsdb_path):
-                    streamed_path = os.path.join(STREAMED_DIR, f"{slug}.webp")
-                    if img_obj and download_multi_source(img_obj, streamed_path):
-                        team_count += 1
+            # 3. Download (No restrictions!)
+            # Check TSDB first to avoid duplicates/overwriting high-quality images
+            tsdb_path = os.path.join(TSDB_DIR, f"{slug}.webp")
+            if not os.path.exists(tsdb_path):
+                streamed_path = os.path.join(STREAMED_DIR, f"{slug}.webp")
+                if img_obj and download_multi_source(img_obj, streamed_path):
+                    team_count += 1
 
         # ---------------------------
         # PROCESS LEAGUE IMAGE
         # ---------------------------
-        if is_valid_league and league_imgs:
-            l_slug = slugify(league)
+        # We download the league logo if provided, regardless of whitelist
+        if league_raw and league_imgs:
+            l_slug = slugify(league_raw)
             if l_slug:
                 l_path = os.path.join(LEAGUE_DIR, f"{l_slug}.webp")
                 if download_multi_source(league_imgs, l_path):
                     league_count += 1
 
-    # 3. Save Updated Map
-    with open(LEAGUE_MAP_FILE, 'w') as f:
-        json.dump(league_map, f, indent=2)
-
     print(f"--- Sync Done. Teams: {team_count} | Leagues: {league_count} ---")
-    print(f"--- League Map Updated: {len(league_map)} items ---")
 
 if __name__ == "__main__":
     main()
