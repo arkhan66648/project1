@@ -13,43 +13,55 @@ const BRANCH = 'main';
 const DEFAULT_PRIORITIES = {
     US: {
         _HIDE_OTHERS: false,
-        _BOOST: "", // New Boost Field
+        _BOOST: "",
+        // Top Leagues
         "NFL": { score: 100, isLeague: true, hasLink: true, isHidden: false },
         "NBA": { score: 99, isLeague: true, hasLink: true, isHidden: false },
         "MLB": { score: 98, isLeague: true, hasLink: true, isHidden: false },
         "NHL": { score: 97, isLeague: true, hasLink: true, isHidden: false },
-        "UFC": { score: 95, isLeague: true, hasLink: true, isHidden: false }, 
-        "Boxing": { score: 94, isLeague: false, hasLink: true, isHidden: false }, 
-        "Formula 1": { score: 93, isLeague: true, hasLink: true, isHidden: false },
-        "College Football": { score: 90, isLeague: true, hasLink: true, isHidden: false }, 
-        "College Basketball": { score: 89, isLeague: true, hasLink: true, isHidden: false }, 
+        "UFC": { score: 95, isLeague: true, hasLink: true, isHidden: false },
+        "College Football": { score: 90, isLeague: true, hasLink: true, isHidden: false },
+        "College Basketball": { score: 89, isLeague: true, hasLink: true, isHidden: false },
+        "Formula 1": { score: 88, isLeague: true, hasLink: true, isHidden: false },
         "Premier League": { score: 85, isLeague: true, hasLink: true, isHidden: false },
         "Champions League": { score: 84, isLeague: true, hasLink: true, isHidden: false },
         "MLS": { score: 83, isLeague: true, hasLink: true, isHidden: false },
-        "LaLiga": { score: 82, isLeague: true, hasLink: true, isHidden: false },
-        "Bundesliga": { score: 81, isLeague: true, hasLink: true, isHidden: false },
-        "Serie A": { score: 80, isLeague: true, hasLink: true, isHidden: false },
-        "Tennis": { score: 40, isLeague: false, hasLink: true, isHidden: false }, 
-        "Golf": { score: 30, isLeague: false, hasLink: false, isHidden: false }
+        
+        // Generic Sports Priorities (Fallbacks)
+        "Football": { score: 79, isLeague: false, hasLink: false, isHidden: false },
+        "Basketball": { score: 78, isLeague: false, hasLink: false, isHidden: false },
+        "Baseball": { score: 77, isLeague: false, hasLink: false, isHidden: false },
+        "Fighting": { score: 76, isLeague: false, hasLink: false, isHidden: false },
+        "Ice Hockey": { score: 75, isLeague: false, hasLink: false, isHidden: false },
+        "Soccer": { score: 60, isLeague: false, hasLink: false, isHidden: false },
+        "Tennis": { score: 40, isLeague: false, hasLink: true, isHidden: false },
+        "Golf": { score: 30, isLeague: false, hasLink: false, isHidden: false },
+        "Motorsport": { score: 20, isLeague: false, hasLink: false, isHidden: false }
     },
     UK: {
         _HIDE_OTHERS: false,
-        _BOOST: "", // New Boost Field
+        _BOOST: "",
+        // Top Leagues
         "Premier League": { score: 100, isLeague: true, hasLink: true, isHidden: false },
         "Champions League": { score: 99, isLeague: true, hasLink: true, isHidden: false },
-        "Championship": { score: 98, isLeague: true, hasLink: true, isHidden: false }, 
-        "Scottish Premiership": { score: 97, isLeague: true, hasLink: true, isHidden: false }, 
+        "Championship": { score: 98, isLeague: true, hasLink: true, isHidden: false },
+        "Scottish Premiership": { score: 97, isLeague: true, hasLink: true, isHidden: false },
         "Europa League": { score: 96, isLeague: true, hasLink: true, isHidden: false },
-        "Boxing": { score: 90, isLeague: false, hasLink: true, isHidden: false }, 
+        "LaLiga": { score: 95, isLeague: true, hasLink: true, isHidden: false },
+        "Serie A": { score: 94, isLeague: true, hasLink: true, isHidden: false },
+        "Bundesliga": { score: 93, isLeague: true, hasLink: true, isHidden: false },
         "Formula 1": { score: 88, isLeague: true, hasLink: true, isHidden: false },
-        "Cricket": { score: 85, isLeague: false, hasLink: true, isHidden: false }, 
-        "Rugby": { score: 84, isLeague: false, hasLink: true, isHidden: false }, 
-        "Darts": { score: 82, isLeague: false, hasLink: true, isHidden: false }, 
+        
+        // Generic Sports Priorities
+        "Soccer": { score: 90, isLeague: false, hasLink: false, isHidden: false },
+        "Cricket": { score: 85, isLeague: false, hasLink: true, isHidden: false },
+        "Rugby": { score: 84, isLeague: false, hasLink: true, isHidden: false },
+        "Darts": { score: 82, isLeague: false, hasLink: true, isHidden: false },
         "Snooker": { score: 80, isLeague: false, hasLink: true, isHidden: false },
+        "Boxing": { score: 75, isLeague: false, hasLink: true, isHidden: false },
         "NFL": { score: 70, isLeague: true, hasLink: true, isHidden: false },
-        "NBA": { score: 65, isLeague: true, hasLink: true, isHidden: false },
-        "UFC": { score: 60, isLeague: true, hasLink: true, isHidden: false },
-        "Tennis": { score: 40, isLeague: false, hasLink: false, isHidden: false }
+        "Tennis": { score: 50, isLeague: false, hasLink: false, isHidden: false },
+        "Golf": { score: 40, isLeague: false, hasLink: false, isHidden: false }
     }
 };
 
