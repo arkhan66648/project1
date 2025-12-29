@@ -16,7 +16,9 @@ DIRS = {
 OUTPUT_FILE = 'assets/data/image_map.json'
 FUZZY_CUTOFF = 0.85 
 
-# --- WHITELIST CONFIGURATION ---
+# --- WHITELIST FOR NAME CLEANING ONLY ---
+# We use this ONLY to help clean names like "NBA - Celtics".
+# We DO NOT use this to filter which teams get mapped.
 ALLOWED_LEAGUES_INPUT = """
 NFL, NBA, MLB, NHL, College Football, College-Football, College Basketball, College-Basketball, 
 NCAAB, NCAAF, NCAA Men, NCAA-Men, NCAA Women, NCAA-Women, Premier League, Premier-League, 
@@ -32,11 +34,15 @@ VALID_LEAGUES = {x.strip().lower() for x in ALLOWED_LEAGUES_INPUT.split(',') if 
 # ==========================================
 def clean_display_name(name):
     """
-    Sanitizer: Priority Colon Rule -> Whitelist Fallback
+    Sanitizer:
+    1. PRIORITY RULE: If a colon (:) is found, assume format "League: Team" 
+       and strip everything before the first colon.
+    2. FALLBACK: Check whitelist for prefixes (e.g. "NBA - Team") if no colon exists.
     """
     if not name: return None
     
-    # Rule 1: Colon
+    # --- RULE 1: Generic Colon Stripper ---
+    # This ensures "A-League: Team A" becomes "Team A" automatically.
     if ':' in name:
         parts = name.split(':', 1)
         if len(parts) > 1:
@@ -44,11 +50,12 @@ def clean_display_name(name):
             if cleaned and len(cleaned) > 1:
                 return cleaned
 
-    # Rule 2: Whitelist
+    # --- RULE 2: Whitelist Fallback ---
     lower_name = name.lower()
     for league in VALID_LEAGUES:
         if lower_name.startswith(league):
             remainder = name[len(league):]
+            # Remove separator characters (spaces, hyphens) from the start
             clean_remainder = re.sub(r"^[\s-]+", "", remainder)
             if clean_remainder and len(clean_remainder.strip()) > 1:
                 return clean_remainder.strip()
@@ -57,6 +64,7 @@ def clean_display_name(name):
 def make_pretty_name(slug):
     """
     Converts a filename slug back to a human-readable title.
+    Ex: "manchester-united" -> "Manchester United"
     """
     return slug.replace('-', ' ').title()
 
@@ -118,26 +126,30 @@ def main():
     avail_slugs = list(slug_to_path.keys())
 
     for m in matches:
+        # We NO LONGER check "if league not in whitelist: continue"
+        # We process ALL matches.
         league_name = m.get('league')
-        
-        # Skip if league not valid
-        if not league_name or league_name.strip().lower() not in VALID_LEAGUES:
-            continue
 
         # Map Teams
         for t_key in ['home_team', 'away_team']:
             raw_name = m.get(t_key)
             if not raw_name: continue
             
+            # A. Clean the name (Handles "A-League: Team A" -> "Team A")
             clean_name = clean_display_name(raw_name)
+            
+            # B. Generate Slug from Clean Name
             search_slug = "".join([c for c in clean_name.lower() if c.isalnum() or c == '-']).strip('-')
             
-            # Match
+            # C. Try to match file
             if search_slug in slug_to_path:
+                # Perfect Match
                 final_teams[clean_name] = slug_to_path[search_slug]
+                # Also Map "Raw Name" (just in case frontend sends raw name)
                 if raw_name != clean_name:
                     final_teams[raw_name] = slug_to_path[search_slug]
             else:
+                # Fuzzy Match
                 fuzzy = get_close_matches(search_slug, avail_slugs, n=1, cutoff=FUZZY_CUTOFF)
                 if fuzzy:
                     matched_slug = fuzzy[0]
