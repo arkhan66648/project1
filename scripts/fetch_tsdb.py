@@ -3,7 +3,6 @@ import requests
 import urllib.parse
 import re
 import time
-import json
 from PIL import Image
 from io import BytesIO
 
@@ -13,7 +12,6 @@ from io import BytesIO
 API_KEY = "123" # Replace with valid key
 BASE_URL = f"https://www.thesportsdb.com/api/v1/json/{API_KEY}"
 SAVE_DIR = "assets/logos/tsdb"
-LEAGUE_MAP_FILE = "assets/data/league_map.json"
 REFRESH_DAYS = 60
 
 HEADERS = {
@@ -22,13 +20,13 @@ HEADERS = {
 }
 
 # --- WHITELIST CONFIGURATION ---
-# Normalized list of allowed leagues (Lowercased for comparison)
 ALLOWED_LEAGUES_INPUT = """
 NFL, NBA, MLB, NHL, College Football, College-Football, College Basketball, College-Basketball, 
 NCAAB, NCAAF, NCAA Men, NCAA-Men, NCAA Women, NCAA-Women, Premier League, Premier-League, 
 Champions League, Champions-League, MLS, Bundesliga, Serie-A, Serie A, American Football, 
 Ice Hockey, Ice-Hockey, Championship, Scottish Premiership, Scottish-Premiership, 
-Europa League, Europa-League
+Europa League, Europa-League, A League, A-League, A League Men, A League Women, 
+Ligue 1, La Liga, Eredivisie, Primeira Liga, Saudi Pro League, F1, UFC, Rugby
 """
 VALID_LEAGUES = {x.strip().lower() for x in ALLOWED_LEAGUES_INPUT.split(',') if x.strip()}
 
@@ -51,6 +49,9 @@ LEAGUES = {
     "NFL": "NFL",
     "NHL": "NHL",
     "MLB": "MLB",
+    "A League": "Australian A-League",
+    "A League Men": "Australian A-League",
+    "A League Women": "Australian A-League Women",
     "F1": "Formula 1",
     "UFC": "UFC"
 }
@@ -93,45 +94,21 @@ def save_image_optimized(url, save_path):
 # ==========================================
 def main():
     os.makedirs(SAVE_DIR, exist_ok=True)
-    os.makedirs(os.path.dirname(LEAGUE_MAP_FILE), exist_ok=True)
-    
-    # Load Map
-    league_map = {}
-    if os.path.exists(LEAGUE_MAP_FILE):
-        try:
-            with open(LEAGUE_MAP_FILE, 'r') as f:
-                league_map = json.load(f)
-        except: pass
-
-    # --- VALIDATOR: Remove teams not in Whitelist ---
-    cleaned_count = 0
-    keys_to_delete = [
-        k for k, v in league_map.items() 
-        if str(v).lower().strip() not in VALID_LEAGUES
-    ]
-    for k in keys_to_delete:
-        del league_map[k]
-        cleaned_count += 1
-    
-    if cleaned_count > 0:
-        print(f"--- Removed {cleaned_count} teams with non-whitelisted leagues ---")
-
-    print("--- Starting TSDB Harvester ---")
+    print("--- Starting TSDB Harvester (Image Only) ---")
 
     for display_name, tsdb_name in LEAGUES.items():
-        # Only process if this league is actually in our whitelist (fuzzy check)
-        # We check if the display_name is loosely in our valid set to avoid saving unwanted leagues
+        # Whitelist Check
         if display_name.lower() not in VALID_LEAGUES:
-            # You might want to skip, or proceed if you trust LEAGUES dict.
-            # For safety, we will proceed but map strict naming.
-            pass
+            continue
 
         print(f" > Checking: {display_name}")
         encoded = urllib.parse.quote(tsdb_name)
         url = f"{BASE_URL}/search_all_teams.php?l={encoded}"
         
         try:
-            data = requests.get(url, headers=HEADERS, timeout=10).json()
+            resp = requests.get(url, headers=HEADERS, timeout=10)
+            data = resp.json()
+            
             if data and data.get('teams'):
                 count = 0
                 for t in data['teams']:
@@ -139,10 +116,8 @@ def main():
                     if name:
                         slug = slugify(name)
                         if slug:
-                            # Update Map: Always prioritize latest fetch
-                            # We use 'display_name' from LEAGUES dict as the clean name
-                            league_map[slug] = display_name
-
+                            # Note: We NO LONGER update league_map.json here.
+                            
                             # Download Image
                             badge = t.get('strTeamBadge') or t.get('strBadge')
                             if badge:
@@ -152,15 +127,15 @@ def main():
                                         count += 1
                 
                 if count > 0: print(f"   [+] Processed {count} updates.")
+            else:
+                print(f"   [-] No teams found for {tsdb_name}")
+
         except Exception as e:
             print(f"   [!] Error: {e}")
         
         time.sleep(1.2)
-
-    with open(LEAGUE_MAP_FILE, 'w') as f:
-        json.dump(league_map, f, indent=2)
     
-    print(f"--- League Map Saved ({len(league_map)} teams) ---")
+    print("--- TSDB Sync Complete ---")
 
 if __name__ == "__main__":
     main()
