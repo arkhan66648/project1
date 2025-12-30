@@ -14,6 +14,7 @@
             <div class="logo-area"><h2>⚡ StreamCMS</h2></div>
             <nav>
                 <button class="nav-btn active" onclick="switchTab('general')">⚙️ General & SEO</button>
+                <button class="nav-btn" onclick="switchTab('theme')">🎨 Theme Designer</button> <!-- NEW -->
                 <button class="nav-btn" onclick="switchTab('pages')">📄 Pages & Content</button>
                 <button class="nav-btn" onclick="switchTab('priorities')">📊 Priorities & Boost</button>
                 <button class="nav-btn" onclick="switchTab('leagues')">🏆 Leagues & Teams</button>
@@ -35,7 +36,7 @@
                     <div class="card">
                         <h3>Site Identity</h3>
                         <label>Backend API URL</label>
-    <input type="text" id="apiUrl" placeholder="https://your-api.com/api/sync">
+                        <input type="text" id="apiUrl" placeholder="https://your-api.com/api/sync">
                         <label>Target Country</label>
                         <select id="targetCountry" onchange="renderPriorities()">
                             <option value="US">🇺🇸 USA</option>
@@ -59,6 +60,185 @@
                     <input type="text" id="footerCopyright" placeholder="© 2025 StreamEast. All rights reserved.">
                     <label>Footer Disclaimer</label>
                     <textarea id="footerDisclaimer" rows="3" placeholder="We do not host any content..."></textarea>
+                </div>
+            </section>
+
+            <!-- THEME DESIGNER (NEW) -->
+            <section id="tab-theme" class="tab-content">
+                <div class="header-box">
+                    <h1>Theme Designer</h1>
+                    <button class="btn-secondary" onclick="randomizeTheme()">🎲 Randomize Theme</button>
+                </div>
+                
+                <div class="grid-3">
+                    <!-- 1. TYPOGRAPHY & SHAPE -->
+                    <div class="card">
+                        <h3>📐 Base & Typography</h3>
+                        <label>Font Stack (0ms Load Time)</label>
+                        <select id="themeFontBase">
+                            <option value="system-ui, -apple-system, sans-serif">Modern System (Default)</option>
+                            <option value="'Segoe UI', Roboto, Helvetica, Arial, sans-serif">Neutral Sans</option>
+                            <option value="Georgia, Cambria, 'Times New Roman', serif">Classic Serif</option>
+                            <option value="'Courier New', Courier, monospace">Tech Monospace</option>
+                            <option value="'Impact', 'Arial Black', sans-serif">Bold Impact</option>
+                            <option value="'Trebuchet MS', 'Lucida Sans', sans-serif">Humanist</option>
+                        </select>
+                        
+                        <label>Heading Font</label>
+                        <select id="themeFontHeadings">
+                            <option value="inherit">Same as Base</option>
+                            <option value="'Arial Black', 'Helvetica', sans-serif">Heavy/Bold</option>
+                            <option value="Georgia, serif">Elegant Serif</option>
+                            <option value="'Courier New', monospace">Code/Tech</option>
+                        </select>
+
+                        <div class="range-wrapper">
+                            <label>Global Border Radius: <span id="val_borderRadius">6px</span></label>
+                            <input type="range" id="themeBorderRadius" min="0" max="20" step="1" oninput="document.getElementById('val_borderRadius').innerText=this.value+'px'">
+                        </div>
+
+                        <div class="range-wrapper">
+                            <label>Site Max Width: <span id="val_maxWidth">1100px</span></label>
+                            <input type="range" id="themeMaxWidth" min="800" max="1600" step="50" oninput="document.getElementById('val_maxWidth').innerText=this.value+'px'">
+                        </div>
+                    </div>
+
+                    <!-- 2. PALETTE -->
+                    <div class="card">
+                        <h3>🎨 Global Palette</h3>
+                        <div class="color-grid">
+                            <div><label>Brand Primary</label><input type="color" id="themeBrandPrimary"></div>
+                            <div><label>Brand Dark</label><input type="color" id="themeBrandDark"></div>
+                            <div><label>Accent Gold</label><input type="color" id="themeAccentGold"></div>
+                            <div><label>Status Green</label><input type="color" id="themeStatusGreen"></div>
+                            
+                            <div><label>Body BG</label><input type="color" id="themeBgBody"></div>
+                            <div><label>Panel BG</label><input type="color" id="themeBgPanel"></div>
+                            <div><label>Text Main</label><input type="color" id="themeTextMain"></div>
+                            <div><label>Text Muted</label><input type="color" id="themeTextMuted"></div>
+                            
+                            <div><label>Borders</label><input type="color" id="themeBorderColor"></div>
+                            <div><label>Scroll Thumb</label><input type="color" id="themeScrollThumb"></div>
+                        </div>
+                    </div>
+
+                    <!-- 3. HEADER -->
+                    <div class="card">
+                        <h3>🧭 Header</h3>
+                        <div class="color-grid">
+                            <div><label>Background</label><input type="color" id="themeHeaderBg"></div>
+                            <div><label>Text Color</label><input type="color" id="themeHeaderText"></div>
+                            <div><label>Active Link</label><input type="color" id="themeHeaderActive"></div>
+                        </div>
+                        
+                        <label>Logo Text Colors (If no image)</label>
+                        <div class="color-grid">
+                            <div><label>Part 1</label><input type="color" id="themeLogoP1"></div>
+                            <div><label>Part 2</label><input type="color" id="themeLogoP2"></div>
+                        </div>
+                        
+                        <label>Border Bottom</label>
+                        <select id="themeHeaderBorderBottom">
+                            <option value="1px solid var(--border)">Thin Border</option>
+                            <option value="none">None</option>
+                            <option value="1px solid var(--brand-primary)">Brand Color</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid-3">
+                    <!-- 4. HERO SECTION -->
+                    <div class="card">
+                        <h3>📢 Hero Section</h3>
+                        <label>Background Style</label>
+                        <select id="themeHeroBgStyle" onchange="toggleHeroInputs()">
+                            <option value="solid">Solid Color</option>
+                            <option value="gradient">Gradient</option>
+                            <option value="image">Image (URL)</option>
+                        </select>
+
+                        <div id="heroSolidInput" class="mt-2"><label>Solid Color</label><input type="color" id="themeHeroBgSolid"></div>
+                        
+                        <div id="heroGradientInput" class="color-grid mt-2" style="display:none;">
+                            <div><label>Grad Start</label><input type="color" id="themeHeroGradStart"></div>
+                            <div><label>Grad End</label><input type="color" id="themeHeroGradEnd"></div>
+                        </div>
+                        
+                        <div id="heroImageInput" class="mt-2" style="display:none;">
+                            <label>Image URL</label><input type="text" id="themeHeroBgImage">
+                            <div class="range-wrapper">
+                                <label>Overlay Opacity</label>
+                                <input type="range" id="themeHeroOverlayOpacity" min="0" max="1" step="0.1">
+                            </div>
+                        </div>
+
+                        <div class="color-grid mt-2">
+                            <div><label>H1 Color</label><input type="color" id="themeHeroH1"></div>
+                            <div><label>Intro Text</label><input type="color" id="themeHeroIntro"></div>
+                        </div>
+
+                        <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Category Pills</h4>
+                        <div class="color-grid">
+                            <div><label>Pill BG</label><input type="color" id="themeHeroPillBg"></div>
+                            <div><label>Pill Text</label><input type="color" id="themeHeroPillText"></div>
+                            <div><label>Active BG</label><input type="color" id="themeHeroPillActiveBg"></div>
+                            <div><label>Active Text</label><input type="color" id="themeHeroPillActiveText"></div>
+                        </div>
+                    </div>
+
+                    <!-- 5. MATCH ROWS -->
+                    <div class="card">
+                        <h3>⚔️ Match Rows</h3>
+                        <div class="color-grid">
+                            <div><label>Row BG</label><input type="color" id="themeMatchRowBg"></div>
+                            <div><label>Border</label><input type="color" id="themeMatchRowBorder"></div>
+                            <div><label>Team Name</label><input type="color" id="themeMatchTeamColor"></div>
+                            <div><label>Time Color</label><input type="color" id="themeMatchTimeColor"></div>
+                        </div>
+                        
+                        <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Live Matches</h4>
+                        <div class="color-grid">
+                            <div><label>Live BG Start</label><input type="color" id="themeMatchLiveBgStart"></div>
+                            <div><label>Live BG End</label><input type="color" id="themeMatchLiveBgEnd"></div>
+                            <div><label>Live Text</label><input type="color" id="themeMatchLiveText"></div>
+                        </div>
+                        
+                        <label>Row Height</label>
+                        <select id="themeRowHeight">
+                            <option value="compact">Compact (Data Dense)</option>
+                            <option value="standard">Standard (Balanced)</option>
+                            <option value="spacious">Spacious (Airy)</option>
+                        </select>
+
+                        <label>Buttons</label>
+                        <div class="color-grid">
+                            <div><label>Watch BG</label><input type="color" id="themeBtnWatchBg"></div>
+                            <div><label>Watch Text</label><input type="color" id="themeBtnWatchText"></div>
+                        </div>
+                    </div>
+
+                    <!-- 6. FOOTER -->
+                    <div class="card">
+                        <h3>🔻 Footer</h3>
+                        <div class="color-grid">
+                            <div><label>BG Start</label><input type="color" id="themeFooterBgStart"></div>
+                            <div><label>BG End</label><input type="color" id="themeFooterBgEnd"></div>
+                            <div><label>Text</label><input type="color" id="themeFooterText"></div>
+                            <div><label>Links</label><input type="color" id="themeFooterLink"></div>
+                        </div>
+                        
+                        <label>Text Align (Desktop)</label>
+                        <select id="themeFooterAlign">
+                            <option value="left">Left</option>
+                            <option value="center">Center</option>
+                        </select>
+                        
+                        <label>Grid Columns</label>
+                        <select id="themeFooterGrid">
+                            <option value="1fr 1fr">Equal (2 Cols)</option>
+                            <option value="2fr 1fr">Wide Brand (2 Cols)</option>
+                        </select>
+                    </div>
                 </div>
             </section>
 
@@ -88,7 +268,6 @@
                             <label>Meta Keywords (Comma separated)</label><input type="text" id="pageMetaKeywords">
                             <label>Canonical URL</label><input type="text" id="pageCanonical">
                             
-                            <!-- Schema Section (Populated by app.js) -->
                             <div class="checkbox-group" style="margin-top:15px; display:flex; flex-direction:column; gap:8px;">
                                 <!-- Dynamic Content: Org, Website, FAQ Editor -->
                             </div>
@@ -104,7 +283,6 @@
                     <h1>Priorities & Boost</h1>
                 </div>
                 
-                <!-- NEW: BOOST SECTION -->
                 <div class="card" style="border-color: #eab308;">
                     <h3 style="color: #facc15;">🚀 Category Boost</h3>
                     <p class="desc">Matches in these categories will appear immediately after the "Top 15 Upcoming" section, before any other league.</p>
@@ -122,7 +300,7 @@
                 </div>
             </section>
 
-            <!-- LEAGUES & TEAMS (NEW) -->
+            <!-- LEAGUES & TEAMS -->
             <section id="tab-leagues" class="tab-content">
                 <div class="header-box">
                     <h1>Leagues & Teams Map</h1>
@@ -190,7 +368,6 @@
         </div>
     </div>
 
-    <!-- NEW LEAGUE MODAL -->
     <div id="leagueModal" class="modal" style="display:none;">
         <div class="modal-content">
             <h3>Add New League</h3>
