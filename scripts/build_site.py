@@ -142,6 +142,8 @@ def render_page(template, config, page_data):
         'sys_status_dot_color': '#22c55e', 'sys_status_bg': 'rgba(34, 197, 94, 0.1)', 'sys_status_border': 'rgba(34, 197, 94, 0.2)', 'sys_status_text': '#22c55e',
         'skeleton_gradient_start': '#1e293b', 'skeleton_gradient_mid': '#334155', 'skeleton_gradient_end': '#1e293b',
         'skeleton_border_color': '#334155',
+        'text_wildcard_title': '',         # Default empty
+        'text_top_upcoming_title': '',     # Default empty
         
         # New Theme Designer specific mappings
         'logo_image_shadow_color': 'rgba(208, 0, 0, 0.3)',
@@ -223,6 +225,8 @@ def render_page(template, config, page_data):
     html = html.replace('{{TEXT_HD_BADGE}}', theme.get('text_hd_badge', 'HD'))
     html = html.replace('{{TEXT_SECTION_LINK}}', theme.get('text_section_link', 'View All'))
     html = html.replace('{{TEXT_SECTION_PREFIX}}', theme.get('text_section_prefix', 'Upcoming'))
+    html = html.replace('{{TEXT_WILDCARD_TITLE}}', theme.get('text_wildcard_title', ''))
+    html = html.replace('{{TEXT_TOP_UPCOMING_TITLE}}', theme.get('text_top_upcoming_title', ''))
 
 
     # --- 5. BASIC CONFIG REPLACEMENTS (Legacy/Core) ---
