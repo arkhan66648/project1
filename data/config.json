@@ -82,7 +82,7 @@
     "back_to_top_icon_color": "#000000",
     "back_to_top_radius": "",
     "back_to_top_size": "",
-    "display_hero": "block"
+    "display_hero": "none"
   },
   "sport_priorities": {
     "US": {
