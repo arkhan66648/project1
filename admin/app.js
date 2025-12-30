@@ -4,7 +4,7 @@
 const REPO_OWNER = 'arkhan66648'; 
 const REPO_NAME = 'project1';     
 const FILE_PATH = 'data/config.json';
-const LEAGUE_FILE_PATH = 'assets/data/league_map.json'; // New Path
+const LEAGUE_FILE_PATH = 'assets/data/league_map.json'; 
 const BRANCH = 'main'; 
 
 // ==========================================
@@ -13,25 +13,20 @@ const BRANCH = 'main';
 const DEFAULT_PRIORITIES = {
     US: {
         _HIDE_OTHERS: false,
-        _BOOST: "Super Bowl, Playoffs, Finals", // Example Boosts
-        // --- TIER 1: The Big 4 + NCAA ---
+        _BOOST: "Super Bowl, Playoffs, Finals",
         "NFL": { score: 100, isLeague: true, hasLink: true, isHidden: false },
         "NBA": { score: 99, isLeague: true, hasLink: true, isHidden: false },
-        "NCAA": { score: 98, isLeague: true, hasLink: true, isHidden: false }, // Captures Football & Basketball
+        "NCAA": { score: 98, isLeague: true, hasLink: true, isHidden: false },
         "MLB": { score: 97, isLeague: true, hasLink: true, isHidden: false },
         "NHL": { score: 96, isLeague: true, hasLink: true, isHidden: false },
         "UFC": { score: 95, isLeague: true, hasLink: true, isHidden: false },
-        
-        // --- TIER 2: High Interest ---
         "Premier League": { score: 90, isLeague: true, hasLink: true, isHidden: false },
         "Champions League": { score: 89, isLeague: true, hasLink: true, isHidden: false },
         "Formula 1": { score: 88, isLeague: true, hasLink: true, isHidden: false },
         "MLS": { score: 87, isLeague: true, hasLink: true, isHidden: false },
-        "Africa Cup of Nations": { score: 86, isLeague: true, hasLink: true, isHidden: false }, // Trending
+        "Africa Cup of Nations": { score: 86, isLeague: true, hasLink: true, isHidden: false },
         "La Liga": { score: 85, isLeague: true, hasLink: true, isHidden: false },
         "Liga MX": { score: 84, isLeague: true, hasLink: false, isHidden: false },
-
-        // --- TIER 3: Generic Fallbacks ---
         "Football": { score: 79, isLeague: false, hasLink: false, isHidden: false },
         "Basketball": { score: 78, isLeague: false, hasLink: false, isHidden: false },
         "Baseball": { score: 77, isLeague: false, hasLink: false, isHidden: false },
@@ -43,30 +38,25 @@ const DEFAULT_PRIORITIES = {
     UK: {
         _HIDE_OTHERS: false,
         _BOOST: "Final, Derby",
-        // --- TIER 1: Domestic Football ---
         "Premier League": { score: 100, isLeague: true, hasLink: true, isHidden: false },
         "Champions League": { score: 99, isLeague: true, hasLink: true, isHidden: false },
         "Championship": { score: 98, isLeague: true, hasLink: true, isHidden: false },
-        "Africa Cup of Nations": { score: 97, isLeague: true, hasLink: true, isHidden: false }, // Trending
+        "Africa Cup of Nations": { score: 97, isLeague: true, hasLink: true, isHidden: false },
         "Scottish Premiership": { score: 96, isLeague: true, hasLink: true, isHidden: false },
         "Europa League": { score: 95, isLeague: true, hasLink: true, isHidden: false },
         "FA Cup": { score: 94, isLeague: true, hasLink: true, isHidden: false },
-        
-        // --- TIER 2: International Leagues ---
         "LaLiga": { score: 90, isLeague: true, hasLink: true, isHidden: false },
         "Serie A": { score: 89, isLeague: true, hasLink: true, isHidden: false },
         "Bundesliga": { score: 88, isLeague: true, hasLink: true, isHidden: false },
-        "National League": { score: 85, isLeague: true, hasLink: true, isHidden: false }, // Wrexham effect
+        "National League": { score: 85, isLeague: true, hasLink: true, isHidden: false },
         "Formula 1": { score: 84, isLeague: true, hasLink: true, isHidden: false },
-        
-        // --- TIER 3: Other Sports ---
         "Rugby": { score: 80, isLeague: false, hasLink: true, isHidden: false },
         "Cricket": { score: 79, isLeague: false, hasLink: true, isHidden: false },
         "Darts": { score: 78, isLeague: false, hasLink: true, isHidden: false },
         "Snooker": { score: 77, isLeague: false, hasLink: true, isHidden: false },
         "Boxing": { score: 75, isLeague: false, hasLink: true, isHidden: false },
         "NFL": { score: 70, isLeague: true, hasLink: true, isHidden: false },
-        "Soccer": { score: 60, isLeague: false, hasLink: false, isHidden: false } // Fallback
+        "Soccer": { score: 60, isLeague: false, hasLink: false, isHidden: false }
     }
 };
 
@@ -81,7 +71,7 @@ const DEMO_CONFIG = {
     },
     theme: {
         brand_primary: "#D00000", brand_dark: "#8a0000", accent_gold: "#FFD700",
-        bg_body: "#050505", hero_gradient_start: "#1a0505", font_family: "system-ui"
+        bg_body: "#050505", font_family_base: "system-ui"
     },
     sport_priorities: JSON.parse(JSON.stringify(DEFAULT_PRIORITIES)), 
     menus: { header: [], hero: [], footer_static: [] },
@@ -90,10 +80,74 @@ const DEMO_CONFIG = {
     ]
 };
 
+// --- MAPPING FOR NEW THEME DESIGNER ---
+// Maps JSON key -> HTML ID
+const THEME_FIELDS = {
+    // Typography & Base
+    'font_family_base': 'themeFontBase',
+    'font_family_headings': 'themeFontHeadings',
+    'border_radius_base': 'themeBorderRadius',
+    'container_max_width': 'themeMaxWidth',
+    
+    // Palette
+    'brand_primary': 'themeBrandPrimary',
+    'brand_dark': 'themeBrandDark',
+    'accent_gold': 'themeAccentGold',
+    'status_green': 'themeStatusGreen',
+    'bg_body': 'themeBgBody',
+    'bg_panel': 'themeBgPanel',
+    'text_main': 'themeTextMain',
+    'text_muted': 'themeTextMuted',
+    'border_color': 'themeBorderColor',
+    'scrollbar_thumb_color': 'themeScrollThumb',
+
+    // Header
+    'header_bg': 'themeHeaderBg',
+    'header_text_color': 'themeHeaderText',
+    'header_link_active_color': 'themeHeaderActive',
+    'logo_p1_color': 'themeLogoP1',
+    'logo_p2_color': 'themeLogoP2',
+    'header_border_bottom': 'themeHeaderBorderBottom',
+
+    // Hero
+    'hero_bg_style': 'themeHeroBgStyle',
+    'hero_bg_solid': 'themeHeroBgSolid',
+    'hero_gradient_start': 'themeHeroGradStart',
+    'hero_gradient_end': 'themeHeroGradEnd',
+    'hero_bg_image_url': 'themeHeroBgImage',
+    'hero_bg_image_overlay_opacity': 'themeHeroOverlayOpacity',
+    'hero_h1_color': 'themeHeroH1',
+    'hero_intro_color': 'themeHeroIntro',
+    'hero_pill_bg': 'themeHeroPillBg',
+    'hero_pill_text': 'themeHeroPillText',
+    'hero_pill_hover_bg': 'themeHeroPillActiveBg',
+    'hero_pill_hover_text': 'themeHeroPillActiveText',
+
+    // Match Rows
+    'match_row_bg': 'themeMatchRowBg',
+    'match_row_border': 'themeMatchRowBorder',
+    'match_row_team_name_color': 'themeMatchTeamColor',
+    'match_row_time_main_color': 'themeMatchTimeColor',
+    'match_row_live_bg_start': 'themeMatchLiveBgStart',
+    'match_row_live_bg_end': 'themeMatchLiveBgEnd',
+    'match_row_live_text_color': 'themeMatchLiveText',
+    'row_height_mode': 'themeRowHeight',
+    'match_row_btn_watch_bg': 'themeBtnWatchBg',
+    'match_row_btn_watch_text': 'themeBtnWatchText',
+
+    // Footer
+    'footer_bg_start': 'themeFooterBgStart',
+    'footer_bg_end': 'themeFooterBgEnd',
+    'footer_desc_color': 'themeFooterText',
+    'footer_link_color': 'themeFooterLink',
+    'footer_text_align_desktop': 'themeFooterAlign',
+    'footer_grid_columns_desktop': 'themeFooterGrid'
+};
+
 let configData = {};
-let leagueMapData = {}; // Stores the fetched league_map.json
+let leagueMapData = {}; 
 let currentSha = null;
-let leagueMapSha = null; // SHA for league_map.json
+let leagueMapSha = null; 
 let currentEditingPageId = null;
 let isBuilding = false;
 
@@ -157,7 +211,7 @@ async function verifyAndLoad(token) {
 
         // Process League Map
         if(resLeague.status === 404) {
-            leagueMapData = {}; // Empty map if not found
+            leagueMapData = {}; 
         } else {
             const lData = await resLeague.json();
             leagueMapSha = lData.sha;
@@ -176,7 +230,8 @@ async function verifyAndLoad(token) {
         if(!configData.sport_priorities.US) configData.sport_priorities.US = { _HIDE_OTHERS: false, _BOOST: "" };
         if(!configData.sport_priorities.UK) configData.sport_priorities.UK = { _HIDE_OTHERS: false, _BOOST: "" };
         if(!configData.social_sharing) configData.social_sharing = DEMO_CONFIG.social_sharing;
-        
+        if(!configData.theme) configData.theme = {};
+
         populateUI();
         startPolling();
     } catch(e) { console.error(e); }
@@ -204,6 +259,7 @@ function populateUI() {
     setVal('socialTwitter', soc.counts?.twitter || 0);
     setVal('socialExcluded', soc.excluded_pages || "");
 
+    renderThemeSettings(); // NEW
     renderPriorities();
     renderMenus();
     renderPageList();
@@ -211,7 +267,57 @@ function populateUI() {
 }
 
 // ==========================================
-// 5. PRIORITIES & BOOST
+// 5. THEME DESIGNER FUNCTIONS (NEW)
+// ==========================================
+function renderThemeSettings() {
+    const t = configData.theme || {};
+    
+    // Iterate over our mapping and set values, or defaults if missing
+    for (const [jsonKey, htmlId] of Object.entries(THEME_FIELDS)) {
+        if(t[jsonKey]) setVal(htmlId, t[jsonKey]);
+    }
+
+    // Handle range display updates
+    if(document.getElementById('val_borderRadius')) document.getElementById('val_borderRadius').innerText = (t.border_radius_base || '6') + 'px';
+    if(document.getElementById('val_maxWidth')) document.getElementById('val_maxWidth').innerText = (t.container_max_width || '1100') + 'px';
+
+    // Handle Hero Toggles
+    toggleHeroInputs();
+}
+
+window.toggleHeroInputs = () => {
+    const style = document.getElementById('themeHeroBgStyle').value;
+    document.getElementById('heroSolidInput').style.display = style === 'solid' ? 'block' : 'none';
+    document.getElementById('heroGradientInput').style.display = style === 'gradient' ? 'grid' : 'none';
+    document.getElementById('heroImageInput').style.display = style === 'image' ? 'block' : 'none';
+};
+
+window.randomizeTheme = () => {
+    if(!confirm("This will overwrite current theme settings with random values. Continue?")) return;
+    
+    const rCol = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+    
+    // Randomize Colors
+    setVal('themeBrandPrimary', rCol());
+    setVal('themeBrandDark', rCol());
+    setVal('themeAccentGold', rCol());
+    setVal('themeBgBody', '#0f172a'); // Keep body dark for safety
+    setVal('themeBgPanel', '#1e293b');
+    
+    // Randomize Radius
+    const rRad = Math.floor(Math.random() * 16);
+    setVal('themeBorderRadius', rRad);
+    document.getElementById('val_borderRadius').innerText = rRad + 'px';
+
+    // Randomize Fonts
+    const fonts = document.getElementById('themeFontBase').options;
+    setVal('themeFontBase', fonts[Math.floor(Math.random() * fonts.length)].value);
+    
+    alert("Theme Randomized! Fine tune colors if needed.");
+};
+
+// ==========================================
+// 6. PRIORITIES & BOOST
 // ==========================================
 function renderPriorities() {
     const c = getVal('targetCountry') || 'US';
@@ -223,7 +329,6 @@ function renderPriorities() {
 
     const isHideOthers = !!configData.sport_priorities[c]._HIDE_OTHERS;
     
-    // NEW: Set Boost Input Value
     setVal('prioBoost', configData.sport_priorities[c]._BOOST || "");
 
     const items = Object.entries(configData.sport_priorities[c])
@@ -305,7 +410,7 @@ window.deletePriority = (c, name) => {
 };
 
 // ==========================================
-// 6. PAGES SYSTEM
+// 7. PAGES SYSTEM
 // ==========================================
 function renderPageList() {
     const tbody = document.querySelector('#pagesTable tbody');
@@ -455,7 +560,7 @@ window.deletePage = (id) => {
 };
 
 // ==========================================
-// 7. MENUS
+// 8. MENUS
 // ==========================================
 function renderMenus() {
     ['header', 'hero', 'footer_static'].forEach(sec => {
@@ -505,7 +610,7 @@ window.saveMenuItem = () => {
 window.deleteMenuItem = (sec, idx) => { configData.menus[sec].splice(idx, 1); renderMenus(); };
 
 // ==========================================
-// 8. LEAGUES & TEAMS MAP (UPDATED)
+// 9. LEAGUES & TEAMS MAP
 // ==========================================
 function getGroupedLeagues() {
     return leagueMapData || {};
@@ -584,7 +689,7 @@ function rebuildLeagueMapFromUI() {
 
 
 // ==========================================
-// 9. SAVE & UTILS
+// 10. SAVE & UTILS
 // ==========================================
 document.getElementById('saveBtn').onclick = async () => {
     if(isBuilding) return;
@@ -616,6 +721,12 @@ document.getElementById('saveBtn').onclick = async () => {
         },
         excluded_pages: getVal('socialExcluded')
     };
+    
+    // --- NEW: Capture Theme Data ---
+    configData.theme = {};
+    for (const [jsonKey, htmlId] of Object.entries(THEME_FIELDS)) {
+        configData.theme[jsonKey] = getVal(htmlId);
+    }
 
     // --- 2. Prepare League Map Data ---
     if(document.querySelector('.team-list-editor')) {
