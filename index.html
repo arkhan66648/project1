@@ -945,7 +945,7 @@
             topList.innerHTML = ''; hiddenList.innerHTML = ''; btn.style.display='none';
             
             // Update counter text
-            document.getElementById('live-count').innerText = `● ${displayMatches.length} Live`;
+            document.getElementById('live-count').innerText = `● ${displayMatches.length} Live Events`;
             
             // Show Top 5 (Visuals)
             displayMatches.slice(0, 5).forEach(m => topList.appendChild(createMatchRow(m, { isLive: true }, null)));
