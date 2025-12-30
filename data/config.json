@@ -21,7 +21,7 @@
   "sport_priorities": {
     "US": {
       "_HIDE_OTHERS": false,
-      "_BOOST": "Super Bowl, Playoffs, Finals",
+      "_BOOST": "Super Bowl, Playoffs, Final",
       "NFL": {
         "score": 100,
         "isLeague": true,
