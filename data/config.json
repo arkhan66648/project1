@@ -8,7 +8,7 @@
     "favicon_url": "/assets/Untitled%20design%20(46)-min.png",
     "footer_copyright": "Copyright",
     "footer_disclaimer": "Hello world",
-    "target_country": "US"
+    "target_country": "UK"
   },
   "theme": {
     "font_family_base": "system-ui, -apple-system, sans-serif",
@@ -266,7 +266,8 @@
         "score": 30,
         "isLeague": true,
         "hasLink": false
-      }
+      },
+      "_BOOST": ""
     }
   },
   "header_menu": [
