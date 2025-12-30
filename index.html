@@ -902,34 +902,48 @@
             const hiddenList = document.getElementById('hidden-live-list');
             const btn = document.getElementById('show-more-live');
             
-            // Filter by Wildcard if Active for Live Section too? 
-            // Request said: "Then the live schema will only available for nfl".
-            // Visuals usually show everything live, but if you want strict visuals too:
+            // 1. VISUAL PRIORITY LOGIC
+            // We do NOT strictly hide non-wildcard matches here. 
+            // Instead, we push Wildcard matches to the very top.
             let displayMatches = matches;
+
             if (WILDCARD_CATEGORY && WILDCARD_CATEGORY.length > 2) {
-                 displayMatches = matches.filter(m => 
-                    m.finalLeague.toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase()) || 
-                    (m.sport || "").toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase())
+                const wLower = WILDCARD_CATEGORY.toLowerCase();
+                
+                // Bucket A: The Wildcard Matches
+                const wcMatches = matches.filter(m => 
+                    m.finalLeague.toLowerCase().includes(wLower) || 
+                    (m.sport || "").toLowerCase().includes(wLower)
                 );
-                // If no live matches for wildcard, hide section
-                if (displayMatches.length === 0) {
-                    wrapper.style.display = 'none';
-                    return;
-                }
+                
+                // Bucket B: Everything Else (Non-Duplicate)
+                // Note: We used !includes so these are mutually exclusive
+                const otherMatches = matches.filter(m => 
+                    !m.finalLeague.toLowerCase().includes(wLower) && 
+                    !(m.sport || "").toLowerCase().includes(wLower)
+                );
+
+                // Merge: Wildcard First + Others Second
+                displayMatches = [...wcMatches, ...otherMatches];
             }
 
+            // 2. Rendering
             if (displayMatches.length === 0) { 
                 wrapper.style.display = 'none'; 
                 document.getElementById('live-section').style.display = 'none';
                 return; 
             }
+            
             wrapper.style.display = 'block';
             topList.innerHTML = ''; hiddenList.innerHTML = ''; btn.style.display='none';
             
+            // Update counter text
             document.getElementById('live-count').innerText = `● ${displayMatches.length} Live`;
             
+            // Show Top 5 (Visuals)
             displayMatches.slice(0, 5).forEach(m => topList.appendChild(createMatchRow(m, { isLive: true }, null)));
             
+            // Hide the rest behind "Show More"
             if (displayMatches.length > 5) {
                 displayMatches.slice(5).forEach(m => hiddenList.appendChild(createMatchRow(m, { isLive: true }, null)));
                 btn.style.display = 'block'; btn.innerText = `Show More (${displayMatches.length - 5}) ▼`;
