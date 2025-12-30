@@ -78,8 +78,8 @@
     "social_desktop_scale": "",
     "mobile_footer_height": "",
     "mobile_footer_bg": "#000000",
-    "back_to_top_bg": "#000000",
-    "back_to_top_icon_color": "#000000",
+    "back_to_top_bg": "#130101",
+    "back_to_top_icon_color": "#d1d1d1",
     "back_to_top_radius": "",
     "back_to_top_size": "",
     "display_hero": "none"
