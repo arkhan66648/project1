@@ -11,10 +11,10 @@
     "target_country": "US"
   },
   "theme": {
-    "font_family_base": "system-ui, -apple-system, sans-serif",
-    "font_family_headings": "inherit",
-    "border_radius_base": "9",
-    "container_max_width": "1200",
+    "font_family_base": "'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    "font_family_headings": "'Arial Black', 'Helvetica', sans-serif",
+    "border_radius_base": "12",
+    "container_max_width": "1100",
     "brand_primary": "#62169a",
     "brand_dark": "#26e267",
     "accent_gold": "#0ecb2e",
