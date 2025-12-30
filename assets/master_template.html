@@ -534,9 +534,9 @@
                 document.getElementById('top-upcoming-container').innerHTML = '<div style="padding:15px;color:#666;text-align:center;">No upcoming matches in next 24h.</div>';
             }
 
-            // PASS TOP 15 TO SCHEMA (SEO Requirement)
-            const top15Schema = upcomingMatches.slice(0, 15);
-            generateDynamicSchema(liveMatches, top15Schema);
+            // PASS MATCHES TO SCHEMA (Logic handled inside function)
+// We pass all upcoming matches so the schema function can perform its own strict time check
+generateDynamicSchema(liveMatches, upcomingMatches);
 
             // FILTER REST
             const top5Ids = new Set(top5Display.map(m => m.id));
@@ -783,50 +783,133 @@
         }
 
         function generateDynamicSchema(liveList, upcomingList) {
-            const schemas = [];
             const now = Date.now();
-            
-            liveList.forEach(m => {
-                if (!m.startTimeUnix) return;
-                const duration = (m.sport_duration || 120) * 60 * 1000;
-                const endTime = m.startTimeUnix + duration;
-                if (now > endTime - (20 * 60 * 1000)) return; 
-                schemas.push(createEventSchema(m, 'BroadcastEvent'));
-            });
+            const twentyMin = 20 * 60 * 1000;
+            const oneDay = 24 * 60 * 60 * 1000;
 
-            upcomingList.forEach(m => {
-                if (!m.startTimeUnix) return;
-                schemas.push(createEventSchema(m, 'SportsEvent'));
-            });
-            
-            if(schemas.length > 0) {
-                const script = document.createElement('script');
-                script.type = 'application/ld+json';
-                script.text = JSON.stringify(schemas);
-                document.head.appendChild(script);
-            }
-        }
+            // 1. DYNAMICALLY FETCH SITE LOGO (Main Event Image)
+            const metaImg = document.querySelector('meta[property="og:image"]');
+            const mainImage = metaImg ? metaImg.content : `${SITE_DOMAIN}/assets/logo.png`;
 
-        function createEventSchema(m, type) {
-            let logoA = undefined, logoB = undefined;
-            if (IMAGE_MAP.teams[m.displayHome] && IMAGE_MAP.teams[m.displayAway]) {
-                logoA = `${SITE_DOMAIN}${IMAGE_MAP.teams[m.displayHome]}`;
-                logoB = `${SITE_DOMAIN}${IMAGE_MAP.teams[m.displayAway]}`;
-            }
-            
-            const urlParam = type === 'BroadcastEvent' ? 'stream' : 'v';
-            
-            return {
-                "@context": "https://schema.org",
-                "@type": type,
-                "name": `${m.displayHome} vs ${m.displayAway}`,
-                "startDate": new Date(m.startTimeUnix).toISOString(),
-                "url": `${SITE_DOMAIN}/watch/?${urlParam}=${m.id}`,
-                "competitor": [
-                    { "@type": "SportsTeam", "name": m.displayHome, "logo": logoA },
-                    { "@type": "SportsTeam", "name": m.displayAway, "logo": logoB }
-                ]
+            // 2. DEFINE INDIVIDUAL SPORTS (Person vs SportsTeam)
+            const INDIVIDUAL_SPORTS = ['ufc', 'mma', 'boxing', 'tennis', 'golf', 'f1', 'motorsport', 'fighting', 'nascar'];
+            const isIndividual = (leagueName) => {
+                const lower = (leagueName || "").toLowerCase();
+                return INDIVIDUAL_SPORTS.some(s => lower.includes(s));
             };
+
+            // 3. FILTER LIVE MATCHES (Max 5)
+            // Rule: Remove 20 mins before duration ends
+            const validLive = liveList.filter(m => {
+                if (!m.startTimeUnix) return false;
+                const duration = (m.sport_duration || 120) * 60 * 1000;
+                const cutoffTime = m.startTimeUnix + duration - twentyMin;
+                return now < cutoffTime;
+            }).slice(0, 5);
+
+            // 4. FILTER UPCOMING MATCHES (Max 15)
+            // Rule: Must be strictly future (diff > 0) AND within 24h
+            const validUpcoming = upcomingList.filter(m => {
+                if (!m.startTimeUnix) return false;
+                const diff = m.startTimeUnix - now;
+                return diff > 0 && diff < oneDay;
+            }).slice(0, 15);
+
+            // 5. COMBINE LISTS
+            const allItems = [...validLive, ...validUpcoming];
+            if (allItems.length === 0) return;
+
+            // 6. BUILD SCHEMA ITEMS
+            const listItems = allItems.map((m, index) => {
+                const isLiveItem = validLive.includes(m);
+                const evtStatus = isLiveItem ? "https://schema.org/EventLive" : "https://schema.org/EventScheduled";
+                
+                // Determine Type: Person or SportsTeam
+                const entityType = isIndividual(m.finalLeague) ? "Person" : "SportsTeam";
+                
+                // Determine Structure: Single Event vs Match
+                const isSingle = !m.displayAway || m.displayAway === 'TBA';
+
+                // --- LOGO LOGIC ---
+                let logoA = undefined, logoB = undefined;
+                
+                if (isSingle) {
+                    // Single: Just check Home logo
+                    if (IMAGE_MAP.teams && IMAGE_MAP.teams[m.displayHome]) {
+                        logoA = `${SITE_DOMAIN}${IMAGE_MAP.teams[m.displayHome]}`;
+                    }
+                } else {
+                    // Double: STRICT RULE - Both must exist, otherwise show NONE
+                    if (IMAGE_MAP.teams && IMAGE_MAP.teams[m.displayHome] && IMAGE_MAP.teams[m.displayAway]) {
+                        logoA = `${SITE_DOMAIN}${IMAGE_MAP.teams[m.displayHome]}`;
+                        logoB = `${SITE_DOMAIN}${IMAGE_MAP.teams[m.displayAway]}`;
+                    }
+                }
+
+                // --- BASE ITEM ---
+                const schemaItem = {
+                    "@type": "SportsEvent",
+                    "startDate": new Date(m.startTimeUnix).toISOString(),
+                    "eventStatus": evtStatus,
+                    "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+                    "url": `${SITE_DOMAIN}/watch/?info=${m.id}`,
+                    "image": [ mainImage ], // Always use high-res site logo here
+                    "organizer": { "@id": `${SITE_DOMAIN}/#organization` },
+                    "offers": {
+                        "@type": "Offer",
+                        "price": "0",
+                        "priceCurrency": "USD",
+                        "availability": isLiveItem ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
+                        "url": `${SITE_DOMAIN}/watch/?info=${m.id}`
+                    }
+                };
+
+                // --- STRUCTURE INJECTION ---
+                if (isSingle) {
+                    // STRUCTURE 1: Single Competitor (e.g. F1, Golf)
+                    schemaItem.name = m.displayHome; // Name is just the event/person
+                    schemaItem.description = `Watch ${m.displayHome} live stream. ${m.finalLeague}.`;
+                    schemaItem.competitor = [{
+                        "@type": entityType,
+                        "name": m.displayHome,
+                        "logo": logoA
+                    }];
+                } else {
+                    // STRUCTURE 2: Versus Match (e.g. NBA, Soccer)
+                    schemaItem.name = `${m.displayHome} vs ${m.displayAway}`;
+                    schemaItem.description = `Watch ${m.displayHome} vs ${m.displayAway} live stream. ${m.finalLeague}.`;
+                    schemaItem.homeTeam = {
+                        "@type": entityType,
+                        "name": m.displayHome,
+                        "logo": logoA
+                    };
+                    schemaItem.awayTeam = {
+                        "@type": entityType,
+                        "name": m.displayAway,
+                        "logo": logoB
+                    };
+                }
+
+                return {
+                    "@type": "ListItem",
+                    "position": index + 1,
+                    "item": schemaItem
+                };
+            });
+
+            // 7. INJECT SCHEMA
+            const schema = {
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                "@id": `${SITE_DOMAIN}/#matchlist`,
+                "name": "Live & Upcoming Sports Schedule",
+                "itemListElement": listItems
+            };
+
+            const script = document.createElement('script');
+            script.type = 'application/ld+json';
+            script.text = JSON.stringify(schema);
+            document.head.appendChild(script);
         }
 
         function renderSocials() {
