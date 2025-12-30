@@ -11,7 +11,7 @@
     "target_country": "US"
   },
   "theme": {
-    "font_family_base": "'Impact', 'Arial Black', sans-serif",
+    "font_family_base": "Georgia, Cambria, 'Times New Roman', serif",
     "font_family_headings": "'Arial Black', 'Helvetica', sans-serif",
     "border_radius_base": "15",
     "container_max_width": "1100",
@@ -53,8 +53,8 @@
     "row_height_mode": "standard",
     "match_row_btn_watch_bg": "#001eff",
     "match_row_btn_watch_text": "#ffffff",
-    "footer_bg_start": "#000000",
-    "footer_bg_end": "#000000",
+    "footer_bg_start": "#6b6b6b",
+    "footer_bg_end": "#110e0e",
     "footer_desc_color": "#ffffff",
     "footer_link_color": "#1eff00",
     "footer_text_align_desktop": "left",
