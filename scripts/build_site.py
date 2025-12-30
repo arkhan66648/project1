@@ -227,16 +227,87 @@ def render_page(template, config, page_data):
     # --- 7. STATIC SCHEMA GENERATION ---
     schemas = []
     page_schemas = page_data.get('schemas', {})
+    
+    # Common IDs for Entity Stacking
+    org_id = f"https://{domain}/#organization"
+    website_id = f"https://{domain}/#website"
+    
+    # 1. Organization Schema (Enhanced)
     if page_schemas.get('org'):
-        schemas.append({"@context": "https://schema.org", "@type": "Organization", "@id": f"https://{domain}/#organization", "name": site_name, "url": f"https://{domain}/", "logo": {"@type": "ImageObject", "url": og_image}})
-    if page_schemas.get('website'):
-        schemas.append({"@context": "https://schema.org", "@type": "WebSite", "@id": f"https://{domain}/#website", "url": f"https://{domain}/", "name": site_name, "publisher": {"@type": "Organization", "@id": f"https://{domain}/#organization"}})
-    if page_schemas.get('faq'):
-        valid_faqs = [{"@type": "Question", "name": item.get('q'), "acceptedAnswer": {"@type": "Answer", "text": item.get('a')}} for item in page_schemas.get('faq_list', []) if item.get('q') and item.get('a')]
-        if valid_faqs:
-            schemas.append({"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": valid_faqs})
+        org_schema = {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "@id": org_id,
+            "name": site_name,
+            "url": f"https://{domain}/",
+            "logo": {
+                "@type": "ImageObject",
+                "url": og_image, # This is your high-res logo from config
+                "width": 512,    # Hardcoded assumption based on your input
+                "height": 512,
+                "caption": f"{site_name} Logo"
+            }
+        }
+        schemas.append(org_schema)
 
-    schema_html = f'<script type="application/ld+json">{json.dumps(schemas, indent=2)}</script>' if schemas else ''
+    # 2. WebSite Schema
+    if page_schemas.get('website'):
+        website_schema = {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "@id": website_id,
+            "url": f"https://{domain}/",
+            "name": site_name,
+            "publisher": {"@id": org_id}
+        }
+        schemas.append(website_schema)
+
+    # 3. CollectionPage Schema (ONLY for Homepage)
+    # This is the "Hub" definition that connects to the dynamic match list
+    if page_data.get('slug') == 'home':
+        collection_schema = {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "@id": f"https://{domain}/#webpage",
+            "url": f"https://{domain}/",
+            "name": page_data.get('meta_title') or f"{site_name} - Live Sports",
+            "description": page_data.get('meta_desc', ''),
+            "isPartOf": {"@id": website_id},
+            "about": {"@id": org_id},
+            "mainEntity": {"@id": f"https://{domain}/#matchlist"} # Links to the Dynamic JS List
+        }
+        schemas.append(collection_schema)
+
+    # 4. FAQ Schema
+    if page_schemas.get('faq'):
+        valid_faqs = [
+            {
+                "@type": "Question", 
+                "name": item.get('q'), 
+                "acceptedAnswer": {"@type": "Answer", "text": item.get('a')}
+            } 
+            for item in page_schemas.get('faq_list', []) if item.get('q') and item.get('a')
+        ]
+        if valid_faqs:
+            schemas.append({
+                "@context": "https://schema.org", 
+                "@type": "FAQPage", 
+                "mainEntity": valid_faqs
+            })
+
+    # Wrap in separate script tags or one graph? 
+    # For compatibility with your requested style, we'll output a single script with a graph.
+    if schemas:
+        # combine into one @graph for cleaner structure
+        final_graph = {"@context": "https://schema.org", "@graph": schemas}
+        # We strip the @context from individual items since it's at the root now
+        for s in schemas:
+            if "@context" in s: del s["@context"]
+            
+        schema_html = f'<script type="application/ld+json">{json.dumps(final_graph, indent=2)}</script>'
+    else:
+        schema_html = ''
+
     html = html.replace('{{SCHEMA_BLOCK}}', schema_html)
     
     preload_html = f'<link rel="preload" as="image" href="{s.get("logo_url")}" fetchpriority="high">' if s.get('logo_url') else ''
