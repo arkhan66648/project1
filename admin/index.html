@@ -14,7 +14,7 @@
             <div class="logo-area"><h2>⚡ StreamCMS</h2></div>
             <nav>
                 <button class="nav-btn active" onclick="switchTab('general')">⚙️ General & SEO</button>
-                <button class="nav-btn" onclick="switchTab('theme')">🎨 Theme Designer</button> <!-- NEW -->
+                <button class="nav-btn" onclick="switchTab('theme')">🎨 Theme Designer</button>
                 <button class="nav-btn" onclick="switchTab('pages')">📄 Pages & Content</button>
                 <button class="nav-btn" onclick="switchTab('priorities')">📊 Priorities & Boost</button>
                 <button class="nav-btn" onclick="switchTab('leagues')">🏆 Leagues & Teams</button>
@@ -63,18 +63,18 @@
                 </div>
             </section>
 
-            <!-- THEME DESIGNER (NEW) -->
+            <!-- THEME DESIGNER -->
             <section id="tab-theme" class="tab-content">
                 <div class="header-box">
                     <h1>Theme Designer</h1>
                     <button class="btn-secondary" onclick="randomizeTheme()">🎲 Randomize Theme</button>
                 </div>
                 
+                <!-- ROW 1: BASE -->
                 <div class="grid-3">
-                    <!-- 1. TYPOGRAPHY & SHAPE -->
                     <div class="card">
                         <h3>📐 Base & Typography</h3>
-                        <label>Font Stack (0ms Load Time)</label>
+                        <label>Font Stack (0ms Load)</label>
                         <select id="themeFontBase">
                             <option value="system-ui, -apple-system, sans-serif">Modern System (Default)</option>
                             <option value="'Segoe UI', Roboto, Helvetica, Arial, sans-serif">Neutral Sans</option>
@@ -83,7 +83,6 @@
                             <option value="'Impact', 'Arial Black', sans-serif">Bold Impact</option>
                             <option value="'Trebuchet MS', 'Lucida Sans', sans-serif">Humanist</option>
                         </select>
-                        
                         <label>Heading Font</label>
                         <select id="themeFontHeadings">
                             <option value="inherit">Same as Base</option>
@@ -91,19 +90,16 @@
                             <option value="Georgia, serif">Elegant Serif</option>
                             <option value="'Courier New', monospace">Code/Tech</option>
                         </select>
-
                         <div class="range-wrapper">
-                            <label>Global Border Radius: <span id="val_borderRadius">6px</span></label>
+                            <label>Global Radius: <span id="val_borderRadius">6px</span></label>
                             <input type="range" id="themeBorderRadius" min="0" max="20" step="1" oninput="document.getElementById('val_borderRadius').innerText=this.value+'px'">
                         </div>
-
                         <div class="range-wrapper">
-                            <label>Site Max Width: <span id="val_maxWidth">1100px</span></label>
+                            <label>Max Width: <span id="val_maxWidth">1100px</span></label>
                             <input type="range" id="themeMaxWidth" min="800" max="1600" step="50" oninput="document.getElementById('val_maxWidth').innerText=this.value+'px'">
                         </div>
                     </div>
 
-                    <!-- 2. PALETTE -->
                     <div class="card">
                         <h3>🎨 Global Palette</h3>
                         <div class="color-grid">
@@ -111,18 +107,15 @@
                             <div><label>Brand Dark</label><input type="color" id="themeBrandDark"></div>
                             <div><label>Accent Gold</label><input type="color" id="themeAccentGold"></div>
                             <div><label>Status Green</label><input type="color" id="themeStatusGreen"></div>
-                            
                             <div><label>Body BG</label><input type="color" id="themeBgBody"></div>
                             <div><label>Panel BG</label><input type="color" id="themeBgPanel"></div>
                             <div><label>Text Main</label><input type="color" id="themeTextMain"></div>
                             <div><label>Text Muted</label><input type="color" id="themeTextMuted"></div>
-                            
                             <div><label>Borders</label><input type="color" id="themeBorderColor"></div>
                             <div><label>Scroll Thumb</label><input type="color" id="themeScrollThumb"></div>
                         </div>
                     </div>
 
-                    <!-- 3. HEADER -->
                     <div class="card">
                         <h3>🧭 Header</h3>
                         <div class="color-grid">
@@ -130,13 +123,11 @@
                             <div><label>Text Color</label><input type="color" id="themeHeaderText"></div>
                             <div><label>Active Link</label><input type="color" id="themeHeaderActive"></div>
                         </div>
-                        
-                        <label>Logo Text Colors (If no image)</label>
+                        <label>Logo Text Colors</label>
                         <div class="color-grid">
                             <div><label>Part 1</label><input type="color" id="themeLogoP1"></div>
                             <div><label>Part 2</label><input type="color" id="themeLogoP2"></div>
                         </div>
-                        
                         <label>Border Bottom</label>
                         <select id="themeHeaderBorderBottom">
                             <option value="1px solid var(--border)">Thin Border</option>
@@ -146,8 +137,8 @@
                     </div>
                 </div>
 
+                <!-- ROW 2: COMPONENTS -->
                 <div class="grid-3">
-                    <!-- 4. HERO SECTION -->
                     <div class="card">
                         <h3>📢 Hero Section</h3>
                         <label>Background Style</label>
@@ -156,28 +147,20 @@
                             <option value="gradient">Gradient</option>
                             <option value="image">Image (URL)</option>
                         </select>
-
                         <div id="heroSolidInput" class="mt-2"><label>Solid Color</label><input type="color" id="themeHeroBgSolid"></div>
-                        
                         <div id="heroGradientInput" class="color-grid mt-2" style="display:none;">
                             <div><label>Grad Start</label><input type="color" id="themeHeroGradStart"></div>
                             <div><label>Grad End</label><input type="color" id="themeHeroGradEnd"></div>
                         </div>
-                        
                         <div id="heroImageInput" class="mt-2" style="display:none;">
                             <label>Image URL</label><input type="text" id="themeHeroBgImage">
-                            <div class="range-wrapper">
-                                <label>Overlay Opacity</label>
-                                <input type="range" id="themeHeroOverlayOpacity" min="0" max="1" step="0.1">
-                            </div>
+                            <div class="range-wrapper"><label>Overlay Opacity</label><input type="range" id="themeHeroOverlayOpacity" min="0" max="1" step="0.1"></div>
                         </div>
-
                         <div class="color-grid mt-2">
                             <div><label>H1 Color</label><input type="color" id="themeHeroH1"></div>
                             <div><label>Intro Text</label><input type="color" id="themeHeroIntro"></div>
                         </div>
-
-                        <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Category Pills</h4>
+                        <h4 style="margin:10px 0 5px 0; font-size:0.8rem; color:#aaa;">Category Pills</h4>
                         <div class="color-grid">
                             <div><label>Pill BG</label><input type="color" id="themeHeroPillBg"></div>
                             <div><label>Pill Text</label><input type="color" id="themeHeroPillText"></div>
@@ -186,7 +169,6 @@
                         </div>
                     </div>
 
-                    <!-- 5. MATCH ROWS -->
                     <div class="card">
                         <h3>⚔️ Match Rows</h3>
                         <div class="color-grid">
@@ -195,21 +177,18 @@
                             <div><label>Team Name</label><input type="color" id="themeMatchTeamColor"></div>
                             <div><label>Time Color</label><input type="color" id="themeMatchTimeColor"></div>
                         </div>
-                        
-                        <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Live Matches</h4>
+                        <h4 style="margin:10px 0 5px 0; font-size:0.8rem; color:#aaa;">Live Matches</h4>
                         <div class="color-grid">
                             <div><label>Live BG Start</label><input type="color" id="themeMatchLiveBgStart"></div>
                             <div><label>Live BG End</label><input type="color" id="themeMatchLiveBgEnd"></div>
                             <div><label>Live Text</label><input type="color" id="themeMatchLiveText"></div>
                         </div>
-                        
                         <label>Row Height</label>
                         <select id="themeRowHeight">
                             <option value="compact">Compact (Data Dense)</option>
                             <option value="standard">Standard (Balanced)</option>
                             <option value="spacious">Spacious (Airy)</option>
                         </select>
-
                         <label>Buttons</label>
                         <div class="color-grid">
                             <div><label>Watch BG</label><input type="color" id="themeBtnWatchBg"></div>
@@ -217,7 +196,6 @@
                         </div>
                     </div>
 
-                    <!-- 6. FOOTER -->
                     <div class="card">
                         <h3>🔻 Footer</h3>
                         <div class="color-grid">
@@ -226,18 +204,98 @@
                             <div><label>Text</label><input type="color" id="themeFooterText"></div>
                             <div><label>Links</label><input type="color" id="themeFooterLink"></div>
                         </div>
-                        
-                        <label>Text Align (Desktop)</label>
+                        <label>Text Align</label>
                         <select id="themeFooterAlign">
                             <option value="left">Left</option>
                             <option value="center">Center</option>
                         </select>
-                        
                         <label>Grid Columns</label>
                         <select id="themeFooterGrid">
                             <option value="1fr 1fr">Equal (2 Cols)</option>
                             <option value="2fr 1fr">Wide Brand (2 Cols)</option>
                         </select>
+                    </div>
+                </div>
+
+                <!-- ROW 3: ADVANCED CUSTOMIZATION (NEW) -->
+                <div class="grid-3">
+                    <!-- CARD 1: CONTENT & LOGIC -->
+                    <div class="card">
+                        <h3>⚡ Content & Logic</h3>
+                        <div class="range-wrapper" style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;">
+                            <label style="color:#facc15;">🔥 Wildcard Category</label>
+                            <input type="text" id="themeWildcardCat" placeholder="e.g. NFL, Premier League">
+                            <small style="color:#666; font-size:0.7rem;">Shows full schedule, hides 'Top 5', sets Schema.</small>
+                        </div>
+                        
+                        <label>Hero Visibility</label>
+                        <select id="themeDisplayHero">
+                            <option value="block">Show Hero</option>
+                            <option value="none">Hide Hero</option>
+                        </select>
+
+                        <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Text Labels</h4>
+                        <div class="grid-2" style="gap:10px;">
+                            <div><label>Live Title</label><input type="text" id="themeTextLiveTitle" placeholder="Trending Live"></div>
+                            <div><label>Show More</label><input type="text" id="themeTextShowMore" placeholder="Show More"></div>
+                            <div><label>Watch Btn</label><input type="text" id="themeTextWatch" placeholder="WATCH"></div>
+                            <div><label>HD Badge</label><input type="text" id="themeTextHd" placeholder="HD"></div>
+                            <div><label>Link Text</label><input type="text" id="themeTextSectionLink" placeholder="View All"></div>
+                            <div><label>Prefix</label><input type="text" id="themeTextSectionPrefix" placeholder="Upcoming"></div>
+                        </div>
+                    </div>
+
+                    <!-- CARD 2: BUTTONS & HOVER -->
+                    <div class="card">
+                        <h3>🖱️ Buttons & Hover</h3>
+                        
+                        <h4 style="margin:5px 0 5px 0; font-size:0.8rem; color:#aaa;">Live "Show More" Btn</h4>
+                        <div class="color-grid">
+                            <div><label>BG</label><input type="color" id="themeShowMoreBg"></div>
+                            <div><label>Text</label><input type="color" id="themeShowMoreText"></div>
+                            <div><label>Border</label><input type="color" id="themeShowMoreBorder"></div>
+                        </div>
+                        <div class="range-wrapper"><label>Radius</label><input type="text" id="themeShowMoreRadius" placeholder="30px"></div>
+
+                        <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Match Row Hover</h4>
+                        <div class="color-grid">
+                            <div><label>Hover BG</label><input type="color" id="themeMatchRowHoverBg"></div>
+                            <div><label>Hover Border</label><input type="color" id="themeMatchRowHoverBorder"></div>
+                        </div>
+                        
+                        <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Section Headers</h4>
+                        <div class="range-wrapper">
+                            <label>Logo Size: <span id="val_secLogo">24px</span></label>
+                            <input type="range" id="themeSectionLogoSize" min="0" max="60" step="1" oninput="document.getElementById('val_secLogo').innerText=this.value+'px'">
+                        </div>
+                    </div>
+
+                    <!-- CARD 3: FLOATING ELEMENTS -->
+                    <div class="card">
+                        <h3>📍 Floating Elements</h3>
+                        
+                        <h4 style="margin:5px 0 5px 0; font-size:0.8rem; color:#aaa;">Back to Top</h4>
+                        <div class="color-grid">
+                            <div><label>BG</label><input type="color" id="themeBttBg"></div>
+                            <div><label>Icon</label><input type="color" id="themeBttIcon"></div>
+                        </div>
+                        <div class="grid-2" style="gap:10px; margin-top:5px;">
+                            <input type="text" id="themeBttSize" placeholder="Size (40px)">
+                            <input type="text" id="themeBttRadius" placeholder="Radius (50%)">
+                        </div>
+
+                        <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Desktop Share (Left)</h4>
+                        <div class="grid-2" style="gap:10px;">
+                            <div><label>Top</label><input type="text" id="themeSocialDeskTop" placeholder="50%"></div>
+                            <div><label>Left</label><input type="text" id="themeSocialDeskLeft" placeholder="0"></div>
+                            <div><label>Scale</label><input type="text" id="themeSocialDeskScale" placeholder="1.0"></div>
+                        </div>
+
+                        <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Mobile Share (Bottom)</h4>
+                        <div class="grid-2" style="gap:10px;">
+                            <div><label>Height</label><input type="text" id="themeMobFootHeight" placeholder="60px"></div>
+                            <div><label>BG</label><input type="color" id="themeMobFootBg"></div>
+                        </div>
                     </div>
                 </div>
             </section>
