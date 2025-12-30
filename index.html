@@ -799,9 +799,17 @@
 
                 if (wildcardMatches.length > 0) {
                     const wcContainer = document.getElementById('wildcard-container');
-                    wcContainer.innerHTML = ''; // Clear previous
-                    const prefix = "Next" || "Upcoming";
-                    const wcTitle = `${prefix} ${WILDCARD_CATEGORY}`;
+                    wcContainer.innerHTML = ''; 
+                    
+                    // 1. WILDCARD TITLE LOGIC
+                    // Use Admin Title OR fallback to "Prefix + Category"
+                    let wcTitle = "";
+                    if (!wcTitle) {
+                        const prefix = "Next".trim() || "Upcoming";
+                        wcTitle = `${prefix} ${WILDCARD_CATEGORY}`;
+                    }
+                    
+                    // Note: We pass skipPrefix=true because we manually constructed the title above
                     createSection(wcContainer, wcTitle, wildcardMatches, false, false, null, WILDCARD_CATEGORY, true);
                 }
             }
@@ -810,13 +818,15 @@
             let top5Ids = new Set();
             
             if (!isWildcardActive) {
-                // Only show Top 5 if Wildcard is disabled
                 const top24h = upcomingMatches.filter(m => (m.startTimeUnix - now) < oneDay);
                 const top5Display = top24h.slice(0, 5);
                 
                 if (top5Display.length > 0) {
-                    createSection(document.getElementById('top-upcoming-container'), "Top Matches in Next 24h", top5Display, false, false, "🔥", null);
-                    // Track IDs to remove them from grouped sections later
+                    // 2. TOP 5 TITLE LOGIC
+                    // Use Admin Title OR fallback default
+                    const topTitle = "" || "Top Matches in Next 24h";
+                    
+                    createSection(document.getElementById('top-upcoming-container'), topTitle, top5Display, false, false, "🔥", null, true);
                     top5Display.forEach(m => top5Ids.add(m.id));
                 } else {
                     document.getElementById('top-upcoming-container').innerHTML = '<div style="padding:15px;color:var(--text-muted);text-align:center;">No upcoming matches in next 24h.</div>';
@@ -825,13 +835,10 @@
                 document.getElementById('top-upcoming-container').style.display = 'none';
             }
 
-            // --- SCHEMA LOGIC ---
             generateDynamicSchema(liveMatches, upcomingMatches);
 
             // --- GROUPED SECTIONS LOGIC ---
             const wcIds = new Set(wildcardMatches.map(m => m.id));
-            
-            // Filter: Must NOT be in Wildcard, Must NOT be in Top 5, Must be within 24h
             const remainingMatches = upcomingMatches.filter(m => 
                 !wcIds.has(m.id) && 
                 !top5Ids.has(m.id) && 
@@ -951,14 +958,14 @@
             }
         }
 
-        function createSection(container, title, matches, hasLink, isLeague, customIcon, sectionTitle, isWildcardSection=false) {
-            if(!matches || matches.length === 0) return; // Safety check
+        function createSection(container, title, matches, hasLink, isLeague, customIcon, sectionTitle, skipPrefix=false) {
+            if(!matches || matches.length === 0) return;
 
             const section = document.createElement('div');
             section.style.marginBottom = '30px';
             
             let linkHtml = '';
-            if (!isWildcardSection && PRIORITIES[title] && PRIORITIES[title].hasLink) {
+            if (!skipPrefix && PRIORITIES[title] && PRIORITIES[title].hasLink) {
                 const slug = normalizeKey(title);
                 linkHtml = `<a href="/${slug}-streams/" class="sec-right-link">Show More ></a>`;
             }
@@ -971,14 +978,21 @@
                 iconHtml = `<span style="font-size:1.2rem; margin-right:8px;">${getSportIcon(title)}</span>`;
             }
 
+            // 3. PREFIX LOGIC
+            // Apply prefix only if we are NOT skipping it (standard sections) and a prefix exists
+            let displayTitle = title;
+            const prefix = "Next".trim();
+            if (!skipPrefix && prefix) {
+                displayTitle = `${prefix} ${title}`;
+            }
+
             section.innerHTML = `
                 <div class="sec-head">
-                    <h2 class="sec-title">${iconHtml} ${title}</h2>
+                    <h2 class="sec-title">${iconHtml} ${displayTitle}</h2>
                     ${linkHtml}
                 </div>`;
             
             const list = document.createElement('div');
-            // FIX: Sort matches by time before rendering
             matches.sort((a, b) => a.startTimeUnix - b.startTimeUnix).forEach(m => {
                 list.appendChild(createMatchRow(m, { isLive: false }, sectionTitle));
             });
@@ -1084,7 +1098,7 @@
                 if (diffMin <= 30) {
                      actionHtml = `<button onclick="openMatch('${m.id}', 'info')" class="btn-watch">Streams <span class="hd-badge">SD</span></button>` + copyBtn;
                 } else {
-                     actionHtml = `<button onclick="openMatch('${m.id}', 'v')" class="btn-notify">🔔 Notify</button>` + copyBtn;
+                     actionHtml = `<button onclick="setNotify(this)" class="btn-notify">🔔 Notify</button>` + copyBtn;
                 }
             }
             
