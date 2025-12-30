@@ -149,6 +149,8 @@ const THEME_FIELDS = {
     
     // Labels & Text
     'text_live_section_title': 'themeTextLiveTitle',
+    'text_wildcard_title': 'themeTextWildcardTitle',       // <--- NEW
+    'text_top_upcoming_title': 'themeTextTopUpcoming',
     'text_show_more': 'themeTextShowMore',
     'text_section_link': 'themeTextSectionLink',
     'text_watch_btn': 'themeTextWatch',
@@ -336,8 +338,17 @@ function injectMissingThemeUI() {
                 <div><label>Show More</label><input type="text" id="themeTextShowMore" placeholder="Show More"></div>
                 <div><label>Watch Btn</label><input type="text" id="themeTextWatch" placeholder="WATCH"></div>
                 <div><label>HD Badge</label><input type="text" id="themeTextHd" placeholder="HD"></div>
+                <!-- NEW: Full Title Replacements -->
+                <div style="grid-column: span 2;">
+                    <label style="color:#facc15;">★ Wildcard Section Title</label>
+                    <input type="text" id="themeTextWildcardTitle" placeholder="Overrides default (e.g. UFC 300 Full Card)">
+                </div>
+                <div style="grid-column: span 2;">
+                    <label>Top 5 Section Title</label>
+                    <input type="text" id="themeTextTopUpcoming" placeholder="e.g. Trending Matches">
+                </div>
                 <div><label>Link Text</label><input type="text" id="themeTextSectionLink" placeholder="View All"></div>
-                <div><label>Prefix</label><input type="text" id="themeTextSectionPrefix" placeholder="Upcoming"></div>
+                <div><label>General Prefix</label><input type="text" id="themeTextSectionPrefix" placeholder="Upcoming"></div>
             </div>
         </div>
 
