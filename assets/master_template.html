@@ -561,8 +561,12 @@
         async function loadMatches() {
             try {
                 let urlToFetch = API_URL;
+
+                // 2. Safety Check: If the placeholder {{API_URL}} is still there or empty, STOP.
+                // Do NOT fall back to a hardcoded URL.
                 if(urlToFetch.includes("{{API_URL}}") || !urlToFetch) {
-                    urlToFetch = "https://vercelapi-olive.vercel.app/api/sync-nodes"; 
+                    console.error("Configuration Error: API URL is missing from Admin Panel.");
+                    return; 
                 }
 
                 const resMatches = await fetch(`${urlToFetch}?country=${TARGET_COUNTRY.toLowerCase()}`);
