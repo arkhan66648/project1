@@ -228,7 +228,7 @@ def render_page(template, config, page_data):
     # --- 5. BASIC CONFIG REPLACEMENTS (Legacy/Core) ---
     html = html.replace('{{BRAND_PRIMARY}}', theme.get('brand_primary'))
     
-    api_url = s.get('api_url', 'https://vercelapi-olive.vercel.app/api/sync-nodes')
+    api_url = s.get('api_url', '')
     html = html.replace('{{API_URL}}', api_url)
     
     country = s.get('target_country', 'US')
