@@ -11,7 +11,7 @@
     "target_country": "US"
   },
   "theme": {
-    "font_family_base": "'Trebuchet MS', 'Lucida Sans', sans-serif",
+    "font_family_base": "system-ui, -apple-system, sans-serif",
     "font_family_headings": "'Courier New', monospace",
     "border_radius_base": "0",
     "container_max_width": "950",
