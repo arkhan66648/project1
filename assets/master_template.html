@@ -876,6 +876,13 @@
             section.appendChild(list);
             container.appendChild(section);
         }
+        function formatMatchTime(ms) {
+    const d = new Date(ms);
+    return {
+        time: d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        date: d.toLocaleDateString([], { month: 'short', day: 'numeric' })
+    };
+}
 
         function createMatchRow(m, context, sectionTitle) {
             const div = document.createElement('div');
