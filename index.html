@@ -655,7 +655,7 @@
 
                 // 2. Safety Check: If the placeholder https://vercelapi-olive.vercel.app/api/sync-nodes is still there or empty, STOP.
                 // Do NOT fall back to a hardcoded URL.
-                if(urlToFetch.includes("https://vercelapi-olive.vercel.app/api/sync-nodes") || !urlToFetch) {
+                if(urlToFetch.includes("{{") || !urlToFetch) {
                     console.error("Configuration Error: API URL is missing from Admin Panel.");
                     return; 
                 }
