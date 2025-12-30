@@ -1078,7 +1078,17 @@
             
             let metaHtml = '';
             if (m.is_live) {
-                 metaHtml = `<div class="meta-top">👀 ${m.live_viewers || 'N/A'}</div>`;
+                const v = m.live_viewers || 0;
+                let vText = "⚡ Stable"; // Default for < 1000 or null
+                
+                if (v > 5000) {
+                    vText = `👁️ ${(v/1000).toFixed(1)}k 🔥`;
+                } else if (v >= 1000) {
+                    vText = `👁️ ${(v/1000).toFixed(1)}k 📈`;
+                }
+                
+                // Uses var(--accent-gold) from Theme Admin
+                metaHtml = `<div class="meta-top">${vText}</div>`;
             } else {
                  metaHtml = `
                     <div style="display:flex; flex-direction:column; align-items:flex-end;">
