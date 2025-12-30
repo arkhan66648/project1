@@ -7,7 +7,7 @@ import re
 # ==========================================
 CONFIG_PATH = 'data/config.json'
 LEAGUE_MAP_PATH = 'assets/data/league_map.json' 
-IMAGE_MAP_PATH = 'assets/data/image_map.json'  # Added
+IMAGE_MAP_PATH = 'assets/data/image_map.json'
 TEMPLATE_PATH = 'assets/master_template.html'
 WATCH_TEMPLATE_PATH = 'assets/watch_template.html' 
 OUTPUT_DIR = '.' 
@@ -34,6 +34,15 @@ def normalize_key(s):
     """
     return re.sub(r'[^a-z0-9]', '', s.lower())
 
+def ensure_unit(val, unit='px'):
+    """
+    Ensures a value has a CSS unit. e.g. "6" -> "6px", "100%" -> "100%".
+    """
+    s_val = str(val).strip()
+    if not s_val: return f"0{unit}"
+    if s_val.isdigit(): return f"{s_val}{unit}"
+    return s_val
+
 def build_menu_html(menu_items, section):
     """
     Generates HTML links for menus (Header, Hero, Footer).
@@ -44,7 +53,7 @@ def build_menu_html(menu_items, section):
         url = item.get('url', '#')
         
         if section == 'header':
-            style = ' style="color:#facc15; border-bottom:1px solid #facc15;"' if item.get('highlight') else ''
+            style = ' style="color:var(--accent-gold); border-bottom:1px solid var(--accent-gold);"' if item.get('highlight') else ''
             html += f'<a href="{url}"{style}>{title}</a>'
             
         elif section == 'footer_leagues':
@@ -90,13 +99,109 @@ def render_page(template, config, page_data):
     
     html = template
     
-    # --- 1. Basic Config & Theme Replacements ---
-    html = html.replace('{{BRAND_PRIMARY}}', t.get('brand_primary', '#D00000'))
-    html = html.replace('{{BRAND_DARK}}', t.get('brand_dark', '#8a0000'))
-    html = html.replace('{{ACCENT_GOLD}}', t.get('accent_gold', '#FFD700'))
-    html = html.replace('{{BG_BODY}}', t.get('bg_body', '#050505'))
-    html = html.replace('{{HERO_GRADIENT}}', t.get('hero_gradient_start', '#1a0505'))
-    html = html.replace('{{FONT_FAMILY}}', t.get('font_family', 'system-ui'))
+    # --- 1. THEME ENGINE INJECTION (NEW) ---
+    # Define Defaults to prevent build crashes
+    defaults = {
+        'brand_primary': '#D00000', 'brand_dark': '#8a0000', 'accent_gold': '#FFD700', 'status_green': '#22c55e',
+        'bg_body': '#050505', 'bg_panel': '#1e293b', 'bg_glass': 'rgba(30, 41, 59, 0.7)',
+        'text_main': '#f1f5f9', 'text_muted': '#94a3b8', 'border_color': '#334155', 'scrollbar_thumb_color': '#475569',
+        'font_family_base': 'system-ui, -apple-system, sans-serif', 'font_family_headings': 'inherit',
+        'base_font_size': '14px', 'base_line_height': '1.5', 
+        'container_max_width': '1100px', 'border_radius_base': '6px', 'button_border_radius': '4px',
+        'card_shadow': '0 4px 6px -1px rgba(0,0,0,0.1)',
+        'header_bg': 'rgba(5, 5, 5, 0.8)', 'header_text_color': '#f1f5f9', 'header_link_active_color': '#D00000',
+        'header_border_bottom': '1px solid #334155', 'logo_p1_color': '#f1f5f9', 'logo_p2_color': '#D00000',
+        'logo_image_size': '40px',
+        'hero_bg_style': 'solid', 'hero_bg_solid': '#1a0505', 
+        'hero_h1_color': '#ffffff', 'hero_intro_color': '#94a3b8',
+        'hero_pill_bg': 'rgba(255,255,255,0.05)', 'hero_pill_text': '#f1f5f9', 'hero_pill_border': 'rgba(255,255,255,0.1)',
+        'hero_pill_hover_bg': '#D00000', 'hero_pill_hover_text': '#ffffff', 'hero_pill_hover_border': '#D00000',
+        'match_row_bg': '#1e293b', 'match_row_border': '#334155', 
+        'match_row_live_border_left': '4px solid #22c55e', 
+        'match_row_live_bg_start': 'rgba(34, 197, 94, 0.1)', 'match_row_live_bg_end': 'transparent',
+        'match_row_hover_border': '#D00000', 'match_row_hover_transform': 'translateY(-2px)',
+        'match_row_time_main_color': '#f1f5f9', 'match_row_time_sub_color': '#94a3b8',
+        'match_row_live_text_color': '#22c55e', 'match_row_league_tag_color': '#94a3b8', 'match_row_team_name_color': '#f1f5f9',
+        'match_row_btn_watch_bg': '#D00000', 'match_row_btn_watch_text': '#ffffff', 
+        'match_row_btn_watch_hover_bg': '#b91c1c', 'match_row_btn_watch_hover_transform': 'scale(1.05)',
+        'match_row_hd_badge_bg': 'rgba(0,0,0,0.3)', 'match_row_hd_badge_border': 'rgba(255,255,255,0.2)', 'match_row_hd_badge_text': '#facc15',
+        'match_row_btn_notify_bg': 'transparent', 'match_row_btn_notify_border': '#334155', 'match_row_btn_notify_text': '#94a3b8',
+        'match_row_btn_notify_active_bg': '#22c55e', 'match_row_btn_notify_active_border': '#22c55e', 'match_row_btn_notify_active_text': '#ffffff',
+        'match_row_btn_copy_link_color': '#64748b', 'match_row_btn_copy_link_hover_color': '#D00000',
+        'footer_bg_start': '#0f172a', 'footer_bg_end': '#020617', 'footer_border_top': '1px solid #334155',
+        'footer_heading_color': '#94a3b8', 'footer_link_color': '#64748b', 'footer_link_hover_color': '#f1f5f9',
+        'footer_link_hover_transform': 'translateX(5px)', 'footer_copyright_color': '#475569', 'footer_desc_color': '#64748b',
+        'social_sidebar_bg': 'rgba(15, 23, 42, 0.8)', 'social_sidebar_border': '#334155', 'social_sidebar_shadow': '0 4px 10px rgba(0,0,0,0.3)',
+        'social_btn_bg': 'rgba(30, 41, 59, 0.8)', 'social_btn_border': '#334155', 'social_btn_color': '#94a3b8',
+        'social_btn_hover_bg': '#1e293b', 'social_btn_hover_border': '#D00000', 'social_btn_hover_transform': 'translateX(5px)',
+        'social_count_color': '#64748b',
+        'mobile_footer_bg': 'rgba(5, 5, 5, 0.9)', 'mobile_footer_border_top': '1px solid #334155', 'mobile_footer_shadow': '0 -4px 10px rgba(0,0,0,0.5)',
+        'copy_toast_bg': '#22c55e', 'copy_toast_text': '#ffffff', 'copy_toast_border': '#16a34a',
+        'back_to_top_bg': '#D00000', 'back_to_top_icon_color': '#ffffff', 'back_to_top_shadow': '0 4px 10px rgba(208,0,0,0.4)',
+        'sys_status_dot_color': '#22c55e', 'sys_status_bg': 'rgba(34, 197, 94, 0.1)', 'sys_status_border': 'rgba(34, 197, 94, 0.2)', 'sys_status_text': '#22c55e',
+        'skeleton_gradient_start': '#1e293b', 'skeleton_gradient_mid': '#334155', 'skeleton_gradient_end': '#1e293b',
+        'skeleton_border_color': '#334155',
+        
+        # New Theme Designer specific mappings
+        'logo_image_shadow_color': 'rgba(208, 0, 0, 0.3)',
+        'button_shadow_color': 'rgba(0,0,0,0.2)',
+        'show_more_btn_bg': '#1e293b', 'show_more_btn_border': '#334155', 'show_more_btn_text': '#94a3b8',
+        'show_more_btn_hover_bg': '#D00000', 'show_more_btn_hover_border': '#D00000', 'show_more_btn_hover_text': '#ffffff',
+        'league_card_bg': 'rgba(30, 41, 59, 0.5)', 'league_card_border': '#334155', 'league_card_text': '#f1f5f9',
+        'league_card_hover_bg': '#1e293b', 'league_card_hover_border': '#D00000',
+        'footer_brand_color': '#ffffff',
+        'mobile_footer_btn_active_bg': 'rgba(255,255,255,0.1)',
+        'social_telegram_color': '#0088cc', 'social_whatsapp_color': '#25D366', 'social_reddit_color': '#FF4500', 'social_twitter_color': '#1DA1F2',
+        'social_btn_hover_shadow_color': 'rgba(0,0,0,0.3)',
+        'footer_grid_columns': '1fr 1fr', 'footer_text_align_mobile': 'left',
+        'footer_grid_columns_desktop': '1fr 1fr 1fr', 'footer_text_align_desktop': 'left', 'footer_last_col_align_desktop': 'right'
+    }
+
+    # Merge Config with Defaults
+    # We iterate over defaults and prefer the value from config if it exists and is not empty
+    theme = {}
+    for k, v in defaults.items():
+        val = t.get(k)
+        # Apply units to specific keys if they are raw numbers
+        if k in ['border_radius_base', 'container_max_width', 'base_font_size', 'logo_image_size', 'button_border_radius']:
+            if val: val = ensure_unit(val, 'px')
+        
+        theme[k] = val if val else v
+
+    # Inject into HTML
+    # We map the lowercase json key to the uppercase template placeholder {{THEME_KEY}}
+    for key, val in theme.items():
+        placeholder = f"{{{{THEME_{key.upper()}}}}}"
+        html = html.replace(placeholder, str(val))
+
+    # --- 2. COMPLEX THEME LOGIC (Hero & Layouts) ---
+    hero_style = theme.get('hero_bg_style', 'solid')
+    hero_css = ""
+    
+    if hero_style == 'gradient':
+        start = theme.get('hero_gradient_start', '#1a0505')
+        end = theme.get('hero_gradient_end', '#000000')
+        hero_css = f"background: linear-gradient(135deg, {start} 0%, {end} 100%);"
+    elif hero_style == 'image':
+        img = theme.get('hero_bg_image_url', '')
+        # Fallback if opacity is missing in config
+        op = theme.get('hero_bg_image_overlay_opacity', '0.7')
+        # We assume black overlay for simplicity, or we could add overlay_color to theme config later
+        hero_css = f"background: linear-gradient(rgba(0,0,0,{op}), rgba(0,0,0,{op})), url('{img}'); background-size: cover; background-position: center;"
+    else:
+        # Solid
+        solid = theme.get('hero_bg_solid', '#1a0505')
+        hero_css = f"background: {solid};"
+
+    html = html.replace('{{HERO_BG_CSS}}', hero_css)
+    
+    # Inject Raw Theme Config for JS
+    html = html.replace('{{JS_THEME_CONFIG}}', json.dumps(theme))
+
+
+    # --- 3. BASIC CONFIG REPLACEMENTS (Legacy/Core) ---
+    html = html.replace('{{BRAND_PRIMARY}}', theme.get('brand_primary'))
+    
     api_url = s.get('api_url', 'https://vercelapi-olive.vercel.app/api/sync-nodes')
     html = html.replace('{{API_URL}}', api_url)
     
@@ -143,7 +248,7 @@ def render_page(template, config, page_data):
     html = html.replace('{{DOMAIN}}', domain)
     html = html.replace('{{FAVICON}}', s.get('favicon_url', ''))
 
-    # --- 2. Menus Injection ---
+    # --- 4. Menus Injection ---
     html = html.replace('{{HEADER_MENU}}', build_menu_html(m.get('header', []), 'header'))
     html = html.replace('{{HERO_PILLS}}', build_menu_html(m.get('hero', []), 'hero'))
     html = html.replace('{{FOOTER_STATIC}}', build_menu_html(m.get('footer_static', []), 'footer_static'))
@@ -163,11 +268,11 @@ def render_page(template, config, page_data):
                 auto_footer_leagues.append({'title': name, 'url': f'/{slug}-streams/'})
     html = html.replace('{{FOOTER_LEAGUES}}', build_menu_html(auto_footer_leagues, 'footer_leagues'))
 
-    # --- 3. Footer Content ---
+    # --- 5. Footer Content ---
     html = html.replace('{{FOOTER_COPYRIGHT}}', s.get('footer_copyright', f"&copy; 2025 {domain}"))
     html = html.replace('{{FOOTER_DISCLAIMER}}', s.get('footer_disclaimer', ''))
 
-    # --- 4. SEO & Metadata ---
+    # --- 6. SEO & Metadata ---
     layout = page_data.get('layout', 'page')
 
     if layout == 'watch':
@@ -176,6 +281,9 @@ def render_page(template, config, page_data):
         html = html.replace('<link rel="canonical" href="{{CANONICAL_URL}}">', '')
         html = html.replace('{{H1_TITLE}}', '')
         html = html.replace('{{HERO_TEXT}}', '')
+        html = html.replace('{{DISPLAY_HERO}}', 'none')
+        # Inject styling to hide hero sections in watch template if they exist
+        html = html.replace('</head>', '<style>.hero, #live-section, #upcoming-container { display: none !important; }</style></head>')
     else:
         html = html.replace('{{META_TITLE}}', page_data.get('meta_title') or f"{site_name} - {page_data.get('title')}")
         html = html.replace('{{META_DESC}}', page_data.get('meta_desc', ''))
@@ -192,17 +300,18 @@ def render_page(template, config, page_data):
     if keywords: html = html.replace('{{META_KEYWORDS}}', f'<meta name="keywords" content="{keywords}">')
     else: html = html.replace('{{META_KEYWORDS}}', '')
 
-    # --- 5. Layout Logic ---
+    # --- 7. Layout Logic (Home vs Page) ---
     if layout == 'home':
         html = html.replace('{{DISPLAY_HERO}}', 'block')
-    elif '{{DISPLAY_HERO}}' in html:
-        html = html.replace('{{DISPLAY_HERO}}', 'none')
-        # Hide live sections on non-home pages if template has them
-        html = html.replace('</head>', '<style>#live-section, #upcoming-container { display: none !important; }</style></head>')
+    elif layout != 'watch': # Standard page
+        if '{{DISPLAY_HERO}}' in html:
+            html = html.replace('{{DISPLAY_HERO}}', 'none')
+            # Hide live sections on non-home pages
+            html = html.replace('</head>', '<style>#live-section, #upcoming-container { display: none !important; }</style></head>')
 
     html = html.replace('{{ARTICLE_CONTENT}}', page_data.get('content', ''))
 
-    # --- 6. JS Injections (Dynamic Data) ---
+    # --- 8. JS Injections (Dynamic Data) ---
     # Inject Priorities
     html = html.replace('{{JS_PRIORITIES}}', json.dumps(priorities))
     
@@ -216,23 +325,22 @@ def render_page(template, config, page_data):
     if 'const SHARE_CONFIG' in html:
         html = re.sub(r'const SHARE_CONFIG = \{.*?\};', f'const SHARE_CONFIG = {social_json};', html, flags=re.DOTALL)
 
-    # --- NEW: Inject League Map ---
+    # Inject League Map
     league_map_data = load_json(LEAGUE_MAP_PATH)
     html = html.replace('{{JS_LEAGUE_MAP}}', json.dumps(league_map_data))
 
-    # --- NEW: Inject Image Map ---
+    # Inject Image Map
     image_map_data = load_json(IMAGE_MAP_PATH)
     html = html.replace('{{JS_IMAGE_MAP}}', json.dumps(image_map_data))
 
-    # --- 7. STATIC SCHEMA GENERATION ---
+    # --- 9. STATIC SCHEMA GENERATION (Entity Stacking) ---
     schemas = []
     page_schemas = page_data.get('schemas', {})
     
-    # Common IDs for Entity Stacking
     org_id = f"https://{domain}/#organization"
     website_id = f"https://{domain}/#website"
     
-    # 1. Organization Schema (Enhanced)
+    # Organization Schema
     if page_schemas.get('org'):
         org_schema = {
             "@context": "https://schema.org",
@@ -242,15 +350,15 @@ def render_page(template, config, page_data):
             "url": f"https://{domain}/",
             "logo": {
                 "@type": "ImageObject",
-                "url": og_image, # This is your high-res logo from config
-                "width": 512,    # Hardcoded assumption based on your input
+                "url": og_image,
+                "width": 512,
                 "height": 512,
                 "caption": f"{site_name} Logo"
             }
         }
         schemas.append(org_schema)
 
-    # 2. WebSite Schema
+    # WebSite Schema
     if page_schemas.get('website'):
         website_schema = {
             "@context": "https://schema.org",
@@ -262,8 +370,7 @@ def render_page(template, config, page_data):
         }
         schemas.append(website_schema)
 
-    # 3. CollectionPage Schema (ONLY for Homepage)
-    # This is the "Hub" definition that connects to the dynamic match list
+    # CollectionPage Schema (Homepage only)
     if page_data.get('slug') == 'home':
         collection_schema = {
             "@context": "https://schema.org",
@@ -274,11 +381,11 @@ def render_page(template, config, page_data):
             "description": page_data.get('meta_desc', ''),
             "isPartOf": {"@id": website_id},
             "about": {"@id": org_id},
-            "mainEntity": {"@id": f"https://{domain}/#matchlist"} # Links to the Dynamic JS List
+            "mainEntity": {"@id": f"https://{domain}/#matchlist"} 
         }
         schemas.append(collection_schema)
 
-    # 4. FAQ Schema
+    # FAQ Schema
     if page_schemas.get('faq'):
         valid_faqs = [
             {
@@ -295,15 +402,10 @@ def render_page(template, config, page_data):
                 "mainEntity": valid_faqs
             })
 
-    # Wrap in separate script tags or one graph? 
-    # For compatibility with your requested style, we'll output a single script with a graph.
     if schemas:
-        # combine into one @graph for cleaner structure
         final_graph = {"@context": "https://schema.org", "@graph": schemas}
-        # We strip the @context from individual items since it's at the root now
         for s in schemas:
             if "@context" in s: del s["@context"]
-            
         schema_html = f'<script type="application/ld+json">{json.dumps(final_graph, indent=2)}</script>'
     else:
         schema_html = ''
@@ -312,6 +414,11 @@ def render_page(template, config, page_data):
     
     preload_html = f'<link rel="preload" as="image" href="{s.get("logo_url")}" fetchpriority="high">' if s.get('logo_url') else ''
     html = html.replace('{{LOGO_PRELOAD}}', preload_html)
+    
+    # Final Classes Injection
+    html = html.replace('{{HEADER_CLASSES}}', '')
+    html = html.replace('{{MAIN_CONTAINER_CLASSES}}', '')
+    html = html.replace('{{FOOTER_CLASSES}}', '')
 
     return html
 
