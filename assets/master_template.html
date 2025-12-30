@@ -592,6 +592,18 @@
         let allMatches = [];
         let scrollTimeout;
 
+        // Security Helper
+        function escapeHtml(text) {
+            if (!text) return text;
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // Action Function (MISSING IN ORIGINAL)
+        function openMatch(matchId, type) {
+            const url = `${SITE_DOMAIN}/watch/?info=${matchId}`;
+            window.location.href = url;
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             highlightActiveMenu();
             renderSocials();
@@ -689,15 +701,16 @@
                 return {
                     ...m,
                     finalLeague: resolved.name,
-                    displayHome: homeClean,
-                    displayAway: awayClean,
+                    displayHome: escapeHtml(homeClean), // XSS Protection
+                    displayAway: escapeHtml(awayClean), // XSS Protection
                     priorityScore: score
                 };
             });
         }
 
         function slugify(text) {
-            return text ? text.toString().toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/^-+|-+$/g, '') : "";
+            // Safety check for null/undefined
+            return (text || "").toString().toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/^-+|-+$/g, '');
         }
 
         function unslugify(slug) {
@@ -778,8 +791,8 @@
             }
 
             // PASS MATCHES TO SCHEMA (Logic handled inside function)
-// We pass all upcoming matches so the schema function can perform its own strict time check
-generateDynamicSchema(liveMatches, upcomingMatches);
+            // We pass all upcoming matches so the schema function can perform its own strict time check
+            generateDynamicSchema(liveMatches, upcomingMatches);
 
             // FILTER REST
             const top5Ids = new Set(top5Display.map(m => m.id));
@@ -1030,6 +1043,10 @@ generateDynamicSchema(liveMatches, upcomingMatches);
             const twentyMin = 20 * 60 * 1000;
             const oneDay = 24 * 60 * 60 * 1000;
 
+            // Prevent duplicates
+            const existing = document.getElementById('dynamic-schema-script');
+            if (existing) existing.remove();
+
             // 1. DYNAMICALLY FETCH SITE LOGO (Main Event Image)
             // This solves the "Missing Image" error in Google Console
             const metaImg = document.querySelector('meta[property="og:image"]');
@@ -1152,6 +1169,7 @@ generateDynamicSchema(liveMatches, upcomingMatches);
             };
 
             const script = document.createElement('script');
+            script.id = 'dynamic-schema-script';
             script.type = 'application/ld+json';
             script.text = JSON.stringify(schema);
             document.head.appendChild(script);
