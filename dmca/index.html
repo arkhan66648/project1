@@ -41,121 +41,121 @@
     <style>
         :root {
             /* DYNAMICALLY INJECTED THEME VARIABLES */
-            --brand-primary: {{THEME_BRAND_PRIMARY}};
-            --brand-dark: {{THEME_BRAND_DARK}};
-            --status-green: {{THEME_STATUS_GREEN}};
-            --accent-gold: {{THEME_ACCENT_GOLD}};
-            --bg-body: {{THEME_BG_BODY}};
-            --bg-panel: {{THEME_BG_PANEL}};
-            --bg-glass: {{THEME_BG_GLASS}};
-            --border: {{THEME_BORDER_COLOR}};
-            --text-main: {{THEME_TEXT_MAIN}};
-            --text-muted: {{THEME_TEXT_MUTED}};
+            --brand-primary: #D00000;
+            --brand-dark: #8a0000;
+            --status-green: #22c55e;
+            --accent-gold: #FFD700;
+            --bg-body: #050505;
+            --bg-panel: #1e293b;
+            --bg-glass: rgba(30, 41, 59, 0.7);
+            --border: #334155;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
             --cms-hero-grad-start: {{THEME_HERO_GRADIENT_START}};
             --cms-hero-grad-end: {{THEME_HERO_GRADIENT_END}};
-            --font-family-base: {{THEME_FONT_FAMILY_BASE}};
-            --font-family-headings: {{THEME_FONT_FAMILY_HEADINGS}};
-            --base-font-size: {{THEME_BASE_FONT_SIZE}}; /* e.g., 14px */
-            --base-line-height: {{THEME_BASE_LINE_HEIGHT}}; /* e.g., 1.5 */
-            --container-max-width: {{THEME_CONTAINER_MAX_WIDTH}}; /* e.g., 1100px */
-            --border-radius-base: {{THEME_BORDER_RADIUS_BASE}}; /* e.g., 6px */
-            --button-border-radius: {{THEME_BUTTON_BORDER_RADIUS}}; /* e.g., 4px */
-            --card-shadow: {{THEME_CARD_SHADOW}}; /* e.g., 0 4px 6px -1px rgba(0,0,0,0.1) */
+            --font-family-base: system-ui, -apple-system, sans-serif;
+            --font-family-headings: inherit;
+            --base-font-size: 14px; /* e.g., 14px */
+            --base-line-height: 1.5; /* e.g., 1.5 */
+            --container-max-width: 1100px; /* e.g., 1100px */
+            --border-radius-base: 6px; /* e.g., 6px */
+            --button-border-radius: 4px; /* e.g., 4px */
+            --card-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); /* e.g., 0 4px 6px -1px rgba(0,0,0,0.1) */
 
             /* HEADER */
-            --header-bg: {{THEME_HEADER_BG}};
-            --header-text-color: {{THEME_HEADER_TEXT_COLOR}};
-            --header-link-active-color: {{THEME_HEADER_LINK_ACTIVE_COLOR}};
-            --header-border-bottom: {{THEME_HEADER_BORDER_BOTTOM}}; /* 1px solid var(--border) or none */
-            --logo-text-p1-color: {{THEME_LOGO_P1_COLOR}};
-            --logo-text-p2-color: {{THEME_LOGO_P2_COLOR}};
-            --logo-image-size: {{THEME_LOGO_IMAGE_SIZE}};
+            --header-bg: rgba(5, 5, 5, 0.8);
+            --header-text-color: #f1f5f9;
+            --header-link-active-color: #D00000;
+            --header-border-bottom: 1px solid #334155; /* 1px solid var(--border) or none */
+            --logo-text-p1-color: #f1f5f9;
+            --logo-text-p2-color: #D00000;
+            --logo-image-size: 40px;
 
             /* HERO */
-            --hero-bg-style: {{THEME_HERO_BG_STYLE}}; /* solid, gradient, image */
-            --hero-bg-solid: {{THEME_HERO_BG_SOLID}};
+            --hero-bg-style: solid; /* solid, gradient, image */
+            --hero-bg-solid: #1a0505;
             --hero-bg-image-url: {{THEME_HERO_BG_IMAGE_URL}};
             --hero-bg-image-overlay-color: {{THEME_HERO_BG_IMAGE_OVERLAY_COLOR}};
             --hero-bg-image-overlay-opacity: {{THEME_HERO_BG_IMAGE_OVERLAY_OPACITY}};
-            --hero-h1-color: {{THEME_HERO_H1_COLOR}};
-            --hero-intro-color: {{THEME_HERO_INTRO_COLOR}};
-            --hero-pill-bg: {{THEME_HERO_PILL_BG}};
-            --hero-pill-text: {{THEME_HERO_PILL_TEXT}};
-            --hero-pill-border: {{THEME_HERO_PILL_BORDER}};
-            --hero-pill-hover-bg: {{THEME_HERO_PILL_HOVER_BG}};
-            --hero-pill-hover-text: {{THEME_HERO_PILL_HOVER_TEXT}};
-            --hero-pill-hover-border: {{THEME_HERO_PILL_HOVER_BORDER}};
+            --hero-h1-color: #ffffff;
+            --hero-intro-color: #94a3b8;
+            --hero-pill-bg: rgba(255,255,255,0.05);
+            --hero-pill-text: #f1f5f9;
+            --hero-pill-border: rgba(255,255,255,0.1);
+            --hero-pill-hover-bg: #D00000;
+            --hero-pill-hover-text: #ffffff;
+            --hero-pill-hover-border: #D00000;
 
             /* MATCH ROWS */
-            --match-row-bg: {{THEME_MATCH_ROW_BG}};
-            --match-row-border: {{THEME_MATCH_ROW_BORDER}};
-            --match-row-live-border-left: {{THEME_MATCH_ROW_LIVE_BORDER_LEFT}};
-            --match-row-live-bg-start: {{THEME_MATCH_ROW_LIVE_BG_START}};
-            --match-row-live-bg-end: {{THEME_MATCH_ROW_LIVE_BG_END}};
-            --match-row-hover-border: {{THEME_MATCH_ROW_HOVER_BORDER}};
-            --match-row-hover-transform: {{THEME_MATCH_ROW_HOVER_TRANSFORM}};
-            --match-row-time-main-color: {{THEME_MATCH_ROW_TIME_MAIN_COLOR}};
-            --match-row-time-sub-color: {{THEME_MATCH_ROW_TIME_SUB_COLOR}};
-            --match-row-live-text-color: {{THEME_MATCH_ROW_LIVE_TEXT_COLOR}};
-            --match-row-league-tag-color: {{THEME_MATCH_ROW_LEAGUE_TAG_COLOR}};
-            --match-row-team-name-color: {{THEME_MATCH_ROW_TEAM_NAME_COLOR}};
-            --match-row-btn-watch-bg: {{THEME_MATCH_ROW_BTN_WATCH_BG}};
-            --match-row-btn-watch-text: {{THEME_MATCH_ROW_BTN_WATCH_TEXT}};
-            --match-row-btn-watch-hover-bg: {{THEME_MATCH_ROW_BTN_WATCH_HOVER_BG}};
-            --match-row-btn-watch-hover-transform: {{THEME_MATCH_ROW_BTN_WATCH_HOVER_TRANSFORM}};
-            --match-row-hd-badge-bg: {{THEME_MATCH_ROW_HD_BADGE_BG}};
-            --match-row-hd-badge-border: {{THEME_MATCH_ROW_HD_BADGE_BORDER}};
-            --match-row-hd-badge-text: {{THEME_MATCH_ROW_HD_BADGE_TEXT}};
-            --match-row-btn-notify-bg: {{THEME_MATCH_ROW_BTN_NOTIFY_BG}};
-            --match-row-btn-notify-border: {{THEME_MATCH_ROW_BTN_NOTIFY_BORDER}};
-            --match-row-btn-notify-text: {{THEME_MATCH_ROW_BTN_NOTIFY_TEXT}};
-            --match-row-btn-notify-active-bg: {{THEME_MATCH_ROW_BTN_NOTIFY_ACTIVE_BG}};
-            --match-row-btn-notify-active-border: {{THEME_MATCH_ROW_BTN_NOTIFY_ACTIVE_BORDER}};
-            --match-row-btn-notify-active-text: {{THEME_MATCH_ROW_BTN_NOTIFY_ACTIVE_TEXT}};
-            --match-row-btn-copy-link-color: {{THEME_MATCH_ROW_BTN_COPY_LINK_COLOR}};
-            --match-row-btn-copy-link-hover-color: {{THEME_MATCH_ROW_BTN_COPY_LINK_HOVER_COLOR}};
+            --match-row-bg: #1e293b;
+            --match-row-border: #334155;
+            --match-row-live-border-left: 4px solid #22c55e;
+            --match-row-live-bg-start: rgba(34, 197, 94, 0.1);
+            --match-row-live-bg-end: transparent;
+            --match-row-hover-border: #D00000;
+            --match-row-hover-transform: translateY(-2px);
+            --match-row-time-main-color: #f1f5f9;
+            --match-row-time-sub-color: #94a3b8;
+            --match-row-live-text-color: #22c55e;
+            --match-row-league-tag-color: #94a3b8;
+            --match-row-team-name-color: #f1f5f9;
+            --match-row-btn-watch-bg: #D00000;
+            --match-row-btn-watch-text: #ffffff;
+            --match-row-btn-watch-hover-bg: #b91c1c;
+            --match-row-btn-watch-hover-transform: scale(1.05);
+            --match-row-hd-badge-bg: rgba(0,0,0,0.3);
+            --match-row-hd-badge-border: rgba(255,255,255,0.2);
+            --match-row-hd-badge-text: #facc15;
+            --match-row-btn-notify-bg: transparent;
+            --match-row-btn-notify-border: #334155;
+            --match-row-btn-notify-text: #94a3b8;
+            --match-row-btn-notify-active-bg: #22c55e;
+            --match-row-btn-notify-active-border: #22c55e;
+            --match-row-btn-notify-active-text: #ffffff;
+            --match-row-btn-copy-link-color: #64748b;
+            --match-row-btn-copy-link-hover-color: #D00000;
 
             /* FOOTER */
-            --footer-bg-start: {{THEME_FOOTER_BG_START}};
-            --footer-bg-end: {{THEME_FOOTER_BG_END}};
-            --footer-border-top: {{THEME_FOOTER_BORDER_TOP}}; /* 1px solid var(--border) or none */
-            --footer-heading-color: {{THEME_FOOTER_HEADING_COLOR}};
-            --footer-link-color: {{THEME_FOOTER_LINK_COLOR}};
-            --footer-link-hover-color: {{THEME_FOOTER_LINK_HOVER_COLOR}};
-            --footer-link-hover-transform: {{THEME_FOOTER_LINK_HOVER_TRANSFORM}};
-            --footer-copyright-color: {{THEME_FOOTER_COPYRIGHT_COLOR}};
-            --footer-desc-color: {{THEME_FOOTER_DESC_COLOR}};
+            --footer-bg-start: #0f172a;
+            --footer-bg-end: #020617;
+            --footer-border-top: 1px solid #334155; /* 1px solid var(--border) or none */
+            --footer-heading-color: #94a3b8;
+            --footer-link-color: #64748b;
+            --footer-link-hover-color: #f1f5f9;
+            --footer-link-hover-transform: translateX(5px);
+            --footer-copyright-color: #475569;
+            --footer-desc-color: #64748b;
 
             /* SOCIALS */
-            --social-sidebar-bg: {{THEME_SOCIAL_SIDEBAR_BG}};
-            --social-sidebar-border: {{THEME_SOCIAL_SIDEBAR_BORDER}};
-            --social-sidebar-shadow: {{THEME_SOCIAL_SIDEBAR_SHADOW}};
-            --social-btn-bg: {{THEME_SOCIAL_BTN_BG}};
-            --social-btn-border: {{THEME_SOCIAL_BTN_BORDER}};
-            --social-btn-color: {{THEME_SOCIAL_BTN_COLOR}};
-            --social-btn-hover-bg: {{THEME_SOCIAL_BTN_HOVER_BG}};
-            --social-btn-hover-border: {{THEME_SOCIAL_BTN_HOVER_BORDER}};
-            --social-btn-hover-transform: {{THEME_SOCIAL_BTN_HOVER_TRANSFORM}};
-            --social-count-color: {{THEME_SOCIAL_COUNT_COLOR}};
-            --mobile-footer-bg: {{THEME_MOBILE_FOOTER_BG}};
-            --mobile-footer-border-top: {{THEME_MOBILE_FOOTER_BORDER_TOP}};
-            --mobile-footer-shadow: {{THEME_MOBILE_FOOTER_SHADOW}};
-            --copy-toast-bg: {{THEME_COPY_TOAST_BG}};
-            --copy-toast-text: {{THEME_COPY_TOAST_TEXT}};
-            --copy-toast-border: {{THEME_COPY_TOAST_BORDER}};
+            --social-sidebar-bg: rgba(15, 23, 42, 0.8);
+            --social-sidebar-border: #334155;
+            --social-sidebar-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            --social-btn-bg: rgba(30, 41, 59, 0.8);
+            --social-btn-border: #334155;
+            --social-btn-color: #94a3b8;
+            --social-btn-hover-bg: #1e293b;
+            --social-btn-hover-border: #D00000;
+            --social-btn-hover-transform: translateX(5px);
+            --social-count-color: #64748b;
+            --mobile-footer-bg: rgba(5, 5, 5, 0.9);
+            --mobile-footer-border-top: 1px solid #334155;
+            --mobile-footer-shadow: 0 -4px 10px rgba(0,0,0,0.5);
+            --copy-toast-bg: #22c55e;
+            --copy-toast-text: #ffffff;
+            --copy-toast-border: #16a34a;
 
             /* UTILITY */
-            --scrollbar-thumb-color: {{THEME_SCROLLBAR_THUMB_COLOR}};
-            --back-to-top-bg: {{THEME_BACK_TO_TOP_BG}};
-            --back-to-top-icon-color: {{THEME_BACK_TO_TOP_ICON_COLOR}};
-            --back-to-top-shadow: {{THEME_BACK_TO_TOP_SHADOW}};
-            --sys-status-dot-color: {{THEME_SYS_STATUS_DOT_COLOR}};
-            --sys-status-bg: {{THEME_SYS_STATUS_BG}};
-            --sys-status-border: {{THEME_SYS_STATUS_BORDER}};
-            --sys-status-text: {{THEME_SYS_STATUS_TEXT}};
-            --skeleton-gradient-start: {{THEME_SKELETON_GRADIENT_START}};
-            --skeleton-gradient-mid: {{THEME_SKELETON_GRADIENT_MID}};
-            --skeleton-gradient-end: {{THEME_SKELETON_GRADIENT_END}};
+            --scrollbar-thumb-color: #475569;
+            --back-to-top-bg: #D00000;
+            --back-to-top-icon-color: #ffffff;
+            --back-to-top-shadow: 0 4px 10px rgba(208,0,0,0.4);
+            --sys-status-dot-color: #22c55e;
+            --sys-status-bg: rgba(34, 197, 94, 0.1);
+            --sys-status-border: rgba(34, 197, 94, 0.2);
+            --sys-status-text: #22c55e;
+            --skeleton-gradient-start: #1e293b;
+            --skeleton-gradient-mid: #334155;
+            --skeleton-gradient-end: #1e293b;
 
 
             /* CLS FIXED HEIGHTS (these are less likely to change but kept as variables for consistency) */
@@ -178,12 +178,12 @@
         .skeleton { background: var(--skeleton-gradient-start); border-radius: var(--border-radius-base); animation: shimmer 1.5s infinite linear; background: linear-gradient(to right, var(--skeleton-gradient-start) 4%, var(--skeleton-gradient-mid) 25%, var(--skeleton-gradient-end) 36%); background-size: 1000px 100%; }
         
         /* Matches .sec-head dimensions exactly */
-        .skeleton-header { display: flex; justify-content: space-between; align-items: flex-end; margin: 40px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid {{THEME_SKELETON_BORDER_COLOR}}; height: 38px; }
+        .skeleton-header { display: flex; justify-content: space-between; align-items: flex-end; margin: 40px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #334155; height: 38px; }
         .sk-title { height: 22px; width: 140px; }
         .sk-count { height: 15px; width: 80px; }
         
         /* Matches .match-row dimensions exactly */
-        .skeleton-box { height: var(--row-h-mob); width: 100%; margin-bottom: 8px; border-radius: var(--border-radius-base); border: 1px solid {{THEME_SKELETON_BORDER_COLOR}}; }
+        .skeleton-box { height: var(--row-h-mob); width: 100%; margin-bottom: 8px; border-radius: var(--border-radius-base); border: 1px solid #334155; }
         @media (min-width: 768px) { .skeleton-box { height: var(--row-h-desk); } }
 
         @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
@@ -199,7 +199,7 @@
 
         .header-container { max-width: var(--container-max-width); margin: 0 auto; height: 100%; padding: 0 15px; display: flex; align-items: center; justify-content: space-between; }
         .logo-link { display: flex; align-items: center; gap: 10px; }
-        .logo-img { height: var(--logo-image-size); width: var(--logo-image-size); border-radius: var(--border-radius-base); object-fit: cover; box-shadow: 0 0 10px {{THEME_LOGO_IMAGE_SHADOW_COLOR}}; }
+        .logo-img { height: var(--logo-image-size); width: var(--logo-image-size); border-radius: var(--border-radius-base); object-fit: cover; box-shadow: 0 0 10px rgba(208, 0, 0, 0.3); }
         .logo-text { font-size: 1.4rem; font-weight: 900; font-style: italic; letter-spacing: -1px; text-transform: uppercase; line-height: 1; }
         .logo-text span { color: var(--logo-text-p2-color); } /* Dynamically control P2 color */
         .logo-text { color: var(--logo-text-p1-color); } /* Dynamically control P1 color */
@@ -235,16 +235,16 @@
             cursor: pointer; 
         }
         .social-btn svg { width: 20px; height: 20px; fill: currentColor; display: block; }
-        .social-btn.telegram { color: {{THEME_SOCIAL_TELEGRAM_COLOR}}; } 
-        .social-btn.whatsapp { color: {{THEME_SOCIAL_WHATSAPP_COLOR}}; }
-        .social-btn.reddit { color: {{THEME_SOCIAL_REDDIT_COLOR}}; } 
-        .social-btn.twitter { color: {{THEME_SOCIAL_TWITTER_COLOR}}; } 
+        .social-btn.telegram { color: #0088cc; } 
+        .social-btn.whatsapp { color: #25D366; }
+        .social-btn.reddit { color: #FF4500; } 
+        .social-btn.twitter { color: #1DA1F2; } 
         .social-btn.copy { color: var(--social-btn-color); }
         .social-btn:hover { 
             background: var(--social-btn-hover-bg); 
             border-color: var(--social-btn-hover-border); 
             transform: var(--social-btn-hover-transform); 
-            box-shadow: 0 4px 10px {{THEME_SOCIAL_BTN_HOVER_SHADOW_COLOR}}; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
         }
         .s-count { font-size: 0.65rem; font-weight: 700; color: var(--social-count-color); letter-spacing: 0.3px; }
         @media (max-width: 1024px) { .social-sidebar { display: none; } }
@@ -259,7 +259,7 @@
             box-shadow: var(--mobile-footer-shadow); 
         }
         .mobile-sticky-footer .social-btn { border: none; flex: 1; height: 100%; padding: 0; border-radius: 0; transform: none !important; background: transparent; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px; }
-        .mobile-sticky-footer .social-btn:active { background: {{THEME_MOBILE_FOOTER_BTN_ACTIVE_BG}}; }
+        .mobile-sticky-footer .social-btn:active { background: rgba(255,255,255,0.1); }
         .mobile-sticky-footer .s-count { display: block !important; font-size: 0.65rem; color: var(--social-count-color); margin: 0; line-height: 1; }
         .mobile-sticky-footer svg { width: 20px; height: 20px; }
         @media (max-width: 1024px) { .mobile-sticky-footer { display: flex; } }
@@ -277,7 +277,7 @@
         /* HERO */
         .hero { 
             padding: 40px 15px 15px 15px; text-align: center; 
-            {{HERO_BG_CSS}} /* This will be a complex injection based on bg type */
+            background: #1a0505; /* This will be a complex injection based on bg type */
             border-bottom: 1px solid var(--border); 
             display: none; 
         }
@@ -375,7 +375,7 @@
             background: var(--match-row-btn-watch-bg); color: var(--match-row-btn-watch-text); 
             font-size: 0.65rem; font-weight: 800; padding: 6px 10px; 
             border-radius: var(--button-border-radius); width: 100%; text-transform: uppercase; 
-            transition: 0.2s; box-shadow: 0 2px 5px {{THEME_BUTTON_SHADOW_COLOR}}; 
+            transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
             display:flex; align-items:center; justify-content:center; gap:5px; height: 26px; 
         }
         .btn-watch:hover { 
@@ -413,30 +413,30 @@
 
         .show-more-btn { 
             display: block; width: 100%; max-width: 300px; margin: 20px auto; 
-            background: {{THEME_SHOW_MORE_BTN_BG}}; border: 1px solid {{THEME_SHOW_MORE_BTN_BORDER}}; 
-            color: {{THEME_SHOW_MORE_BTN_TEXT}}; padding: 12px; 
+            background: #1e293b; border: 1px solid #334155; 
+            color: #94a3b8; padding: 12px; 
             border-radius: 30px; font-weight: 600; font-size: 0.85rem; 
             transition:0.2s; cursor: pointer; 
         }
         .show-more-btn:hover { 
-            border-color: {{THEME_SHOW_MORE_BTN_HOVER_BORDER}}; 
-            color: {{THEME_SHOW_MORE_BTN_HOVER_TEXT}}; 
-            background: {{THEME_SHOW_MORE_BTN_HOVER_BG}}; 
+            border-color: #D00000; 
+            color: #ffffff; 
+            background: #D00000; 
         }
         
         .leagues-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 15px; }
         .league-card { 
-            background: {{THEME_LEAGUE_CARD_BG}}; border: 1px solid {{THEME_LEAGUE_CARD_BORDER}}; 
+            background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; 
             padding: 10px 15px; border-radius: var(--border-radius-base); 
             display: flex; align-items: center; gap: 10px; transition: 0.2s; 
             white-space: nowrap; overflow: hidden; 
         }
         .league-card:hover { 
-            border-color: {{THEME_LEAGUE_CARD_HOVER_BORDER}}; 
-            background: {{THEME_LEAGUE_CARD_HOVER_BG}}; 
+            border-color: #D00000; 
+            background: #1e293b; 
             transform: translateY(-2px); 
         }
-        .league-card span { font-size: 0.8rem; font-weight: 700; color: {{THEME_LEAGUE_CARD_TEXT}}; overflow: hidden; text-overflow: ellipsis; }
+        .league-card span { font-size: 0.8rem; font-weight: 700; color: #f1f5f9; overflow: hidden; text-overflow: ellipsis; }
         .l-icon { font-size: 1.1rem; }
         
         footer { 
@@ -444,9 +444,9 @@
             border-top: var(--footer-border-top); 
             padding: 60px 20px 30px 20px; margin-top: 60px; 
         }
-        .footer-grid { display: grid; grid-template-columns: {{THEME_FOOTER_GRID_COLUMNS}}; gap: 40px; max-width: var(--container-max-width); margin: 0 auto; text-align: {{THEME_FOOTER_TEXT_ALIGN_MOBILE}}; }
-        @media(min-width: 768px) { .footer-grid { grid-template-columns: {{THEME_FOOTER_GRID_COLUMNS_DESKTOP}}; text-align: {{THEME_FOOTER_TEXT_ALIGN_DESKTOP}}; } .footer-grid div:last-child { text-align: {{THEME_FOOTER_LAST_COL_ALIGN_DESKTOP}}; } }
-        .f-brand h2 { margin: 0 0 15px 0; font-style: italic; text-transform: uppercase; color: {{THEME_FOOTER_BRAND_COLOR}}; letter-spacing: -1px; }
+        .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: var(--container-max-width); margin: 0 auto; text-align: left; }
+        @media(min-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr 1fr; text-align: left; } .footer-grid div:last-child { text-align: right; } }
+        .f-brand h2 { margin: 0 0 15px 0; font-style: italic; text-transform: uppercase; color: #ffffff; letter-spacing: -1px; }
         .f-desc { color: var(--footer-desc-color); font-size: 0.85rem; line-height: 1.6; max-width: 400px; margin: 0 auto; }
         @media(min-width: 768px) { .f-desc { margin: 0; } }
         .f-links { display: flex; flex-direction: column; gap: 12px; }
@@ -475,14 +475,14 @@
     
     <div id="socialSidebar" class="social-sidebar"></div>
 
-    <header class="{{HEADER_CLASSES}}">
+    <header class="">
         <div class="header-container">
             <a href="/" class="logo-link"><img src="/assets/test-logo.webp" class="logo-img" alt="StreamEast Logo" fetchpriority="high"> <div class="logo-text">Stream<span>East</span></div></a>
-            <nav class="nav-links" id="desktopNav"><a href="#">Schedule</a><a href="/#faqs">FAQs</a><a href="/#comeback" style="color:#facc15; border-bottom:1px solid #facc15;">How we comeback</a></nav>
+            <nav class="nav-links" id="desktopNav"><a href="#">Schedule</a><a href="/#faqs">FAQs</a><a href="/#comeback" style="color:var(--accent-gold); border-bottom:1px solid var(--accent-gold);">How we comeback</a></nav>
             <button class="hamburger" onclick="toggleMenu()">☰</button>
         </div>
     </header>
-    <div class="mobile-menu" id="mobileMenu"><a href="#">Schedule</a><a href="/#faqs">FAQs</a><a href="/#comeback" style="color:#facc15; border-bottom:1px solid #facc15;">How we comeback</a></div>
+    <div class="mobile-menu" id="mobileMenu"><a href="#">Schedule</a><a href="/#faqs">FAQs</a><a href="/#comeback" style="color:var(--accent-gold); border-bottom:1px solid var(--accent-gold);">How we comeback</a></div>
 
     <div class="hero">
         <div class="sys-status"><div class="dot"></div> System Status: Online</div>
@@ -491,7 +491,7 @@
         <div class="cat-scroll"><a href="#" class="cat-pill">⚾ MLB</a><a href="/nba" class="cat-pill">🏀 NBA</a><a href="/#ufc" class="cat-pill">🥊 UFC</a></div>
     </div>
 
-    <main class="container {{MAIN_CONTAINER_CLASSES}}">
+    <main class="container ">
         
         <!-- 1. LIVE SECTION -->
         <div id="live-section">
@@ -591,7 +591,7 @@
 
     </main>
 
-    <footer class="{{FOOTER_CLASSES}}">
+    <footer class="">
         <div class="footer-grid">
             <div class="f-brand">
                 <img src="/assets/test-logo.webp" class="logo-img" alt="StreamEast Logo" fetchpriority="high"> <div class="logo-text">Stream<span>East</span></div>
@@ -624,7 +624,7 @@
         const SHARE_CONFIG = {"excluded": ["dmca", "contact", "about", "privacy"], "counts": {"telegram": 12000, "whatsapp": 14400, "reddit": 60077, "twitter": 5544}};
 
         // This will be replaced by the dynamic theme config from build_site.py
-        const THEME_CONFIG = {{JS_THEME_CONFIG}}; 
+        const THEME_CONFIG = {"brand_primary": "#D00000", "brand_dark": "#8a0000", "accent_gold": "#FFD700", "status_green": "#22c55e", "bg_body": "#050505", "bg_panel": "#1e293b", "bg_glass": "rgba(30, 41, 59, 0.7)", "text_main": "#f1f5f9", "text_muted": "#94a3b8", "border_color": "#334155", "scrollbar_thumb_color": "#475569", "font_family_base": "system-ui, -apple-system, sans-serif", "font_family_headings": "inherit", "base_font_size": "14px", "base_line_height": "1.5", "container_max_width": "1100px", "border_radius_base": "6px", "button_border_radius": "4px", "card_shadow": "0 4px 6px -1px rgba(0,0,0,0.1)", "header_bg": "rgba(5, 5, 5, 0.8)", "header_text_color": "#f1f5f9", "header_link_active_color": "#D00000", "header_border_bottom": "1px solid #334155", "logo_p1_color": "#f1f5f9", "logo_p2_color": "#D00000", "logo_image_size": "40px", "hero_bg_style": "solid", "hero_bg_solid": "#1a0505", "hero_h1_color": "#ffffff", "hero_intro_color": "#94a3b8", "hero_pill_bg": "rgba(255,255,255,0.05)", "hero_pill_text": "#f1f5f9", "hero_pill_border": "rgba(255,255,255,0.1)", "hero_pill_hover_bg": "#D00000", "hero_pill_hover_text": "#ffffff", "hero_pill_hover_border": "#D00000", "match_row_bg": "#1e293b", "match_row_border": "#334155", "match_row_live_border_left": "4px solid #22c55e", "match_row_live_bg_start": "rgba(34, 197, 94, 0.1)", "match_row_live_bg_end": "transparent", "match_row_hover_border": "#D00000", "match_row_hover_transform": "translateY(-2px)", "match_row_time_main_color": "#f1f5f9", "match_row_time_sub_color": "#94a3b8", "match_row_live_text_color": "#22c55e", "match_row_league_tag_color": "#94a3b8", "match_row_team_name_color": "#f1f5f9", "match_row_btn_watch_bg": "#D00000", "match_row_btn_watch_text": "#ffffff", "match_row_btn_watch_hover_bg": "#b91c1c", "match_row_btn_watch_hover_transform": "scale(1.05)", "match_row_hd_badge_bg": "rgba(0,0,0,0.3)", "match_row_hd_badge_border": "rgba(255,255,255,0.2)", "match_row_hd_badge_text": "#facc15", "match_row_btn_notify_bg": "transparent", "match_row_btn_notify_border": "#334155", "match_row_btn_notify_text": "#94a3b8", "match_row_btn_notify_active_bg": "#22c55e", "match_row_btn_notify_active_border": "#22c55e", "match_row_btn_notify_active_text": "#ffffff", "match_row_btn_copy_link_color": "#64748b", "match_row_btn_copy_link_hover_color": "#D00000", "footer_bg_start": "#0f172a", "footer_bg_end": "#020617", "footer_border_top": "1px solid #334155", "footer_heading_color": "#94a3b8", "footer_link_color": "#64748b", "footer_link_hover_color": "#f1f5f9", "footer_link_hover_transform": "translateX(5px)", "footer_copyright_color": "#475569", "footer_desc_color": "#64748b", "social_sidebar_bg": "rgba(15, 23, 42, 0.8)", "social_sidebar_border": "#334155", "social_sidebar_shadow": "0 4px 10px rgba(0,0,0,0.3)", "social_btn_bg": "rgba(30, 41, 59, 0.8)", "social_btn_border": "#334155", "social_btn_color": "#94a3b8", "social_btn_hover_bg": "#1e293b", "social_btn_hover_border": "#D00000", "social_btn_hover_transform": "translateX(5px)", "social_count_color": "#64748b", "mobile_footer_bg": "rgba(5, 5, 5, 0.9)", "mobile_footer_border_top": "1px solid #334155", "mobile_footer_shadow": "0 -4px 10px rgba(0,0,0,0.5)", "copy_toast_bg": "#22c55e", "copy_toast_text": "#ffffff", "copy_toast_border": "#16a34a", "back_to_top_bg": "#D00000", "back_to_top_icon_color": "#ffffff", "back_to_top_shadow": "0 4px 10px rgba(208,0,0,0.4)", "sys_status_dot_color": "#22c55e", "sys_status_bg": "rgba(34, 197, 94, 0.1)", "sys_status_border": "rgba(34, 197, 94, 0.2)", "sys_status_text": "#22c55e", "skeleton_gradient_start": "#1e293b", "skeleton_gradient_mid": "#334155", "skeleton_gradient_end": "#1e293b", "skeleton_border_color": "#334155", "logo_image_shadow_color": "rgba(208, 0, 0, 0.3)", "button_shadow_color": "rgba(0,0,0,0.2)", "show_more_btn_bg": "#1e293b", "show_more_btn_border": "#334155", "show_more_btn_text": "#94a3b8", "show_more_btn_hover_bg": "#D00000", "show_more_btn_hover_border": "#D00000", "show_more_btn_hover_text": "#ffffff", "league_card_bg": "rgba(30, 41, 59, 0.5)", "league_card_border": "#334155", "league_card_text": "#f1f5f9", "league_card_hover_bg": "#1e293b", "league_card_hover_border": "#D00000", "footer_brand_color": "#ffffff", "mobile_footer_btn_active_bg": "rgba(255,255,255,0.1)", "social_telegram_color": "#0088cc", "social_whatsapp_color": "#25D366", "social_reddit_color": "#FF4500", "social_twitter_color": "#1DA1F2", "social_btn_hover_shadow_color": "rgba(0,0,0,0.3)", "footer_grid_columns": "1fr 1fr", "footer_text_align_mobile": "left", "footer_grid_columns_desktop": "1fr 1fr 1fr", "footer_text_align_desktop": "left", "footer_last_col_align_desktop": "right"}; 
 
         // Flatten the league map for O(1) lookup
         let teamToLeagueMap = {};

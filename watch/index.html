@@ -107,7 +107,7 @@
         .fullscreen-btn { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; border: 1px solid #555; border-radius: 4px; padding: 8px; cursor: pointer; z-index: 10; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
     </style>
-</head>
+<style>.hero, #live-section, #upcoming-container { display: none !important; }</style></head>
 <body>
     
     <div id="socialSidebar" class="social-sidebar"></div>
@@ -115,11 +115,11 @@
     <header>
         <div class="header-container">
             <a href="/" class="logo-link"><img src="/assets/test-logo.webp" class="logo-img" alt="StreamEast Logo" fetchpriority="high"> <div class="logo-text">Stream<span>East</span></div></a>
-            <nav class="nav-links" id="desktopNav"><a href="#">Schedule</a><a href="/#faqs">FAQs</a><a href="/#comeback" style="color:#facc15; border-bottom:1px solid #facc15;">How we comeback</a></nav>
+            <nav class="nav-links" id="desktopNav"><a href="#">Schedule</a><a href="/#faqs">FAQs</a><a href="/#comeback" style="color:var(--accent-gold); border-bottom:1px solid var(--accent-gold);">How we comeback</a></nav>
             <button class="hamburger" onclick="toggleMenu()">☰</button>
         </div>
     </header>
-    <div class="mobile-menu" id="mobileMenu"><a href="#">Schedule</a><a href="/#faqs">FAQs</a><a href="/#comeback" style="color:#facc15; border-bottom:1px solid #facc15;">How we comeback</a></div>
+    <div class="mobile-menu" id="mobileMenu"><a href="#">Schedule</a><a href="/#faqs">FAQs</a><a href="/#comeback" style="color:var(--accent-gold); border-bottom:1px solid var(--accent-gold);">How we comeback</a></div>
 
     <div id="watch-container">
         <div class="hero-section">
