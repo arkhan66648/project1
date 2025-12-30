@@ -99,7 +99,7 @@ def render_page(template, config, page_data):
     
     html = template
     
-    # --- 1. THEME ENGINE INJECTION (NEW) ---
+    # --- 1. THEME ENGINE INJECTION ---
     # Define Defaults to prevent build crashes
     defaults = {
         'brand_primary': '#D00000', 'brand_dark': '#8a0000', 'accent_gold': '#FFD700', 'status_green': '#22c55e',
@@ -120,6 +120,7 @@ def render_page(template, config, page_data):
         'match_row_live_border_left': '4px solid #22c55e', 
         'match_row_live_bg_start': 'rgba(34, 197, 94, 0.1)', 'match_row_live_bg_end': 'transparent',
         'match_row_hover_border': '#D00000', 'match_row_hover_transform': 'translateY(-2px)',
+        'match_row_hover_bg': '#1e293b', # Added default for new feature
         'match_row_time_main_color': '#f1f5f9', 'match_row_time_sub_color': '#94a3b8',
         'match_row_live_text_color': '#22c55e', 'match_row_league_tag_color': '#94a3b8', 'match_row_team_name_color': '#f1f5f9',
         'match_row_btn_watch_bg': '#D00000', 'match_row_btn_watch_text': '#ffffff', 
@@ -154,7 +155,19 @@ def render_page(template, config, page_data):
         'social_telegram_color': '#0088cc', 'social_whatsapp_color': '#25D366', 'social_reddit_color': '#FF4500', 'social_twitter_color': '#1DA1F2',
         'social_btn_hover_shadow_color': 'rgba(0,0,0,0.3)',
         'footer_grid_columns': '1fr 1fr', 'footer_text_align_mobile': 'left',
-        'footer_grid_columns_desktop': '1fr 1fr 1fr', 'footer_text_align_desktop': 'left', 'footer_last_col_align_desktop': 'right'
+        'footer_grid_columns_desktop': '1fr 1fr 1fr', 'footer_text_align_desktop': 'left', 'footer_last_col_align_desktop': 'right',
+        
+        # New Feature Mappings
+        'social_desktop_top': '50%', 'social_desktop_left': '0', 'social_desktop_scale': '1.0',
+        'mobile_footer_height': '60px',
+        'show_more_btn_radius': '30px',
+        'back_to_top_radius': '50%', 'back_to_top_size': '40px',
+        'section_logo_size': '24px',
+        'text_live_section_title': 'Trending Live',
+        'text_show_more': 'Show More',
+        'text_watch_btn': 'WATCH', 'text_hd_badge': 'HD',
+        'text_section_link': 'View All',
+        'wildcard_category': '', 'text_section_prefix': 'Upcoming'
     }
 
     # Merge Config with Defaults
@@ -163,7 +176,8 @@ def render_page(template, config, page_data):
     for k, v in defaults.items():
         val = t.get(k)
         # Apply units to specific keys if they are raw numbers
-        if k in ['border_radius_base', 'container_max_width', 'base_font_size', 'logo_image_size', 'button_border_radius']:
+        if k in ['border_radius_base', 'container_max_width', 'base_font_size', 'logo_image_size', 'button_border_radius', 
+                 'show_more_btn_radius', 'back_to_top_size', 'section_logo_size']:
             if val: val = ensure_unit(val, 'px')
         
         theme[k] = val if val else v
@@ -197,9 +211,21 @@ def render_page(template, config, page_data):
     
     # Inject Raw Theme Config for JS
     html = html.replace('{{JS_THEME_CONFIG}}', json.dumps(theme))
+    
+    # --- 3. WILDCARD INJECTION (NEW) ---
+    wildcard_cat = theme.get('wildcard_category', '')
+    html = html.replace('{{WILDCARD_CATEGORY}}', wildcard_cat)
+    
+    # --- 4. TEXT REPLACEMENTS (NEW) ---
+    html = html.replace('{{TEXT_LIVE_SECTION_TITLE}}', theme.get('text_live_section_title', 'Trending Live'))
+    html = html.replace('{{TEXT_SHOW_MORE}}', theme.get('text_show_more', 'Show More Matches'))
+    html = html.replace('{{TEXT_WATCH_BTN}}', theme.get('text_watch_btn', 'WATCH'))
+    html = html.replace('{{TEXT_HD_BADGE}}', theme.get('text_hd_badge', 'HD'))
+    html = html.replace('{{TEXT_SECTION_LINK}}', theme.get('text_section_link', 'View All'))
+    html = html.replace('{{TEXT_SECTION_PREFIX}}', theme.get('text_section_prefix', 'Upcoming'))
 
 
-    # --- 3. BASIC CONFIG REPLACEMENTS (Legacy/Core) ---
+    # --- 5. BASIC CONFIG REPLACEMENTS (Legacy/Core) ---
     html = html.replace('{{BRAND_PRIMARY}}', theme.get('brand_primary'))
     
     api_url = s.get('api_url', 'https://vercelapi-olive.vercel.app/api/sync-nodes')
@@ -248,7 +274,7 @@ def render_page(template, config, page_data):
     html = html.replace('{{DOMAIN}}', domain)
     html = html.replace('{{FAVICON}}', s.get('favicon_url', ''))
 
-    # --- 4. Menus Injection ---
+    # --- 6. Menus Injection ---
     html = html.replace('{{HEADER_MENU}}', build_menu_html(m.get('header', []), 'header'))
     html = html.replace('{{HERO_PILLS}}', build_menu_html(m.get('hero', []), 'hero'))
     html = html.replace('{{FOOTER_STATIC}}', build_menu_html(m.get('footer_static', []), 'footer_static'))
@@ -268,11 +294,11 @@ def render_page(template, config, page_data):
                 auto_footer_leagues.append({'title': name, 'url': f'/{slug}-streams/'})
     html = html.replace('{{FOOTER_LEAGUES}}', build_menu_html(auto_footer_leagues, 'footer_leagues'))
 
-    # --- 5. Footer Content ---
+    # --- 7. Footer Content ---
     html = html.replace('{{FOOTER_COPYRIGHT}}', s.get('footer_copyright', f"&copy; 2025 {domain}"))
     html = html.replace('{{FOOTER_DISCLAIMER}}', s.get('footer_disclaimer', ''))
 
-    # --- 6. SEO & Metadata ---
+    # --- 8. SEO & Metadata ---
     layout = page_data.get('layout', 'page')
 
     if layout == 'watch':
@@ -300,9 +326,10 @@ def render_page(template, config, page_data):
     if keywords: html = html.replace('{{META_KEYWORDS}}', f'<meta name="keywords" content="{keywords}">')
     else: html = html.replace('{{META_KEYWORDS}}', '')
 
-    # --- 7. Layout Logic (Home vs Page) ---
+    # --- 9. Layout Logic (Home vs Page) ---
     if layout == 'home':
-        html = html.replace('{{DISPLAY_HERO}}', 'block')
+        display_val = theme.get('display_hero', 'block')
+        html = html.replace('{{DISPLAY_HERO}}', display_val)
     elif layout != 'watch': # Standard page
         if '{{DISPLAY_HERO}}' in html:
             html = html.replace('{{DISPLAY_HERO}}', 'none')
@@ -311,7 +338,7 @@ def render_page(template, config, page_data):
 
     html = html.replace('{{ARTICLE_CONTENT}}', page_data.get('content', ''))
 
-    # --- 8. JS Injections (Dynamic Data) ---
+    # --- 10. JS Injections (Dynamic Data) ---
     # Inject Priorities
     html = html.replace('{{JS_PRIORITIES}}', json.dumps(priorities))
     
@@ -333,7 +360,7 @@ def render_page(template, config, page_data):
     image_map_data = load_json(IMAGE_MAP_PATH)
     html = html.replace('{{JS_IMAGE_MAP}}', json.dumps(image_map_data))
 
-    # --- 9. STATIC SCHEMA GENERATION (Entity Stacking) ---
+    # --- 11. STATIC SCHEMA GENERATION (Entity Stacking) ---
     schemas = []
     page_schemas = page_data.get('schemas', {})
     
