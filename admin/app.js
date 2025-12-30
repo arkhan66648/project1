@@ -307,13 +307,20 @@ function populateUI() {
 // 5. THEME DESIGNER FUNCTIONS (UPDATED)
 // ==========================================
 function injectMissingThemeUI() {
-    // Only inject if not already present
-    if(document.getElementById('themeWildcardCat')) return;
-
     const themeTab = document.getElementById('tab-theme');
     if(!themeTab) return;
 
-    // We append a new Grid Container for the advanced controls
+    // 1. FORCE UPDATE: Check if the section exists and REMOVE it so we can rebuild it with new fields
+    // This fixes the issue where the code stops because "themeWildcardCat" already exists.
+    const existingInput = document.getElementById('themeWildcardCat');
+    if (existingInput) {
+        // Find the container div (grid-3) and remove it. 
+        // In your structure: Input -> div (range-wrapper) -> div (card) -> div (grid-3)
+        const container = existingInput.closest('.grid-3');
+        if (container) container.remove();
+    }
+
+    // 2. Create and Append the New Section
     const newSection = document.createElement('div');
     newSection.className = 'grid-3';
     newSection.innerHTML = `
@@ -332,12 +339,8 @@ function injectMissingThemeUI() {
                 <option value="none">Hide Hero</option>
             </select>
 
-            <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Text Labels</h4>
+            <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Text Labels & Titles</h4>
             <div class="grid-2" style="gap:10px;">
-                <div><label>Live Title</label><input type="text" id="themeTextLiveTitle" placeholder="Trending Live"></div>
-                <div><label>Show More</label><input type="text" id="themeTextShowMore" placeholder="Show More"></div>
-                <div><label>Watch Btn</label><input type="text" id="themeTextWatch" placeholder="WATCH"></div>
-                <div><label>HD Badge</label><input type="text" id="themeTextHd" placeholder="HD"></div>
                 <!-- NEW: Full Title Replacements -->
                 <div style="grid-column: span 2;">
                     <label style="color:#facc15;">★ Wildcard Section Title</label>
@@ -347,8 +350,14 @@ function injectMissingThemeUI() {
                     <label>Top 5 Section Title</label>
                     <input type="text" id="themeTextTopUpcoming" placeholder="e.g. Trending Matches">
                 </div>
+
+                <!-- Existing Labels -->
+                <div><label>Live Title</label><input type="text" id="themeTextLiveTitle" placeholder="Trending Live"></div>
+                <div><label>Show More</label><input type="text" id="themeTextShowMore" placeholder="Show More"></div>
+                <div><label>Watch Btn</label><input type="text" id="themeTextWatch" placeholder="WATCH"></div>
+                <div><label>HD Badge</label><input type="text" id="themeTextHd" placeholder="HD"></div>
                 <div><label>Link Text</label><input type="text" id="themeTextSectionLink" placeholder="View All"></div>
-                <div><label>General Prefix</label><input type="text" id="themeTextSectionPrefix" placeholder="Upcoming"></div>
+                <div><label>Prefix</label><input type="text" id="themeTextSectionPrefix" placeholder="Upcoming"></div>
             </div>
         </div>
 
