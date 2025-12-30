@@ -564,7 +564,7 @@
 
                 // 2. Safety Check: If the placeholder {{API_URL}} is still there or empty, STOP.
                 // Do NOT fall back to a hardcoded URL.
-                if(urlToFetch.includes("{{API_URL}}") || !urlToFetch) {
+                if(urlToFetch.includes("{{") || !urlToFetch) {
                     console.error("Configuration Error: API URL is missing from Admin Panel.");
                     return; 
                 }
