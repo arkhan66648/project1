@@ -788,30 +788,32 @@
             const isWildcardActive = WILDCARD_CATEGORY && WILDCARD_CATEGORY.length > 2;
 
             if (isWildcardActive) {
-                // Filter ANY upcoming match that matches Wildcard name (Not just 24h)
                 wildcardMatches = upcomingMatches.filter(m => 
                     m.finalLeague.toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase()) || 
                     (m.sport || "").toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase())
                 ).sort((a,b) => a.startTimeUnix - b.startTimeUnix);
 
                 if (wildcardMatches.length > 0) {
-                    // Render Wildcard Section
                     const wcContainer = document.getElementById('wildcard-container');
+                    wcContainer.innerHTML = ''; // Clear previous
                     const prefix = "Upcoming" || "Upcoming";
                     const wcTitle = `${prefix} ${WILDCARD_CATEGORY}`;
-                    // Pass isWildcard=true to suppress "Show All" link
                     createSection(wcContainer, wcTitle, wildcardMatches, false, false, null, WILDCARD_CATEGORY, true);
                 }
             }
 
             // --- TOP 5 UPCOMING LOGIC ---
-            // Only show Top 5 container if Wildcard is NOT active
+            let top5Ids = new Set();
+            
             if (!isWildcardActive) {
+                // Only show Top 5 if Wildcard is disabled
                 const top24h = upcomingMatches.filter(m => (m.startTimeUnix - now) < oneDay);
                 const top5Display = top24h.slice(0, 5);
                 
                 if (top5Display.length > 0) {
                     createSection(document.getElementById('top-upcoming-container'), "Top Matches in Next 24h", top5Display, false, false, "🔥", null);
+                    // Track IDs to remove them from grouped sections later
+                    top5Display.forEach(m => top5Ids.add(m.id));
                 } else {
                     document.getElementById('top-upcoming-container').innerHTML = '<div style="padding:15px;color:var(--text-muted);text-align:center;">No upcoming matches in next 24h.</div>';
                 }
@@ -823,9 +825,14 @@
             generateDynamicSchema(liveMatches, upcomingMatches);
 
             // --- GROUPED SECTIONS LOGIC ---
-            // Remove matches already shown in Wildcard from the rest
             const wcIds = new Set(wildcardMatches.map(m => m.id));
-            const remainingMatches = upcomingMatches.filter(m => !wcIds.has(m.id) && (m.startTimeUnix - now) < oneDay);
+            
+            // Filter: Must NOT be in Wildcard, Must NOT be in Top 5, Must be within 24h
+            const remainingMatches = upcomingMatches.filter(m => 
+                !wcIds.has(m.id) && 
+                !top5Ids.has(m.id) && 
+                (m.startTimeUnix - now) < oneDay
+            );
 
             renderGroupedSections(remainingMatches);
         }
@@ -927,11 +934,12 @@
         }
 
         function createSection(container, title, matches, hasLink, isLeague, customIcon, sectionTitle, isWildcardSection=false) {
+            if(!matches || matches.length === 0) return; // Safety check
+
             const section = document.createElement('div');
             section.style.marginBottom = '30px';
             
             let linkHtml = '';
-            // Only show link if it's NOT a wildcard section and hasLink is true
             if (!isWildcardSection && PRIORITIES[title] && PRIORITIES[title].hasLink) {
                 const slug = normalizeKey(title);
                 linkHtml = `<a href="/${slug}-streams/" class="sec-right-link">View All ></a>`;
@@ -952,7 +960,8 @@
                 </div>`;
             
             const list = document.createElement('div');
-            matches.forEach(m => {
+            // FIX: Sort matches by time before rendering
+            matches.sort((a, b) => a.startTimeUnix - b.startTimeUnix).forEach(m => {
                 list.appendChild(createMatchRow(m, { isLive: false }, sectionTitle));
             });
             section.appendChild(list);
