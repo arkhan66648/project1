@@ -1283,8 +1283,10 @@
         
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
         function setNotify(btn) {
-            btn.classList.add('active'); btn.innerHTML = '✓ Set'; btn.disabled = true;
-            copyText('You’ll be notified before kickoff'); 
+            // Just update visual state, no copying, no toast.
+            btn.classList.add('active'); 
+            btn.innerHTML = '✓ Set'; 
+            btn.disabled = true;
         }
     </script>
 </body>
