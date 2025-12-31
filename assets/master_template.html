@@ -52,6 +52,7 @@
             --leagues-order: {{THEME_FOOTER_LEAGUES_POSITION}};
             --header-align: {{THEME_HEADER_ALIGNMENT}};
             --container-width-override: {{THEME_LAYOUT_CONTAINER_WIDTH}};
+            
             --brand-primary: {{THEME_BRAND_PRIMARY}};
             --brand-dark: {{THEME_BRAND_DARK}};
             --status-green: {{THEME_STATUS_GREEN}};
@@ -82,7 +83,7 @@
             --logo-image-size: {{THEME_LOGO_IMAGE_SIZE}};
 
             /* HERO */
-            --hero-bg-css: {{HERO_BG_CSS}}; /* Replaces specific vars with full CSS string */
+            --hero-bg-css: {{HERO_BG_CSS}}; 
             --hero-h1-color: {{THEME_HERO_H1_COLOR}};
             --hero-intro-color: {{THEME_HERO_INTRO_COLOR}};
             --hero-pill-bg: {{THEME_HERO_PILL_BG}};
@@ -99,7 +100,7 @@
             --match-row-live-bg-start: {{THEME_MATCH_ROW_LIVE_BG_START}};
             --match-row-live-bg-end: {{THEME_MATCH_ROW_LIVE_BG_END}};
             --match-row-hover-border: {{THEME_MATCH_ROW_HOVER_BORDER}};
-            --match-row-hover-bg: {{THEME_MATCH_ROW_HOVER_BG}}; /* New: Hover BG */
+            --match-row-hover-bg: {{THEME_MATCH_ROW_HOVER_BG}};
             --match-row-hover-transform: {{THEME_MATCH_ROW_HOVER_TRANSFORM}};
             --match-row-time-main-color: {{THEME_MATCH_ROW_TIME_MAIN_COLOR}};
             --match-row-time-sub-color: {{THEME_MATCH_ROW_TIME_SUB_COLOR}};
@@ -137,7 +138,7 @@
             --footer-copyright-color: {{THEME_FOOTER_COPYRIGHT_COLOR}};
             --footer-desc-color: {{THEME_FOOTER_DESC_COLOR}};
 
-            /* SOCIALS (New Customizations) */
+            /* SOCIALS */
             --social-sidebar-bg: {{THEME_SOCIAL_SIDEBAR_BG}};
             --social-sidebar-border: {{THEME_SOCIAL_SIDEBAR_BORDER}};
             --social-sidebar-shadow: {{THEME_SOCIAL_SIDEBAR_SHADOW}};
@@ -149,14 +150,14 @@
             --social-btn-hover-transform: {{THEME_SOCIAL_BTN_HOVER_TRANSFORM}};
             --social-count-color: {{THEME_SOCIAL_COUNT_COLOR}};
             
-            --social-desktop-top: {{THEME_SOCIAL_DESKTOP_TOP}}; /* e.g. 50% */
-            --social-desktop-left: {{THEME_SOCIAL_DESKTOP_LEFT}}; /* e.g. 0 */
-            --social-desktop-scale: {{THEME_SOCIAL_DESKTOP_SCALE}}; /* e.g. 1.0 */
+            --social-desktop-top: {{THEME_SOCIAL_DESKTOP_TOP}};
+            --social-desktop-left: {{THEME_SOCIAL_DESKTOP_LEFT}};
+            --social-desktop-scale: {{THEME_SOCIAL_DESKTOP_SCALE}};
             
             --mobile-footer-bg: {{THEME_MOBILE_FOOTER_BG}};
             --mobile-footer-border-top: {{THEME_MOBILE_FOOTER_BORDER_TOP}};
             --mobile-footer-shadow: {{THEME_MOBILE_FOOTER_SHADOW}};
-            --mobile-footer-height: {{THEME_MOBILE_FOOTER_HEIGHT}}; /* e.g. 60px */
+            --mobile-footer-height: {{THEME_MOBILE_FOOTER_HEIGHT}};
             
             --copy-toast-bg: {{THEME_COPY_TOAST_BG}};
             --copy-toast-text: {{THEME_COPY_TOAST_TEXT}};
@@ -166,7 +167,7 @@
             --show-more-btn-bg: {{THEME_SHOW_MORE_BTN_BG}};
             --show-more-btn-border: {{THEME_SHOW_MORE_BTN_BORDER}};
             --show-more-btn-text: {{THEME_SHOW_MORE_BTN_TEXT}};
-            --show-more-btn-radius: {{THEME_SHOW_MORE_BTN_RADIUS}}; /* New */
+            --show-more-btn-radius: {{THEME_SHOW_MORE_BTN_RADIUS}};
             --show-more-btn-hover-bg: {{THEME_SHOW_MORE_BTN_HOVER_BG}};
             --show-more-btn-hover-border: {{THEME_SHOW_MORE_BTN_HOVER_BORDER}};
             --show-more-btn-hover-text: {{THEME_SHOW_MORE_BTN_HOVER_TEXT}};
@@ -177,15 +178,15 @@
             --back-to-top-bg: {{THEME_BACK_TO_TOP_BG}};
             --back-to-top-icon-color: {{THEME_BACK_TO_TOP_ICON_COLOR}};
             --back-to-top-shadow: {{THEME_BACK_TO_TOP_SHADOW}};
-            --back-to-top-radius: {{THEME_BACK_TO_TOP_RADIUS}}; /* New */
-            --back-to-top-size: {{THEME_BACK_TO_TOP_SIZE}}; /* New */
+            --back-to-top-radius: {{THEME_BACK_TO_TOP_RADIUS}};
+            --back-to-top-size: {{THEME_BACK_TO_TOP_SIZE}};
             
             --sys-status-dot-color: {{THEME_SYS_STATUS_DOT_COLOR}};
             --sys-status-bg: {{THEME_SYS_STATUS_BG}};
             --sys-status-border: {{THEME_SYS_STATUS_BORDER}};
             --sys-status-text: {{THEME_SYS_STATUS_TEXT}};
             
-            --section-logo-size: {{THEME_SECTION_LOGO_SIZE}}; /* New for CLS */
+            --section-logo-size: {{THEME_SECTION_LOGO_SIZE}};
             
             --skeleton-gradient-start: {{THEME_SKELETON_GRADIENT_START}};
             --skeleton-gradient-mid: {{THEME_SKELETON_GRADIENT_MID}};
@@ -327,7 +328,7 @@
         .sec-right-link { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; text-decoration: none; }
         .sec-right-link:hover { color: var(--brand-primary); text-decoration: underline; }
         
-        /* MATCH ROW */
+        /* MATCH ROW - STANDARD LIST */
         .match-row { 
             display: grid; grid-template-columns: 45px 1fr 50px 75px; align-items: center; gap: 8px; 
             background: var(--match-row-bg); border: 1px solid var(--match-row-border); 
@@ -417,6 +418,7 @@
 
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        
         /* --- NEW LAYOUT FEATURES CSS --- */
         
         /* 1. Flex Ordering Implementation */
@@ -444,7 +446,7 @@
         .header-container[data-align="center"] { justify-content: center; }
         .header-container[data-align="center"] .nav-links { display: none; } /* Hide standard nav if centered, force hamburger or move nav below (optional) */
         
-        
+        /* --- PROFESSIONAL GRID ENGINE --- */
         
         /* 1. Grid Container & SKELETON FIX */
         /* This applies to BOTH the match list AND the skeleton wrapper */
