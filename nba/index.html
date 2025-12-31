@@ -448,36 +448,40 @@
         
         /* --- FINAL GRID ENGINE & SKELETON FIX --- */
 
-        /* --- FIXED GRID ENGINE & SKELETON (NO CONFLICTS) --- */
+        /* --- GEOMETRICALLY ACCURATE GRID & SKELETON --- */
 
-        /* 1. SKELETON GEOMETRY */
+        /* 1. SKELETON HEADER ALIGNMENT */
+        /* Must match .sec-head { margin: 40px 0 12px 0; } exactly */
         .skeleton-header {
             display: flex;
-            align-items: center;
+            align-items: flex-end; /* Align bottom like real header */
             background: transparent;
-            border: none;
-            height: 30px;
-            margin-bottom: 15px;
-            padding: 0;
+            border-bottom: 1px solid #334155; /* Match real border */
+            height: 38px; /* Height of real text + icon */
+            margin: 40px 0 12px 0 !important; /* Exact match to real .sec-head */
+            padding-bottom: 8px; /* Match real padding */
+            box-sizing: border-box;
         }
+        
         .sk-title {
             width: 180px;
-            height: 24px;
-            border-radius: 6px;
+            height: 20px;
+            border-radius: 4px;
             background: var(--skeleton-gradient-start); 
             animation: shimmer 1.5s infinite linear;
         }
         .sk-count { display: none; }
 
-        /* 2. GRID LAYOUT CONTROL */
-        /* We DO NOT use !important for display, so JS can hide it */
+        /* 2. GRID LAYOUT SYNCHRONIZATION */
+        /* Apply identical grid properties to Skeleton and Match List */
         body.view-mode-grid #live-skeleton,
         body.view-mode-grid #upcoming-skeleton,
         body.view-mode-grid .match-list {
             display: grid;
             grid-template-columns: repeat(var(--grid-cols-mob), 1fr);
             gap: var(--grid-gap);
-            margin-top: 10px;
+            margin-top: 0; /* Removing top margin to let gap handle spacing */
+            padding-top: 5px; /* Slight buffer matching visuals */
         }
         
         /* Desktop Breakpoint */
@@ -489,26 +493,34 @@
             }
         }
 
-        /* 3. SKELETON CARD STYLE (Matches Pro Card) */
+        /* 3. SKELETON CARD GEOMETRY */
+        /* Forces skeleton to fill the exact height of the PRO cards */
         body.view-mode-grid .skeleton-box {
             height: var(--grid-min-height) !important;
             width: 100% !important;
             margin: 0 !important;
             border-radius: 12px !important;
-            background: #1a1a1a;
+            background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            box-shadow: none; /* Skeletons shouldn't have drop shadows */
         }
 
-        /* 4. PRO "VS" CARD DESIGN */
+        /* 4. SAFETY: HIDE SKELETONS WHEN JS SAYS SO */
+        #live-skeleton[style*="none"], 
+        #upcoming-skeleton[style*="none"],
+        #live-sk-head[style*="none"] {
+            display: none !important;
+        }
+
+        /* --- PRO "VS" CARD DESIGN (MATCHING SKELETON SIZE) --- */
         .match-list.grid-view .match-row {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             height: 100%;
-            min-height: var(--grid-min-height);
+            min-height: var(--grid-min-height); /* Matches skeleton height */
             padding: 0;
-            background: #141414; /* Netflix Dark */
+            background: #141414;
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 12px;
             overflow: hidden;
@@ -523,7 +535,7 @@
             z-index: 2;
         }
 
-        /* HEADER */
+        /* [HEADER] */
         .g-header {
             display: flex;
             justify-content: space-between;
@@ -532,6 +544,7 @@
             background: rgba(255,255,255,0.03);
             border-bottom: 1px solid rgba(255,255,255,0.05);
             font-size: 0.7rem;
+            min-height: 35px; /* Stable height */
         }
         .g-league { font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .g-badge { 
@@ -540,13 +553,13 @@
         }
         .g-badge.live { background: var(--brand-primary); animation: blink 2s infinite; }
 
-        /* BODY */
+        /* [BODY] */
         .g-body {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 15px 5px;
+            padding: 10px 5px;
             gap: 5px;
         }
         .g-team {
@@ -569,6 +582,7 @@
             font-size: 0.75rem; font-weight: 600; line-height: 1.2;
             color: #e5e5e5;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+            min-height: 2.4em; /* Enforce 2 lines height to prevent shift */
         }
 
         .g-vs {
@@ -582,15 +596,17 @@
         .g-vs-txt { font-family: var(--font-family-headings); font-weight: 900; font-style: italic; font-size: 0.9rem; color: var(--text-muted); }
         .g-time { font-size: 0.6rem; color: var(--accent-gold); font-weight: 700; white-space: nowrap; }
 
-        /* FOOTER */
+        /* [FOOTER] */
         .g-footer {
             padding: 12px;
             display: flex;
             flex-direction: column;
             gap: 8px;
             background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.2));
+            min-height: 75px; /* Stable height */
+            justify-content: flex-end;
         }
-        .g-meta { text-align: center; font-size: 0.65rem; color: var(--text-muted); display:flex; justify-content: center; align-items: center; gap: 5px; }
+        .g-meta { text-align: center; font-size: 0.65rem; color: var(--text-muted); display:flex; justify-content: center; align-items: center; gap: 5px; height: 15px; }
         
         .match-list.grid-view .btn-watch {
             width: 100%; height: 34px;
@@ -604,18 +620,11 @@
         .match-list.grid-view .btn-watch:hover { background: #fff; color: #000; }
         .match-list.grid-view .btn-notify { width: 100%; height: 34px; border-radius: 6px; font-size: 0.75rem; }
 
-        /* SAFETY: Ensure List elements are hidden in grid mode */
+        /* LIST FALLBACK HIDING */
         .match-list.grid-view .col-time, 
         .match-list.grid-view .col-meta, 
         .match-list.grid-view .teams-wrapper, 
         .match-list.grid-view .col-action { display: none !important; }
-        
-        /* SAFETY: Force Hide Skeletons when JS says so */
-        /* This fixes the double-view issue */
-        #live-skeleton[style*="none"], 
-        #upcoming-skeleton[style*="none"] {
-            display: none !important;
-        }
 
         /* --- BACKGROUND ANIMATIONS (VAST SELECTION) --- */
         
