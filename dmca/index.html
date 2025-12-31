@@ -1311,7 +1311,12 @@ if (THEME_CONFIG.match_view_mode === 'grid') {
             const getLogo = (name) => (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) ? IMAGE_MAP.teams[name] : null;
             const logoA = getLogo(m.displayHome);
             const logoB = getLogo(m.displayAway);
-            const rLogo = (url, c) => url ? `<img src="${url}" loading="lazy">` : `<span class="t-logo" style="background:${getColor(c)}">${c}</span>`;
+
+            // --- FIX START: Updated rLogo to accept 'name' and add alt tag ---
+            const rLogo = (url, c, name) => url 
+                ? `<img src="${url}" alt="${name}" loading="lazy">` 
+                : `<span class="t-logo" style="background:${getColor(c)}">${c}</span>`;
+            // --- FIX END ---
             
             const infoLink = `${SITE_DOMAIN}/watch/?info=${m.id}`;
             const copyIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`;
@@ -1334,20 +1339,26 @@ if (THEME_CONFIG.match_view_mode === 'grid') {
                 if(m.is_live && m.live_viewers) meta = `<span style="color:#22c55e">● ${(m.live_viewers/1000).toFixed(1)}k Viewers</span>`;
                 else if(!m.is_live) meta = `<span onclick="copyText('${infoLink}')" style="cursor:pointer; display:flex; align-items:center; gap:4px;">${copyIcon} Copy Link</span>`;
 
+                // --- FIX START: Passed team names as the 3rd argument ---
                 div.innerHTML = `
                     <div class="g-header"><span class="g-league">${league}</span>${badgeHtml}</div>
                     <div class="g-body">
-                        <div class="g-team"><div class="g-logo-box">${rLogo(logoA, m.displayHome.charAt(0))}</div><span>${m.displayHome}</span></div>
+                        <div class="g-team"><div class="g-logo-box">${rLogo(logoA, m.displayHome.charAt(0), m.displayHome)}</div><span>${m.displayHome}</span></div>
                         <div class="g-vs">${midHtml}</div>
-                        <div class="g-team"><div class="g-logo-box">${rLogo(logoB, m.displayAway.charAt(0))}</div><span>${m.displayAway}</span></div>
+                        <div class="g-team"><div class="g-logo-box">${rLogo(logoB, m.displayAway.charAt(0), m.displayAway)}</div><span>${m.displayAway}</span></div>
                     </div>
                     <div class="g-footer">${btn}<div class="g-meta">${meta}</div></div>
                 `;
+                // --- FIX END ---
             } 
             // 3. LIST RENDER (Legacy)
             else {
                 let colTime = m.is_live ? `<span class="live-txt">LIVE</span><span class="time-sub">${dateDisplay}</span>` : `<span class="time-main">${timeDisplay}</span><span class="time-sub">${dateDisplay}</span>`;
-                let logos = `<div class="logo-box">${rLogo(logoA, m.displayHome.charAt(0))}</div>` + (m.displayAway!=='TBA' ? `<div class="logo-box">${rLogo(logoB, m.displayAway.charAt(0))}</div>` : '');
+                
+                // --- FIX START: Passed team names as the 3rd argument ---
+                let logos = `<div class="logo-box">${rLogo(logoA, m.displayHome.charAt(0), m.displayHome)}</div>` + (m.displayAway!=='TBA' ? `<div class="logo-box">${rLogo(logoB, m.displayAway.charAt(0), m.displayAway)}</div>` : '');
+                // --- FIX END ---
+
                 let teams = `<div class="team-name">${logos} ${m.displayHome} ${m.displayAway!=='TBA' ? 'vs '+m.displayAway : ''}</div>`;
                 let action = m.is_live ? `<button onclick="openMatch('${m.id}')" class="btn-watch">WATCH</button>` : `<button onclick="setNotify(this)" class="btn-notify">🔔</button>`;
                 
