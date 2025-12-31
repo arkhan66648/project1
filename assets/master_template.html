@@ -448,56 +448,56 @@
         
         /* --- FINAL GRID ENGINE & SKELETON FIX --- */
 
-        /* 1. SKELETON GEOMETRY (The Fix) */
-        
-        /* Section Title Skeleton: Make it look like a text title */
+        /* --- FIXED GRID ENGINE & SKELETON (NO CONFLICTS) --- */
+
+        /* 1. SKELETON GEOMETRY */
         .skeleton-header {
             display: flex;
             align-items: center;
-            background: transparent !important; /* Remove background from container */
-            border: none !important;
-            height: 30px !important;
-            margin-bottom: 20px !important;
-            padding: 0 !important;
+            background: transparent;
+            border: none;
+            height: 30px;
+            margin-bottom: 15px;
+            padding: 0;
         }
-        /* The Title Bar itself */
         .sk-title {
-            width: 200px !important;
-            height: 24px !important;
+            width: 180px;
+            height: 24px;
             border-radius: 6px;
-            background: var(--skeleton-gradient-start); /* Restore gradient here */
+            background: var(--skeleton-gradient-start); 
             animation: shimmer 1.5s infinite linear;
         }
-        /* Hide the count in skeleton for cleaner look */
-        .sk-count { display: none !important; }
+        .sk-count { display: none; }
 
-        /* 2. FORCE GRID LAYOUT (Use Body Class) */
-        
-        /* Apply Grid to Skeletons & Matches */
+        /* 2. GRID LAYOUT CONTROL */
+        /* We DO NOT use !important for display, so JS can hide it */
         body.view-mode-grid #live-skeleton,
         body.view-mode-grid #upcoming-skeleton,
         body.view-mode-grid .match-list {
-            display: grid !important;
-            grid-template-columns: repeat(var(--grid-cols-mob), 1fr) !important;
-            gap: var(--grid-gap) !important;
-            margin-top: 5px;
+            display: grid;
+            grid-template-columns: repeat(var(--grid-cols-mob), 1fr);
+            gap: var(--grid-gap);
+            margin-top: 10px;
         }
+        
+        /* Desktop Breakpoint */
         @media (min-width: 768px) {
             body.view-mode-grid #live-skeleton,
             body.view-mode-grid #upcoming-skeleton,
             body.view-mode-grid .match-list {
-                grid-template-columns: repeat(var(--grid-cols-desk), 1fr) !important;
+                grid-template-columns: repeat(var(--grid-cols-desk), 1fr);
             }
         }
 
-        /* 3. SKELETON BOXES (Grid Mode) */
+        /* 3. SKELETON CARD STYLE (Matches Pro Card) */
         body.view-mode-grid .skeleton-box {
-            height: var(--grid-min-height) !important; /* Exact match to card height */
+            height: var(--grid-min-height) !important;
             width: 100% !important;
             margin: 0 !important;
-            border-radius: 12px !important; /* Match card radius */
+            border-radius: 12px !important;
+            background: #1a1a1a;
             border: 1px solid rgba(255,255,255,0.05);
-            background: rgba(255,255,255,0.03); /* Darker, subtler skeleton */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
 
         /* 4. PRO "VS" CARD DESIGN */
@@ -513,7 +513,7 @@
             border-radius: 12px;
             overflow: hidden;
             position: relative;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            transition: all 0.2s ease;
         }
         
         .match-list.grid-view .match-row:hover {
@@ -523,7 +523,7 @@
             z-index: 2;
         }
 
-        /* CARD HEADER */
+        /* HEADER */
         .g-header {
             display: flex;
             justify-content: space-between;
@@ -540,14 +540,14 @@
         }
         .g-badge.live { background: var(--brand-primary); animation: blink 2s infinite; }
 
-        /* CARD BODY (VS Layout) */
+        /* BODY */
         .g-body {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 15px 5px;
-            gap: 10px;
+            gap: 5px;
         }
         .g-team {
             width: 40%;
@@ -558,7 +558,7 @@
             gap: 8px;
         }
         .g-logo-box {
-            width: 55px; height: 55px; /* Big Logos */
+            width: 50px; height: 50px; 
             display: flex; align-items: center; justify-content: center;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
         }
@@ -566,23 +566,23 @@
         .g-logo-box .t-logo { width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; }
         
         .g-team span {
-            font-size: 0.8rem; font-weight: 600; line-height: 1.2;
+            font-size: 0.75rem; font-weight: 600; line-height: 1.2;
             color: #e5e5e5;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         }
 
         .g-vs {
-            width: 20%;
+            width: 15%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 2px;
             opacity: 0.6;
         }
-        .g-vs-txt { font-family: var(--font-family-headings); font-weight: 900; font-style: italic; font-size: 1rem; color: var(--text-muted); }
-        .g-time { font-size: 0.65rem; color: var(--accent-gold); font-weight: 700; white-space: nowrap; }
+        .g-vs-txt { font-family: var(--font-family-headings); font-weight: 900; font-style: italic; font-size: 0.9rem; color: var(--text-muted); }
+        .g-time { font-size: 0.6rem; color: var(--accent-gold); font-weight: 700; white-space: nowrap; }
 
-        /* CARD FOOTER */
+        /* FOOTER */
         .g-footer {
             padding: 12px;
             display: flex;
@@ -593,22 +593,29 @@
         .g-meta { text-align: center; font-size: 0.65rem; color: var(--text-muted); display:flex; justify-content: center; align-items: center; gap: 5px; }
         
         .match-list.grid-view .btn-watch {
-            width: 100%; height: 36px;
+            width: 100%; height: 34px;
             background: var(--brand-primary); color: #fff;
             border: none; border-radius: 6px;
-            font-size: 0.8rem; letter-spacing: 0.5px;
+            font-size: 0.75rem; letter-spacing: 0.5px;
             font-weight: 700;
             display: flex; align-items: center; justify-content: center; gap: 6px;
             transition: 0.2s;
         }
         .match-list.grid-view .btn-watch:hover { background: #fff; color: #000; }
-        .match-list.grid-view .btn-notify { width: 100%; height: 36px; border-radius: 6px; }
+        .match-list.grid-view .btn-notify { width: 100%; height: 34px; border-radius: 6px; font-size: 0.75rem; }
 
-        /* HIDE LIST ELEMENTS */
+        /* SAFETY: Ensure List elements are hidden in grid mode */
         .match-list.grid-view .col-time, 
         .match-list.grid-view .col-meta, 
         .match-list.grid-view .teams-wrapper, 
         .match-list.grid-view .col-action { display: none !important; }
+        
+        /* SAFETY: Force Hide Skeletons when JS says so */
+        /* This fixes the double-view issue */
+        #live-skeleton[style*="none"], 
+        #upcoming-skeleton[style*="none"] {
+            display: none !important;
+        }
 
         /* --- BACKGROUND ANIMATIONS (VAST SELECTION) --- */
         
@@ -939,17 +946,15 @@
         function normalizeKey(str) { return str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : ""; }
 
         function renderApp(matches) {
-            // 1. Apply Grid Class to Skeletons properly based on config
-            const isGrid = (typeof THEME_CONFIG !== 'undefined' && THEME_CONFIG.match_view_mode === 'grid');
-            if (isGrid) {
-                document.getElementById('live-skeleton').classList.add('grid-view');
-                document.getElementById('upcoming-skeleton').classList.add('grid-view');
+            // 1. Force Grid Mode CSS Class if needed
+            // This ensures skeletons align before we hide them
+            if (typeof THEME_CONFIG !== 'undefined' && THEME_CONFIG.match_view_mode === 'grid') {
+                document.body.classList.add('view-mode-grid');
             } else {
-                document.getElementById('live-skeleton').classList.remove('grid-view');
-                document.getElementById('upcoming-skeleton').classList.remove('grid-view');
+                document.body.classList.remove('view-mode-grid');
             }
 
-            // 2. Hide Skeletons (Existing code)
+            // 2. Hide Skeletons (The CSS [style*="none"] rule ensures this works)
             document.getElementById('live-sk-head').style.display = 'none';
             document.getElementById('live-skeleton').style.display = 'none';
             document.getElementById('upcoming-skeleton').style.display = 'none';
@@ -975,32 +980,22 @@
                 if (wildcardMatches.length > 0) {
                     const wcContainer = document.getElementById('wildcard-container');
                     wcContainer.innerHTML = ''; 
-                    
-                    // 1. WILDCARD TITLE LOGIC
-                    // Use Admin Title OR fallback to "Prefix + Category"
                     let wcTitle = "{{TEXT_WILDCARD_TITLE}}";
                     if (!wcTitle) {
                         const prefix = "{{TEXT_SECTION_PREFIX}}".trim() || "Upcoming";
                         wcTitle = `${prefix} ${WILDCARD_CATEGORY}`;
                     }
-                    
-                    // Note: We pass skipPrefix=true because we manually constructed the title above
                     createSection(wcContainer, wcTitle, wildcardMatches, false, false, null, WILDCARD_CATEGORY, true);
                 }
             }
 
-            // --- TOP 5 UPCOMING LOGIC ---
+            // --- TOP 5 UPCOMING ---
             let top5Ids = new Set();
-            
             if (!isWildcardActive) {
                 const top24h = upcomingMatches.filter(m => (m.startTimeUnix - now) < oneDay);
                 const top5Display = top24h.slice(0, 5);
-                
                 if (top5Display.length > 0) {
-                    // 2. TOP 5 TITLE LOGIC
-                    // Use Admin Title OR fallback default
                     const topTitle = "{{TEXT_TOP_UPCOMING_TITLE}}" || "Top Matches in Next 24h";
-                    
                     createSection(document.getElementById('top-upcoming-container'), topTitle, top5Display, false, false, "🔥", null, true);
                     top5Display.forEach(m => top5Ids.add(m.id));
                 } else {
@@ -1012,14 +1007,13 @@
 
             generateDynamicSchema(liveMatches, upcomingMatches);
 
-            // --- GROUPED SECTIONS LOGIC ---
+            // --- GROUPED SECTIONS ---
             const wcIds = new Set(wildcardMatches.map(m => m.id));
             const remainingMatches = upcomingMatches.filter(m => 
                 !wcIds.has(m.id) && 
                 !top5Ids.has(m.id) && 
                 (m.startTimeUnix - now) < oneDay
             );
-
             renderGroupedSections(remainingMatches);
         }
 
