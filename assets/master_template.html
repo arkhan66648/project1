@@ -728,8 +728,9 @@
         <div id="wildcard-container"></div>
 
         <!-- 3. TOP 5 UPCOMING -->
+        <!-- FIXED: Skeleton Header moved OUTSIDE the grid container so it spans full width -->
+        <div id="upcoming-sk-head" class="skeleton skeleton-header"><div class="sk-title"></div></div>
         <div id="upcoming-skeleton">
-             <div class="skeleton skeleton-header"><div class="sk-title"></div></div>
              <div class="skeleton skeleton-box"></div>
              <div class="skeleton skeleton-box"></div>
              <div class="skeleton skeleton-box"></div>
@@ -966,6 +967,8 @@
             // 2. Hide Skeletons (The CSS [style*="none"] rule ensures this works)
             document.getElementById('live-sk-head').style.display = 'none';
             document.getElementById('live-skeleton').style.display = 'none';
+            // FIXED: Hide the separate upcoming header
+            document.getElementById('upcoming-sk-head').style.display = 'none';
             document.getElementById('upcoming-skeleton').style.display = 'none';
 
             const now = Date.now();
