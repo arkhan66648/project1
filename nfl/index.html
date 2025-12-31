@@ -446,102 +446,140 @@
         .header-container[data-align="center"] { justify-content: center; }
         .header-container[data-align="center"] .nav-links { display: none; } /* Hide standard nav if centered, force hamburger or move nav below (optional) */
         
-        /* --- PROFESSIONAL GRID ENGINE --- */
+        /* --- 2.0 ADVANCED GRID ENGINE (VS LAYOUT) --- */
         
-        /* 1. Grid Container & SKELETON FIX */
-        /* This applies to BOTH the match list AND the skeleton wrapper */
-        .view-mode-grid .match-list,
-        .view-mode-grid #live-skeleton,
-        .view-mode-grid #upcoming-skeleton {
+        /* GRID CONTAINER & SKELETON FIX */
+        /* Applies grid layout to match list AND skeleton wrappers */
+        .match-list.grid-view,
+        #live-skeleton.grid-view,
+        #upcoming-skeleton.grid-view {
             display: grid;
             grid-template-columns: repeat(var(--grid-cols-mob), 1fr);
             gap: var(--grid-gap);
+            margin-top: 15px; /* Ensure separation from title */
         }
         @media (min-width: 768px) {
-            .view-mode-grid .match-list,
-            .view-mode-grid #live-skeleton,
-            .view-mode-grid #upcoming-skeleton {
+            .match-list.grid-view,
+            #live-skeleton.grid-view,
+            #upcoming-skeleton.grid-view {
                 grid-template-columns: repeat(var(--grid-cols-desk), 1fr);
             }
         }
 
-        /* 2. Skeleton Box Sizing for Grid */
-        .view-mode-grid .skeleton-box {
-            height: var(--grid-min-height); /* Matches Card Height EXACTLY */
+        /* GRID SKELETON SPECIFIC */
+        /* Ensures the skeleton boxes match the card height exactly to prevent shift */
+        .grid-view .skeleton-box {
+            height: var(--grid-min-height); 
             width: 100%;
-            margin-bottom: 0; /* Gap handled by grid */
+            margin: 0;
+            border-radius: var(--border-radius-base);
+        }
+        /* Fix Section Title Skeleton Position */
+        .skeleton-header { 
+            margin-bottom: 20px !important; 
+            width: 50%; /* Don't span full width unnecessarily */
+            min-width: 200px;
         }
 
-        /* 3. PRO CARD DESIGN (Structured, Not Center) */
+        /* --- PRO "VS" CARD DESIGN --- */
         .match-list.grid-view .match-row {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             height: 100%;
             min-height: var(--grid-min-height);
-            padding: 15px;
-            /* Reset Layout */
-            grid-template-columns: none; 
-            grid-template-rows: none;
-            gap: 10px;
-            text-align: left;
-            /* Card Style Logic will go here via background variables */
+            padding: 0; /* padding handled by inner containers */
+            gap: 0;
+            text-align: center;
+            background: var(--match-row-bg); /* Uses theme setting */
+            overflow: hidden;
+            position: relative;
+            /* Optional: Add slight border for distinct look */
+            border: 1px solid var(--border); 
         }
 
-        /* Card Header: League (Left) & Time (Right) */
-        .match-list.grid-view .col-time {
-            order: 1;
-            flex-direction: row;
+        /* 1. CARD HEADER (League & Status) */
+        .grid-header {
+            display: flex;
             justify-content: space-between;
             align-items: center;
-            width: 100%;
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.2); /* Darker header strip */
             border-bottom: 1px solid var(--border);
-            padding-bottom: 8px;
-            margin-bottom: 5px;
+            font-size: 0.75rem;
         }
-        /* Hide League Tag in body, show in header if needed, or rely on col-time */
-        .match-list.grid-view .league-tag { display: none; } 
+        .grid-league { font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 0.65rem; }
+        .grid-status { font-weight: 700; display: flex; align-items: center; gap: 5px; }
+        .grid-status.live { color: var(--match-row-live-text-color); animation: blink 1.5s infinite; }
+        .grid-status.upcoming { color: var(--accent-gold); }
+
+        /* 2. CARD BODY (Team A vs Team B) */
+        .grid-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Spreads teams apart */
+            padding: 15px 10px;
+            position: relative;
+        }
         
-        /* Card Body: Teams (Stacked) */
-        .match-list.grid-view .teams-wrapper {
-            order: 2;
-            flex: 1; /* Pushes Footer down */
+        /* Team Block (Left & Right) */
+        .g-team {
+            display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
             justify-content: center;
-            gap: 12px;
-            width: 100%;
+            width: 40%; /* Leaves 20% for VS */
+            gap: 8px;
+            text-align: center;
         }
-        .match-list.grid-view .team-name {
-            font-size: 1rem;
-            width: 100%;
-            justify-content: flex-start; /* Left Align Logos */
+        .g-team img, .g-team .t-logo {
+            width: 45px; height: 45px; /* Larger logos for grid */
+            object-fit: contain;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border-radius: 50%;
         }
-        .match-list.grid-view .logo-box {
-            width: 24px; height: 24px; margin-right: 8px; /* Bigger logos in grid */
+        .g-team span {
+            font-size: 0.85rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--text-main);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        /* Card Footer: Metadata & Button */
-        .match-list.grid-view .col-meta {
-            order: 3;
-            flex-direction: row;
-            justify-content: space-between;
-            width: 100%;
-            margin-top: 5px;
+        /* VS Badge (Middle) */
+        .g-vs {
+            position: absolute;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.7rem;
+            font-weight: 900;
+            color: var(--text-muted);
+            opacity: 0.5;
+            font-style: italic;
         }
-        .match-list.grid-view .col-action {
-            order: 4;
-            width: 100%;
-            margin-top: 8px;
+
+        /* 3. CARD FOOTER (Buttons) */
+        .grid-footer {
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.02);
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+            justify-content: center;
         }
-        .match-list.grid-view .btn-watch {
-            width: 100%;
-            height: 36px;
-            font-size: 0.8rem;
-        }
-        .match-list.grid-view .btn-copy-link {
-            display: none; /* Hide copy link in grid to save space */
-        }
+        
+        /* Button Tweaks for Grid */
+        .match-list.grid-view .btn-watch { width: 100%; height: 32px; font-size: 0.75rem; }
+        .match-list.grid-view .btn-notify { width: 100%; height: 32px; font-size: 0.75rem; }
+        
+        /* HIDE Old List Elements in Grid Mode */
+        .match-list.grid-view .col-time, 
+        .match-list.grid-view .col-meta, 
+        .match-list.grid-view .teams-wrapper,
+        .match-list.grid-view .col-action { display: none; }
 
         /* --- BACKGROUND ANIMATIONS (VAST SELECTION) --- */
         
