@@ -670,6 +670,15 @@
         
         /* In Render JS, we add class to match-list based on card style? 
            Easier: Use CSS variable for background based on theme config */
+        /* SKELETON BUTTON */
+.skeleton-btn { 
+    height: 42px; 
+    width: 100%; 
+    max-width: 300px; 
+    margin: 20px auto; 
+    border-radius: 30px; /* Matches standard pill radius */
+    display: block;
+}
     </style>
 </head>
 <body class="{{BODY_CLASSES}}">
@@ -716,6 +725,7 @@
                 <div class="skeleton skeleton-box"></div>
                 <div class="skeleton skeleton-box"></div>
             </div>
+            <div id="live-btn-skeleton" class="skeleton skeleton-btn"></div>
             <div id="live-content-wrapper" style="display:none;">
                 <div class="sec-head">
                     <h2 class="sec-title"><div class="live-dot"></div> {{TEXT_LIVE_SECTION_TITLE}}</h2>
