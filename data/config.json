@@ -84,7 +84,14 @@
     "back_to_top_icon_color": "#d1d1d1",
     "back_to_top_radius": "",
     "back_to_top_size": "",
-    "display_hero": "none"
+    "display_hero": "none",
+    "match_view_mode": "grid",
+    "heading_transform": "none",
+    "heading_weight": "600",
+    "seo_content_position": "100",
+    "footer_leagues_position": "2",
+    "header_alignment": "center",
+    "layout_container_width": "1100px"
   },
   "sport_priorities": {
     "US": {
