@@ -980,6 +980,8 @@
             // 2. Hide Skeletons (The CSS [style*="none"] rule ensures this works)
             document.getElementById('live-sk-head').style.display = 'none';
             document.getElementById('live-skeleton').style.display = 'none';
+            // ADD THIS LINE:
+    if(document.getElementById('live-btn-skeleton')) document.getElementById('live-btn-skeleton').style.display = 'none';
             // FIXED: Hide the separate upcoming header
             document.getElementById('upcoming-sk-head').style.display = 'none';
             document.getElementById('upcoming-skeleton').style.display = 'none';
