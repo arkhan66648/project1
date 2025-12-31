@@ -15,6 +15,7 @@
             <nav>
                 <button class="nav-btn active" onclick="switchTab('general')">⚙️ General & SEO</button>
                 <button class="nav-btn" onclick="switchTab('theme')">🎨 Theme Designer</button>
+                <button class="nav-btn" onclick="switchTab('layout')">📐 Layout & Structure</button>
                 <button class="nav-btn" onclick="switchTab('pages')">📄 Pages & Content</button>
                 <button class="nav-btn" onclick="switchTab('priorities')">📊 Priorities & Boost</button>
                 <button class="nav-btn" onclick="switchTab('leagues')">🏆 Leagues & Teams</button>
@@ -299,6 +300,72 @@
                     </div>
                 </div>
             </section>
+
+            <!-- LAYOUT & STRUCTURE (NEW) -->
+<section id="tab-layout" class="tab-content">
+    <div class="header-box">
+        <h1>Layout & Structure</h1>
+    </div>
+    
+    <div class="grid-3">
+        <!-- CARD 1: MATCH DISPLAY -->
+        <div class="card">
+            <h3>👁️ Match Display</h3>
+            <label>View Mode</label>
+            <select id="themeMatchView">
+                <option value="list">List Bars (Standard)</option>
+                <option value="grid">Card Grid (Differentiator)</option>
+            </select>
+            <p class="desc" style="font-size:0.75rem; color:#666; margin-top:5px;">"Card Grid" turns match rows into square boxes.</p>
+            
+            <label>Heading Style</label>
+            <select id="themeHeadingTransform">
+                <option value="none">Normal (Default)</option>
+                <option value="uppercase">UPPERCASE</option>
+                <option value="capitalize">Capitalize Words</option>
+            </select>
+            
+            <div class="range-wrapper">
+                <label>Heading Weight: <span id="val_weight">800</span></label>
+                <input type="range" id="themeHeadingWeight" min="300" max="900" step="100" oninput="document.getElementById('val_weight').innerText=this.value">
+            </div>
+        </div>
+
+        <!-- CARD 2: SECTION ORDERING -->
+        <div class="card">
+            <h3>🔃 Content Ordering</h3>
+            <p class="desc" style="font-size:0.75rem; color:#666; margin-bottom:10px;">Move SEO text to top/bottom without hurting Google ranking.</p>
+            
+            <label>SEO Article Position</label>
+            <select id="themeSeoPos">
+                <option value="100">Bottom (Default)</option>
+                <option value="-1">Top (Above Matches)</option>
+            </select>
+
+            <label>Footer Leagues Position</label>
+            <select id="themeLeaguesPos">
+                <option value="101">Bottom (Above Footer)</option>
+                <option value="2">Below Hero</option>
+            </select>
+        </div>
+
+        <!-- CARD 3: HEADER LAYOUT -->
+        <div class="card">
+            <h3>🧭 Header Layout</h3>
+            <label>Logo Alignment</label>
+            <select id="themeHeaderAlign">
+                <option value="left">Left (Standard)</option>
+                <option value="center">Center (Magazine)</option>
+            </select>
+            
+            <label>Main Container Width</label>
+            <select id="themeContainerWidth">
+                <option value="1100px">Boxed (1100px)</option>
+                <option value="100%">Full Width (Fluid)</option>
+            </select>
+        </div>
+    </div>
+</section>
 
             <!-- PAGES -->
             <section id="tab-pages" class="tab-content">
