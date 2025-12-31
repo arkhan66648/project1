@@ -672,15 +672,22 @@
            Easier: Use CSS variable for background based on theme config */
         /* SKELETON BUTTON */
 /* SKELETON BUTTON POSITIONING */
+/* SKELETON BUTTON */
 .skeleton-btn { 
     height: 42px; 
     width: 100%; 
     max-width: 300px; 
-    margin: 20px auto; /* Matches the real button margin */
+    margin: 20px auto; 
     border-radius: 30px; 
     display: block;
-    clear: both; /* Prevents floating overlap */
-    background-color: rgba(255, 255, 255, 0.05); 
+    clear: both;
+    /* No background/border here - let it inherit the .skeleton shimmer by default */
+}
+
+/* MATCH THE GRID VIEW STYLE (Glass Effect) */
+body.view-mode-grid .skeleton-btn {
+    /* Use 'background' shorthand to overwrite the gradient image with flat color */
+    background: rgba(255, 255, 255, 0.05); 
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
     </style>
