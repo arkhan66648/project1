@@ -92,7 +92,7 @@
     "footer_leagues_position": "101",
     "header_alignment": "center",
     "layout_container_width": "1100px",
-    "grid_columns_desk": "4",
+    "grid_columns_desk": "5",
     "grid_columns_mob": "2",
     "grid_min_height": "240",
     "grid_gap": "20",
