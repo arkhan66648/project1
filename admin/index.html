@@ -16,6 +16,7 @@
                 <button class="nav-btn active" onclick="switchTab('general')">⚙️ General & SEO</button>
                 <button class="nav-btn" onclick="switchTab('theme')">🎨 Theme Designer</button>
                 <button class="nav-btn" onclick="switchTab('layout')">📐 Layout & Structure</button>
+                <button class="nav-btn" onclick="switchTab('visuals')">✨ Visuals & Grid</button>
                 <button class="nav-btn" onclick="switchTab('pages')">📄 Pages & Content</button>
                 <button class="nav-btn" onclick="switchTab('priorities')">📊 Priorities & Boost</button>
                 <button class="nav-btn" onclick="switchTab('leagues')">🏆 Leagues & Teams</button>
@@ -300,6 +301,67 @@
                     </div>
                 </div>
             </section>
+            <!-- VISUALS & GRID ADVANCED -->
+<section id="tab-visuals" class="tab-content">
+    <div class="header-box"><h1>Visuals & Grid Control</h1></div>
+    
+    <div class="grid-3">
+        <!-- CARD 1: GRID GEOMETRY -->
+        <div class="card">
+            <h3>📐 Grid Geometry</h3>
+            <p class="desc">Controls the size and shape of cards in Grid Mode.</p>
+            
+            <div class="range-wrapper">
+                <label>Desktop Columns: <span id="val_colsDesk">3</span></label>
+                <input type="range" id="themeGridColsDesk" min="2" max="5" step="1" oninput="document.getElementById('val_colsDesk').innerText=this.value">
+            </div>
+            
+            <div class="range-wrapper">
+                <label>Mobile Columns: <span id="val_colsMob">1</span></label>
+                <input type="range" id="themeGridColsMob" min="1" max="2" step="1" oninput="document.getElementById('val_colsMob').innerText=this.value">
+            </div>
+
+            <div class="range-wrapper">
+                <label>Min Height (px): <span id="val_cardHeight">180px</span></label>
+                <input type="range" id="themeGridMinHeight" min="150" max="300" step="10" oninput="document.getElementById('val_cardHeight').innerText=this.value+'px'">
+            </div>
+            
+            <div class="range-wrapper">
+                <label>Gap (px): <span id="val_gridGap">15px</span></label>
+                <input type="range" id="themeGridGap" min="5" max="30" step="5" oninput="document.getElementById('val_gridGap').innerText=this.value+'px'">
+            </div>
+        </div>
+
+        <!-- CARD 2: BACKGROUNDS & ANIMATION -->
+        <div class="card">
+            <h3>✨ Backgrounds & Animations</h3>
+            
+            <label>Global Body Background</label>
+            <select id="themeGlobalBgAnim">
+                <option value="none">Solid Color (Default)</option>
+                <option value="anim-gradient">Gradient Flow</option>
+                <option value="anim-mesh">Mesh Gradient</option>
+                <option value="anim-dots">Polka Dots (Static)</option>
+                <option value="anim-grid">Tech Grid (Static)</option>
+            </select>
+            
+            <label>Grid Card Style</label>
+            <select id="themeCardStyle">
+                <option value="solid">Solid Panel</option>
+                <option value="glass">Glassmorphism (Blur)</option>
+                <option value="border">Border Only (Minimal)</option>
+                <option value="gradient">Subtle Gradient</option>
+            </select>
+            
+            <label>Match Row Animation</label>
+            <select id="themeRowAnim">
+                <option value="none">None</option>
+                <option value="fade-up">Fade Up on Load</option>
+                <option value="slide-in">Slide In</option>
+            </select>
+        </div>
+    </div>
+</section>
 
             <!-- LAYOUT & STRUCTURE (NEW) -->
 <section id="tab-layout" class="tab-content">
