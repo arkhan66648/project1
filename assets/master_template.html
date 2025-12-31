@@ -41,6 +41,13 @@
     <style>
         :root {
             /* --- DYNAMIC THEME VARIABLES --- */
+            --match-view-mode: {{THEME_MATCH_VIEW_MODE}}; 
+            --heading-transform: {{THEME_HEADING_TRANSFORM}};
+            --heading-weight: {{THEME_HEADING_WEIGHT}};
+            --seo-order: {{THEME_SEO_CONTENT_POSITION}};
+            --leagues-order: {{THEME_FOOTER_LEAGUES_POSITION}};
+            --header-align: {{THEME_HEADER_ALIGNMENT}};
+            --container-width-override: {{THEME_LAYOUT_CONTAINER_WIDTH}};
             --brand-primary: {{THEME_BRAND_PRIMARY}};
             --brand-dark: {{THEME_BRAND_DARK}};
             --status-green: {{THEME_STATUS_GREEN}};
@@ -406,6 +413,73 @@
 
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        /* --- NEW LAYOUT FEATURES CSS --- */
+        
+        /* 1. Flex Ordering Implementation */
+        main.container {
+            display: flex;
+            flex-direction: column;
+            /* Override max-width if set in config */
+            max-width: var(--container-width-override, 1100px); 
+        }
+        
+        /* Order: Default matches are order: 10 */
+        #live-section, #wildcard-container, #top-upcoming-container, #grouped-container { order: 10; }
+        
+        /* Dynamic Order Classes */
+        .seo-box { order: var(--seo-order); }
+        .section-box { order: var(--leagues-order); }
+
+        /* 2. Typography */
+        h1, h2, h3, .sec-title, .logo-text { 
+            text-transform: var(--heading-transform); 
+            font-weight: var(--heading-weight) !important;
+        }
+
+        /* 3. Header Alignment */
+        .header-container[data-align="center"] { justify-content: center; }
+        .header-container[data-align="center"] .nav-links { display: none; } /* Hide standard nav if centered, force hamburger or move nav below (optional) */
+        
+        /* 4. MATCH GRID MODE (The Differentiator) */
+        /* Only activates if build script sets mode to 'grid' */
+        .match-list.grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        
+        /* Transform Row into Card */
+        .match-list.grid-view .match-row {
+            height: auto;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto auto auto;
+            padding: 20px;
+            text-align: center;
+            gap: 10px;
+        }
+        
+        .match-list.grid-view .col-time { 
+            flex-direction: row; gap: 10px; border-bottom: 1px solid var(--border); 
+            padding-bottom: 8px; margin-bottom: 5px; 
+        }
+        
+        .match-list.grid-view .teams-wrapper { 
+            flex-direction: column; gap: 8px; align-items: center; 
+        }
+        
+        .match-list.grid-view .team-name { 
+            font-size: 1rem; justify-content: center; 
+        }
+        
+        .match-list.grid-view .col-meta { 
+            align-items: center; 
+        }
+        
+        .match-list.grid-view .col-action { 
+            margin-top: 5px; width: 100%; 
+        }
+        
+        .match-list.grid-view .btn-watch { width: 100%; height: 32px; }
     </style>
 </head>
 <body>
@@ -413,7 +487,7 @@
     <div id="socialSidebar" class="social-sidebar"></div>
 
     <header class="{{HEADER_CLASSES}}">
-        <div class="header-container">
+        <div class="header-container" data-align="{{THEME_HEADER_ALIGNMENT}}">
             <a href="/" class="logo-link">{{LOGO_HTML}}</a>
             <nav class="nav-links" id="desktopNav">{{HEADER_MENU}}</nav>
             <button class="hamburger" onclick="toggleMenu()">☰</button>
@@ -852,6 +926,16 @@
             
             wrapper.style.display = 'block';
             topList.innerHTML = ''; hiddenList.innerHTML = ''; btn.style.display='none';
+            // START OF NEW CODE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            // Apply grid class if active
+            if (THEME_CONFIG.match_view_mode === 'grid') {
+                topList.className = 'match-list grid-view';
+                hiddenList.className = 'match-list grid-view';
+            } else {
+                topList.className = 'match-list';
+                hiddenList.className = 'match-list';
+            }
+            // END OF NEW CODE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             
             // Update counter text
             document.getElementById('live-count').innerText = `● ${displayMatches.length} Live Events`;
@@ -902,6 +986,12 @@
                 </div>`;
             
             const list = document.createElement('div');
+// Check config for Grid Mode
+if (THEME_CONFIG.match_view_mode === 'grid') {
+    list.className = 'match-list grid-view';
+} else {
+    list.className = 'match-list';
+}
             matches.sort((a, b) => a.startTimeUnix - b.startTimeUnix).forEach(m => {
                 list.appendChild(createMatchRow(m, { isLive: false }, sectionTitle));
             });
