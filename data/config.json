@@ -91,7 +91,14 @@
     "seo_content_position": "100",
     "footer_leagues_position": "2",
     "header_alignment": "center",
-    "layout_container_width": "1100px"
+    "layout_container_width": "1100px",
+    "grid_columns_desk": "4",
+    "grid_columns_mob": "2",
+    "grid_min_height": "240",
+    "grid_gap": "20",
+    "global_bg_animation": "none",
+    "card_style": "solid",
+    "row_animation": "none"
   },
   "sport_priorities": {
     "US": {
