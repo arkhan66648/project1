@@ -430,7 +430,13 @@
         }
         
         /* Order: Default matches are order: 10 */
-        #live-section, #wildcard-container, #top-upcoming-container, #grouped-container { order: 10; }
+        /* Order: Default matches are order: 10 */
+/* FIX: Force Live Section to top (Order 1) */
+#live-section { order: 1; } 
+
+/* FIX: Ensure Upcoming Skeletons flow with the rest of the content (Order 10) */
+#upcoming-sk-head, #upcoming-skeleton, 
+#wildcard-container, #top-upcoming-container, #grouped-container { order: 10; }
         
         /* Dynamic Order Classes */
         .seo-box { order: var(--seo-order); }
