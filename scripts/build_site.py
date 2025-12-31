@@ -180,7 +180,7 @@ def render_page(template, config, page_data):
         'layout_container_width': '1100px',
         # Visual Defaults
         'grid_columns_desk': '3',
-        'grid_columns_mob': '2',
+        'grid_columns_mob': '1',
         'grid_min_height': '180px',
         'grid_gap': '15px',
         'global_bg_animation': 'none',
