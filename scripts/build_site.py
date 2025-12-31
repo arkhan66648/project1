@@ -169,7 +169,15 @@ def render_page(template, config, page_data):
         'text_show_more': 'Show More',
         'text_watch_btn': 'WATCH', 'text_hd_badge': 'HD',
         'text_section_link': 'View All',
-        'wildcard_category': '', 'text_section_prefix': 'Upcoming'
+        'wildcard_category': '', 'text_section_prefix': 'Upcoming',
+        # New Layout Defaults
+        'match_view_mode': 'list',
+        'heading_transform': 'none',
+        'heading_weight': '800',
+        'seo_content_position': '100',      # 100 = Bottom
+        'footer_leagues_position': '101',   # 101 = Very Bottom
+        'header_alignment': 'left',
+        'layout_container_width': '1100px'
     }
 
     # Merge Config with Defaults
