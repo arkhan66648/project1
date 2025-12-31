@@ -900,6 +900,17 @@
         function normalizeKey(str) { return str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : ""; }
 
         function renderApp(matches) {
+            // 1. Apply Grid Class to Skeletons properly based on config
+            const isGrid = (typeof THEME_CONFIG !== 'undefined' && THEME_CONFIG.match_view_mode === 'grid');
+            if (isGrid) {
+                document.getElementById('live-skeleton').classList.add('grid-view');
+                document.getElementById('upcoming-skeleton').classList.add('grid-view');
+            } else {
+                document.getElementById('live-skeleton').classList.remove('grid-view');
+                document.getElementById('upcoming-skeleton').classList.remove('grid-view');
+            }
+
+            // 2. Hide Skeletons (Existing code)
             document.getElementById('live-sk-head').style.display = 'none';
             document.getElementById('live-skeleton').style.display = 'none';
             document.getElementById('upcoming-skeleton').style.display = 'none';
@@ -1176,87 +1187,110 @@ if (THEME_CONFIG.match_view_mode === 'grid') {
 
         function createMatchRow(m, context, sectionTitle) {
             const div = document.createElement('div');
+            // Base Class
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
-            let timeCol;
+            // --- 1. PREPARE DATA ---
+            // Formatted Time
+            let timeDisplay = "";
+            let dateDisplay = "";
             if (m.is_live) {
-                timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
-            } else { 
+                timeDisplay = "LIVE"; 
+                dateDisplay = m.status_text || "Now";
+            } else {
                 const ft = formatMatchTime(m.startTimeUnix);
-                timeCol = `<span class="time-main">${ft.time}</span><span class="time-sub">${ft.date}</span>`; 
+                timeDisplay = ft.time;
+                dateDisplay = ft.date;
             }
-            
-            const getLogo = (name) => {
-                if (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) {
-                    const p = IMAGE_MAP.teams[name];
-                    const full = p.startsWith('/') ? p : '/' + p;
-                    return `<div class="logo-box"><img src="${full}" class="t-img" alt="${name}" loading="lazy" width="20" height="20"></div>`;
-                }
-                return `<div class="logo-box"><span class="t-logo" style="background:${getColor(name.charAt(0))}">${name.charAt(0)}</span></div>`;
+
+            // Logos
+            const getLogoUrl = (name) => {
+                if (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) return IMAGE_MAP.teams[name];
+                return null;
             };
+            const logoA = getLogoUrl(m.displayHome);
+            const logoB = getLogoUrl(m.displayAway);
             
-            let teamsHtml = '';
-            const isSingle = (m.displayAway === 'TBA');
+            // Logo HTML Generators
+            const renderLogo = (url, char) => url ? `<img src="${url}" class="t-img" loading="lazy">` : `<span class="t-logo" style="background:${getColor(char)}">${char}</span>`;
             
-            if (isSingle) {
-                teamsHtml = `<div class="team-name">${getLogo(m.displayHome)} ${m.displayHome}</div>`;
-            } else {
-                teamsHtml += `<div class="team-name">${getLogo(m.displayHome)} ${m.displayHome}</div>`;
-                teamsHtml += `<div class="team-name">${getLogo(m.displayAway)} ${m.displayAway}</div>`;
-            }
-            
-            let tagText = m.finalLeague;
-            if (sectionTitle && m.finalLeague === sectionTitle) {
-                tagText = m.sport || "General";
-            }
-            
-            let metaHtml = '';
-            if (m.is_live) {
-                const v = m.live_viewers || 0;
-                let vText = "⚡ Stable"; 
-                if (v > 5000) vText = `👀 ${(v/1000).toFixed(1)}k 🔥`;
-                else if (v >= 1000) vText = `👀 ${(v/1000).toFixed(1)}k 📈`;
-                metaHtml = `<div class="meta-top">${vText}</div>`;
-            } else {
-                 metaHtml = `
-                    <div style="display:flex; flex-direction:column; align-items:flex-end;">
-                        <span style="font-size:0.55rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px;">Starts in</span>
-                        <span class="meta-top" style="color:var(--accent-gold); font-size:0.75rem;">${m.status_text}</span>
-                    </div>`;
-            }
-
-            let actionHtml = '';
+            // Buttons
             const infoLink = `${SITE_DOMAIN}/watch/?info=${m.id}`;
-            const copyBtn = `<button class="btn-copy-link" onclick="copyText('${infoLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
-
+            let btnHtml = "";
+            
             if (m.is_live) {
-                actionHtml = `<button onclick="openMatch('${m.id}', 'live')" class="btn-watch" title="Watch ${m.displayHome}">{{TEXT_WATCH_BTN}} <span class="hd-badge">{{TEXT_HD_BADGE}}</span></button>`;
+                btnHtml = `<button onclick="openMatch('${m.id}', 'live')" class="btn-watch">${THEME_CONFIG.text_watch_btn || 'WATCH'} <span class="hd-badge">HD</span></button>`;
             } else {
-                const now = Date.now();
-                const start = m.startTimeUnix || now;
-                const diffMin = (start - now) / 60000;
-                
-                if (diffMin <= 30) {
-                     actionHtml = `<button onclick="openMatch('${m.id}', 'info')" class="btn-watch">{{TEXT_WATCH_BTN}} <span class="hd-badge">{{TEXT_HD_BADGE}}</span></button>` + copyBtn;
+                // If starting within 30 mins, show Watch
+                if ((m.startTimeUnix - Date.now()) < 1800000) {
+                    btnHtml = `<button onclick="openMatch('${m.id}', 'info')" class="btn-watch">${THEME_CONFIG.text_watch_btn || 'WATCH'}</button>`;
                 } else {
-                     actionHtml = `<button onclick="setNotify(this)" class="btn-notify">🔔 Notify</button>` + copyBtn;
+                    btnHtml = `<button onclick="setNotify(this)" class="btn-notify">🔔 Notify</button>`;
                 }
             }
-            
-            // --- FIX LOGIC START ---
-            let finalTimeCol = timeCol;
-            let finalTeamsHtml = teamsHtml;
 
-            if (typeof THEME_CONFIG !== 'undefined' && THEME_CONFIG.match_view_mode === 'grid') {
-                // Grid View: League goes in Header (col-time)
-                finalTimeCol = `<span class="league-tag-grid" style="font-weight:700; font-size:0.7rem; color:var(--text-muted);">${tagText.toUpperCase()}</span> <div style="text-align:right;">${timeCol}</div>`;
+            // --- 2. RENDER MODE CHECK ---
+            if (THEME_CONFIG.match_view_mode === 'grid') {
+                // >>>>>> PROFESSIONAL GRID LAYOUT (VS STYLE) <<<<<<
+                
+                // Status Badge Color logic
+                const statusClass = m.is_live ? 'live' : 'upcoming';
+                const statusIcon = m.is_live ? '●' : '🕒';
+                
+                // League Name logic
+                let leagueName = m.finalLeague;
+                if(sectionTitle && sectionTitle === leagueName) leagueName = m.sport || "";
+
+                const html = `
+                    <div class="grid-header">
+                        <span class="grid-league">${leagueName}</span>
+                        <span class="grid-status ${statusClass}">${statusIcon} ${timeDisplay}</span>
+                    </div>
+                    <div class="grid-body">
+                        <div class="g-team">
+                            <div class="logo-box" style="width:45px;height:45px;">${renderLogo(logoA, m.displayHome.charAt(0))}</div>
+                            <span>${m.displayHome}</span>
+                        </div>
+                        <div class="g-vs">VS</div>
+                        <div class="g-team">
+                            <div class="logo-box" style="width:45px;height:45px;">${renderLogo(logoB, m.displayAway.charAt(0))}</div>
+                            <span>${m.displayAway}</span>
+                        </div>
+                    </div>
+                    <div class="grid-footer">
+                        ${btnHtml}
+                    </div>
+                `;
+                div.innerHTML = html;
+
             } else {
-                // List View: League goes above Teams (Restored feature)
-                finalTeamsHtml = `<div class="league-tag">${tagText.toUpperCase()}</div>${teamsHtml}`;
-            }
-            // --- FIX LOGIC END ---
+                // >>>>>> STANDARD LIST LAYOUT (Legacy) <<<<<<
+                
+                // Time Column
+                let colTime = m.is_live 
+                    ? `<span class="live-txt">LIVE</span><span class="time-sub">${dateDisplay}</span>`
+                    : `<span class="time-main">${timeDisplay}</span><span class="time-sub">${dateDisplay}</span>`;
 
-            div.innerHTML = `<div class="col-time">${finalTimeCol}</div><div class="teams-wrapper">${finalTeamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${actionHtml}</div>`;
+                // Teams Column
+                const logoHtmlA = `<div class="logo-box">${renderLogo(logoA, m.displayHome.charAt(0))}</div>`;
+                const logoHtmlB = `<div class="logo-box">${renderLogo(logoB, m.displayAway.charAt(0))}</div>`;
+                
+                let teamsHtml = `<div class="team-name">${logoHtmlA} ${m.displayHome}</div>`;
+                if(m.displayAway !== 'TBA') teamsHtml += `<div class="team-name">${logoHtmlB} ${m.displayAway}</div>`;
+                
+                let leagueHtml = `<div class="league-tag">${m.finalLeague.toUpperCase()}</div>`;
+
+                // Meta Column
+                let metaHtml = m.is_live 
+                    ? `<div class="meta-top">⚡ Stable</div>` 
+                    : `<div style="display:flex;flex-direction:column;align-items:flex-end;"><span style="font-size:0.55rem;color:var(--text-muted);font-weight:700;">STARTS</span><span class="meta-top">${m.status_text}</span></div>`;
+
+                // Copy Button (Only for list)
+                let copyBtn = `<button class="btn-copy-link" onclick="copyText('${infoLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
+
+                div.innerHTML = `<div class="col-time">${colTime}</div><div class="teams-wrapper">${leagueHtml}${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${btnHtml}${copyBtn}</div>`;
+            }
+
             return div;
         }
 
