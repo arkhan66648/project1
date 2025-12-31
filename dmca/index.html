@@ -448,138 +448,138 @@
         
         /* --- 2.0 ADVANCED GRID ENGINE (VS LAYOUT) --- */
         
-        /* GRID CONTAINER & SKELETON FIX */
-        /* Applies grid layout to match list AND skeleton wrappers */
-        .match-list.grid-view,
-        #live-skeleton.grid-view,
-        #upcoming-skeleton.grid-view {
-            display: grid;
+       /* --- ADVANCED GRID ENGINE (Full Features) --- */
+        
+        /* 1. SKELETON & CONTAINER FIX (Force Grid) */
+        /* We use !important to ensure this overrides default list styles instantly */
+        body.view-mode-grid #live-skeleton,
+        body.view-mode-grid #upcoming-skeleton,
+        body.view-mode-grid .match-list {
+            display: grid !important; 
             grid-template-columns: repeat(var(--grid-cols-mob), 1fr);
             gap: var(--grid-gap);
-            margin-top: 15px; /* Ensure separation from title */
+            margin-top: 15px;
         }
         @media (min-width: 768px) {
-            .match-list.grid-view,
-            #live-skeleton.grid-view,
-            #upcoming-skeleton.grid-view {
+            body.view-mode-grid #live-skeleton,
+            body.view-mode-grid #upcoming-skeleton,
+            body.view-mode-grid .match-list {
                 grid-template-columns: repeat(var(--grid-cols-desk), 1fr);
             }
         }
 
-        /* GRID SKELETON SPECIFIC */
-        /* Ensures the skeleton boxes match the card height exactly to prevent shift */
-        .grid-view .skeleton-box {
+        /* 2. SKELETON SIZING */
+        body.view-mode-grid .skeleton-box {
             height: var(--grid-min-height); 
             width: 100%;
             margin: 0;
             border-radius: var(--border-radius-base);
         }
-        /* Fix Section Title Skeleton Position */
-        .skeleton-header { 
-            margin-bottom: 20px !important; 
-            width: 50%; /* Don't span full width unnecessarily */
-            min-width: 200px;
-        }
 
-        /* --- PRO "VS" CARD DESIGN --- */
+        /* 3. PRO "VS" CARD STYLING */
         .match-list.grid-view .match-row {
             display: flex;
             flex-direction: column;
             height: 100%;
             min-height: var(--grid-min-height);
-            padding: 0; /* padding handled by inner containers */
-            gap: 0;
-            text-align: center;
-            background: var(--match-row-bg); /* Uses theme setting */
+            padding: 0; 
+            background: var(--match-row-bg); 
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius-base);
             overflow: hidden;
             position: relative;
-            /* Optional: Add slight border for distinct look */
-            border: 1px solid var(--border); 
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .match-list.grid-view .match-row:hover {
+            transform: translateY(-3px);
+            border-color: var(--brand-primary);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
-        /* 1. CARD HEADER (League & Status) */
-        .grid-header {
+        /* TOP BAR: League (Left) + Copy Link (Right) */
+        .g-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 8px 12px;
-            background: rgba(0,0,0,0.2); /* Darker header strip */
-            border-bottom: 1px solid var(--border);
-            font-size: 0.75rem;
+            background: rgba(0,0,0,0.2); 
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            height: 35px;
         }
-        .grid-league { font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 0.65rem; }
-        .grid-status { font-weight: 700; display: flex; align-items: center; gap: 5px; }
-        .grid-status.live { color: var(--match-row-live-text-color); animation: blink 1.5s infinite; }
-        .grid-status.upcoming { color: var(--accent-gold); }
+        .g-league { font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        /* Grid Copy Button */
+        .g-copy-btn {
+            background: none; border: none; padding: 4px; 
+            color: var(--text-muted); cursor: pointer; display: flex; 
+            align-items: center; gap: 4px; font-size: 0.6rem; font-weight: 700;
+            text-transform: uppercase; transition: 0.2s;
+        }
+        .g-copy-btn:hover { color: var(--brand-primary); background: rgba(255,255,255,0.05); border-radius: 4px; }
+        .g-copy-btn svg { width: 12px; height: 12px; }
 
-        /* 2. CARD BODY (Team A vs Team B) */
-        .grid-body {
+        /* STATUS BAR: Time / Live Badge */
+        .g-status-bar {
+            text-align: center;
+            padding: 4px 0;
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: rgba(0,0,0,0.1);
+        }
+        .g-status-bar.live { color: var(--status-green); animation: blink 1.5s infinite; background: rgba(34, 197, 94, 0.1); }
+        .g-status-bar.upcoming { color: var(--accent-gold); }
+
+        /* MAIN BODY: Team A - VS - Team B */
+        .g-body {
             flex: 1;
             display: flex;
             align-items: center;
-            justify-content: space-between; /* Spreads teams apart */
-            padding: 15px 10px;
+            justify-content: space-between;
+            padding: 10px;
             position: relative;
         }
-        
-        /* Team Block (Left & Right) */
         .g-team {
+            width: 42%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            width: 40%; /* Leaves 20% for VS */
-            gap: 8px;
             text-align: center;
+            gap: 6px;
         }
-        .g-team img, .g-team .t-logo {
-            width: 45px; height: 45px; /* Larger logos for grid */
-            object-fit: contain;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            border-radius: 50%;
-        }
+        .g-team .logo-box { width: 40px; height: 40px; margin: 0; }
+        .g-team .t-img, .g-team .t-logo { width: 100%; height: 100%; box-shadow: 0 4px 8px rgba(0,0,0,0.3); border-radius: 50%; }
         .g-team span {
-            font-size: 0.85rem;
-            font-weight: 700;
-            line-height: 1.2;
+            font-size: 0.8rem; font-weight: 700; line-height: 1.2;
             color: var(--text-main);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         }
-
-        /* VS Badge (Middle) */
         .g-vs {
-            position: absolute;
-            left: 50%; top: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 0.7rem;
-            font-weight: 900;
-            color: var(--text-muted);
-            opacity: 0.5;
-            font-style: italic;
+            font-size: 0.7rem; font-weight: 900; color: var(--text-muted); opacity: 0.4; font-style: italic;
         }
 
-        /* 3. CARD FOOTER (Buttons) */
-        .grid-footer {
-            padding: 10px 12px;
+        /* FOOTER: Meta + Action */
+        .g-footer {
+            padding: 10px;
             background: rgba(255,255,255,0.02);
-            border-top: 1px solid var(--border);
+            border-top: 1px solid rgba(255,255,255,0.05);
             display: flex;
-            gap: 8px;
-            justify-content: center;
+            flex-direction: column;
+            gap: 6px;
         }
         
-        /* Button Tweaks for Grid */
-        .match-list.grid-view .btn-watch { width: 100%; height: 32px; font-size: 0.75rem; }
-        .match-list.grid-view .btn-notify { width: 100%; height: 32px; font-size: 0.75rem; }
+        .g-meta { text-align: center; font-size: 0.65rem; color: var(--text-muted); font-weight: 600; }
         
-        /* HIDE Old List Elements in Grid Mode */
+        /* Override Button Styles for Grid */
+        .match-list.grid-view .btn-watch, 
+        .match-list.grid-view .btn-notify {
+            width: 100%; height: 34px; font-size: 0.75rem; margin: 0;
+        }
+
+        /* HIDE LIST ELEMENTS */
         .match-list.grid-view .col-time, 
         .match-list.grid-view .col-meta, 
         .match-list.grid-view .teams-wrapper,
-        .match-list.grid-view .col-action { display: none; }
+        .match-list.grid-view .col-action { display: none !important; }
 
         /* --- BACKGROUND ANIMATIONS (VAST SELECTION) --- */
         
@@ -1239,13 +1239,13 @@ if (THEME_CONFIG.match_view_mode === 'grid') {
             // Base Class
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
-            // --- 1. PREPARE DATA ---
-            // Formatted Time
+            // --- 1. SHARED DATA PREP ---
             let timeDisplay = "";
             let dateDisplay = "";
+            
             if (m.is_live) {
-                timeDisplay = "LIVE"; 
-                dateDisplay = m.status_text || "Now";
+                timeDisplay = "LIVE NOW"; 
+                dateDisplay = m.status_text || "Stable";
             } else {
                 const ft = formatMatchTime(m.startTimeUnix);
                 timeDisplay = ft.time;
@@ -1259,68 +1259,74 @@ if (THEME_CONFIG.match_view_mode === 'grid') {
             };
             const logoA = getLogoUrl(m.displayHome);
             const logoB = getLogoUrl(m.displayAway);
-            
-            // Logo HTML Generators
             const renderLogo = (url, char) => url ? `<img src="${url}" class="t-img" loading="lazy">` : `<span class="t-logo" style="background:${getColor(char)}">${char}</span>`;
             
-            // Buttons
+            // Buttons & Links
             const infoLink = `${SITE_DOMAIN}/watch/?info=${m.id}`;
-            let btnHtml = "";
+            const copyIconSvg = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`;
             
+            let btnHtml = "";
             if (m.is_live) {
                 btnHtml = `<button onclick="openMatch('${m.id}', 'live')" class="btn-watch">${THEME_CONFIG.text_watch_btn || 'WATCH'} <span class="hd-badge">HD</span></button>`;
             } else {
-                // If starting within 30 mins, show Watch
-                if ((m.startTimeUnix - Date.now()) < 1800000) {
+                if ((m.startTimeUnix - Date.now()) < 1800000) { // 30 mins
                     btnHtml = `<button onclick="openMatch('${m.id}', 'info')" class="btn-watch">${THEME_CONFIG.text_watch_btn || 'WATCH'}</button>`;
                 } else {
                     btnHtml = `<button onclick="setNotify(this)" class="btn-notify">🔔 Notify</button>`;
                 }
             }
 
-            // --- 2. RENDER MODE CHECK ---
+            // --- 2. RENDER MODE: GRID VS LIST ---
             if (THEME_CONFIG.match_view_mode === 'grid') {
-                // >>>>>> PROFESSIONAL GRID LAYOUT (VS STYLE) <<<<<<
+                // >>> PROFESSIONAL GRID LAYOUT (ALL ELEMENTS) <<<
                 
-                // Status Badge Color logic
-                const statusClass = m.is_live ? 'live' : 'upcoming';
-                const statusIcon = m.is_live ? '●' : '🕒';
-                
-                // League Name logic
                 let leagueName = m.finalLeague;
                 if(sectionTitle && sectionTitle === leagueName) leagueName = m.sport || "";
+                
+                // Status Bar Logic
+                const statusClass = m.is_live ? 'live' : 'upcoming';
+                let statusText = m.is_live ? `● ${dateDisplay}` : `${dateDisplay} • ${timeDisplay}`;
+                
+                // Meta Logic (Viewers or Starts In)
+                let metaText = "";
+                if(m.is_live) {
+                    const v = m.live_viewers || 0;
+                    metaText = v > 1000 ? `👥 ${(v/1000).toFixed(1)}k Viewers` : `👥 ${v} Viewers`;
+                } else {
+                    metaText = m.status_text; // "Starts in 2h"
+                }
 
                 const html = `
-                    <div class="grid-header">
-                        <span class="grid-league">${leagueName}</span>
-                        <span class="grid-status ${statusClass}">${statusIcon} ${timeDisplay}</span>
+                    <div class="g-top">
+                        <span class="g-league">${leagueName}</span>
+                        <button class="g-copy-btn" onclick="copyText('${infoLink}')">${copyIconSvg} LINK</button>
                     </div>
-                    <div class="grid-body">
+                    <div class="g-status-bar ${statusClass}">${statusText}</div>
+                    <div class="g-body">
                         <div class="g-team">
-                            <div class="logo-box" style="width:45px;height:45px;">${renderLogo(logoA, m.displayHome.charAt(0))}</div>
+                            <div class="logo-box">${renderLogo(logoA, m.displayHome.charAt(0))}</div>
                             <span>${m.displayHome}</span>
                         </div>
                         <div class="g-vs">VS</div>
                         <div class="g-team">
-                            <div class="logo-box" style="width:45px;height:45px;">${renderLogo(logoB, m.displayAway.charAt(0))}</div>
+                            <div class="logo-box">${renderLogo(logoB, m.displayAway.charAt(0))}</div>
                             <span>${m.displayAway}</span>
                         </div>
                     </div>
-                    <div class="grid-footer">
+                    <div class="g-footer">
+                        <div class="g-meta">${metaText}</div>
                         ${btnHtml}
                     </div>
                 `;
                 div.innerHTML = html;
 
             } else {
-                // >>>>>> STANDARD LIST LAYOUT (Legacy) <<<<<<
+                // >>> STANDARD LIST LAYOUT <<<
                 
-                // Time Column
                 let colTime = m.is_live 
                     ? `<span class="live-txt">LIVE</span><span class="time-sub">${dateDisplay}</span>`
                     : `<span class="time-main">${timeDisplay}</span><span class="time-sub">${dateDisplay}</span>`;
 
-                // Teams Column
                 const logoHtmlA = `<div class="logo-box">${renderLogo(logoA, m.displayHome.charAt(0))}</div>`;
                 const logoHtmlB = `<div class="logo-box">${renderLogo(logoB, m.displayAway.charAt(0))}</div>`;
                 
@@ -1329,20 +1335,17 @@ if (THEME_CONFIG.match_view_mode === 'grid') {
                 
                 let leagueHtml = `<div class="league-tag">${m.finalLeague.toUpperCase()}</div>`;
 
-                // Meta Column
                 let metaHtml = m.is_live 
-                    ? `<div class="meta-top">⚡ Stable</div>` 
+                    ? `<div class="meta-top">${m.live_viewers ? ((m.live_viewers/1000).toFixed(1)+'k') : 'Stable'}</div>` 
                     : `<div style="display:flex;flex-direction:column;align-items:flex-end;"><span style="font-size:0.55rem;color:var(--text-muted);font-weight:700;">STARTS</span><span class="meta-top">${m.status_text}</span></div>`;
 
-                // Copy Button (Only for list)
-                let copyBtn = `<button class="btn-copy-link" onclick="copyText('${infoLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
+                let copyBtn = `<button class="btn-copy-link" onclick="copyText('${infoLink}')">${copyIconSvg} Link</button>`;
 
                 div.innerHTML = `<div class="col-time">${colTime}</div><div class="teams-wrapper">${leagueHtml}${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${btnHtml}${copyBtn}</div>`;
             }
 
             return div;
         }
-
         function generateDynamicSchema(liveList, upcomingList) {
             const now = Date.now();
             const twentyMin = 20 * 60 * 1000;
