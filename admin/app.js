@@ -80,36 +80,43 @@ const DEMO_CONFIG = {
     ]
 };
 
-// --- MAPPING FOR THEME DESIGNER ---
-// JSON Key -> HTML ID
+// --- MAPPING FOR THEME DESIGNER (16+ FEATURES) ---
+// Maps JSON Config Key -> HTML Input ID
 const THEME_FIELDS = {
-    // 1. Typography & Base
+    // 1. GLOBAL LAYOUT
+    'layout_mode': 'themeLayoutMode',
+    'page_bg_anim': 'themePageAnim',
     'font_family_base': 'themeFontBase',
     'font_family_headings': 'themeFontHeadings',
-    'border_radius_base': 'themeBorderRadius',
     'container_max_width': 'themeMaxWidth',
-    
-    // 2. Palette
-    'brand_primary': 'themeBrandPrimary',
-    'brand_dark': 'themeBrandDark',
-    'accent_gold': 'themeAccentGold',
-    'status_green': 'themeStatusGreen',
+    'border_radius_base': 'themeBorderRadius',
     'bg_body': 'themeBgBody',
     'bg_panel': 'themeBgPanel',
     'text_main': 'themeTextMain',
     'text_muted': 'themeTextMuted',
     'border_color': 'themeBorderColor',
     'scrollbar_thumb_color': 'themeScrollThumb',
+    'brand_primary': 'themeBrandPrimary',
+    'brand_dark': 'themeBrandDark',
+    'accent_gold': 'themeAccentGold',
+    'status_green': 'themeStatusGreen',
 
-    // 3. Header
+    // 2. HEADER
+    'header_logo_order': 'themeHeaderLogoOrder',
+    'header_nav_order': 'themeHeaderNavOrder',
+    'header_justify': 'themeHeaderJustify',
     'header_bg': 'themeHeaderBg',
     'header_text_color': 'themeHeaderText',
+    'header_sticky_class': 'themeHeaderSticky', 
     'header_link_active_color': 'themeHeaderActive',
+    'header_border_bottom': 'themeHeaderBorderBottom',
     'logo_p1_color': 'themeLogoP1',
     'logo_p2_color': 'themeLogoP2',
-    'header_border_bottom': 'themeHeaderBorderBottom',
 
-    // 4. Hero
+    // 3. HERO
+    'display_hero': 'themeDisplayHero',
+    'hero_animation_class': 'themeHeroAnim',
+    'hero_text_align': 'themeHeroAlign',
     'hero_bg_style': 'themeHeroBgStyle',
     'hero_bg_solid': 'themeHeroBgSolid',
     'hero_gradient_start': 'themeHeroGradStart',
@@ -122,65 +129,61 @@ const THEME_FIELDS = {
     'hero_pill_text': 'themeHeroPillText',
     'hero_pill_hover_bg': 'themeHeroPillActiveBg',
     'hero_pill_hover_text': 'themeHeroPillActiveText',
+    
+    // 4. FEATURED MATCH
+    'display_featured': 'themeShowFeatured',
+    'featured_bg': 'themeFeaturedBg',
+    'featured_border': 'themeFeaturedBorder',
 
-    // 5. Match Rows
+    // 5. MATCH ROWS
+    'match_row_layout_class': 'themeRowLayout',
+    'live_animation_class': 'themeLiveAnim',
     'match_row_bg': 'themeMatchRowBg',
     'match_row_border': 'themeMatchRowBorder',
+    'match_row_hover_bg': 'themeMatchRowHoverBg',
+    'match_row_hover_border': 'themeMatchRowHoverBorder',
+    'match_row_btn_watch_bg': 'themeBtnWatchBg',
+    'match_row_btn_watch_text': 'themeBtnWatchText',
     'match_row_team_name_color': 'themeMatchTeamColor',
     'match_row_time_main_color': 'themeMatchTimeColor',
     'match_row_live_bg_start': 'themeMatchLiveBgStart',
     'match_row_live_bg_end': 'themeMatchLiveBgEnd',
     'match_row_live_text_color': 'themeMatchLiveText',
-    'row_height_mode': 'themeRowHeight',
-    'match_row_btn_watch_bg': 'themeBtnWatchBg',
-    'match_row_btn_watch_text': 'themeBtnWatchText',
 
-    // 6. Footer
+    // 6. FOOTER
+    'footer_grid_columns': 'themeFooterGrid',
+    'footer_animation_class': 'themeFooterAnim',
     'footer_bg_start': 'themeFooterBgStart',
     'footer_bg_end': 'themeFooterBgEnd',
+    'footer_text_align_desktop': 'themeFooterAlign',
     'footer_desc_color': 'themeFooterText',
     'footer_link_color': 'themeFooterLink',
-    'footer_text_align_desktop': 'themeFooterAlign',
-    'footer_grid_columns_desktop': 'themeFooterGrid',
 
-    // --- NEW EXTENDED FIELDS ---
-    // Wildcard
-    'wildcard_category': 'themeWildcardCat',
-    
-    // Labels & Text
-    'text_live_section_title': 'themeTextLiveTitle',
-    'text_wildcard_title': 'themeTextWildcardTitle',       // <--- NEW
-    'text_top_upcoming_title': 'themeTextTopUpcoming',
-    'text_show_more': 'themeTextShowMore',
-    'text_section_link': 'themeTextSectionLink',
-    'text_watch_btn': 'themeTextWatch',
-    'text_hd_badge': 'themeTextHd',
-    'text_section_prefix': 'themeTextSectionPrefix',
-
-    // Hover & Styles
-    'match_row_hover_bg': 'themeMatchRowHoverBg',
-    'match_row_hover_border': 'themeMatchRowHoverBorder',
-    'section_logo_size': 'themeSectionLogoSize',
-    'show_more_btn_bg': 'themeShowMoreBg',
-    'show_more_btn_border': 'themeShowMoreBorder',
-    'show_more_btn_text': 'themeShowMoreText',
-    'show_more_btn_radius': 'themeShowMoreRadius',
-
-    // Sticky Share
+    // 7. SOCIALS (STICKY)
     'social_desktop_top': 'themeSocialDeskTop',
-    'social_desktop_left': 'themeSocialDeskLeft',
-    'social_desktop_scale': 'themeSocialDeskScale',
+    'social_btn_border_radius': 'themeSocialRadius',
     'mobile_footer_height': 'themeMobFootHeight',
     'mobile_footer_bg': 'themeMobFootBg',
 
-    // Back to Top
+    // 8. TEXT LABELS & LOGIC
+    'wildcard_category': 'themeWildcardCat',
+    'text_live_section_title': 'themeTextLiveTitle',
+    'text_show_more': 'themeTextShowMore',
+    'text_watch_btn': 'themeTextWatch',
+    'text_hd_badge': 'themeTextHd',
+    'text_section_link': 'themeTextSectionLink',
+    'text_section_prefix': 'themeTextSectionPrefix',
+    
+    // 9. UTILITY
     'back_to_top_bg': 'themeBttBg',
     'back_to_top_icon_color': 'themeBttIcon',
-    'back_to_top_radius': 'themeBttRadius',
     'back_to_top_size': 'themeBttSize',
-    
-    // Logic Toggles
-    'display_hero': 'themeDisplayHero'
+    'back_to_top_radius': 'themeBttRadius',
+    'section_logo_size': 'themeSectionLogoSize',
+    'show_more_btn_bg': 'themeShowMoreBg',
+    'show_more_btn_text': 'themeShowMoreText',
+    'show_more_btn_border': 'themeShowMoreBorder',
+    'show_more_btn_radius': 'themeShowMoreRadius'
 };
 
 let configData = {};
@@ -233,11 +236,13 @@ async function verifyAndLoad(token) {
     try {
         const headers = { 'Authorization': `token ${token}` };
         
+        // Fetch BOTH Config and League Map
         const [resConfig, resLeague] = await Promise.all([
             fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?ref=${BRANCH}`, { headers }),
             fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${LEAGUE_FILE_PATH}?ref=${BRANCH}`, { headers })
         ]);
 
+        // Process Config
         if(resConfig.status === 404) {
             configData = JSON.parse(JSON.stringify(DEMO_CONFIG));
         } else {
@@ -246,6 +251,7 @@ async function verifyAndLoad(token) {
             configData = JSON.parse(decodeURIComponent(escape(atob(data.content))));
         }
 
+        // Process League Map
         if(resLeague.status === 404) {
             leagueMapData = {}; 
         } else {
@@ -254,7 +260,7 @@ async function verifyAndLoad(token) {
             leagueMapData = JSON.parse(decodeURIComponent(escape(atob(lData.content))));
         }
         
-        // Data Normalization
+        // --- DATA NORMALIZATION ---
         if(!configData.pages) configData.pages = DEMO_CONFIG.pages;
         configData.pages.forEach(p => { 
             if(!p.id) p.id = 'p_' + Math.random().toString(36).substr(2, 9); 
@@ -295,8 +301,7 @@ function populateUI() {
     setVal('socialTwitter', soc.counts?.twitter || 0);
     setVal('socialExcluded', soc.excluded_pages || "");
 
-    injectMissingThemeUI(); // Inject new controls before rendering
-    renderThemeSettings(); 
+    renderThemeSettings(); // POPULATE THEME
     renderPriorities();
     renderMenus();
     renderPageList();
@@ -304,130 +309,28 @@ function populateUI() {
 }
 
 // ==========================================
-// 5. THEME DESIGNER FUNCTIONS (UPDATED)
+// 5. THEME DESIGNER FUNCTIONS
 // ==========================================
-function injectMissingThemeUI() {
-    const themeTab = document.getElementById('tab-theme');
-    if(!themeTab) return;
-
-    // 1. FORCE UPDATE: Check if the section exists and REMOVE it so we can rebuild it with new fields
-    // This fixes the issue where the code stops because "themeWildcardCat" already exists.
-    const existingInput = document.getElementById('themeWildcardCat');
-    if (existingInput) {
-        // Find the container div (grid-3) and remove it. 
-        // In your structure: Input -> div (range-wrapper) -> div (card) -> div (grid-3)
-        const container = existingInput.closest('.grid-3');
-        if (container) container.remove();
-    }
-
-    // 2. Create and Append the New Section
-    const newSection = document.createElement('div');
-    newSection.className = 'grid-3';
-    newSection.innerHTML = `
-        <!-- CARD 1: CONTENT & WILDCARD -->
-        <div class="card">
-            <h3>⚡ Content & Logic</h3>
-            <div class="range-wrapper" style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;">
-                <label style="color:#facc15;">🔥 Wildcard Category</label>
-                <input type="text" id="themeWildcardCat" placeholder="e.g. NFL, Premier League">
-                <small style="color:#666; font-size:0.7rem;">Shows full schedule, hides 'Top 5', sets Schema.</small>
-            </div>
-            
-            <label>Hero Section Visibility</label>
-            <select id="themeDisplayHero">
-                <option value="block">Show Hero</option>
-                <option value="none">Hide Hero</option>
-            </select>
-
-            <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Text Labels & Titles</h4>
-            <div class="grid-2" style="gap:10px;">
-                <!-- NEW: Full Title Replacements -->
-                <div style="grid-column: span 2;">
-                    <label style="color:#facc15;">★ Wildcard Section Title</label>
-                    <input type="text" id="themeTextWildcardTitle" placeholder="Overrides default (e.g. UFC 300 Full Card)">
-                </div>
-                <div style="grid-column: span 2;">
-                    <label>Top 5 Section Title</label>
-                    <input type="text" id="themeTextTopUpcoming" placeholder="e.g. Trending Matches">
-                </div>
-
-                <!-- Existing Labels -->
-                <div><label>Live Title</label><input type="text" id="themeTextLiveTitle" placeholder="Trending Live"></div>
-                <div><label>Show More</label><input type="text" id="themeTextShowMore" placeholder="Show More"></div>
-                <div><label>Watch Btn</label><input type="text" id="themeTextWatch" placeholder="WATCH"></div>
-                <div><label>HD Badge</label><input type="text" id="themeTextHd" placeholder="HD"></div>
-                <div><label>Link Text</label><input type="text" id="themeTextSectionLink" placeholder="View All"></div>
-                <div><label>Prefix</label><input type="text" id="themeTextSectionPrefix" placeholder="Upcoming"></div>
-            </div>
-        </div>
-
-        <!-- CARD 2: BUTTONS & INTERACTION -->
-        <div class="card">
-            <h3>🖱️ Buttons & Hover</h3>
-            
-            <h4 style="margin:5px 0 5px 0; font-size:0.8rem; color:#aaa;">Live "Show More" Btn</h4>
-            <div class="color-grid">
-                <div><label>BG</label><input type="color" id="themeShowMoreBg"></div>
-                <div><label>Text</label><input type="color" id="themeShowMoreText"></div>
-                <div><label>Border</label><input type="color" id="themeShowMoreBorder"></div>
-            </div>
-            <div class="range-wrapper"><label>Radius</label><input type="text" id="themeShowMoreRadius" placeholder="30px"></div>
-
-            <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Match Row Hover</h4>
-            <div class="color-grid">
-                <div><label>Hover BG</label><input type="color" id="themeMatchRowHoverBg"></div>
-                <div><label>Hover Border</label><input type="color" id="themeMatchRowHoverBorder"></div>
-            </div>
-            
-            <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Section Headers</h4>
-            <div class="range-wrapper">
-                <label>Logo Size: <span id="val_secLogo">24px</span></label>
-                <input type="range" id="themeSectionLogoSize" min="0" max="60" step="1" oninput="document.getElementById('val_secLogo').innerText=this.value+'px'">
-            </div>
-        </div>
-
-        <!-- CARD 3: FLOATING ELEMENTS -->
-        <div class="card">
-            <h3>📍 Floating Elements</h3>
-            
-            <h4 style="margin:5px 0 5px 0; font-size:0.8rem; color:#aaa;">Back to Top</h4>
-            <div class="color-grid">
-                <div><label>BG</label><input type="color" id="themeBttBg"></div>
-                <div><label>Icon</label><input type="color" id="themeBttIcon"></div>
-            </div>
-            <div class="grid-2" style="gap:10px; margin-top:5px;">
-                <input type="text" id="themeBttSize" placeholder="Size (40px)">
-                <input type="text" id="themeBttRadius" placeholder="Radius (50%)">
-            </div>
-
-            <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Desktop Share (Left)</h4>
-            <div class="grid-2" style="gap:10px;">
-                <div><label>Top</label><input type="text" id="themeSocialDeskTop" placeholder="50%"></div>
-                <div><label>Left</label><input type="text" id="themeSocialDeskLeft" placeholder="0"></div>
-                <div><label>Scale</label><input type="text" id="themeSocialDeskScale" placeholder="1.0"></div>
-            </div>
-
-            <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Mobile Share (Bottom)</h4>
-            <div class="grid-2" style="gap:10px;">
-                <div><label>Height</label><input type="text" id="themeMobFootHeight" placeholder="60px"></div>
-                <div><label>BG</label><input type="color" id="themeMobFootBg"></div>
-            </div>
-        </div>
-    `;
-    themeTab.appendChild(newSection);
-}
-
 function renderThemeSettings() {
     const t = configData.theme || {};
     
+    // Iterate over our mapping and set values
     for (const [jsonKey, htmlId] of Object.entries(THEME_FIELDS)) {
-        if(t[jsonKey]) setVal(htmlId, t[jsonKey]);
+        if(t[jsonKey] && document.getElementById(htmlId)) {
+            setVal(htmlId, t[jsonKey]);
+        }
     }
 
-    if(document.getElementById('val_borderRadius')) document.getElementById('val_borderRadius').innerText = (t.border_radius_base || '6') + 'px';
-    if(document.getElementById('val_maxWidth')) document.getElementById('val_maxWidth').innerText = (t.container_max_width || '1100') + 'px';
-    if(document.getElementById('val_secLogo')) document.getElementById('val_secLogo').innerText = (t.section_logo_size || '24') + 'px';
-
+    // Default Fallbacks for display logic
+    if(!t.header_logo_order) setVal('themeHeaderLogoOrder', '1');
+    if(!t.header_nav_order) setVal('themeHeaderNavOrder', '2');
+    
+    // Refresh the range displays (if they exist in new html)
+    if(document.getElementById('val_borderRadius') && t.border_radius_base) {
+         document.getElementById('val_borderRadius').innerText = t.border_radius_base + 'px';
+    }
+    
+    // Toggle Hero Inputs based on selection
     toggleHeroInputs();
 }
 
@@ -439,17 +342,22 @@ window.toggleHeroInputs = () => {
 };
 
 window.randomizeTheme = () => {
-    if(!confirm("Overwrite with random theme?")) return;
+    if(!confirm("Overwrite current theme with random values?")) return;
+    
     const rCol = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+    
+    // Randomize Colors
     setVal('themeBrandPrimary', rCol());
     setVal('themeBrandDark', rCol());
     setVal('themeAccentGold', rCol());
-    setVal('themeBgBody', '#0f172a');
+    setVal('themeBgBody', '#0f172a'); // Keep body dark for safety
     setVal('themeBgPanel', '#1e293b');
+    
+    // Randomize Radius
     const rRad = Math.floor(Math.random() * 16);
     setVal('themeBorderRadius', rRad);
-    document.getElementById('val_borderRadius').innerText = rRad + 'px';
-    alert("Theme Randomized!");
+    
+    alert("Theme Randomized! Fine tune colors if needed.");
 };
 
 // ==========================================
@@ -460,8 +368,12 @@ function renderPriorities() {
     const container = document.getElementById('priorityListContainer');
     if(document.getElementById('prioLabel')) document.getElementById('prioLabel').innerText = c;
     
+    // Safety check for priorities object
     if(!configData.sport_priorities[c]) configData.sport_priorities[c] = { _HIDE_OTHERS: false, _BOOST: "" };
+
     const isHideOthers = !!configData.sport_priorities[c]._HIDE_OTHERS;
+    
+    // Set Boost Input Value
     setVal('prioBoost', configData.sport_priorities[c]._BOOST || "");
 
     const items = Object.entries(configData.sport_priorities[c])
@@ -475,7 +387,9 @@ function renderPriorities() {
                 <input type="checkbox" ${isHideOthers ? 'checked' : ''} onchange="toggleHideOthers('${c}', this.checked)"> 
                 🚫 Hide all others (Strict Mode)
             </label>
-            <p style="margin:5px 0 0 26px; font-size:0.8rem; color:#aaa;">Only listed sports displayed.</p>
+            <p style="margin:5px 0 0 26px; font-size:0.8rem; color:#aaa;">
+                If checked, only the leagues/sports listed below will be displayed in the upcoming section.
+            </p>
         </div>
     `;
 
@@ -483,14 +397,21 @@ function renderPriorities() {
         <div class="menu-item-row" style="flex-wrap:wrap; opacity: ${item.isHidden ? '0.5' : '1'};">
             <strong style="width:140px; overflow:hidden;">${item.name}</strong>
             <div style="flex:1; display:flex; gap:10px; align-items:center;">
-                <label style="margin:0; font-size:0.75rem;"><input type="checkbox" ${item.isLeague?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','isLeague',this.checked)"> League</label>
-                <label style="margin:0; font-size:0.75rem;"><input type="checkbox" ${item.hasLink?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','hasLink',this.checked)"> Link</label>
-                <label style="margin:0; font-size:0.75rem; color:#ef4444;"><input type="checkbox" ${item.isHidden?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','isHidden',this.checked)"> Hide</label>
+                <label style="margin:0; font-size:0.75rem;">
+                    <input type="checkbox" ${item.isLeague?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','isLeague',this.checked)"> League
+                </label>
+                <label style="margin:0; font-size:0.75rem;">
+                    <input type="checkbox" ${item.hasLink?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','hasLink',this.checked)"> Link
+                </label>
+                <label style="margin:0; font-size:0.75rem; color:#ef4444;">
+                    <input type="checkbox" ${item.isHidden?'checked':''} onchange="updatePrioMeta('${c}','${item.name}','isHidden',this.checked)"> Hide
+                </label>
                 <input type="number" value="${item.score}" onchange="updatePrioMeta('${c}','${item.name}','score',this.value)" style="width:60px; margin:0;">
                 <button class="btn-icon" onclick="deletePriority('${c}', '${item.name}')">×</button>
             </div>
         </div>
     `).join('');
+
     container.innerHTML = html;
 }
 
@@ -501,8 +422,9 @@ window.toggleHideOthers = (c, checked) => {
 
 window.resetPriorities = () => {
     const c = getVal('targetCountry');
-    if(!confirm(`Reset priorities for ${c}?`)) return;
-    configData.sport_priorities[c] = JSON.parse(JSON.stringify(DEFAULT_PRIORITIES[c] || DEFAULT_PRIORITIES['US']));
+    if(!confirm(`Reset priorities for ${c} to default settings?`)) return;
+    const defaults = JSON.parse(JSON.stringify(DEFAULT_PRIORITIES[c] || DEFAULT_PRIORITIES['US']));
+    configData.sport_priorities[c] = defaults;
     renderPriorities();
 };
 
@@ -511,8 +433,8 @@ window.addPriorityRow = () => {
     const name = getVal('newSportName');
     if(name) {
         if(!configData.sport_priorities[c]) configData.sport_priorities[c] = { _HIDE_OTHERS: false, _BOOST: "" };
-        const isLikelyLeague = name.toLowerCase().match(/league|nba|nfl/);
-        configData.sport_priorities[c][name] = { score: 50, isLeague: !!isLikelyLeague, hasLink: false, isHidden: false };
+        const isLikelyLeague = name.toLowerCase().includes('league') || name.toLowerCase().includes('nba') || name.toLowerCase().includes('nfl');
+        configData.sport_priorities[c][name] = { score: 50, isLeague: isLikelyLeague, hasLink: false, isHidden: false };
         setVal('newSportName', '');
         renderPriorities();
     }
@@ -533,11 +455,12 @@ window.deletePriority = (c, name) => {
 };
 
 // ==========================================
-// 7. PAGES & MENUS (STANDARD)
+// 7. PAGES SYSTEM
 // ==========================================
 function renderPageList() {
     const tbody = document.querySelector('#pagesTable tbody');
     if(!configData.pages) configData.pages = [];
+    
     tbody.innerHTML = configData.pages.map(p => `
         <tr>
             <td><strong>${p.title}</strong></td>
@@ -555,9 +478,11 @@ window.editPage = (id) => {
     currentEditingPageId = id;
     const p = configData.pages.find(x => x.id === id);
     if(!p) return;
+
     document.getElementById('pageListView').style.display = 'none';
     document.getElementById('pageEditorView').style.display = 'block';
     document.getElementById('editorPageTitleDisplay').innerText = `Editing: ${p.title}`;
+
     setVal('pageTitle', p.title);
     setVal('pageSlug', p.slug);
     setVal('pageLayout', p.layout || 'page');
@@ -566,188 +491,401 @@ window.editPage = (id) => {
     setVal('pageMetaKeywords', p.meta_keywords); 
     setVal('pageCanonical', p.canonical_url); 
     
+    // Schema UI
     if(!p.schemas) p.schemas = {};
     if(!p.schemas.faq_list) p.schemas.faq_list = [];
-    
-    document.querySelector('#pageEditorView .checkbox-group').innerHTML = `
-        <label style="color:#facc15; font-weight:700;">Static Schemas (SEO)</label>
-        <label><input type="checkbox" id="schemaOrg" ${p.schemas.org ? 'checked' : ''}> Organization</label>
-        <label><input type="checkbox" id="schemaWebsite" ${p.schemas.website ? 'checked' : ''}> WebSite</label>
-        <label><input type="checkbox" id="schemaFaq" ${p.schemas.faq ? 'checked' : ''} onchange="toggleFaqEditor(this.checked)"> FAQ</label>
-        <div id="faqEditorContainer" style="display:${p.schemas.faq?'block':'none'}; margin-top:10px;">
-            <div style="display:flex;justify-content:space-between;"><h4 style="margin:0">FAQ Items</h4><button class="btn-primary" onclick="addFaqItem()">+ Add</button></div>
-            <div id="faqList" style="display:flex;flex-direction:column;gap:10px;margin-top:10px;"></div>
+
+    const checkboxGroup = document.querySelector('#pageEditorView .checkbox-group');
+    checkboxGroup.innerHTML = `
+        <label style="color:#facc15; font-weight:700; border-bottom:1px solid #333; padding-bottom:5px; margin-bottom:10px;">Static Schemas (SEO)</label>
+        <label><input type="checkbox" id="schemaOrg" ${p.schemas.org ? 'checked' : ''}> Organization Schema</label>
+        <label><input type="checkbox" id="schemaWebsite" ${p.schemas.website ? 'checked' : ''}> WebSite Schema</label>
+        <label><input type="checkbox" id="schemaFaq" ${p.schemas.faq ? 'checked' : ''} onchange="toggleFaqEditor(this.checked)"> FAQ Schema</label>
+        
+        <div id="faqEditorContainer" style="display:${p.schemas.faq ? 'block' : 'none'}; background:#0f172a; padding:15px; border:1px solid #334155; border-radius:6px; margin-top:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h4 style="margin:0; font-size:0.9rem;">FAQ Items</h4>
+                <button class="btn-primary" style="padding:4px 10px; font-size:0.8rem;" onclick="addFaqItem()">+ Add Question</button>
+            </div>
+            <div id="faqList" style="display:flex; flex-direction:column; gap:10px;"></div>
         </div>
     `;
+
     renderFaqItems(p.schemas.faq_list);
+
     if(tinymce.get('pageContentEditor')) tinymce.get('pageContentEditor').setContent(p.content || '');
     document.getElementById('pageSlug').disabled = (p.slug === 'home');
 };
 
-window.toggleFaqEditor = (isChecked) => { document.getElementById('faqEditorContainer').style.display = isChecked ? 'block' : 'none'; };
+window.toggleFaqEditor = (isChecked) => {
+    document.getElementById('faqEditorContainer').style.display = isChecked ? 'block' : 'none';
+};
+
 window.renderFaqItems = (list) => {
-    document.getElementById('faqList').innerHTML = list.map((item, idx) => `
-        <div style="background:rgba(0,0,0,0.2); padding:10px; border:1px solid #333;">
-            <input type="text" class="faq-q" value="${item.q||''}" placeholder="Question" style="font-weight:bold;margin-bottom:5px;">
-            <textarea class="faq-a" rows="2" placeholder="Answer" style="margin-bottom:5px;">${item.a||''}</textarea>
-            <button class="btn-danger" style="padding:4px 8px;font-size:0.7rem;" onclick="removeFaqItem(${idx})">Remove</button>
+    const container = document.getElementById('faqList');
+    container.innerHTML = list.map((item, idx) => `
+        <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:4px; border:1px solid #333;">
+            <input type="text" placeholder="Question" class="faq-q" value="${item.q || ''}" style="margin-bottom:5px; font-weight:bold;">
+            <textarea placeholder="Answer" class="faq-a" rows="2" style="margin-bottom:5px;">${item.a || ''}</textarea>
+            <button class="btn-danger" style="padding:4px 8px; font-size:0.7rem;" onclick="removeFaqItem(${idx})">Remove</button>
         </div>
     `).join('');
 };
-window.addFaqItem = () => { saveCurrentFaqState(); configData.pages.find(x => x.id === currentEditingPageId).schemas.faq_list.push({ q: "", a: "" }); renderFaqItems(configData.pages.find(x => x.id === currentEditingPageId).schemas.faq_list); };
-window.removeFaqItem = (idx) => { saveCurrentFaqState(); configData.pages.find(x => x.id === currentEditingPageId).schemas.faq_list.splice(idx, 1); renderFaqItems(configData.pages.find(x => x.id === currentEditingPageId).schemas.faq_list); };
-function saveCurrentFaqState() { 
-    if(!currentEditingPageId) return; 
-    const p = configData.pages.find(x => x.id === currentEditingPageId); 
-    const div = document.getElementById('faqList');
-    if(!div) return;
-    p.schemas.faq_list = Array.from(div.querySelectorAll('.faq-q')).map((q, i) => ({ q: q.value, a: div.querySelectorAll('.faq-a')[i].value }));
+
+window.addFaqItem = () => {
+    saveCurrentFaqState(); 
+    const p = configData.pages.find(x => x.id === currentEditingPageId);
+    p.schemas.faq_list.push({ q: "", a: "" });
+    renderFaqItems(p.schemas.faq_list);
+};
+
+window.removeFaqItem = (idx) => {
+    saveCurrentFaqState();
+    const p = configData.pages.find(x => x.id === currentEditingPageId);
+    p.schemas.faq_list.splice(idx, 1);
+    renderFaqItems(p.schemas.faq_list);
+};
+
+function saveCurrentFaqState() {
+    if(!currentEditingPageId) return;
+    const p = configData.pages.find(x => x.id === currentEditingPageId);
+    const container = document.getElementById('faqList');
+    if(!container) return;
+    
+    const qInputs = container.querySelectorAll('.faq-q');
+    const aInputs = container.querySelectorAll('.faq-a');
+    
+    p.schemas.faq_list = Array.from(qInputs).map((input, idx) => ({
+        q: input.value,
+        a: aInputs[idx].value
+    }));
 }
+
 window.saveEditorContentToMemory = () => {
     if(!currentEditingPageId) return;
     const p = configData.pages.find(x => x.id === currentEditingPageId);
-    p.title = getVal('pageTitle'); p.slug = getVal('pageSlug'); p.layout = getVal('pageLayout');
-    p.meta_title = getVal('pageMetaTitle'); p.meta_desc = getVal('pageMetaDesc'); p.meta_keywords = getVal('pageMetaKeywords'); p.canonical_url = getVal('pageCanonical');
+    if(!p) return;
+
+    p.title = getVal('pageTitle');
+    p.slug = getVal('pageSlug');
+    p.layout = getVal('pageLayout');
+    p.meta_title = getVal('pageMetaTitle');
+    p.meta_desc = getVal('pageMetaDesc');
+    p.meta_keywords = getVal('pageMetaKeywords');
+    p.canonical_url = getVal('pageCanonical');
     p.content = tinymce.get('pageContentEditor').getContent();
-    saveCurrentFaqState();
+    
+    saveCurrentFaqState(); 
+    
     if(!p.schemas) p.schemas = {};
     p.schemas.org = document.getElementById('schemaOrg').checked;
     p.schemas.website = document.getElementById('schemaWebsite').checked;
     p.schemas.faq = document.getElementById('schemaFaq').checked;
 };
-window.closePageEditor = () => { saveEditorContentToMemory(); document.getElementById('pageEditorView').style.display = 'none'; document.getElementById('pageListView').style.display = 'block'; renderPageList(); };
-window.createNewPage = () => { configData.pages.push({ id: 'p_'+Date.now(), title: "New", slug: "new", layout: "page", content: "", schemas: {org:true} }); renderPageList(); };
-window.deletePage = (id) => { if(confirm("Del?")) { configData.pages = configData.pages.filter(p => p.id !== id); renderPageList(); } };
 
+window.closePageEditor = () => {
+    saveEditorContentToMemory();
+    document.getElementById('pageEditorView').style.display = 'none';
+    document.getElementById('pageListView').style.display = 'block';
+    renderPageList();
+};
+
+window.createNewPage = () => {
+    const id = 'p_' + Date.now();
+    configData.pages.push({ id, title: "New Page", slug: "new-page", layout: "page", content: "", schemas: { org: true } });
+    renderPageList();
+    editPage(id);
+};
+
+window.deletePage = (id) => {
+    if(confirm("Delete this page?")) {
+        configData.pages = configData.pages.filter(p => p.id !== id);
+        renderPageList();
+    }
+};
+
+// ==========================================
+// 8. MENUS
+// ==========================================
 function renderMenus() {
     ['header', 'hero', 'footer_static'].forEach(sec => {
-        if(document.getElementById(`menu-${sec}`)) {
-            document.getElementById(`menu-${sec}`).innerHTML = (configData.menus[sec]||[]).map((item, idx) => `
-                <div class="menu-item-row"><div>${item.highlight?'<span style="color:#facc15">★</span>':''} <strong>${item.title}</strong> <small>(${item.url})</small></div><button class="btn-icon" onclick="deleteMenuItem('${sec}', ${idx})">×</button></div>
-            `).join('');
+        const div = document.getElementById(`menu-${sec}`);
+        if(div) {
+            div.innerHTML = (configData.menus[sec] || []).map((item, idx) => {
+                const hl = item.highlight ? '<span style="color:#facc15">★</span>' : '';
+                return `
+                <div class="menu-item-row">
+                    <div>${hl} <strong>${item.title}</strong> <small>(${item.url})</small></div>
+                    <button class="btn-icon" onclick="deleteMenuItem('${sec}', ${idx})">×</button>
+                </div>
+            `;
+            }).join('');
         }
     });
 }
+
 window.openMenuModal = (sec) => { 
     document.getElementById('menuTargetSection').value = sec; 
-    setVal('menuTitleItem',''); setVal('menuUrlItem',''); 
-    const chk = document.getElementById('menuHighlightCheck'); if(chk) chk.parentNode.remove();
+    setVal('menuTitleItem',''); 
+    setVal('menuUrlItem',''); 
+    const modalContent = document.querySelector('#menuModal .modal-content');
+    const existingCheck = document.getElementById('menuHighlightCheck');
+    if(existingCheck) existingCheck.parentNode.remove();
     if(sec === 'header') {
-        const w = document.createElement('div'); w.innerHTML = `<label style="display:inline-flex;gap:5px;margin-top:10px;"><input type="checkbox" id="menuHighlightCheck"> Highlight</label>`;
-        document.querySelector('#menuModal .modal-content').insertBefore(w, document.querySelector('#menuModal .modal-actions'));
+        const wrap = document.createElement('div');
+        wrap.innerHTML = `<label style="display:inline-flex; align-items:center; gap:5px; margin-top:10px;"><input type="checkbox" id="menuHighlightCheck"> Highlight this link (Gold Color)</label>`;
+        modalContent.insertBefore(wrap, modalContent.querySelector('.modal-actions'));
     }
     document.getElementById('menuModal').style.display='flex'; 
 };
+
 window.saveMenuItem = () => { 
     const sec = document.getElementById('menuTargetSection').value;
+    const isHighlight = document.getElementById('menuHighlightCheck') ? document.getElementById('menuHighlightCheck').checked : false;
+    const item = { 
+        title: getVal('menuTitleItem'), 
+        url: getVal('menuUrlItem'),
+        highlight: sec === 'header' ? isHighlight : false 
+    };
     if(!configData.menus[sec]) configData.menus[sec] = [];
-    configData.menus[sec].push({ title: getVal('menuTitleItem'), url: getVal('menuUrlItem'), highlight: document.getElementById('menuHighlightCheck')?.checked });
-    renderMenus(); document.getElementById('menuModal').style.display = 'none';
+    configData.menus[sec].push(item);
+    renderMenus();
+    document.getElementById('menuModal').style.display = 'none';
 };
 window.deleteMenuItem = (sec, idx) => { configData.menus[sec].splice(idx, 1); renderMenus(); };
 
-function getGroupedLeagues() { return leagueMapData || {}; }
-function renderLeagues() {
-    const c = document.getElementById('leaguesContainer'); if(!c) return;
-    const g = getGroupedLeagues();
-    c.innerHTML = Object.keys(g).sort().map(l => `<div class="card"><div class="league-card-header"><h3>${l}</h3><span>${g[l].length} Teams</span></div><label>Teams</label><textarea class="team-list-editor" rows="6" data-league="${l}">${g[l].join(', ')}</textarea></div>`).join('');
-}
-window.copyAllLeaguesData = () => {
-    let o = ""; for(const [l,t] of Object.entries(getGroupedLeagues())) o+=`LEAGUE: ${l}\nTEAMS: ${t.join(', ')}\n---\n`;
-    navigator.clipboard.writeText(o).then(() => alert("Copied!"));
-};
-window.openLeagueModal = () => document.getElementById('leagueModal').style.display = 'flex';
-window.saveNewLeague = () => { 
-    const n = document.getElementById('newLeagueNameInput').value.trim(); 
-    if(n) { if(!leagueMapData) leagueMapData={}; leagueMapData[n] = ["new"]; renderLeagues(); document.getElementById('leagueModal').style.display='none'; } 
-};
-function rebuildLeagueMapFromUI() {
-    const map = {}; document.querySelectorAll('.team-list-editor').forEach(t => { map[t.getAttribute('data-league')] = t.value.split(',').map(x=>x.trim().toLowerCase().replace(/\s+/g,'-')).filter(x=>x.length>0); });
-    return map;
+// ==========================================
+// 9. LEAGUES & TEAMS MAP
+// ==========================================
+function getGroupedLeagues() {
+    return leagueMapData || {};
 }
 
+function renderLeagues() {
+    const container = document.getElementById('leaguesContainer');
+    if(!container) return;
+
+    const grouped = getGroupedLeagues();
+    const sortedLeagues = Object.keys(grouped).sort();
+
+    container.innerHTML = sortedLeagues.map(league => {
+        const teamsArray = grouped[league] || [];
+        const teamsString = teamsArray.join(', ');
+        return `
+        <div class="card">
+            <div class="league-card-header">
+                <h3>${league}</h3>
+                <span style="font-size:0.8rem; color:#64748b;">${teamsArray.length} Teams</span>
+            </div>
+            <label>Teams (comma separated slugs)</label>
+            <textarea class="team-list-editor" rows="6" data-league="${league}">${teamsString}</textarea>
+        </div>
+        `;
+    }).join('');
+}
+
+window.copyAllLeaguesData = () => {
+    const grouped = getGroupedLeagues();
+    let output = "--- LEAGUES AND TEAMS DATA ---\n\n";
+    for(const [league, teams] of Object.entries(grouped)) {
+        output += `LEAGUE: ${league}\n`;
+        output += `TEAMS: ${teams.join(', ')}\n`;
+        output += `--------------------------------\n`;
+    }
+    navigator.clipboard.writeText(output).then(() => {
+        const btn = document.querySelector('#tab-leagues .btn-secondary');
+        const originalText = btn.innerText;
+        btn.innerText = "✅ Copied!";
+        setTimeout(() => btn.innerText = originalText, 2000);
+    });
+};
+
+window.openLeagueModal = () => {
+    document.getElementById('leagueModal').style.display = 'flex';
+};
+
+window.saveNewLeague = () => {
+    const name = document.getElementById('newLeagueNameInput').value.trim();
+    if(name) {
+        if (!leagueMapData) leagueMapData = {};
+        leagueMapData[name] = ["new-team-placeholder"];
+        renderLeagues();
+        document.getElementById('leagueModal').style.display = 'none';
+        document.getElementById('newLeagueNameInput').value = '';
+    }
+};
+
+function rebuildLeagueMapFromUI() {
+    const textareas = document.querySelectorAll('.team-list-editor');
+    const newMap = {};
+
+    textareas.forEach(txt => {
+        const leagueName = txt.getAttribute('data-league');
+        const rawTeams = txt.value.split(',');
+        
+        const teamList = rawTeams
+            .map(t => t.trim().toLowerCase().replace(/\s+/g, '-')) 
+            .filter(t => t.length > 0); 
+
+        newMap[leagueName] = teamList;
+    });
+    return newMap;
+}
+
+
 // ==========================================
-// 10. SAVE
+// 10. SAVE & UTILS
 // ==========================================
 document.getElementById('saveBtn').onclick = async () => {
     if(isBuilding) return;
     saveEditorContentToMemory(); 
     
-    const c = getVal('targetCountry') || 'US';
-    if(configData.sport_priorities[c]) configData.sport_priorities[c]._BOOST = getVal('prioBoost');
+    // --- 1. Prepare Config Data ---
+    const country = getVal('targetCountry') || 'US';
+    if(configData.sport_priorities[country]) {
+        configData.sport_priorities[country]._BOOST = getVal('prioBoost');
+    }
 
     configData.site_settings = {
-        api_url: getVal('apiUrl'), title_part_1: getVal('titleP1'), title_part_2: getVal('titleP2'),
-        domain: getVal('siteDomain'), logo_url: getVal('logoUrl'), favicon_url: getVal('faviconUrl'),
-        footer_copyright: getVal('footerCopyright'), footer_disclaimer: getVal('footerDisclaimer'),
-        target_country: c
+        api_url: getVal('apiUrl'),
+        title_part_1: getVal('titleP1'), title_part_2: getVal('titleP2'),
+        domain: getVal('siteDomain'), logo_url: getVal('logoUrl'),
+        favicon_url: getVal('faviconUrl'),
+        footer_copyright: getVal('footerCopyright'),
+        footer_disclaimer: getVal('footerDisclaimer'),
+        target_country: getVal('targetCountry')
     };
+    
     configData.social_sharing = {
-        counts: { telegram: parseInt(getVal('socialTelegram'))||0, whatsapp: parseInt(getVal('socialWhatsapp'))||0, reddit: parseInt(getVal('socialReddit'))||0, twitter: parseInt(getVal('socialTwitter'))||0 },
+        counts: {
+            telegram: parseInt(getVal('socialTelegram')) || 0,
+            whatsapp: parseInt(getVal('socialWhatsapp')) || 0, 
+            reddit: parseInt(getVal('socialReddit')) || 0,
+            twitter: parseInt(getVal('socialTwitter')) || 0
+        },
         excluded_pages: getVal('socialExcluded')
     };
     
-    // CAPTURE ALL THEME DATA
+    // --- NEW: Capture Theme Data ---
     configData.theme = {};
     for (const [jsonKey, htmlId] of Object.entries(THEME_FIELDS)) {
         configData.theme[jsonKey] = getVal(htmlId);
     }
 
-    if(document.querySelector('.team-list-editor')) leagueMapData = rebuildLeagueMapFromUI();
+    // --- 2. Prepare League Map Data ---
+    if(document.querySelector('.team-list-editor')) {
+        leagueMapData = rebuildLeagueMapFromUI();
+    }
 
-    document.getElementById('saveBtn').innerText = "Saving..."; document.getElementById('saveBtn').disabled = true;
+    // UI Updates
+    document.getElementById('saveBtn').innerText = "Saving...";
+    document.getElementById('saveBtn').disabled = true;
+
     const token = localStorage.getItem('gh_token');
     
     try {
-        const lContent = btoa(unescape(encodeURIComponent(JSON.stringify(leagueMapData, null, 2))));
-        await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${LEAGUE_FILE_PATH}`, {
-            method: 'PUT', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: "Update League Map", content: lContent, sha: leagueMapSha, branch: BRANCH })
-        }).then(r=>r.json()).then(d=>leagueMapSha=d.content.sha);
-
-        const cContent = btoa(unescape(encodeURIComponent(JSON.stringify(configData, null, 2))));
-        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
-            method: 'PUT', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: "Update Config", content: cContent, sha: currentSha, branch: BRANCH })
+        // --- SAVE 1: LEAGUE MAP ---
+        const leagueContent = btoa(unescape(encodeURIComponent(JSON.stringify(leagueMapData, null, 2))));
+        const resLeague = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${LEAGUE_FILE_PATH}`, {
+            method: 'PUT',
+            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                message: "Admin: Update League Map", 
+                content: leagueContent, 
+                sha: leagueMapSha, 
+                branch: BRANCH 
+            })
         });
 
-        if(res.ok) {
-            const d = await res.json(); currentSha = d.content.sha; startPolling();
+        if(resLeague.ok) {
+            const d = await resLeague.json();
+            leagueMapSha = d.content.sha;
         } else {
-             alert("Save Config Failed"); document.getElementById('saveBtn').disabled = false;
+            console.error("League Map Save Failed");
         }
-    } catch(e) { alert("Error: " + e.message); document.getElementById('saveBtn').disabled = false; }
+
+        // --- SAVE 2: CONFIG ---
+        const configContent = btoa(unescape(encodeURIComponent(JSON.stringify(configData, null, 2))));
+        const resConfig = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+            method: 'PUT',
+            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                message: "Admin: Update Config", 
+                content: configContent, 
+                sha: currentSha, 
+                branch: BRANCH 
+            })
+        });
+
+        if(resConfig.ok) {
+            const d = await resConfig.json();
+            currentSha = d.content.sha;
+            startPolling();
+        } else {
+             alert("Save failed for Config. Check console.");
+             document.getElementById('saveBtn').innerText = "💾 Save & Build Site";
+             document.getElementById('saveBtn').disabled = false;
+        }
+
+    } catch(e) { 
+        alert("Error: " + e.message); 
+        document.getElementById('saveBtn').innerText = "💾 Save & Build Site";
+        document.getElementById('saveBtn').disabled = false;
+    }
 };
 
 function startPolling() {
     isBuilding = true;
-    const btn = document.getElementById('saveBtn');
-    btn.innerText = "Building..."; btn.disabled = true;
-    document.getElementById('buildStatusBox').className = "build-box building";
+    document.getElementById('saveBtn').innerText = "Building...";
+    document.getElementById('saveBtn').disabled = true;
     document.getElementById('buildStatusText').innerText = "Building...";
+    document.getElementById('buildStatusBox').className = "build-box building";
 
     const iv = setInterval(async () => {
+        const token = localStorage.getItem('gh_token');
         try {
-            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/runs?per_page=1`, { headers: { 'Authorization': `token ${localStorage.getItem('gh_token')}` } });
-            if (!res.ok) throw new Error();
+            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/runs?per_page=1`, { headers: { 'Authorization': `token ${token}` } });
+            if (!res.ok) { 
+                clearInterval(iv);
+                throw new Error(`GitHub API error: ${res.status}`);
+            }
             const d = await res.json();
-            if (!d.workflow_runs || !d.workflow_runs.length) return;
+            if (!d.workflow_runs || d.workflow_runs.length === 0) return; 
+            
             const run = d.workflow_runs[0];
+            
             if(run.status === 'completed') {
-                clearInterval(iv); isBuilding = false;
-                btn.disabled = false; btn.innerText = "💾 Save & Build Site";
+                clearInterval(iv);
+                isBuilding = false;
+                document.getElementById('saveBtn').disabled = false;
+                document.getElementById('saveBtn').innerText = "💾 Save & Build Site";
                 document.getElementById('buildStatusText').innerText = run.conclusion === 'success' ? "Live ✅" : "Failed ❌";
                 document.getElementById('buildStatusBox').className = `build-box ${run.conclusion}`;
             }
-        } catch(e) { clearInterval(iv); isBuilding = false; btn.disabled = false; }
+        } catch(e) {
+            console.error("Polling error:", e);
+            clearInterval(iv);
+            isBuilding = false;
+            document.getElementById('saveBtn').disabled = false;
+            document.getElementById('saveBtn').innerText = "💾 Save & Build Site";
+            document.getElementById('buildStatusText').innerText = "Polling Error";
+            document.getElementById('buildStatusBox').className = "build-box failure";
+        }
     }, 5000);
 }
 
 window.switchTab = (id) => {
     document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(`tab-${id}`).classList.add('active');
-    document.querySelectorAll('.nav-btn').forEach(b => { if(b.onclick.toString().includes(`'${id}'`)) b.classList.add('active'); });
+    
+    const target = document.getElementById(`tab-${id}`);
+    if(target) target.classList.add('active');
+    
+    document.querySelectorAll('.nav-btn').forEach(b => {
+        if(b.onclick.toString().includes(`'${id}'`)) {
+            b.classList.add('active');
+        }
+    });
 };
 
 function setVal(id, v) { if(document.getElementById(id)) document.getElementById(id).value = v || ""; }
