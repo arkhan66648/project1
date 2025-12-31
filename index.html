@@ -486,47 +486,7 @@
         .header-container[data-align="center"] { justify-content: center; }
         .header-container[data-align="center"] .nav-links { display: none; } /* Hide standard nav if centered, force hamburger or move nav below (optional) */
         
-        /* 4. MATCH GRID MODE (The Differentiator) */
-        /* Only activates if build script sets mode to 'grid' */
-        .match-list.grid-view {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
-        }
         
-        /* Transform Row into Card */
-        .match-list.grid-view .match-row {
-            height: auto;
-            grid-template-columns: 1fr;
-            grid-template-rows: auto auto auto auto;
-            padding: 20px;
-            text-align: center;
-            gap: 10px;
-        }
-        
-        .match-list.grid-view .col-time { 
-            flex-direction: row; gap: 10px; border-bottom: 1px solid var(--border); 
-            padding-bottom: 8px; margin-bottom: 5px; 
-        }
-        
-        .match-list.grid-view .teams-wrapper { 
-            flex-direction: column; gap: 8px; align-items: center; 
-        }
-        
-        .match-list.grid-view .team-name { 
-            font-size: 1rem; justify-content: center; 
-        }
-        
-        .match-list.grid-view .col-meta { 
-            align-items: center; 
-        }
-        
-        .match-list.grid-view .col-action { 
-            margin-top: 5px; width: 100%; 
-        }
-        
-        .match-list.grid-view .btn-watch { width: 100%; height: 32px; }
-        /* --- PROFESSIONAL GRID ENGINE --- */
         
         /* 1. Grid Container & SKELETON FIX */
         /* This applies to BOTH the match list AND the skeleton wrapper */
