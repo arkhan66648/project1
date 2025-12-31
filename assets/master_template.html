@@ -671,13 +671,15 @@
         /* In Render JS, we add class to match-list based on card style? 
            Easier: Use CSS variable for background based on theme config */
         /* SKELETON BUTTON */
+/* SKELETON BUTTON POSITIONING */
 .skeleton-btn { 
     height: 42px; 
     width: 100%; 
     max-width: 300px; 
-    margin: 20px auto; 
-    border-radius: 30px; /* Matches standard pill radius */
+    margin: 20px auto; /* Matches the real button margin */
+    border-radius: 30px; 
     display: block;
+    clear: both; /* Prevents floating overlap */
 }
     </style>
 </head>
@@ -970,20 +972,14 @@
 
         function renderApp(matches) {
             // 1. Force Grid Mode CSS Class if needed
-            // This ensures skeletons align before we hide them
             if (typeof THEME_CONFIG !== 'undefined' && THEME_CONFIG.match_view_mode === 'grid') {
                 document.body.classList.add('view-mode-grid');
             } else {
                 document.body.classList.remove('view-mode-grid');
             }
 
-            // 2. Hide Skeletons (The CSS [style*="none"] rule ensures this works)
-            document.getElementById('live-sk-head').style.display = 'none';
-            document.getElementById('live-skeleton').style.display = 'none';
-            // ADD THIS LINE:
-    if(document.getElementById('live-btn-skeleton')) document.getElementById('live-btn-skeleton').style.display = 'none';
-            // FIXED: Hide the separate upcoming header
-            document.getElementById('upcoming-sk-head').style.display = 'none';
+            // --- CHANGED: ONLY HIDE UPCOMING HERE. LEAVE LIVE SKELETONS VISIBLE FOR NOW ---
+            if(document.getElementById('upcoming-sk-head')) document.getElementById('upcoming-sk-head').style.display = 'none';
             document.getElementById('upcoming-skeleton').style.display = 'none';
 
             const now = Date.now();
@@ -1105,42 +1101,33 @@
             const hiddenList = document.getElementById('hidden-live-list');
             const btn = document.getElementById('show-more-live');
             
-            // 1. VISUAL PRIORITY LOGIC
-            // We do NOT strictly hide non-wildcard matches here. 
-            // Instead, we push Wildcard matches to the very top.
+            // 1. VISUAL PRIORITY LOGIC (Your existing logic)
             let displayMatches = matches;
-
             if (WILDCARD_CATEGORY && WILDCARD_CATEGORY.length > 2) {
                 const wLower = WILDCARD_CATEGORY.toLowerCase();
-                
-                // Bucket A: The Wildcard Matches
-                const wcMatches = matches.filter(m => 
-                    m.finalLeague.toLowerCase().includes(wLower) || 
-                    (m.sport || "").toLowerCase().includes(wLower)
-                );
-                
-                // Bucket B: Everything Else (Non-Duplicate)
-                // Note: We used !includes so these are mutually exclusive
-                const otherMatches = matches.filter(m => 
-                    !m.finalLeague.toLowerCase().includes(wLower) && 
-                    !(m.sport || "").toLowerCase().includes(wLower)
-                );
-
-                // Merge: Wildcard First + Others Second
+                const wcMatches = matches.filter(m => m.finalLeague.toLowerCase().includes(wLower) || (m.sport || "").toLowerCase().includes(wLower));
+                const otherMatches = matches.filter(m => !m.finalLeague.toLowerCase().includes(wLower) && !(m.sport || "").toLowerCase().includes(wLower));
                 displayMatches = [...wcMatches, ...otherMatches];
             }
 
-            // 2. Rendering
+            // 2. DEFINE ELEMENTS TO HIDE (Skeletons)
+            const skHead = document.getElementById('live-sk-head');
+            const skGrid = document.getElementById('live-skeleton');
+            const skBtn = document.getElementById('live-btn-skeleton');
+
+            // 3. IF NO MATCHES: Hide everything including section container
             if (displayMatches.length === 0) { 
+                if(skHead) skHead.style.display = 'none';
+                if(skGrid) skGrid.style.display = 'none';
+                if(skBtn) skBtn.style.display = 'none';
                 wrapper.style.display = 'none'; 
                 document.getElementById('live-section').style.display = 'none';
                 return; 
             }
             
-            wrapper.style.display = 'block';
+            // 4. PREPARE CONTENT (Do this BEFORE hiding skeletons to ensure smooth swap)
             topList.innerHTML = ''; hiddenList.innerHTML = ''; btn.style.display='none';
-            // START OF NEW CODE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-            // Apply grid class if active
+            
             if (THEME_CONFIG.match_view_mode === 'grid') {
                 topList.className = 'match-list grid-view';
                 hiddenList.className = 'match-list grid-view';
@@ -1148,20 +1135,24 @@
                 topList.className = 'match-list';
                 hiddenList.className = 'match-list';
             }
-            // END OF NEW CODE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             
-            // Update counter text
             document.getElementById('live-count').innerText = `● ${displayMatches.length} Live Events`;
             
-            // Show Top 5 (Visuals)
             displayMatches.slice(0, 5).forEach(m => topList.appendChild(createMatchRow(m, { isLive: true }, null)));
             
-            // Hide the rest behind "Show More"
             if (displayMatches.length > 5) {
                 displayMatches.slice(5).forEach(m => hiddenList.appendChild(createMatchRow(m, { isLive: true }, null)));
-                btn.style.display = 'block'; btn.innerText = `{{TEXT_SHOW_MORE}} (${displayMatches.length - 5}) ▼`;
+                btn.style.display = 'block'; 
+                btn.innerText = `{{TEXT_SHOW_MORE}} (${displayMatches.length - 5}) ▼`;
                 btn.onclick = () => { hiddenList.style.display='block'; btn.style.display='none'; };
             }
+
+            // 5. INSTANT SWAP: Hide Skeletons & Show Content simultaneously
+            if(skHead) skHead.style.display = 'none';
+            if(skGrid) skGrid.style.display = 'none';
+            if(skBtn) skBtn.style.display = 'none'; // Hide the view more skeleton
+            
+            wrapper.style.display = 'block'; // Show the real content
         }
 
         function createSection(container, title, matches, hasLink, isLeague, customIcon, sectionTitle, skipPrefix=false) {
