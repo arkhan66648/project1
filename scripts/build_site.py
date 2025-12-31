@@ -177,7 +177,15 @@ def render_page(template, config, page_data):
         'seo_content_position': '100',      # 100 = Bottom
         'footer_leagues_position': '101',   # 101 = Very Bottom
         'header_alignment': 'left',
-        'layout_container_width': '1100px'
+        'layout_container_width': '1100px',
+        # Visual Defaults
+        'grid_columns_desk': '3',
+        'grid_columns_mob': '2',
+        'grid_min_height': '180px',
+        'grid_gap': '15px',
+        'global_bg_animation': 'none',
+        'card_style': 'solid',
+        'row_animation': 'none'
     }
 
     # Merge Config with Defaults
@@ -458,6 +466,13 @@ def render_page(template, config, page_data):
     html = html.replace('{{HEADER_CLASSES}}', '')
     html = html.replace('{{MAIN_CONTAINER_CLASSES}}', '')
     html = html.replace('{{FOOTER_CLASSES}}', '')
+    # LOGIC: Inject Body Classes for Grid/List control
+    view_mode = theme.get('match_view_mode', 'list')
+    bg_anim = theme.get('global_bg_animation', 'none')
+    body_classes = f"view-mode-{view_mode} {bg_anim}"
+    
+    # You need to add {{BODY_CLASSES}} to your HTML <body> tag in the next step
+    html = html.replace('{{BODY_CLASSES}}', body_classes)
 
     return html
 
