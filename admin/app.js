@@ -188,7 +188,15 @@ const THEME_FIELDS = {
     'seo_content_position': 'themeSeoPos',
     'footer_leagues_position': 'themeLeaguesPos',
     'header_alignment': 'themeHeaderAlign',
-    'layout_container_width': 'themeContainerWidth'
+    'layout_container_width': 'themeContainerWidth',
+    // --- VISUALS & GRID ---
+    'grid_columns_desk': 'themeGridColsDesk',
+    'grid_columns_mob': 'themeGridColsMob',
+    'grid_min_height': 'themeGridMinHeight',
+    'grid_gap': 'themeGridGap',
+    'global_bg_animation': 'themeGlobalBgAnim',
+    'card_style': 'themeCardStyle',
+    'row_animation': 'themeRowAnim'
 };
 
 let configData = {};
