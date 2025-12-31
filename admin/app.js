@@ -180,7 +180,15 @@ const THEME_FIELDS = {
     'back_to_top_size': 'themeBttSize',
     
     // Logic Toggles
-    'display_hero': 'themeDisplayHero'
+    'display_hero': 'themeDisplayHero',
+    // --- NEW LAYOUT FIELDS ---
+    'match_view_mode': 'themeMatchView',
+    'heading_transform': 'themeHeadingTransform',
+    'heading_weight': 'themeHeadingWeight',
+    'seo_content_position': 'themeSeoPos',
+    'footer_leagues_position': 'themeLeaguesPos',
+    'header_alignment': 'themeHeaderAlign',
+    'layout_container_width': 'themeContainerWidth'
 };
 
 let configData = {};
