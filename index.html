@@ -94,6 +94,7 @@
             --leagues-order: 2;
             --header-align: center;
             --container-width-override: 1100px;
+            
             --brand-primary: #0055ff;
             --brand-dark: #050000;
             --status-green: #00ff04;
@@ -124,7 +125,7 @@
             --logo-image-size: 40px;
 
             /* HERO */
-            --hero-bg-css: background: linear-gradient(135deg, #1a0505 0%, #000000 100%);; /* Replaces specific vars with full CSS string */
+            --hero-bg-css: background: linear-gradient(135deg, #1a0505 0%, #000000 100%);; 
             --hero-h1-color: #ffffff;
             --hero-intro-color: #ffffff;
             --hero-pill-bg: #0084ff;
@@ -141,7 +142,7 @@
             --match-row-live-bg-start: #04adf6;
             --match-row-live-bg-end: #04100f;
             --match-row-hover-border: #000000;
-            --match-row-hover-bg: #000000; /* New: Hover BG */
+            --match-row-hover-bg: #000000;
             --match-row-hover-transform: translateY(-2px);
             --match-row-time-main-color: #9d9b9b;
             --match-row-time-sub-color: #94a3b8;
@@ -179,7 +180,7 @@
             --footer-copyright-color: #475569;
             --footer-desc-color: #ffffff;
 
-            /* SOCIALS (New Customizations) */
+            /* SOCIALS */
             --social-sidebar-bg: rgba(15, 23, 42, 0.8);
             --social-sidebar-border: #334155;
             --social-sidebar-shadow: 0 4px 10px rgba(0,0,0,0.3);
@@ -191,14 +192,14 @@
             --social-btn-hover-transform: translateX(5px);
             --social-count-color: #64748b;
             
-            --social-desktop-top: 50%; /* e.g. 50% */
-            --social-desktop-left: 0; /* e.g. 0 */
-            --social-desktop-scale: 1.0; /* e.g. 1.0 */
+            --social-desktop-top: 50%;
+            --social-desktop-left: 0;
+            --social-desktop-scale: 1.0;
             
             --mobile-footer-bg: #000000;
             --mobile-footer-border-top: 1px solid #334155;
             --mobile-footer-shadow: 0 -4px 10px rgba(0,0,0,0.5);
-            --mobile-footer-height: 60px; /* e.g. 60px */
+            --mobile-footer-height: 60px;
             
             --copy-toast-bg: #22c55e;
             --copy-toast-text: #ffffff;
@@ -208,7 +209,7 @@
             --show-more-btn-bg: #000000;
             --show-more-btn-border: #000000;
             --show-more-btn-text: #000000;
-            --show-more-btn-radius: 30px; /* New */
+            --show-more-btn-radius: 30px;
             --show-more-btn-hover-bg: #D00000;
             --show-more-btn-hover-border: #D00000;
             --show-more-btn-hover-text: #ffffff;
@@ -219,15 +220,15 @@
             --back-to-top-bg: #130101;
             --back-to-top-icon-color: #d1d1d1;
             --back-to-top-shadow: 0 4px 10px rgba(208,0,0,0.4);
-            --back-to-top-radius: 50%; /* New */
-            --back-to-top-size: 40px; /* New */
+            --back-to-top-radius: 50%;
+            --back-to-top-size: 40px;
             
             --sys-status-dot-color: #22c55e;
             --sys-status-bg: rgba(34, 197, 94, 0.1);
             --sys-status-border: rgba(34, 197, 94, 0.2);
             --sys-status-text: #22c55e;
             
-            --section-logo-size: 30px; /* New for CLS */
+            --section-logo-size: 30px;
             
             --skeleton-gradient-start: #1e293b;
             --skeleton-gradient-mid: #334155;
@@ -369,7 +370,7 @@
         .sec-right-link { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; text-decoration: none; }
         .sec-right-link:hover { color: var(--brand-primary); text-decoration: underline; }
         
-        /* MATCH ROW */
+        /* MATCH ROW - STANDARD LIST */
         .match-row { 
             display: grid; grid-template-columns: 45px 1fr 50px 75px; align-items: center; gap: 8px; 
             background: var(--match-row-bg); border: 1px solid var(--match-row-border); 
@@ -459,6 +460,7 @@
 
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        
         /* --- NEW LAYOUT FEATURES CSS --- */
         
         /* 1. Flex Ordering Implementation */
@@ -486,7 +488,7 @@
         .header-container[data-align="center"] { justify-content: center; }
         .header-container[data-align="center"] .nav-links { display: none; } /* Hide standard nav if centered, force hamburger or move nav below (optional) */
         
-        
+        /* --- PROFESSIONAL GRID ENGINE --- */
         
         /* 1. Grid Container & SKELETON FIX */
         /* This applies to BOTH the match list AND the skeleton wrapper */
