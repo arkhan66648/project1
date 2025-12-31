@@ -83,6 +83,10 @@
     <style>
         :root {
             /* --- DYNAMIC THEME VARIABLES --- */
+            --grid-cols-desk: 3;
+            --grid-cols-mob: 2;
+            --grid-min-height: 180px;
+            --grid-gap: 15px;
             --match-view-mode: grid; 
             --heading-transform: none;
             --heading-weight: 600;
@@ -522,9 +526,147 @@
         }
         
         .match-list.grid-view .btn-watch { width: 100%; height: 32px; }
+        /* --- PROFESSIONAL GRID ENGINE --- */
+        
+        /* 1. Grid Container & SKELETON FIX */
+        /* This applies to BOTH the match list AND the skeleton wrapper */
+        .view-mode-grid .match-list,
+        .view-mode-grid #live-skeleton,
+        .view-mode-grid #upcoming-skeleton {
+            display: grid;
+            grid-template-columns: repeat(var(--grid-cols-mob), 1fr);
+            gap: var(--grid-gap);
+        }
+        @media (min-width: 768px) {
+            .view-mode-grid .match-list,
+            .view-mode-grid #live-skeleton,
+            .view-mode-grid #upcoming-skeleton {
+                grid-template-columns: repeat(var(--grid-cols-desk), 1fr);
+            }
+        }
+
+        /* 2. Skeleton Box Sizing for Grid */
+        .view-mode-grid .skeleton-box {
+            height: var(--grid-min-height); /* Matches Card Height EXACTLY */
+            width: 100%;
+            margin-bottom: 0; /* Gap handled by grid */
+        }
+
+        /* 3. PRO CARD DESIGN (Structured, Not Center) */
+        .match-list.grid-view .match-row {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            min-height: var(--grid-min-height);
+            padding: 15px;
+            /* Reset Layout */
+            grid-template-columns: none; 
+            grid-template-rows: none;
+            gap: 10px;
+            text-align: left;
+            /* Card Style Logic will go here via background variables */
+        }
+
+        /* Card Header: League (Left) & Time (Right) */
+        .match-list.grid-view .col-time {
+            order: 1;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            margin-bottom: 5px;
+        }
+        /* Hide League Tag in body, show in header if needed, or rely on col-time */
+        .match-list.grid-view .league-tag { display: none; } 
+        
+        /* Card Body: Teams (Stacked) */
+        .match-list.grid-view .teams-wrapper {
+            order: 2;
+            flex: 1; /* Pushes Footer down */
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+        }
+        .match-list.grid-view .team-name {
+            font-size: 1rem;
+            width: 100%;
+            justify-content: flex-start; /* Left Align Logos */
+        }
+        .match-list.grid-view .logo-box {
+            width: 24px; height: 24px; margin-right: 8px; /* Bigger logos in grid */
+        }
+
+        /* Card Footer: Metadata & Button */
+        .match-list.grid-view .col-meta {
+            order: 3;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 5px;
+        }
+        .match-list.grid-view .col-action {
+            order: 4;
+            width: 100%;
+            margin-top: 8px;
+        }
+        .match-list.grid-view .btn-watch {
+            width: 100%;
+            height: 36px;
+            font-size: 0.8rem;
+        }
+        .match-list.grid-view .btn-copy-link {
+            display: none; /* Hide copy link in grid to save space */
+        }
+
+        /* --- BACKGROUND ANIMATIONS (VAST SELECTION) --- */
+        
+        /* 1. Gradient Flow */
+        body.anim-gradient {
+            background: linear-gradient(-45deg, #0f172a, #1e293b, #0f172a, #000000);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+        @keyframes gradientBG { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
+
+        /* 2. Tech Grid (Static) */
+        body.anim-grid {
+            background-color: var(--bg-body);
+            background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center top;
+        }
+
+        /* 3. Dots (Static) */
+        body.anim-dots {
+            background-color: var(--bg-body);
+            background-image: radial-gradient(var(--border) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* 4. Mesh Gradient (Advanced) */
+        body.anim-mesh {
+            background-color: var(--bg-body);
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+        }
+
+        /* --- CARD STYLES --- */
+        
+        /* Glass Style override */
+        body:has(.match-list.grid-view) { /* Helper */ }
+        
+        /* In Render JS, we add class to match-list based on card style? 
+           Easier: Use CSS variable for background based on theme config */
     </style>
 </head>
-<body>
+<body class="view-mode-grid none">
     
     <div id="socialSidebar" class="social-sidebar"></div>
 
@@ -1192,8 +1334,15 @@ if (THEME_CONFIG.match_view_mode === 'grid') {
                 }
             }
             
-            div.innerHTML = `<div class="col-time">${timeCol}</div><div class="teams-wrapper"><div class="league-tag">${tagText.toUpperCase()}</div>${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${actionHtml}</div>`;
-            return div;
+            // Logic to move League Name to Header for Grid View
+            // We can add the league name to col-time HTML if needed
+            let finalTimeCol = timeCol;
+            if (THEME_CONFIG.match_view_mode === 'grid') {
+                // In Grid, col-time is the header. We want: [League Name] ... [Time]
+                finalTimeCol = `<span class="league-tag-grid" style="font-weight:700; font-size:0.7rem; color:var(--text-muted);">${tagText.toUpperCase()}</span> <div style="text-align:right;">${timeCol}</div>`;
+            }
+
+            div.innerHTML = `<div class="col-time">${finalTimeCol}</div><div class="teams-wrapper">${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${actionHtml}</div>`;
         }
 
         function generateDynamicSchema(liveList, upcomingList) {
