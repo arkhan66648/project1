@@ -189,13 +189,14 @@ def render_page(template, config, page_data):
     }
 
     # Merge Config with Defaults
-    # We iterate over defaults and prefer the value from config if it exists and is not empty
     theme = {}
     for k, v in defaults.items():
         val = t.get(k)
         # Apply units to specific keys if they are raw numbers
-        if k in ['border_radius_base', 'container_max_width', 'base_font_size', 'logo_image_size', 'button_border_radius', 
-                 'show_more_btn_radius', 'back_to_top_size', 'section_logo_size']:
+        # FIXED: Added 'grid_min_height' and 'grid_gap' to this list
+        if k in ['border_radius_base', 'container_max_width', 'base_font_size', 'logo_image_size', 
+                 'button_border_radius', 'show_more_btn_radius', 'back_to_top_size', 'section_logo_size', 
+                 'grid_min_height', 'grid_gap']:
             if val: val = ensure_unit(val, 'px')
         
         theme[k] = val if val else v
