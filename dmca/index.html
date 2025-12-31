@@ -446,139 +446,163 @@
         .header-container[data-align="center"] { justify-content: center; }
         .header-container[data-align="center"] .nav-links { display: none; } /* Hide standard nav if centered, force hamburger or move nav below (optional) */
         
-        /* --- 2.0 ADVANCED GRID ENGINE (VS LAYOUT) --- */
-        
-       /* --- ADVANCED GRID ENGINE (Full Features) --- */
-        
-        /* 1. SKELETON & CONTAINER FIX (Force Grid) */
-        /* We use !important to ensure this overrides default list styles instantly */
+        /* --- 3.0 ELITE GRID ENGINE & SKELETON FIX --- */
+
+        /* 1. SKELETON STABILITY (Prevent Layout Shift) */
+        /* Force title skeleton to be a small strip, not a huge block */
+        .skeleton-header {
+            width: 180px !important;
+            height: 28px !important;
+            margin-bottom: 20px !important;
+            border-radius: 4px;
+        }
+
+        /* Force Containers to Grid Mode Immediately */
         body.view-mode-grid #live-skeleton,
         body.view-mode-grid #upcoming-skeleton,
         body.view-mode-grid .match-list {
-            display: grid !important; 
-            grid-template-columns: repeat(var(--grid-cols-mob), 1fr);
-            gap: var(--grid-gap);
-            margin-top: 15px;
+            display: grid !important;
+            grid-template-columns: repeat(var(--grid-cols-mob), 1fr) !important;
+            gap: var(--grid-gap) !important;
+            margin-top: 10px;
         }
         @media (min-width: 768px) {
             body.view-mode-grid #live-skeleton,
             body.view-mode-grid #upcoming-skeleton,
             body.view-mode-grid .match-list {
-                grid-template-columns: repeat(var(--grid-cols-desk), 1fr);
+                grid-template-columns: repeat(var(--grid-cols-desk), 1fr) !important;
             }
         }
 
-        /* 2. SKELETON SIZING */
+        /* Force Skeleton Boxes to match Real Card dimensions */
         body.view-mode-grid .skeleton-box {
-            height: var(--grid-min-height); 
-            width: 100%;
-            margin: 0;
-            border-radius: var(--border-radius-base);
+            height: var(--grid-min-height) !important;
+            width: 100% !important;
+            border-radius: 12px !important;
+            margin: 0 !important;
+            background: rgba(255,255,255,0.05); /* Darker skeleton for pro feel */
         }
 
-        /* 3. PRO "VS" CARD STYLING */
+        /* 2. PRO CARD DESIGN (Netflix Style) */
         .match-list.grid-view .match-row {
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
             height: 100%;
             min-height: var(--grid-min-height);
-            padding: 0; 
-            background: var(--match-row-bg); 
-            border: 1px solid var(--border);
-            border-radius: var(--border-radius-base);
+            padding: 0;
+            /* Premium Dark Card Background */
+            background: #141414; /* Deep dark bg */
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
             overflow: hidden;
             position: relative;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-        .match-list.grid-view .match-row:hover {
-            transform: translateY(-3px);
-            border-color: var(--brand-primary);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
 
-        /* TOP BAR: League (Left) + Copy Link (Right) */
-        .g-top {
+        /* Hover Effect: Lift and Glow */
+        .match-list.grid-view .match-row:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+            border-color: var(--brand-primary);
+        }
+        /* Gradient Overlay on Hover */
+        .match-list.grid-view .match-row::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.8));
+            pointer-events: none;
+        }
+
+        /* CARD HEADER: Glass Strip */
+        .g-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 12px;
-            background: rgba(0,0,0,0.2); 
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.03);
             border-bottom: 1px solid rgba(255,255,255,0.05);
-            height: 35px;
-        }
-        .g-league { font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        /* Grid Copy Button */
-        .g-copy-btn {
-            background: none; border: none; padding: 4px; 
-            color: var(--text-muted); cursor: pointer; display: flex; 
-            align-items: center; gap: 4px; font-size: 0.6rem; font-weight: 700;
-            text-transform: uppercase; transition: 0.2s;
-        }
-        .g-copy-btn:hover { color: var(--brand-primary); background: rgba(255,255,255,0.05); border-radius: 4px; }
-        .g-copy-btn svg { width: 12px; height: 12px; }
-
-        /* STATUS BAR: Time / Live Badge */
-        .g-status-bar {
-            text-align: center;
-            padding: 4px 0;
             font-size: 0.7rem;
-            font-weight: 700;
-            background: rgba(0,0,0,0.1);
+            backdrop-filter: blur(4px);
         }
-        .g-status-bar.live { color: var(--status-green); animation: blink 1.5s infinite; background: rgba(34, 197, 94, 0.1); }
-        .g-status-bar.upcoming { color: var(--accent-gold); }
+        .g-league { font-weight: 800; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+        .g-live-badge { 
+            background: var(--brand-primary); color: #fff; 
+            padding: 2px 6px; border-radius: 4px; font-weight: 900; font-size: 0.6rem; 
+            box-shadow: 0 0 8px var(--brand-primary); animation: blink 2s infinite;
+        }
 
-        /* MAIN BODY: Team A - VS - Team B */
+        /* CARD BODY: Big Logos & VS */
         .g-body {
             flex: 1;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 10px;
+            justify-content: center;
+            padding: 15px 0;
             position: relative;
+            gap: 15px;
         }
         .g-team {
-            width: 42%;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            width: 35%;
             text-align: center;
-            gap: 6px;
+            z-index: 2;
         }
-        .g-team .logo-box { width: 40px; height: 40px; margin: 0; }
-        .g-team .t-img, .g-team .t-logo { width: 100%; height: 100%; box-shadow: 0 4px 8px rgba(0,0,0,0.3); border-radius: 50%; }
-        .g-team span {
-            font-size: 0.8rem; font-weight: 700; line-height: 1.2;
-            color: var(--text-main);
+        /* Large Professional Logos */
+        .g-logo-box {
+            width: 64px; height: 64px; 
+            margin-bottom: 10px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+            transition: transform 0.3s;
+        }
+        .match-list.grid-view .match-row:hover .g-logo-box { transform: scale(1.1); }
+        .g-logo-box img { width: 100%; height: 100%; object-fit: contain; }
+        .g-logo-box .t-logo { width: 100%; height: 100%; border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:900; }
+        
+        .g-team-name {
+            font-size: 0.8rem; font-weight: 700; color: var(--text-main);
+            line-height: 1.2; max-width: 100%;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         }
-        .g-vs {
-            font-size: 0.7rem; font-weight: 900; color: var(--text-muted); opacity: 0.4; font-style: italic;
-        }
 
-        /* FOOTER: Meta + Action */
+        /* Stylish VS Divider */
+        .g-vs {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            width: 20%; opacity: 0.5;
+        }
+        .g-vs-text { font-family: var(--font-family-headings); font-weight: 900; font-style: italic; font-size: 1.2rem; color: var(--text-muted); }
+        .g-time { font-size: 0.65rem; color: var(--accent-gold); font-weight: 700; white-space: nowrap; }
+
+        /* CARD FOOTER: Actions */
         .g-footer {
-            padding: 10px;
-            background: rgba(255,255,255,0.02);
-            border-top: 1px solid rgba(255,255,255,0.05);
+            padding: 12px;
+            z-index: 2;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
         }
+        .g-viewers { text-align: center; font-size: 0.65rem; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 5px; }
         
-        .g-meta { text-align: center; font-size: 0.65rem; color: var(--text-muted); font-weight: 600; }
-        
-        /* Override Button Styles for Grid */
-        .match-list.grid-view .btn-watch, 
-        .match-list.grid-view .btn-notify {
-            width: 100%; height: 34px; font-size: 0.75rem; margin: 0;
+        /* Modern Button */
+        .match-list.grid-view .btn-watch {
+            width: 100%; height: 38px;
+            border-radius: 6px;
+            font-size: 0.8rem; letter-spacing: 0.5px;
+            background: var(--brand-primary); color: #fff;
+            border: none;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            transition: 0.2s;
         }
+        .match-list.grid-view .btn-watch:hover { background: #fff; color: #000; transform: none; }
+        .match-list.grid-view .btn-notify { width: 100%; height: 38px; border-radius: 6px; }
 
         /* HIDE LIST ELEMENTS */
         .match-list.grid-view .col-time, 
         .match-list.grid-view .col-meta, 
-        .match-list.grid-view .teams-wrapper,
+        .match-list.grid-view .teams-wrapper, 
         .match-list.grid-view .col-action { display: none !important; }
 
         /* --- BACKGROUND ANIMATIONS (VAST SELECTION) --- */
@@ -1239,13 +1263,11 @@ if (THEME_CONFIG.match_view_mode === 'grid') {
             // Base Class
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
-            // --- 1. SHARED DATA PREP ---
-            let timeDisplay = "";
-            let dateDisplay = "";
-            
+            // --- 1. PREPARE DATA ---
+            let timeDisplay, dateDisplay;
             if (m.is_live) {
-                timeDisplay = "LIVE NOW"; 
-                dateDisplay = m.status_text || "Stable";
+                timeDisplay = "LIVE"; 
+                dateDisplay = m.status_text || "Now";
             } else {
                 const ft = formatMatchTime(m.startTimeUnix);
                 timeDisplay = ft.time;
@@ -1253,76 +1275,65 @@ if (THEME_CONFIG.match_view_mode === 'grid') {
             }
 
             // Logos
-            const getLogoUrl = (name) => {
-                if (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) return IMAGE_MAP.teams[name];
-                return null;
-            };
+            const getLogoUrl = (name) => (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) ? IMAGE_MAP.teams[name] : null;
             const logoA = getLogoUrl(m.displayHome);
             const logoB = getLogoUrl(m.displayAway);
             const renderLogo = (url, char) => url ? `<img src="${url}" class="t-img" loading="lazy">` : `<span class="t-logo" style="background:${getColor(char)}">${char}</span>`;
             
-            // Buttons & Links
+            // Link
             const infoLink = `${SITE_DOMAIN}/watch/?info=${m.id}`;
-            const copyIconSvg = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`;
-            
-            let btnHtml = "";
-            if (m.is_live) {
-                btnHtml = `<button onclick="openMatch('${m.id}', 'live')" class="btn-watch">${THEME_CONFIG.text_watch_btn || 'WATCH'} <span class="hd-badge">HD</span></button>`;
-            } else {
-                if ((m.startTimeUnix - Date.now()) < 1800000) { // 30 mins
-                    btnHtml = `<button onclick="openMatch('${m.id}', 'info')" class="btn-watch">${THEME_CONFIG.text_watch_btn || 'WATCH'}</button>`;
-                } else {
-                    btnHtml = `<button onclick="setNotify(this)" class="btn-notify">🔔 Notify</button>`;
-                }
-            }
+            const copyIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`;
 
-            // --- 2. RENDER MODE: GRID VS LIST ---
+            // --- 2. RENDER MODE CHECK ---
             if (THEME_CONFIG.match_view_mode === 'grid') {
-                // >>> PROFESSIONAL GRID LAYOUT (ALL ELEMENTS) <<<
+                // >>> PRO GRID LAYOUT <<<
                 
-                let leagueName = m.finalLeague;
-                if(sectionTitle && sectionTitle === leagueName) leagueName = m.sport || "";
+                let leagueName = (sectionTitle && sectionTitle === m.finalLeague) ? (m.sport || "") : m.finalLeague;
                 
-                // Status Bar Logic
-                const statusClass = m.is_live ? 'live' : 'upcoming';
-                let statusText = m.is_live ? `● ${dateDisplay}` : `${dateDisplay} • ${timeDisplay}`;
+                // Status Logic
+                const liveBadge = m.is_live ? `<span class="g-live-badge">LIVE</span>` : `<span style="font-size:0.65rem;font-weight:700;color:var(--text-muted)">${dateDisplay}</span>`;
                 
-                // Meta Logic (Viewers or Starts In)
-                let metaText = "";
-                if(m.is_live) {
-                    const v = m.live_viewers || 0;
-                    metaText = v > 1000 ? `👥 ${(v/1000).toFixed(1)}k Viewers` : `👥 ${v} Viewers`;
-                } else {
-                    metaText = m.status_text; // "Starts in 2h"
-                }
+                // Middle Column (VS or Time)
+                const middleContent = m.is_live 
+                    ? `<span class="g-vs-text" style="color:var(--status-green)">${m.status_text}</span>` 
+                    : `<div class="g-vs-text">VS</div><div class="g-time">${timeDisplay}</div>`;
+
+                // Button Logic
+                let mainBtn = "";
+                if(m.is_live) mainBtn = `<button onclick="openMatch('${m.id}', 'live')" class="btn-watch">WATCH STREAM</button>`;
+                else if((m.startTimeUnix - Date.now()) < 1800000) mainBtn = `<button onclick="openMatch('${m.id}', 'info')" class="btn-watch">ENTER STREAM</button>`;
+                else mainBtn = `<button onclick="setNotify(this)" class="btn-notify">🔔 REMIND ME</button>`;
+
+                // Footer Info
+                let footerInfo = "";
+                if(m.is_live && m.live_viewers) footerInfo = `<div class="g-viewers" style="color:#22c55e">● ${(m.live_viewers/1000).toFixed(1)}k Watching</div>`;
+                else if (!m.is_live) footerInfo = `<div class="g-viewers" onclick="copyText('${infoLink}')" style="cursor:pointer;opacity:0.7">${copyIcon} Copy Link</div>`;
 
                 const html = `
-                    <div class="g-top">
+                    <div class="g-header">
                         <span class="g-league">${leagueName}</span>
-                        <button class="g-copy-btn" onclick="copyText('${infoLink}')">${copyIconSvg} LINK</button>
+                        ${liveBadge}
                     </div>
-                    <div class="g-status-bar ${statusClass}">${statusText}</div>
                     <div class="g-body">
                         <div class="g-team">
-                            <div class="logo-box">${renderLogo(logoA, m.displayHome.charAt(0))}</div>
-                            <span>${m.displayHome}</span>
+                            <div class="g-logo-box">${renderLogo(logoA, m.displayHome.charAt(0))}</div>
+                            <div class="g-team-name">${m.displayHome}</div>
                         </div>
-                        <div class="g-vs">VS</div>
+                        <div class="g-vs">${middleContent}</div>
                         <div class="g-team">
-                            <div class="logo-box">${renderLogo(logoB, m.displayAway.charAt(0))}</div>
-                            <span>${m.displayAway}</span>
+                            <div class="g-logo-box">${renderLogo(logoB, m.displayAway.charAt(0))}</div>
+                            <div class="g-team-name">${m.displayAway}</div>
                         </div>
                     </div>
                     <div class="g-footer">
-                        <div class="g-meta">${metaText}</div>
-                        ${btnHtml}
+                        ${mainBtn}
+                        ${footerInfo}
                     </div>
                 `;
                 div.innerHTML = html;
 
             } else {
-                // >>> STANDARD LIST LAYOUT <<<
-                
+                // >>> STANDARD LIST LAYOUT (Unchanged) <<<
                 let colTime = m.is_live 
                     ? `<span class="live-txt">LIVE</span><span class="time-sub">${dateDisplay}</span>`
                     : `<span class="time-main">${timeDisplay}</span><span class="time-sub">${dateDisplay}</span>`;
@@ -1334,14 +1345,14 @@ if (THEME_CONFIG.match_view_mode === 'grid') {
                 if(m.displayAway !== 'TBA') teamsHtml += `<div class="team-name">${logoHtmlB} ${m.displayAway}</div>`;
                 
                 let leagueHtml = `<div class="league-tag">${m.finalLeague.toUpperCase()}</div>`;
+                let metaHtml = m.is_live ? `<div class="meta-top">⚡ Stable</div>` : `<div style="display:flex;flex-direction:column;align-items:flex-end;"><span style="font-size:0.55rem;color:var(--text-muted);font-weight:700;">STARTS</span><span class="meta-top">${m.status_text}</span></div>`;
+                let copyBtn = `<button class="btn-copy-link" onclick="copyText('${infoLink}')">${copyIcon} Link</button>`;
+                
+                // Button
+                let actionBtn = m.is_live ? `<button onclick="openMatch('${m.id}')" class="btn-watch">${THEME_CONFIG.text_watch_btn || 'WATCH'} <span class="hd-badge">HD</span></button>` 
+                    : ((m.startTimeUnix - Date.now() < 1800000) ? `<button onclick="openMatch('${m.id}')" class="btn-watch">WATCH</button>` : `<button onclick="setNotify(this)" class="btn-notify">🔔 Notify</button>`);
 
-                let metaHtml = m.is_live 
-                    ? `<div class="meta-top">${m.live_viewers ? ((m.live_viewers/1000).toFixed(1)+'k') : 'Stable'}</div>` 
-                    : `<div style="display:flex;flex-direction:column;align-items:flex-end;"><span style="font-size:0.55rem;color:var(--text-muted);font-weight:700;">STARTS</span><span class="meta-top">${m.status_text}</span></div>`;
-
-                let copyBtn = `<button class="btn-copy-link" onclick="copyText('${infoLink}')">${copyIconSvg} Link</button>`;
-
-                div.innerHTML = `<div class="col-time">${colTime}</div><div class="teams-wrapper">${leagueHtml}${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${btnHtml}${copyBtn}</div>`;
+                div.innerHTML = `<div class="col-time">${colTime}</div><div class="teams-wrapper">${leagueHtml}${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${actionBtn}${copyBtn}</div>`;
             }
 
             return div;
