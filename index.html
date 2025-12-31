@@ -517,7 +517,8 @@
         /* 2. GRID LAYOUT SYNCHRONIZATION */
         /* 1. Use Admin Variables for Grid Columns & Gap */
     body.view-mode-grid #live-skeleton,
-    body.view-mode-grid #upcoming-skeleton {
+    body.view-mode-grid #upcoming-skeleton,
+    body.view-mode-grid .match-list {
         display: grid;
         /* Pulls 'Mobile Columns' from Admin Panel */
         grid-template-columns: repeat(var(--grid-cols-mob), 1fr); 
