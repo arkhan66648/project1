@@ -14,7 +14,7 @@
             <div class="logo-area"><h2>⚡ StreamCMS</h2></div>
             <nav>
                 <button class="nav-btn active" onclick="switchTab('general')">⚙️ General & SEO</button>
-                <button class="nav-btn" onclick="switchTab('theme')">🎨 Theme Designer</button>
+                <button class="nav-btn" onclick="switchTab('theme')">🎨 Theme Designer</button> <!-- NEW -->
                 <button class="nav-btn" onclick="switchTab('pages')">📄 Pages & Content</button>
                 <button class="nav-btn" onclick="switchTab('priorities')">📊 Priorities & Boost</button>
                 <button class="nav-btn" onclick="switchTab('leagues')">🏆 Leagues & Teams</button>
@@ -63,205 +63,226 @@
                 </div>
             </section>
 
-            <!-- THEME DESIGNER -->
-            <!-- THEME DESIGNER -->
+            <!-- THEME DESIGNER (NEW EXPANDED) -->
             <section id="tab-theme" class="tab-content">
                 <div class="header-box">
-                    <h1>Theme Designer & Layout Engine</h1>
-                    <button class="btn-secondary" onclick="randomizeTheme()">🎲 Randomize Look</button>
+                    <h1>Theme & Layout Engine</h1>
+                    <button class="btn-secondary" onclick="randomizeTheme()">🎲 Randomize Theme</button>
                 </div>
                 
-                <!-- 1. GLOBAL LAYOUT & ANIMATION -->
-                <div class="card">
-                    <h3>🌍 Global Layout & Atmosphere</h3>
-                    <div class="grid-3">
-                        <div>
-                            <label>Container Mode</label>
-                            <select id="themeLayoutMode">
-                                <option value="">Fluid (Full Width)</option>
-                                <option value="boxed">Boxed (Centered)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Page Background Animation</label>
-                            <select id="themePageAnim">
-                                <option value="">None (Solid Color)</option>
-                                <option value="anim-gradient">Flowing Gradient</option>
-                                <option value="anim-noise">Static Noise (Texture)</option>
-                                <option value="anim-lines">Cyberpunk Lines</option>
-                                <option value="anim-mesh">Blurry Mesh</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>Font Stack (0ms Load)</label>
-                            <select id="themeFontBase">
-                                <option value="system-ui, -apple-system, sans-serif">Modern System</option>
-                                <option value="'Segoe UI', Roboto, Helvetica, Arial, sans-serif">Neutral Sans</option>
-                                <option value="Georgia, Cambria, 'Times New Roman', serif">Classic Serif</option>
-                                <option value="'Courier New', Courier, monospace">Tech Monospace</option>
-                                <option value="'Impact', 'Arial Black', sans-serif">Bold Impact</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="grid-3 mt-2">
+                <!-- ROW 1: GLOBAL & TYPOGRAPHY -->
+                <div class="grid-3">
+                    <div class="card">
+                        <h3>🌍 Global Layout</h3>
+                        <label>Container Mode</label>
+                        <select id="themeLayoutMode">
+                            <option value="">Fluid (Full Width)</option>
+                            <option value="boxed">Boxed (Centered)</option>
+                        </select>
+                        <label>Page Background Animation</label>
+                        <select id="themePageAnim">
+                            <option value="">None (Solid Color)</option>
+                            <option value="anim-gradient">Flowing Gradient</option>
+                            <option value="anim-noise">Static Noise</option>
+                            <option value="anim-lines">Cyberpunk Lines</option>
+                            <option value="anim-mesh">Blurry Mesh</option>
+                        </select>
                         <div class="range-wrapper"><label>Max Width</label><input type="range" id="themeMaxWidth" min="800" max="1600" step="50"></div>
-                        <div class="range-wrapper"><label>Border Radius</label><input type="range" id="themeBorderRadius" min="0" max="30" step="1"></div>
-                        <div><label>Body BG Color</label><input type="color" id="themeBgBody"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3>🎨 Base Styles</h3>
+                        <label>Font Stack (0ms Load)</label>
+                        <select id="themeFontBase">
+                            <option value="system-ui, -apple-system, sans-serif">Modern System</option>
+                            <option value="'Segoe UI', Roboto, Helvetica, Arial, sans-serif">Neutral Sans</option>
+                            <option value="Georgia, Cambria, 'Times New Roman', serif">Classic Serif</option>
+                            <option value="'Courier New', Courier, monospace">Tech Monospace</option>
+                            <option value="'Impact', 'Arial Black', sans-serif">Bold Impact</option>
+                        </select>
+                        <div class="range-wrapper"><label>Global Radius</label><input type="range" id="themeBorderRadius" min="0" max="25" step="1"></div>
+                        <div class="color-grid">
+                            <div><label>Brand Primary</label><input type="color" id="themeBrandPrimary"></div>
+                            <div><label>Brand Dark</label><input type="color" id="themeBrandDark"></div>
+                            <div><label>Accent Gold</label><input type="color" id="themeAccentGold"></div>
+                            <div><label>Body BG</label><input type="color" id="themeBgBody"></div>
+                            <div><label>Panel BG</label><input type="color" id="themeBgPanel"></div>
+                            <div><label>Text Main</label><input type="color" id="themeTextMain"></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>🧭 Header Layout</h3>
+                        <div class="grid-2">
+                            <div><label>Logo Order</label><input type="number" id="themeHeaderLogoOrder" value="1" min="1" max="3"></div>
+                            <div><label>Menu Order</label><input type="number" id="themeHeaderNavOrder" value="2" min="1" max="3"></div>
+                        </div>
+                        <label>Alignment</label>
+                        <select id="themeHeaderJustify">
+                            <option value="space-between">Space Between</option>
+                            <option value="center">Center</option>
+                            <option value="flex-start">Left Aligned</option>
+                        </select>
+                        <label>Sticky Header?</label>
+                        <select id="themeHeaderSticky">
+                            <option value="sticky">Sticky (Fixed)</option>
+                            <option value="">Normal (Scrolls)</option>
+                        </select>
+                        <div class="color-grid mt-2">
+                            <div><label>Header BG</label><input type="color" id="themeHeaderBg"></div>
+                            <div><label>Links</label><input type="color" id="themeHeaderText"></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 2. HEADER CONFIGURATION -->
-                <div class="card">
-                    <h3>🧭 Header Layout</h3>
-                    <div class="grid-3">
-                        <div>
-                            <label>Logo Position (Order)</label>
-                            <input type="number" id="themeHeaderLogoOrder" min="1" max="3" value="1" placeholder="1 (Left)">
+                <!-- ROW 2: HERO & MATCHES -->
+                <div class="grid-3">
+                    <div class="card">
+                        <h3>📢 Hero Section</h3>
+                        <label>Hero Style</label>
+                        <select id="themeHeroBgStyle" onchange="toggleHeroInputs()">
+                            <option value="solid">Solid Color</option>
+                            <option value="gradient">Gradient</option>
+                            <option value="image">Image (URL)</option>
+                        </select>
+                        
+                        <div id="heroSolidInput" class="mt-2"><label>Solid Color</label><input type="color" id="themeHeroBgSolid"></div>
+                        <div id="heroGradientInput" class="color-grid mt-2" style="display:none;">
+                            <div><label>Start</label><input type="color" id="themeHeroGradStart"></div>
+                            <div><label>End</label><input type="color" id="themeHeroGradEnd"></div>
                         </div>
-                        <div>
-                            <label>Menu Position (Order)</label>
-                            <input type="number" id="themeHeaderNavOrder" min="1" max="3" value="2" placeholder="2 (Center)">
+                        <div id="heroImageInput" class="mt-2" style="display:none;">
+                            <label>Image URL</label><input type="text" id="themeHeroBgImage">
+                            <div class="range-wrapper"><label>Overlay Opacity</label><input type="range" id="themeHeroOverlayOpacity" min="0" max="1" step="0.1"></div>
                         </div>
-                        <div>
-                            <label>Alignment</label>
-                            <select id="themeHeaderJustify">
-                                <option value="space-between">Space Between</option>
-                                <option value="center">Center</option>
-                                <option value="flex-start">Left Aligned</option>
-                            </select>
+
+                        <div class="grid-2 mt-2">
+                            <div>
+                                <label>Visibility</label>
+                                <select id="themeDisplayHero">
+                                    <option value="block">Show</option>
+                                    <option value="none">Hide</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Animation</label>
+                                <select id="themeHeroAnim">
+                                    <option value="">None</option>
+                                    <option value="anim-gradient">Gradient</option>
+                                    <option value="anim-mesh">Mesh</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="grid-3 mt-2">
-                        <div><label>Header BG</label><input type="color" id="themeHeaderBg"></div>
-                        <div><label>Text Color</label><input type="color" id="themeHeaderText"></div>
-                        <div>
-                            <label>Sticky Header</label>
-                            <select id="themeHeaderSticky">
-                                <option value="sticky">Sticky (Fixed)</option>
-                                <option value="">Normal (Scrolls)</option>
-                            </select>
+
+                    <div class="card">
+                        <h3>⚔️ Match List Design</h3>
+                        <label>Row Layout</label>
+                        <select id="themeRowLayout">
+                            <option value="layout-standard">Standard Table</option>
+                            <option value="layout-grid">Grid (Mobile Friendly)</option>
+                            <option value="layout-compact">Compact Line</option>
+                        </select>
+                        <div class="grid-2">
+                            <div>
+                                <label>Live Anim</label>
+                                <select id="themeLiveAnim">
+                                    <option value="">None</option>
+                                    <option value="anim-pulse">Pulse</option>
+                                    <option value="anim-mesh">Mesh</option>
+                                </select>
+                            </div>
+                            <div><label>Row BG</label><input type="color" id="themeMatchRowBg"></div>
+                        </div>
+                        <div class="grid-2 mt-2">
+                            <div><label>Hover BG</label><input type="color" id="themeMatchRowHoverBg"></div>
+                            <div><label>Border</label><input type="color" id="themeMatchRowBorder"></div>
+                        </div>
+                        <div class="grid-2 mt-2">
+                            <div><label>Watch BG</label><input type="color" id="themeBtnWatchBg"></div>
+                            <div><label>Watch Text</label><input type="color" id="themeBtnWatchText"></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>⚡ Logic & Wildcard</h3>
+                        <div class="range-wrapper" style="border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:10px;">
+                            <label style="color:#facc15;">🔥 Wildcard Category</label>
+                            <input type="text" id="themeWildcardCat" placeholder="e.g. NFL">
+                            <small style="color:#aaa; font-size:0.7rem;">Shows full schedule & specific Schema.</small>
+                        </div>
+                        
+                        <label>Featured Match (Top Live)</label>
+                        <select id="themeShowFeatured">
+                            <option value="block">Show as Big Card</option>
+                            <option value="none">Show in List</option>
+                        </select>
+                        
+                        <div class="color-grid mt-2">
+                            <div><label>Card BG</label><input type="color" id="themeFeaturedBg"></div>
+                            <div><label>Border</label><input type="color" id="themeFeaturedBorder"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 3. HERO & FEATURED MATCH -->
-                <div class="card">
-                    <h3>📢 Hero & Featured Content</h3>
-                    <div class="grid-3">
-                        <div>
-                            <label>Hero Visibility</label>
-                            <select id="themeDisplayHero">
-                                <option value="block">Full Hero</option>
-                                <option value="minimal">Minimal (Text Only)</option>
-                                <option value="none">Hidden</option>
-                            </select>
+                <!-- ROW 3: FOOTER, TEXT, FLOATING -->
+                <div class="grid-3">
+                    <div class="card">
+                        <h3>🔻 Footer & Socials</h3>
+                        <div class="grid-2">
+                            <div>
+                                <label>Layout</label>
+                                <select id="themeFooterGrid"><option value="1fr 1fr">2 Col</option><option value="1fr">Center</option></select>
+                            </div>
+                            <div>
+                                <label>Align</label>
+                                <select id="themeFooterAlign"><option value="left">Left</option><option value="center">Center</option></select>
+                            </div>
                         </div>
-                        <div>
-                            <label>Hero Animation</label>
-                            <select id="themeHeroAnim">
-                                <option value="">None</option>
-                                <option value="anim-gradient">Gradient Flow</option>
-                                <option value="anim-mesh">Mesh Blur</option>
-                            </select>
+                        <div class="color-grid mt-2">
+                            <div><label>BG Start</label><input type="color" id="themeFooterBgStart"></div>
+                            <div><label>BG End</label><input type="color" id="themeFooterBgEnd"></div>
                         </div>
-                        <div>
-                            <label>Content Align</label>
-                            <select id="themeHeroAlign">
-                                <option value="center">Center</option>
-                                <option value="left">Left</option>
-                                <option value="right">Right</option>
-                            </select>
+                        
+                        <h4 style="margin:10px 0 5px 0; font-size:0.8rem; color:#aaa;">Sticky Share</h4>
+                        <div class="grid-2">
+                            <input type="text" id="themeSocialDeskTop" placeholder="Top % (50%)">
+                            <input type="text" id="themeSocialRadius" placeholder="Radius (6px)">
                         </div>
                     </div>
-                    
-                    <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Featured Match (Top Live Event)</h4>
-                    <div class="grid-3">
-                        <div>
-                            <label>Featured Section</label>
-                            <select id="themeShowFeatured">
-                                <option value="block">Show Featured Card</option>
-                                <option value="none">Hide (Use List)</option>
-                            </select>
-                        </div>
-                        <div><label>Card BG</label><input type="color" id="themeFeaturedBg"></div>
-                        <div><label>Border</label><input type="color" id="themeFeaturedBorder"></div>
-                    </div>
-                </div>
 
-                <!-- 4. MATCH LIST DESIGN -->
-                <div class="card">
-                    <h3>⚔️ Match List Design</h3>
-                    <div class="grid-3">
-                        <div>
-                            <label>Row Layout Mode</label>
-                            <select id="themeRowLayout">
-                                <option value="layout-standard">Standard Table</option>
-                                <option value="layout-grid">Grid (Mobile Friendly)</option>
-                                <option value="layout-compact">Compact Line</option>
-                            </select>
+                    <div class="card">
+                        <h3>📝 Custom Text Labels</h3>
+                        <div class="grid-2" style="gap:10px;">
+                            <div><label>Live Title</label><input type="text" id="themeTextLiveTitle" placeholder="Trending Live"></div>
+                            <div><label>Show More</label><input type="text" id="themeTextShowMore" placeholder="Show More"></div>
+                            <div><label>Watch Btn</label><input type="text" id="themeTextWatch" placeholder="WATCH"></div>
+                            <div><label>HD Badge</label><input type="text" id="themeTextHd" placeholder="HD"></div>
+                            <div><label>Link Text</label><input type="text" id="themeTextSectionLink" placeholder="View All"></div>
+                            <div><label>Prefix</label><input type="text" id="themeTextSectionPrefix" placeholder="Upcoming"></div>
                         </div>
-                        <div>
-                            <label>Live Section Anim</label>
-                            <select id="themeLiveAnim">
-                                <option value="">None</option>
-                                <option value="anim-pulse">Slow Pulse</option>
-                                <option value="anim-mesh">Mesh</option>
-                            </select>
-                        </div>
-                        <div><label>Row BG</label><input type="color" id="themeMatchRowBg"></div>
                     </div>
-                    <div class="grid-3 mt-2">
-                        <div><label>Hover BG</label><input type="color" id="themeMatchRowHoverBg"></div>
-                        <div><label>Watch Btn BG</label><input type="color" id="themeBtnWatchBg"></div>
-                        <div><label>Watch Btn Text</label><input type="color" id="themeBtnWatchText"></div>
-                    </div>
-                </div>
 
-                <!-- 5. FOOTER & SOCIALS -->
-                <div class="card">
-                    <h3>🔻 Footer & Floating Elements</h3>
-                    <div class="grid-3">
-                        <div>
-                            <label>Footer Layout</label>
-                            <select id="themeFooterGrid">
-                                <option value="1fr 1fr">2 Columns</option>
-                                <option value="1fr 1fr 1fr">3 Columns</option>
-                                <option value="1fr">Centered Stack</option>
-                            </select>
+                    <div class="card">
+                        <h3>📍 Floating & Utility</h3>
+                        <div class="color-grid">
+                            <div><label>BTT BG</label><input type="color" id="themeBttBg"></div>
+                            <div><label>BTT Icon</label><input type="color" id="themeBttIcon"></div>
                         </div>
-                        <div>
-                            <label>Footer Animation</label>
-                            <select id="themeFooterAnim">
-                                <option value="">None</option>
-                                <option value="anim-gradient">Gradient</option>
-                                <option value="anim-noise">Noise</option>
-                            </select>
+                        <div class="grid-2 mt-2">
+                            <input type="text" id="themeBttSize" placeholder="Size (40px)">
+                            <input type="text" id="themeBttRadius" placeholder="Radius (50%)">
                         </div>
-                        <div><label>Footer BG</label><input type="color" id="themeFooterBg"></div>
-                    </div>
-                    
-                    <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Sticky Share Buttons</h4>
-                    <div class="grid-3">
-                        <div><label>Desktop Position (Top %)</label><input type="text" id="themeSocialDeskTop" placeholder="50%"></div>
-                        <div><label>Button Shape (Radius)</label><input type="text" id="themeSocialRadius" placeholder="6px"></div>
-                        <div><label>Mobile Bar Height</label><input type="text" id="themeMobFootHeight" placeholder="60px"></div>
-                    </div>
-                </div>
-
-                <!-- 6. TEXT LABELS & WILDCARD -->
-                <div class="card">
-                    <h3>📝 Text Labels & Logic</h3>
-                    <div class="range-wrapper" style="border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:10px;">
-                        <label style="color:#facc15;">🔥 Wildcard Category</label>
-                        <input type="text" id="themeWildcardCat" placeholder="e.g. NFL">
-                    </div>
-                    <div class="grid-3">
-                        <div><label>Live Title</label><input type="text" id="themeTextLiveTitle" placeholder="Trending Live"></div>
-                        <div><label>Show More</label><input type="text" id="themeTextShowMore" placeholder="Show More"></div>
-                        <div><label>Watch Btn</label><input type="text" id="themeTextWatch" placeholder="WATCH"></div>
-                        <div><label>HD Badge</label><input type="text" id="themeTextHd" placeholder="HD"></div>
-                        <div><label>Link Text</label><input type="text" id="themeTextSectionLink" placeholder="View All"></div>
-                        <div><label>Section Prefix</label><input type="text" id="themeTextSectionPrefix" placeholder="Upcoming"></div>
+                        
+                        <div class="range-wrapper mt-2">
+                            <label>Section Logo Size</label>
+                            <input type="range" id="themeSectionLogoSize" min="0" max="60" step="1">
+                        </div>
+                        
+                        <div class="color-grid mt-2">
+                            <div><label>Show More BG</label><input type="color" id="themeShowMoreBg"></div>
+                            <div><label>Show More Txt</label><input type="color" id="themeShowMoreText"></div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -289,11 +310,18 @@
                             <h3>Advanced SEO</h3>
                             <label>Meta Title</label><input type="text" id="pageMetaTitle">
                             <label>Meta Description</label><textarea id="pageMetaDesc" rows="2"></textarea>
-                            <label>Meta Keywords (Comma separated)</label><input type="text" id="pageMetaKeywords">
+                            <label>Meta Keywords</label><input type="text" id="pageMetaKeywords">
                             <label>Canonical URL</label><input type="text" id="pageCanonical">
                             
                             <div class="checkbox-group" style="margin-top:15px; display:flex; flex-direction:column; gap:8px;">
-                                <!-- Dynamic Content: Org, Website, FAQ Editor -->
+                                <label style="color:#facc15; font-weight:700;">Static Schemas (SEO)</label>
+                                <label><input type="checkbox" id="schemaOrg"> Organization Schema</label>
+                                <label><input type="checkbox" id="schemaWebsite"> WebSite Schema</label>
+                                <label><input type="checkbox" id="schemaFaq" onchange="toggleFaqEditor(this.checked)"> FAQ Schema</label>
+                                <div id="faqEditorContainer" style="display:none; margin-top:10px;">
+                                    <div style="display:flex; justify-content:space-between;"><h4 style="margin:0">FAQ Items</h4><button class="btn-primary" onclick="addFaqItem()">+ Add</button></div>
+                                    <div id="faqList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -329,17 +357,11 @@
                 <div class="header-box">
                     <h1>Leagues & Teams Map</h1>
                     <div style="display:flex; gap:10px;">
-                        <button class="btn-secondary" onclick="copyAllLeaguesData()" title="Copy all leagues and teams to clipboard for AI verification">📋 Copy All Data</button>
+                        <button class="btn-secondary" onclick="copyAllLeaguesData()">📋 Copy All Data</button>
                         <button class="btn-primary" onclick="openLeagueModal()">+ Add League</button>
                     </div>
                 </div>
-                <div class="desc" style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 6px; border: 1px solid rgba(59, 130, 246, 0.3);">
-                    <strong>💡 Info:</strong> Teams are comma-separated. The system uses this map to assign logos and categories correctly. 
-                    Changes here update <code>league_map.json</code>.
-                </div>
-                <div id="leaguesContainer" class="grid-2">
-                    <!-- Dynamic Content populated by JS -->
-                </div>
+                <div id="leaguesContainer" class="grid-2"></div>
             </section>
 
             <!-- MENUS -->
@@ -358,17 +380,15 @@
                 <div class="grid-2">
                     <div class="card">
                         <h3>Fake Share Counts</h3>
-                        <p class="desc">Define the numbers displayed on the social buttons.</p>
-                        <label>Telegram Count</label><input type="number" id="socialTelegram" placeholder="1240">
-                        <label>WhatsApp Count</label><input type="number" id="socialWhatsapp" placeholder="850">
-                        <label>Reddit Count</label><input type="number" id="socialReddit" placeholder="340">
-                        <label>Twitter Count</label><input type="number" id="socialTwitter" placeholder="510">
+                        <label>Telegram</label><input type="number" id="socialTelegram">
+                        <label>WhatsApp</label><input type="number" id="socialWhatsapp">
+                        <label>Reddit</label><input type="number" id="socialReddit">
+                        <label>Twitter</label><input type="number" id="socialTwitter">
                     </div>
                     <div class="card">
                         <h3>Visibility Settings</h3>
-                        <label>Exclude on Pages (Comma separated slugs)</label>
-                        <textarea id="socialExcluded" rows="4" placeholder="dmca, contact, about"></textarea>
-                        <p class="desc">The social sidebar will be hidden on these pages.</p>
+                        <label>Exclude on Pages</label>
+                        <textarea id="socialExcluded" rows="4"></textarea>
                     </div>
                 </div>
             </section>
@@ -395,8 +415,8 @@
     <div id="leagueModal" class="modal" style="display:none;">
         <div class="modal-content">
             <h3>Add New League</h3>
-            <label>League Name (e.g. Premier League)</label>
-            <input type="text" id="newLeagueNameInput" placeholder="Enter league name...">
+            <label>League Name</label>
+            <input type="text" id="newLeagueNameInput">
             <div class="modal-actions">
                 <button class="btn-secondary" onclick="document.getElementById('leagueModal').style.display='none'">Cancel</button>
                 <button class="btn-primary" onclick="saveNewLeague()">Add League</button>
