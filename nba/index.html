@@ -473,37 +473,38 @@
         .sk-count { display: none; }
 
         /* 2. GRID LAYOUT SYNCHRONIZATION */
-        /* Apply identical grid properties to Skeleton and Match List */
-        body.view-mode-grid #live-skeleton,
-        body.view-mode-grid #upcoming-skeleton,
-        body.view-mode-grid .match-list {
-            display: grid;
-            grid-template-columns: repeat(var(--grid-cols-mob), 1fr);
-            gap: var(--grid-gap);
-            margin-top: 0; /* Removing top margin to let gap handle spacing */
-            padding-top: 5px; /* Slight buffer matching visuals */
-        }
-        
-        /* Desktop Breakpoint */
-        @media (min-width: 768px) {
-            body.view-mode-grid #live-skeleton,
-            body.view-mode-grid #upcoming-skeleton,
-            body.view-mode-grid .match-list {
-                grid-template-columns: repeat(var(--grid-cols-desk), 1fr);
-            }
-        }
+        /* 1. Use Admin Variables for Grid Columns & Gap */
+    body.view-mode-grid #live-skeleton,
+    body.view-mode-grid #upcoming-skeleton {
+        display: grid;
+        /* Pulls 'Mobile Columns' from Admin Panel */
+        grid-template-columns: repeat(var(--grid-cols-mob), 1fr); 
+        /* Pulls 'Gap' from Admin Panel */
+        gap: var(--grid-gap); 
+        margin-top: 0;
+        padding-top: 5px;
+    }
 
-        /* 3. SKELETON CARD GEOMETRY */
-        /* Forces skeleton to fill the exact height of the PRO cards */
-        body.view-mode-grid .skeleton-box {
-            height: var(--grid-min-height) !important;
-            width: 100% !important;
-            margin: 0 !important;
-            border-radius: 12px !important;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: none; /* Skeletons shouldn't have drop shadows */
+    /* 2. Desktop Breakpoint */
+    @media (min-width: 768px) {
+        body.view-mode-grid #live-skeleton,
+        body.view-mode-grid #upcoming-skeleton {
+            /* Pulls 'Desktop Columns' from Admin Panel */
+            grid-template-columns: repeat(var(--grid-cols-desk), 1fr); 
         }
+    }
+
+    /* 3. Use Admin Variable for Height */
+    body.view-mode-grid .skeleton-box {
+        /* Pulls 'Min Height' from Admin Panel */
+        height: var(--grid-min-height) !important; 
+        
+        width: 100% !important;
+        margin-bottom: 0 !important;
+        border-radius: 12px !important;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.05);
+    }
 
         /* 4. SAFETY: HIDE SKELETONS WHEN JS SAYS SO */
         #live-skeleton[style*="none"], 
