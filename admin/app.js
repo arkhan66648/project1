@@ -128,6 +128,7 @@ const THEME_FIELDS = {
     'match_row_border': 'themeMatchRowBorder',
     'match_row_team_name_color': 'themeMatchTeamColor',
     'match_row_time_main_color': 'themeMatchTimeColor',
+    'match_row_live_border_left': 'themeMatchLiveBorder',
     'match_row_live_bg_start': 'themeMatchLiveBgStart',
     'match_row_live_bg_end': 'themeMatchLiveBgEnd',
     'match_row_live_text_color': 'themeMatchLiveText',
@@ -457,44 +458,45 @@ const THEME_PRESETS = {
         themeScrollThumb: '#333333',
 
         // --- HEADER ---
-        themeHeaderBg: '#050505',    // Matches rgba(5,5,5,0.95) on dark
-        themeHeaderText: '#aaaaaa',  // Matches nav-links #aaa
-        themeHeaderActive: '#ffffff', // Active state text is white
+        themeHeaderBg: '#050505',
+        themeHeaderText: '#aaaaaa',
+        themeHeaderActive: '#ffffff',
         themeLogoP1: '#ffffff',
         themeLogoP2: '#D00000',
         themeHeaderBorderBottom: '1px solid var(--border)',
 
-        // --- HERO (Exact Gradient Match) ---
+        // --- HERO ---
         themeHeroBgStyle: 'gradient',
-        themeHeroGradStart: '#1a0505', // Matches radial start
-        themeHeroGradEnd: '#050505',   // Matches var(--bg-body)
+        // Tweak: Slightly brighter start (#220505) to make the Red tint visible in Linear mode
+        themeHeroGradStart: '#220505', 
+        themeHeroGradEnd: '#050505',
         themeHeroH1: '#ffffff',
         themeHeroIntro: '#999999',
         themeHeroPillBg: '#111111',
         themeHeroPillText: '#cccccc',
-        themeHeroPillActiveBg: '#1f0505', // Approx rgba(208,0,0,0.1) on dark
+        themeHeroPillActiveBg: '#2a0a0a',
         themeHeroPillActiveText: '#ffffff',
 
         // --- MATCH ROWS ---
-        themeMatchRowBg: '#121212',    // Approx var(--bg-glass) / rgba(18,18,18,0.85)
+        themeMatchRowBg: '#121212',
         themeMatchRowBorder: '#222222',
         themeMatchTeamColor: '#ffffff',
-        themeMatchTimeColor: '#888888', // Matches .time-main
+        themeMatchTimeColor: '#888888',
 
-        // --- LIVE ROWS (The "StreamEast" Glow) ---
-        themeMatchLiveBgStart: '#1a0505', // Very subtle red tint (approx rgba(208,0,0,0.06))
-        themeMatchLiveBgEnd: '#141414',   // Matches rgba(20,20,20,0.8)
+        // --- LIVE ROWS (Fixed) ---
+        themeMatchLiveBgStart: '#1a0505',
+        themeMatchLiveBgEnd: '#141414',
         themeMatchLiveText: '#D00000',
+        // MAGIC FIX: This uses the primary color automatically
+        themeMatchLiveBorder: '3px solid var(--brand-primary)',
 
-        // --- BUTTONS & FOOTER ---
+        // --- OTHERS ---
         themeBtnWatchBg: '#D00000',
         themeBtnWatchText: '#ffffff',
         themeFooterBgStart: '#0e0e0e',
         themeFooterBgEnd: '#050505',
         themeFooterText: '#64748b',
         themeFooterLink: '#94a3b8',
-        
-        // --- ELEMENTS ---
         themeShowMoreBg: '#151515',
         themeShowMoreText: '#cccccc',
         themeShowMoreBorder: '#333333',
@@ -505,19 +507,17 @@ const THEME_PRESETS = {
         themeMobFootBg: '#0a0a0a'
     },
     blue: {
-        // --- BASE ---
-        themeBrandPrimary: '#2563EB', // Royal Blue
+        themeBrandPrimary: '#2563EB',
         themeBrandDark: '#1e3a8a',
-        themeAccentGold: '#38bdf8',   // Cyan Accent
+        themeAccentGold: '#38bdf8',
         themeStatusGreen: '#00e676',
-        themeBgBody: '#020617',       // Slate 950 (Deep Blue Black)
-        themeBgPanel: '#0f172a',      // Slate 900
+        themeBgBody: '#020617',
+        themeBgPanel: '#0f172a',
         themeTextMain: '#f8fafc',
         themeTextMuted: '#94a3b8',
         themeBorderColor: '#1e293b',
         themeScrollThumb: '#334155',
 
-        // --- HEADER ---
         themeHeaderBg: '#020617',
         themeHeaderText: '#94a3b8',
         themeHeaderActive: '#ffffff',
@@ -525,37 +525,32 @@ const THEME_PRESETS = {
         themeLogoP2: '#2563EB',
         themeHeaderBorderBottom: '1px solid var(--border)',
 
-        // --- HERO ---
         themeHeroBgStyle: 'gradient',
-        themeHeroGradStart: '#0f172a', // Deep Blue
+        themeHeroGradStart: '#172554', // Visible Blue tint
         themeHeroGradEnd: '#020617',
         themeHeroH1: '#ffffff',
         themeHeroIntro: '#94a3b8',
         themeHeroPillBg: '#1e293b',
         themeHeroPillText: '#cbd5e1',
-        themeHeroPillActiveBg: '#172554', // Blue tint
+        themeHeroPillActiveBg: '#172554',
         themeHeroPillActiveText: '#ffffff',
 
-        // --- MATCH ROWS ---
-        themeMatchRowBg: '#0f172a',   // Dark Blue Panel
+        themeMatchRowBg: '#0f172a',
         themeMatchRowBorder: '#1e293b',
         themeMatchTeamColor: '#f1f5f9',
         themeMatchTimeColor: '#94a3b8',
 
-        // --- LIVE ROWS ---
-        themeMatchLiveBgStart: '#172554', // Blue 950
+        themeMatchLiveBgStart: '#172554',
         themeMatchLiveBgEnd: '#0f172a',
-        themeMatchLiveText: '#60a5fa',    // Light Blue text
+        themeMatchLiveText: '#60a5fa',
+        themeMatchLiveBorder: '3px solid var(--brand-primary)', // Magic Fix
 
-        // --- FOOTER & BUTTONS ---
         themeBtnWatchBg: '#2563EB',
         themeBtnWatchText: '#ffffff',
         themeFooterBgStart: '#0f172a',
         themeFooterBgEnd: '#020617',
         themeFooterText: '#64748b',
         themeFooterLink: '#94a3b8',
-        
-        // --- ELEMENTS ---
         themeShowMoreBg: '#1e293b',
         themeShowMoreText: '#cbd5e1',
         themeShowMoreBorder: '#334155',
@@ -566,19 +561,17 @@ const THEME_PRESETS = {
         themeMobFootBg: '#020617'
     },
     green: {
-        // --- BASE ---
-        themeBrandPrimary: '#16a34a', // Green 600
-        themeBrandDark: '#14532d',    // Green 900
-        themeAccentGold: '#facc15',   // Yellow (Brazil/Sport style)
+        themeBrandPrimary: '#16a34a',
+        themeBrandDark: '#14532d',
+        themeAccentGold: '#facc15',
         themeStatusGreen: '#22c55e',
-        themeBgBody: '#050505',       // Pure Black
-        themeBgPanel: '#111111',      // Neutral Dark Gray
+        themeBgBody: '#050505',
+        themeBgPanel: '#111111',
         themeTextMain: '#ffffff',
         themeTextMuted: '#a3a3a3',
         themeBorderColor: '#262626',
         themeScrollThumb: '#404040',
 
-        // --- HEADER ---
         themeHeaderBg: '#050505',
         themeHeaderText: '#a3a3a3',
         themeHeaderActive: '#ffffff',
@@ -586,37 +579,32 @@ const THEME_PRESETS = {
         themeLogoP2: '#16a34a',
         themeHeaderBorderBottom: '1px solid var(--border)',
 
-        // --- HERO ---
         themeHeroBgStyle: 'gradient',
-        themeHeroGradStart: '#051a0d', // Deep Forest Green tint
+        themeHeroGradStart: '#052e16', // Visible Green tint
         themeHeroGradEnd: '#000000',
         themeHeroH1: '#ffffff',
         themeHeroIntro: '#a3a3a3',
         themeHeroPillBg: '#262626',
         themeHeroPillText: '#d4d4d4',
-        themeHeroPillActiveBg: '#064e3b', // Green 900
+        themeHeroPillActiveBg: '#064e3b',
         themeHeroPillActiveText: '#ffffff',
 
-        // --- MATCH ROWS ---
         themeMatchRowBg: '#111111',
         themeMatchRowBorder: '#262626',
         themeMatchTeamColor: '#f5f5f5',
         themeMatchTimeColor: '#737373',
 
-        // --- LIVE ROWS ---
-        themeMatchLiveBgStart: '#051a0d', // Subtle Green Black
+        themeMatchLiveBgStart: '#052e16',
         themeMatchLiveBgEnd: '#111111',
-        themeMatchLiveText: '#22c55e',    // Neon Green
+        themeMatchLiveText: '#22c55e',
+        themeMatchLiveBorder: '3px solid var(--brand-primary)', // Magic Fix
 
-        // --- FOOTER & BUTTONS ---
         themeBtnWatchBg: '#16a34a',
         themeBtnWatchText: '#ffffff',
         themeFooterBgStart: '#111111',
         themeFooterBgEnd: '#000000',
         themeFooterText: '#737373',
         themeFooterLink: '#a3a3a3',
-        
-        // --- ELEMENTS ---
         themeShowMoreBg: '#171717',
         themeShowMoreText: '#d4d4d4',
         themeShowMoreBorder: '#262626',
