@@ -31,7 +31,7 @@
     "logo_p1_color": "#f8fafc",
     "logo_p2_color": "#2563eb",
     "header_border_bottom": "1px solid var(--border)",
-    "hero_bg_style": "gradient",
+    "hero_bg_style": "transparent",
     "hero_bg_solid": "#ffffff",
     "hero_gradient_start": "#0f172a",
     "hero_gradient_end": "#020617",
