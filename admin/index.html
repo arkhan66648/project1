@@ -166,43 +166,98 @@
 
                 <!-- ROW 2: COMPONENTS -->
                 <div class="grid-3">
-                    <div class="card">
-                        <h3>📢 Hero Section</h3>
-                        <label>Background Style</label>
-                        <select id="themeHeroBgStyle" onchange="toggleHeroInputs()">
-                            <option value="solid">Solid Color</option>
-                            <option value="gradient">Gradient</option>
-                            <option value="image">Image (URL)</option>
-                            <option value="transparent">Transparent</option>
-                        </select>
-                        <div id="heroSolidInput" class="mt-2"><label>Solid Color</label><input type="color" id="themeHeroBgSolid"></div>
-                        <div id="heroGradientInput" class="color-grid mt-2" style="display:none;">
-                            <div><label>Grad Start</label><input type="color" id="themeHeroGradStart"></div>
-                            <div><label>Grad End</label><input type="color" id="themeHeroGradEnd"></div>
-                        </div>
-                        <div id="heroImageInput" class="mt-2" style="display:none;">
-                            <label>Image URL</label><input type="text" id="themeHeroBgImage">
-                            <div class="range-wrapper"><label>Overlay Opacity</label><input type="range" id="themeHeroOverlayOpacity" min="0" max="1" step="0.1"></div>
-                        </div>
-                        <div class="color-grid mt-2">
-                            <div><label>H1 Color</label><input type="color" id="themeHeroH1"></div>
-                            <div><label>Intro Text</label><input type="color" id="themeHeroIntro"></div>
-                        </div>
-                        <label>Bottom Border</label>
-<select id="themeHeroBorderBottom">
-    <option value="1px solid var(--border)">Thin (Default)</option>
-    <option value="none">None</option>
-    <option value="1px solid var(--brand-primary)">Brand Color Thin</option>
-    <option value="4px solid var(--brand-primary)">Brand Color Thick</option>
-</select>
-                        <h4 style="margin:10px 0 5px 0; font-size:0.8rem; color:#aaa;">Category Pills</h4>
-                        <div class="color-grid">
-                            <div><label>Pill BG</label><input type="color" id="themeHeroPillBg"></div>
-                            <div><label>Pill Text</label><input type="color" id="themeHeroPillText"></div>
-                            <div><label>Active BG</label><input type="color" id="themeHeroPillActiveBg"></div>
-                            <div><label>Active Text</label><input type="color" id="themeHeroPillActiveText"></div>
-                        </div>
-                    </div>
+                    <!-- admin/index.html -> Hero Section Card -->
+<div class="card">
+    <h3>📢 Hero Configuration</h3>
+    
+    <!-- ROW 1: Layout & Visibility -->
+    <div class="grid-2" style="gap:10px;">
+        <div>
+            <label>Layout Mode</label>
+            <select id="themeHeroLayoutMode" onchange="toggleHeroBoxSettings()">
+                <option value="full">Full Width (Default)</option>
+                <option value="box">Boxed Layout</option>
+            </select>
+        </div>
+        <div>
+            <label>Content Alignment</label>
+            <select id="themeHeroAlign">
+                <option value="center">Center</option>
+                <option value="left">Left</option>
+                <option value="right">Right</option>
+            </select>
+        </div>
+        <div>
+            <label>Hero Menu (Pills)</label>
+            <select id="themeHeroMenuVisible">
+                <option value="flex">Show</option>
+                <option value="none">Hide</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- ROW 2: Background Style -->
+    <label class="mt-2">Background Source</label>
+    <select id="themeHeroBgStyle" onchange="toggleHeroInputs()">
+        <option value="solid">Solid Color</option>
+        <option value="gradient">Gradient</option>
+        <option value="image">Image (URL)</option>
+        <option value="transparent">Transparent</option>
+    </select>
+    
+    <!-- BG Inputs -->
+    <div id="heroSolidInput" class="mt-2"><label>Solid Color</label><input type="color" id="themeHeroBgSolid"></div>
+    <div id="heroGradientInput" class="color-grid mt-2" style="display:none;">
+        <div><label>Grad Start</label><input type="color" id="themeHeroGradStart"></div>
+        <div><label>Grad End</label><input type="color" id="themeHeroGradEnd"></div>
+    </div>
+    <div id="heroImageInput" class="mt-2" style="display:none;">
+        <label>Image URL</label><input type="text" id="themeHeroBgImage">
+        <div class="range-wrapper"><label>Overlay Opacity</label><input type="range" id="themeHeroOverlayOpacity" min="0" max="1" step="0.1"></div>
+    </div>
+
+    <!-- ROW 3: Box Settings (Hidden unless Boxed) -->
+    <div id="heroBoxSettings" style="display:none; border:1px dashed #444; padding:10px; margin-top:15px; border-radius:6px;">
+        <h4 style="margin:0 0 10px 0; font-size:0.8rem; color:#facc15;">📦 Box Layout Settings</h4>
+        
+        <label>Box Max Width</label>
+        <input type="text" id="themeHeroBoxWidth" placeholder="e.g. 1000px">
+        
+        <label>Box Borders</label>
+        <div class="grid-2" style="gap:5px;">
+            <input type="number" id="themeHeroBorderWidth" placeholder="Width (px)" value="1">
+            <input type="color" id="themeHeroBorderColor" value="#334155">
+        </div>
+        <div class="checkbox-group" style="margin-top:5px;">
+            <label style="font-size:0.75rem;"><input type="checkbox" id="themeHeroBorderTop"> Top</label>
+            <label style="font-size:0.75rem;"><input type="checkbox" id="themeHeroBorderLeft"> Left</label>
+            <label style="font-size:0.75rem;"><input type="checkbox" id="themeHeroBorderRight"> Right</label>
+        </div>
+    </div>
+
+    <!-- ROW 4: Colors & Bottom Border (Shared) -->
+    <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Text & Elements</h4>
+    <div class="color-grid">
+        <div><label>H1 Color</label><input type="color" id="themeHeroH1"></div>
+        <div><label>Intro Text</label><input type="color" id="themeHeroIntro"></div>
+    </div>
+
+    <label>Bottom Border (Main)</label>
+    <select id="themeHeroBorderBottom">
+        <option value="1px solid var(--border)">Thin (Default)</option>
+        <option value="none">None</option>
+        <option value="1px solid var(--brand-primary)">Brand Color Thin</option>
+        <option value="4px solid var(--brand-primary)">Brand Color Thick</option>
+    </select>
+
+    <h4 style="margin:10px 0 5px 0; font-size:0.8rem; color:#aaa;">Category Pills</h4>
+    <div class="color-grid">
+        <div><label>Pill BG</label><input type="color" id="themeHeroPillBg"></div>
+        <div><label>Pill Text</label><input type="color" id="themeHeroPillText"></div>
+        <div><label>Active BG</label><input type="color" id="themeHeroPillActiveBg"></div>
+        <div><label>Active Text</label><input type="color" id="themeHeroPillActiveText"></div>
+    </div>
+</div>
 
                     <div class="card">
                         <h3>⚔️ Match Rows</h3>
