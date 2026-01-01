@@ -108,6 +108,9 @@ const THEME_FIELDS = {
     'logo_p1_color': 'themeLogoP1',
     'logo_p2_color': 'themeLogoP2',
     'header_border_bottom': 'themeHeaderBorderBottom',
+    'header_layout': 'themeHeaderLayout',       // NEW
+    'header_icon_pos': 'themeHeaderIconPos',    // NEW
+    'header_link_hover_color': 'themeHeaderHover', // NEW
 
     // 4. Hero
     'hero_bg_style': 'themeHeroBgStyle',
@@ -430,6 +433,7 @@ function renderThemeSettings() {
     if(document.getElementById('val_secLogo')) document.getElementById('val_secLogo').innerText = (t.section_logo_size || '24') + 'px';
 
     toggleHeroInputs();
+    toggleHeaderInputs();
 }
 
 // Inside admin/app.js
@@ -441,7 +445,12 @@ window.toggleHeroInputs = () => {
     document.getElementById('heroImageInput').style.display = style === 'image' ? 'block' : 'none';
     // Transparent triggers none of the above, so inputs remain hidden
 };
-
+window.toggleHeaderInputs = () => {
+    const layout = document.getElementById('themeHeaderLayout').value;
+    // Show Icon Position only if Centered
+    const iconGroup = document.getElementById('headerIconPosGroup');
+    if(iconGroup) iconGroup.style.display = (layout === 'center') ? 'block' : 'none';
+};
 // ==========================================
 // 1. FIXED THEME PRESETS
 // ==========================================
