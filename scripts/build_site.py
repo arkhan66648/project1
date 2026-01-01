@@ -197,6 +197,7 @@ def render_page(template, config, page_data):
     if hero_style == 'gradient':
         start = theme.get('hero_gradient_start', '#1a0505')
         end = theme.get('hero_gradient_end', '#000000')
+        # MAKE SURE THIS SAYS 'radial-gradient(circle at top, ...)'
         hero_css = f"background: radial-gradient(circle at top, {start} 0%, {end} 100%);"
     elif hero_style == 'image':
         img = theme.get('hero_bg_image_url', '')
