@@ -244,9 +244,23 @@
     </div>
 
     <!-- ROW 5: Main Bottom Border (Separator) -->
-    <label>Main Section Bottom Border</label>
-    <div class="input-group">
-        <input type="number" id="themeHeroMainBorderWidth" placeholder="Width (px)" value="1">
+    <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Main Bottom Border</h4>
+    <div class="grid-2" style="gap:10px; margin-bottom:10px;">
+        <div>
+            <label style="margin-top:0;">Placement</label>
+            <select id="themeHeroMainBorderPos">
+                <option value="none">None</option>
+                <option value="full">Full Width (Screen)</option>
+                <option value="box" class="opt-box-only">Match Box Width</option>
+            </select>
+        </div>
+        <div>
+            <label style="margin-top:0;">Width (px)</label>
+            <input type="number" id="themeHeroMainBorderWidth" value="1">
+        </div>
+    </div>
+    <div style="margin-bottom:15px;">
+        <label style="margin-top:0;">Color</label>
         <input type="color" id="themeHeroMainBorderColor" value="#334155">
     </div>
 
