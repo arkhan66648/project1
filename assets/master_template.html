@@ -58,7 +58,8 @@
             --base-line-height: {{THEME_BASE_LINE_HEIGHT}}; 
             --container-max-width: {{THEME_CONTAINER_MAX_WIDTH}}; 
             --border-radius-base: {{THEME_BORDER_RADIUS_BASE}}; 
-            --button-border-radius: {{THEME_BUTTON_BORDER_RADIUS}}; 
+            --button-border-radius: {{THEME_BUTTON_BORDER_RADIUS}};
+        --hero-pill-radius: {{THEME_HERO_PILL_RADIUS}};
             --card-shadow: {{THEME_CARD_SHADOW}};
 
             /* HEADER */
@@ -238,7 +239,7 @@
             background: var(--hero-pill-bg); 
             border: 1px solid var(--hero-pill-border); 
             padding: 8px 18px; 
-            border-radius: 50px; 
+            border-radius: var(--hero-pill-radius);
             font-weight: 700; 
             font-size: 0.8rem; 
             white-space: nowrap; 
