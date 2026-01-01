@@ -53,8 +53,9 @@ def build_menu_html(menu_items, section):
         url = item.get('url', '#')
         
         if section == 'header':
-            style = ' style="color:var(--accent-gold); border-bottom:1px solid var(--accent-gold);"' if item.get('highlight') else ''
-            html += f'<a href="{url}"{style}>{title}</a>'
+            # CHANGED: Use class instead of inline style to allow hover effects
+            css_class = ' class="highlighted"' if item.get('highlight') else ''
+            html += f'<a href="{url}"{css_class}>{title}</a>'
             
         elif section == 'footer_leagues':
             icon = "🏆"
@@ -117,6 +118,8 @@ def render_page(template, config, page_data):
         'header_layout': 'standard',
         'header_icon_pos': 'left',
         'header_link_hover_color': '#ffffff',
+        'header_highlight_color': '#FFD700',
+        'header_highlight_hover': '#ffea70',
         'hero_bg_style': 'solid', 'hero_bg_solid': '#1a0505', 
         'hero_gradient_start': '#1a0505', 
         'hero_gradient_end': '#000000',
