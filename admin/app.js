@@ -127,6 +127,17 @@ const THEME_FIELDS = {
     'hero_pill_hover_text': 'themeHeroPillActiveText',
     // ... inside THEME_FIELDS ...
     'hero_border_bottom': 'themeHeroBorderBottom', // NEW
+    // ... inside THEME_FIELDS ...
+    'hero_layout_mode': 'themeHeroLayoutMode', // full or box
+    'hero_content_align': 'themeHeroAlign',    // left, center, right
+    'hero_menu_visible': 'themeHeroMenuVisible', // flex or none
+    
+    'hero_box_width': 'themeHeroBoxWidth',
+    'hero_border_width': 'themeHeroBorderWidth',
+    'hero_border_color': 'themeHeroBorderColor',
+    'hero_border_top': 'themeHeroBorderTop',    // Checkbox
+    'hero_border_left': 'themeHeroBorderLeft',  // Checkbox
+    'hero_border_right': 'themeHeroBorderRight', // Checkbox
 
     // Section Borders (Width & Color)
     'sec_border_live_width': 'themeLiveBorderWidth',
@@ -443,6 +454,10 @@ function injectMissingThemeUI() {
 
 function renderThemeSettings() {
     const t = configData.theme || {};
+    // Checkbox Logic for Hero Borders
+    if(document.getElementById('themeHeroBorderTop')) document.getElementById('themeHeroBorderTop').checked = t.hero_border_top === true;
+    if(document.getElementById('themeHeroBorderLeft')) document.getElementById('themeHeroBorderLeft').checked = t.hero_border_left === true;
+    if(document.getElementById('themeHeroBorderRight')) document.getElementById('themeHeroBorderRight').checked = t.hero_border_right === true;
     
     for (const [jsonKey, htmlId] of Object.entries(THEME_FIELDS)) {
         if(t[jsonKey]) setVal(htmlId, t[jsonKey]);
@@ -454,7 +469,14 @@ function renderThemeSettings() {
 
     toggleHeroInputs();
     toggleHeaderInputs();
+    toggleHeroBoxSettings();
 }
+window.toggleHeroBoxSettings = () => {
+    const mode = document.getElementById('themeHeroLayoutMode').value;
+    const settings = document.getElementById('heroBoxSettings');
+    // If Boxed, show settings. If Full, hide.
+    settings.style.display = (mode === 'box') ? 'block' : 'none';
+};
 
 // Inside admin/app.js
 
@@ -919,7 +941,12 @@ document.getElementById('saveBtn').onclick = async () => {
     // CAPTURE ALL THEME DATA
     configData.theme = {};
     for (const [jsonKey, htmlId] of Object.entries(THEME_FIELDS)) {
-        configData.theme[jsonKey] = getVal(htmlId);
+        const el = document.getElementById(htmlId);
+        if(el && el.type === 'checkbox') {
+             configData.theme[jsonKey] = el.checked; // Capture checkbox boolean
+        } else {
+             configData.theme[jsonKey] = getVal(htmlId);
+        }
     }
 
     if(document.querySelector('.team-list-editor')) leagueMapData = rebuildLeagueMapFromUI();
