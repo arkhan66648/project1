@@ -439,9 +439,8 @@ window.toggleHeroInputs = () => {
     document.getElementById('heroImageInput').style.display = style === 'image' ? 'block' : 'none';
 };
 
-// 1. DEFINE PRESETS DATA (Based on Previous Master Template DNA)
 // ==========================================
-// 1. HIGH-FIDELITY THEME PRESETS
+// 1. FIXED THEME PRESETS
 // ==========================================
 const THEME_PRESETS = {
     red: {
@@ -465,11 +464,10 @@ const THEME_PRESETS = {
         themeLogoP2: '#D00000',
         themeHeaderBorderBottom: '1px solid var(--border)',
 
-        // --- HERO ---
+        // --- HERO (Red Gradient) ---
         themeHeroBgStyle: 'gradient',
-        // Tweak: Slightly brighter start (#220505) to make the Red tint visible in Linear mode
-        themeHeroGradStart: '#220505', 
-        themeHeroGradEnd: '#050505',
+        themeHeroGradStart: '#2a0505', // Deep Red
+        themeHeroGradEnd: '#000000',   // Black
         themeHeroH1: '#ffffff',
         themeHeroIntro: '#999999',
         themeHeroPillBg: '#111111',
@@ -483,14 +481,13 @@ const THEME_PRESETS = {
         themeMatchTeamColor: '#ffffff',
         themeMatchTimeColor: '#888888',
 
-        // --- LIVE ROWS (Fixed) ---
+        // --- LIVE ROWS ---
         themeMatchLiveBgStart: '#1a0505',
         themeMatchLiveBgEnd: '#141414',
         themeMatchLiveText: '#D00000',
-        // MAGIC FIX: This uses the primary color automatically
         themeMatchLiveBorder: '3px solid var(--brand-primary)',
 
-        // --- OTHERS ---
+        // --- ELEMENTS ---
         themeBtnWatchBg: '#D00000',
         themeBtnWatchText: '#ffffff',
         themeFooterBgStart: '#0e0e0e',
@@ -507,6 +504,7 @@ const THEME_PRESETS = {
         themeMobFootBg: '#0a0a0a'
     },
     blue: {
+        // --- BASE ---
         themeBrandPrimary: '#2563EB',
         themeBrandDark: '#1e3a8a',
         themeAccentGold: '#38bdf8',
@@ -518,6 +516,7 @@ const THEME_PRESETS = {
         themeBorderColor: '#1e293b',
         themeScrollThumb: '#334155',
 
+        // --- HEADER ---
         themeHeaderBg: '#020617',
         themeHeaderText: '#94a3b8',
         themeHeaderActive: '#ffffff',
@@ -525,9 +524,10 @@ const THEME_PRESETS = {
         themeLogoP2: '#2563EB',
         themeHeaderBorderBottom: '1px solid var(--border)',
 
+        // --- HERO (Blue Gradient) ---
         themeHeroBgStyle: 'gradient',
-        themeHeroGradStart: '#172554', // Visible Blue tint
-        themeHeroGradEnd: '#020617',
+        themeHeroGradStart: '#0f172a', // Deep Blue
+        themeHeroGradEnd: '#020617',   // Darker Blue
         themeHeroH1: '#ffffff',
         themeHeroIntro: '#94a3b8',
         themeHeroPillBg: '#1e293b',
@@ -535,16 +535,19 @@ const THEME_PRESETS = {
         themeHeroPillActiveBg: '#172554',
         themeHeroPillActiveText: '#ffffff',
 
+        // --- MATCH ROWS ---
         themeMatchRowBg: '#0f172a',
         themeMatchRowBorder: '#1e293b',
         themeMatchTeamColor: '#f1f5f9',
         themeMatchTimeColor: '#94a3b8',
 
+        // --- LIVE ROWS ---
         themeMatchLiveBgStart: '#172554',
         themeMatchLiveBgEnd: '#0f172a',
         themeMatchLiveText: '#60a5fa',
-        themeMatchLiveBorder: '3px solid var(--brand-primary)', // Magic Fix
+        themeMatchLiveBorder: '3px solid var(--brand-primary)',
 
+        // --- ELEMENTS ---
         themeBtnWatchBg: '#2563EB',
         themeBtnWatchText: '#ffffff',
         themeFooterBgStart: '#0f172a',
@@ -561,6 +564,7 @@ const THEME_PRESETS = {
         themeMobFootBg: '#020617'
     },
     green: {
+        // --- BASE ---
         themeBrandPrimary: '#16a34a',
         themeBrandDark: '#14532d',
         themeAccentGold: '#facc15',
@@ -572,6 +576,7 @@ const THEME_PRESETS = {
         themeBorderColor: '#262626',
         themeScrollThumb: '#404040',
 
+        // --- HEADER ---
         themeHeaderBg: '#050505',
         themeHeaderText: '#a3a3a3',
         themeHeaderActive: '#ffffff',
@@ -579,8 +584,9 @@ const THEME_PRESETS = {
         themeLogoP2: '#16a34a',
         themeHeaderBorderBottom: '1px solid var(--border)',
 
+        // --- HERO (Green Gradient) ---
         themeHeroBgStyle: 'gradient',
-        themeHeroGradStart: '#052e16', // Visible Green tint
+        themeHeroGradStart: '#052e16', // Deep Green
         themeHeroGradEnd: '#000000',
         themeHeroH1: '#ffffff',
         themeHeroIntro: '#a3a3a3',
@@ -589,16 +595,19 @@ const THEME_PRESETS = {
         themeHeroPillActiveBg: '#064e3b',
         themeHeroPillActiveText: '#ffffff',
 
+        // --- MATCH ROWS ---
         themeMatchRowBg: '#111111',
         themeMatchRowBorder: '#262626',
         themeMatchTeamColor: '#f5f5f5',
         themeMatchTimeColor: '#737373',
 
+        // --- LIVE ROWS ---
         themeMatchLiveBgStart: '#052e16',
         themeMatchLiveBgEnd: '#111111',
         themeMatchLiveText: '#22c55e',
-        themeMatchLiveBorder: '3px solid var(--brand-primary)', // Magic Fix
+        themeMatchLiveBorder: '3px solid var(--brand-primary)',
 
+        // --- ELEMENTS ---
         themeBtnWatchBg: '#16a34a',
         themeBtnWatchText: '#ffffff',
         themeFooterBgStart: '#111111',
@@ -622,15 +631,21 @@ window.applyPreset = (presetName) => {
 
     if(!confirm(`Apply ${presetName.toUpperCase()} preset? This will overwrite current color settings.`)) return;
 
-    // Loop through defined preset keys and update inputs
+    // 1. First, loop through all keys
     Object.keys(p).forEach(id => {
         setVal(id, p[id]);
     });
 
-    // Handle Hero Logic specifically (toggle visibility of inputs)
-    toggleHeroInputs();
+    // 2. FORCE UPDATE specific gradient fields to be safe
+    if(p.themeHeroGradStart) setVal('themeHeroGradStart', p.themeHeroGradStart);
+    if(p.themeHeroGradEnd) setVal('themeHeroGradEnd', p.themeHeroGradEnd);
 
-    // Visual feedback
+    // 3. Update Visuals
+    toggleHeroInputs();
+    
+    // 4. Update Range Sliders Text (Optional visual polish)
+    if(document.getElementById('val_borderRadius')) document.getElementById('val_borderRadius').innerText = getVal('themeBorderRadius') + 'px';
+
     alert(`${presetName.toUpperCase()} preset loaded! click 'Save' to build.`);
 };
 
