@@ -105,6 +105,7 @@ const THEME_FIELDS = {
     'header_bg': 'themeHeaderBg',
     'header_text_color': 'themeHeaderText',
     'header_link_active_color': 'themeHeaderActive',
+    'header_max_width': 'themeHeaderWidth',
     'logo_p1_color': 'themeLogoP1',
     'logo_p2_color': 'themeLogoP2',
     'header_border_bottom': 'themeHeaderBorderBottom',
@@ -470,6 +471,7 @@ function renderThemeSettings() {
     if(document.getElementById('themeHeroBorderRight')) document.getElementById('themeHeroBorderRight').checked = t.hero_border_right === true;
     if(document.getElementById('val_btnRadius')) document.getElementById('val_btnRadius').innerText = (t.button_border_radius || '4') + 'px';
     if(document.getElementById('val_pillRadius')) document.getElementById('val_pillRadius').innerText = (t.hero_pill_radius || '50') + 'px';
+    if(document.getElementById('val_headerWidth')) document.getElementById('val_headerWidth').innerText = (t.header_max_width || '1100') + 'px';
     
     for (const [jsonKey, htmlId] of Object.entries(THEME_FIELDS)) {
         if(t[jsonKey]) setVal(htmlId, t[jsonKey]);
