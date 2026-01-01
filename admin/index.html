@@ -67,7 +67,12 @@
             <section id="tab-theme" class="tab-content">
                 <div class="header-box">
                     <h1>Theme Designer</h1>
-                    <button class="btn-secondary" onclick="randomizeTheme()">🎲 Randomize Theme</button>
+                    <!-- ADDED: Preset Buttons Group -->
+    <div style="display:flex; gap:10px;">
+        <button class="btn-secondary" style="border:1px solid #D00000; color:#ffcccc;" onclick="applyPreset('red')">🔴 Classic Red</button>
+        <button class="btn-secondary" style="border:1px solid #2563EB; color:#cce0ff;" onclick="applyPreset('blue')">🔵 Pro Blue</button>
+        <button class="btn-secondary" style="border:1px solid #16a34a; color:#ccffcc;" onclick="applyPreset('green')">🟢 Pitch Green</button>
+    </div>
                 </div>
                 
                 <!-- ROW 1: BASE -->
