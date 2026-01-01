@@ -169,34 +169,17 @@ def render_page(template, config, page_data):
         'text_show_more': 'Show More',
         'text_watch_btn': 'WATCH', 'text_hd_badge': 'HD',
         'text_section_link': 'View All',
-        'wildcard_category': '', 'text_section_prefix': 'Upcoming',
-        # New Layout Defaults
-        'match_view_mode': 'list',
-        'heading_transform': 'none',
-        'heading_weight': '800',
-        'seo_content_position': '100',      # 100 = Bottom
-        'footer_leagues_position': '101',   # 101 = Very Bottom
-        'header_alignment': 'left',
-        'layout_container_width': '1100px',
-        # Visual Defaults
-        'grid_columns_desk': '3',
-        'grid_columns_mob': '1',
-        'grid_min_height': '180px',
-        'grid_gap': '15px',
-        'global_bg_animation': 'none',
-        'card_style': 'solid',
-        'row_animation': 'none'
+        'wildcard_category': '', 'text_section_prefix': 'Upcoming'
     }
 
     # Merge Config with Defaults
+    # We iterate over defaults and prefer the value from config if it exists and is not empty
     theme = {}
     for k, v in defaults.items():
         val = t.get(k)
         # Apply units to specific keys if they are raw numbers
-        # FIXED: Added 'grid_min_height' and 'grid_gap' to this list
-        if k in ['border_radius_base', 'container_max_width', 'base_font_size', 'logo_image_size', 
-                 'button_border_radius', 'show_more_btn_radius', 'back_to_top_size', 'section_logo_size', 
-                 'grid_min_height', 'grid_gap']:
+        if k in ['border_radius_base', 'container_max_width', 'base_font_size', 'logo_image_size', 'button_border_radius', 
+                 'show_more_btn_radius', 'back_to_top_size', 'section_logo_size']:
             if val: val = ensure_unit(val, 'px')
         
         theme[k] = val if val else v
@@ -467,13 +450,6 @@ def render_page(template, config, page_data):
     html = html.replace('{{HEADER_CLASSES}}', '')
     html = html.replace('{{MAIN_CONTAINER_CLASSES}}', '')
     html = html.replace('{{FOOTER_CLASSES}}', '')
-    # LOGIC: Inject Body Classes for Grid/List control
-    view_mode = theme.get('match_view_mode', 'list')
-    bg_anim = theme.get('global_bg_animation', 'none')
-    body_classes = f"view-mode-{view_mode} {bg_anim}"
-    
-    # You need to add {{BODY_CLASSES}} to your HTML <body> tag in the next step
-    html = html.replace('{{BODY_CLASSES}}', body_classes)
 
     return html
 
