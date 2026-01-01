@@ -468,6 +468,8 @@ function renderThemeSettings() {
     if(document.getElementById('themeHeroBorderBottomBox')) document.getElementById('themeHeroBorderBottomBox').checked = t.hero_border_bottom_box === true; // NEW
     if(document.getElementById('themeHeroBorderLeft')) document.getElementById('themeHeroBorderLeft').checked = t.hero_border_left === true;
     if(document.getElementById('themeHeroBorderRight')) document.getElementById('themeHeroBorderRight').checked = t.hero_border_right === true;
+    if(document.getElementById('val_btnRadius')) document.getElementById('val_btnRadius').innerText = (t.button_border_radius || '4') + 'px';
+    if(document.getElementById('val_pillRadius')) document.getElementById('val_pillRadius').innerText = (t.hero_pill_radius || '50') + 'px';
     
     for (const [jsonKey, htmlId] of Object.entries(THEME_FIELDS)) {
         if(t[jsonKey]) setVal(htmlId, t[jsonKey]);
