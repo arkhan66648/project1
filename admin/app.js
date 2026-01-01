@@ -133,11 +133,18 @@ const THEME_FIELDS = {
     'hero_menu_visible': 'themeHeroMenuVisible', // flex or none
     
     'hero_box_width': 'themeHeroBoxWidth',
-    'hero_border_width': 'themeHeroBorderWidth',
-    'hero_border_color': 'themeHeroBorderColor',
-    'hero_border_top': 'themeHeroBorderTop',    // Checkbox
-    'hero_border_left': 'themeHeroBorderLeft',  // Checkbox
-    'hero_border_right': 'themeHeroBorderRight', // Checkbox
+    
+    // Box Borders (Inner)
+    'hero_box_border_width': 'themeHeroBoxBorderWidth',
+    'hero_box_border_color': 'themeHeroBoxBorderColor',
+    'hero_border_top': 'themeHeroBorderTop',         // Checkbox
+    'hero_border_bottom_box': 'themeHeroBorderBottomBox', // Checkbox (NEW)
+    'hero_border_left': 'themeHeroBorderLeft',       // Checkbox
+    'hero_border_right': 'themeHeroBorderRight',     // Checkbox
+    
+    // Main Section Border (Outer/Full)
+    'hero_main_border_width': 'themeHeroMainBorderWidth', // NEW
+    'hero_main_border_color': 'themeHeroMainBorderColor', // NEW
     'text_sys_status': 'themeTextSysStatus',
 
     // Section Borders (Width & Color)
@@ -455,6 +462,7 @@ function renderThemeSettings() {
     const t = configData.theme || {};
     // Checkbox Logic for Hero Borders
     if(document.getElementById('themeHeroBorderTop')) document.getElementById('themeHeroBorderTop').checked = t.hero_border_top === true;
+    if(document.getElementById('themeHeroBorderBottomBox')) document.getElementById('themeHeroBorderBottomBox').checked = t.hero_border_bottom_box === true; // NEW
     if(document.getElementById('themeHeroBorderLeft')) document.getElementById('themeHeroBorderLeft').checked = t.hero_border_left === true;
     if(document.getElementById('themeHeroBorderRight')) document.getElementById('themeHeroBorderRight').checked = t.hero_border_right === true;
     
