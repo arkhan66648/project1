@@ -365,6 +365,14 @@
             text-align: {{THEME_HERO_TEXT_ALIGN}};
             align-items: {{THEME_HERO_ALIGN_ITEMS}};
         }
+        .entity-intro { 
+            color: var(--hero-intro-color); 
+            font-size: 0.9rem; 
+            line-height: 1.5; 
+            max-width: 800px; 
+            margin: {{THEME_HERO_INTRO_MARGIN}}; /* Dynamic Margin */
+            margin-bottom: 20px;
+        }
         
         /* Elements inside Hero */
         .sys-status { 
@@ -399,14 +407,6 @@
         #grouped-container .sec-head {
             border-bottom: {{THEME_SEC_BORDER_GROUPED}};
         }
-        
-        .sys-status { display: inline-flex; align-items: center; gap: 8px; background: var(--sys-status-bg); border: 1px solid var(--sys-status-border); padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; font-size: 0.75rem; font-weight: 700; color: var(--sys-status-text); }
-        .dot { width: 6px; height: 6px; background: var(--sys-status-dot-color); border-radius: 50%; box-shadow: 0 0 8px var(--sys-status-dot-color); animation: pulse 2s infinite; }
-        h1 { margin: 0 0 20px 0; font-size: 1.8rem; line-height: 1.2; color: var(--hero-h1-color); font-weight: 800; font-family: var(--font-family-headings); }
-        .entity-intro { color: var(--hero-intro-color); font-size: 0.9rem; line-height: 1.5; max-width: 800px; margin: 0 auto; }
-        .cat-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 10px 5px; justify-content: center; scrollbar-width: none; }
-        .cat-pill { background: var(--hero-pill-bg); border: 1px solid var(--hero-pill-border); padding: 8px 18px; border-radius: 50px; font-weight: 700; font-size: 0.8rem; white-space: nowrap; color: var(--hero-pill-text); }
-        .cat-pill:hover, .cat-pill.active { border-color: var(--hero-pill-hover-border); color: var(--hero-pill-hover-text); background: var(--hero-pill-hover-bg); }
         
         .container { max-width: var(--container-max-width); margin: 0 auto; padding: 20px 15px; min-height: 60vh; }
         .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 40px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
