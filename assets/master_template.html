@@ -41,18 +41,6 @@
     <style>
         :root {
             /* --- DYNAMIC THEME VARIABLES --- */
-            --grid-cols-desk: {{THEME_GRID_COLUMNS_DESK}};
-            --grid-cols-mob: {{THEME_GRID_COLUMNS_MOB}};
-            --grid-min-height: {{THEME_GRID_MIN_HEIGHT}};
-            --grid-gap: {{THEME_GRID_GAP}};
-            --match-view-mode: {{THEME_MATCH_VIEW_MODE}}; 
-            --heading-transform: {{THEME_HEADING_TRANSFORM}};
-            --heading-weight: {{THEME_HEADING_WEIGHT}};
-            --seo-order: {{THEME_SEO_CONTENT_POSITION}};
-            --leagues-order: {{THEME_FOOTER_LEAGUES_POSITION}};
-            --header-align: {{THEME_HEADER_ALIGNMENT}};
-            --container-width-override: {{THEME_LAYOUT_CONTAINER_WIDTH}};
-            
             --brand-primary: {{THEME_BRAND_PRIMARY}};
             --brand-dark: {{THEME_BRAND_DARK}};
             --status-green: {{THEME_STATUS_GREEN}};
@@ -83,7 +71,7 @@
             --logo-image-size: {{THEME_LOGO_IMAGE_SIZE}};
 
             /* HERO */
-            --hero-bg-css: {{HERO_BG_CSS}}; 
+            --hero-bg-css: {{HERO_BG_CSS}}; /* Replaces specific vars with full CSS string */
             --hero-h1-color: {{THEME_HERO_H1_COLOR}};
             --hero-intro-color: {{THEME_HERO_INTRO_COLOR}};
             --hero-pill-bg: {{THEME_HERO_PILL_BG}};
@@ -100,7 +88,7 @@
             --match-row-live-bg-start: {{THEME_MATCH_ROW_LIVE_BG_START}};
             --match-row-live-bg-end: {{THEME_MATCH_ROW_LIVE_BG_END}};
             --match-row-hover-border: {{THEME_MATCH_ROW_HOVER_BORDER}};
-            --match-row-hover-bg: {{THEME_MATCH_ROW_HOVER_BG}};
+            --match-row-hover-bg: {{THEME_MATCH_ROW_HOVER_BG}}; /* New: Hover BG */
             --match-row-hover-transform: {{THEME_MATCH_ROW_HOVER_TRANSFORM}};
             --match-row-time-main-color: {{THEME_MATCH_ROW_TIME_MAIN_COLOR}};
             --match-row-time-sub-color: {{THEME_MATCH_ROW_TIME_SUB_COLOR}};
@@ -138,7 +126,7 @@
             --footer-copyright-color: {{THEME_FOOTER_COPYRIGHT_COLOR}};
             --footer-desc-color: {{THEME_FOOTER_DESC_COLOR}};
 
-            /* SOCIALS */
+            /* SOCIALS (New Customizations) */
             --social-sidebar-bg: {{THEME_SOCIAL_SIDEBAR_BG}};
             --social-sidebar-border: {{THEME_SOCIAL_SIDEBAR_BORDER}};
             --social-sidebar-shadow: {{THEME_SOCIAL_SIDEBAR_SHADOW}};
@@ -150,14 +138,14 @@
             --social-btn-hover-transform: {{THEME_SOCIAL_BTN_HOVER_TRANSFORM}};
             --social-count-color: {{THEME_SOCIAL_COUNT_COLOR}};
             
-            --social-desktop-top: {{THEME_SOCIAL_DESKTOP_TOP}};
-            --social-desktop-left: {{THEME_SOCIAL_DESKTOP_LEFT}};
-            --social-desktop-scale: {{THEME_SOCIAL_DESKTOP_SCALE}};
+            --social-desktop-top: {{THEME_SOCIAL_DESKTOP_TOP}}; /* e.g. 50% */
+            --social-desktop-left: {{THEME_SOCIAL_DESKTOP_LEFT}}; /* e.g. 0 */
+            --social-desktop-scale: {{THEME_SOCIAL_DESKTOP_SCALE}}; /* e.g. 1.0 */
             
             --mobile-footer-bg: {{THEME_MOBILE_FOOTER_BG}};
             --mobile-footer-border-top: {{THEME_MOBILE_FOOTER_BORDER_TOP}};
             --mobile-footer-shadow: {{THEME_MOBILE_FOOTER_SHADOW}};
-            --mobile-footer-height: {{THEME_MOBILE_FOOTER_HEIGHT}};
+            --mobile-footer-height: {{THEME_MOBILE_FOOTER_HEIGHT}}; /* e.g. 60px */
             
             --copy-toast-bg: {{THEME_COPY_TOAST_BG}};
             --copy-toast-text: {{THEME_COPY_TOAST_TEXT}};
@@ -167,7 +155,7 @@
             --show-more-btn-bg: {{THEME_SHOW_MORE_BTN_BG}};
             --show-more-btn-border: {{THEME_SHOW_MORE_BTN_BORDER}};
             --show-more-btn-text: {{THEME_SHOW_MORE_BTN_TEXT}};
-            --show-more-btn-radius: {{THEME_SHOW_MORE_BTN_RADIUS}};
+            --show-more-btn-radius: {{THEME_SHOW_MORE_BTN_RADIUS}}; /* New */
             --show-more-btn-hover-bg: {{THEME_SHOW_MORE_BTN_HOVER_BG}};
             --show-more-btn-hover-border: {{THEME_SHOW_MORE_BTN_HOVER_BORDER}};
             --show-more-btn-hover-text: {{THEME_SHOW_MORE_BTN_HOVER_TEXT}};
@@ -178,15 +166,15 @@
             --back-to-top-bg: {{THEME_BACK_TO_TOP_BG}};
             --back-to-top-icon-color: {{THEME_BACK_TO_TOP_ICON_COLOR}};
             --back-to-top-shadow: {{THEME_BACK_TO_TOP_SHADOW}};
-            --back-to-top-radius: {{THEME_BACK_TO_TOP_RADIUS}};
-            --back-to-top-size: {{THEME_BACK_TO_TOP_SIZE}};
+            --back-to-top-radius: {{THEME_BACK_TO_TOP_RADIUS}}; /* New */
+            --back-to-top-size: {{THEME_BACK_TO_TOP_SIZE}}; /* New */
             
             --sys-status-dot-color: {{THEME_SYS_STATUS_DOT_COLOR}};
             --sys-status-bg: {{THEME_SYS_STATUS_BG}};
             --sys-status-border: {{THEME_SYS_STATUS_BORDER}};
             --sys-status-text: {{THEME_SYS_STATUS_TEXT}};
             
-            --section-logo-size: {{THEME_SECTION_LOGO_SIZE}};
+            --section-logo-size: {{THEME_SECTION_LOGO_SIZE}}; /* New for CLS */
             
             --skeleton-gradient-start: {{THEME_SKELETON_GRADIENT_START}};
             --skeleton-gradient-mid: {{THEME_SKELETON_GRADIENT_MID}};
@@ -328,7 +316,7 @@
         .sec-right-link { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; text-decoration: none; }
         .sec-right-link:hover { color: var(--brand-primary); text-decoration: underline; }
         
-        /* MATCH ROW - STANDARD LIST */
+        /* MATCH ROW */
         .match-row { 
             display: grid; grid-template-columns: 45px 1fr 50px 75px; align-items: center; gap: 8px; 
             background: var(--match-row-bg); border: 1px solid var(--match-row-border); 
@@ -418,301 +406,14 @@
 
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        
-        /* --- NEW LAYOUT FEATURES CSS --- */
-        
-        /* 1. Flex Ordering Implementation */
-        main.container {
-            display: flex;
-            flex-direction: column;
-            /* Override max-width if set in config */
-            max-width: var(--container-width-override, 1100px); 
-        }
-        
-        /* Order: Default matches are order: 10 */
-        /* Order: Default matches are order: 10 */
-/* FIX: Force Live Section to top (Order 1) */
-#live-section { order: 1; } 
-
-/* FIX: Ensure Upcoming Skeletons flow with the rest of the content (Order 10) */
-#upcoming-sk-head, #upcoming-skeleton, 
-#wildcard-container, #top-upcoming-container, #grouped-container { order: 10; }
-        
-        /* Dynamic Order Classes */
-        .seo-box { order: var(--seo-order); }
-        .section-box { order: var(--leagues-order); }
-
-        /* 2. Typography */
-        h1, h2, h3, .sec-title, .logo-text { 
-            text-transform: var(--heading-transform); 
-            font-weight: var(--heading-weight) !important;
-        }
-
-        /* 3. Header Alignment */
-        .header-container[data-align="center"] { justify-content: center; }
-        .header-container[data-align="center"] .nav-links { display: none; } /* Hide standard nav if centered, force hamburger or move nav below (optional) */
-        
-        /* --- FINAL GRID ENGINE & SKELETON FIX --- */
-
-        /* --- GEOMETRICALLY ACCURATE GRID & SKELETON --- */
-
-        /* 1. SKELETON HEADER ALIGNMENT */
-        /* Must match .sec-head { margin: 40px 0 12px 0; } exactly */
-        .skeleton-header {
-            display: flex;
-            align-items: flex-end; /* Align bottom like real header */
-            background: transparent;
-            border-bottom: 1px solid {{THEME_SKELETON_BORDER_COLOR}}; /* Match real border */
-            height: 38px; /* Height of real text + icon */
-            margin: 40px 0 12px 0 !important; /* Exact match to real .sec-head */
-            padding-bottom: 8px; /* Match real padding */
-            box-sizing: border-box;
-        }
-        
-        .sk-title {
-            width: 180px;
-            height: 20px;
-            border-radius: 4px;
-            background: var(--skeleton-gradient-start); 
-            animation: shimmer 1.5s infinite linear;
-        }
-        .sk-count { display: none; }
-
-        /* 2. GRID LAYOUT SYNCHRONIZATION */
-        /* 1. Use Admin Variables for Grid Columns & Gap */
-    body.view-mode-grid #live-skeleton,
-    body.view-mode-grid #upcoming-skeleton,
-    body.view-mode-grid .match-list {
-        display: grid;
-        /* Pulls 'Mobile Columns' from Admin Panel */
-        grid-template-columns: repeat(var(--grid-cols-mob), 1fr); 
-        /* Pulls 'Gap' from Admin Panel */
-        gap: var(--grid-gap); 
-        margin-top: 0;
-        padding-top: 5px;
-    }
-
-    /* 2. Desktop Breakpoint */
-    @media (min-width: 768px) {
-        body.view-mode-grid #live-skeleton,
-        body.view-mode-grid #upcoming-skeleton,
-        body.view-mode-grid .match-list {
-            /* Pulls 'Desktop Columns' from Admin Panel */
-            grid-template-columns: repeat(var(--grid-cols-desk), 1fr); 
-        }
-    }
-
-    /* 3. Use Admin Variable for Height */
-    body.view-mode-grid .skeleton-box {
-        /* Pulls 'Min Height' from Admin Panel */
-        height: var(--grid-min-height) !important; 
-        
-        width: 100% !important;
-        margin-bottom: 0 !important;
-        border-radius: 12px !important;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.05);
-    }
-
-        /* 4. SAFETY: HIDE SKELETONS WHEN JS SAYS SO */
-        #live-skeleton[style*="none"], 
-        #upcoming-skeleton[style*="none"],
-        #live-sk-head[style*="none"] {
-            display: none !important;
-        }
-
-        /* --- PRO "VS" CARD DESIGN (MATCHING SKELETON SIZE) --- */
-        .match-list.grid-view .match-row {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-            min-height: var(--grid-min-height); /* Matches skeleton height */
-            padding: 0;
-            background: #141414;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            transition: all 0.2s ease;
-        }
-        
-        .match-list.grid-view .match-row:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            border-color: var(--brand-primary);
-            z-index: 2;
-        }
-
-        /* [HEADER] */
-        .g-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 14px;
-            background: rgba(255,255,255,0.03);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 0.7rem;
-            min-height: 35px; /* Stable height */
-        }
-        .g-league { font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .g-badge { 
-            background: rgba(255,255,255,0.1); color: #fff; 
-            padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.6rem; 
-        }
-        .g-badge.live { background: var(--brand-primary); animation: blink 2s infinite; }
-
-        /* [BODY] */
-        .g-body {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px 5px;
-            gap: 5px;
-        }
-        .g-team {
-            width: 40%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            gap: 8px;
-        }
-        .g-logo-box {
-            width: 50px; height: 50px; 
-            display: flex; align-items: center; justify-content: center;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
-        }
-        .g-logo-box img { width: 100%; height: 100%; object-fit: contain; }
-        .g-logo-box .t-logo { width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; }
-        
-        .g-team span {
-            font-size: 0.75rem; font-weight: 600; line-height: 1.2;
-            color: #e5e5e5;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-            min-height: 2.4em; /* Enforce 2 lines height to prevent shift */
-        }
-
-        .g-vs {
-            width: 15%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            opacity: 0.6;
-        }
-        .g-vs-txt { font-family: var(--font-family-headings); font-weight: 900; font-style: italic; font-size: 0.9rem; color: var(--text-muted); }
-        .g-time { font-size: 0.6rem; color: var(--accent-gold); font-weight: 700; white-space: nowrap; }
-
-        /* [FOOTER] */
-        .g-footer {
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.2));
-            min-height: 75px; /* Stable height */
-            justify-content: flex-end;
-        }
-        .g-meta { text-align: center; font-size: 0.65rem; color: var(--text-muted); display:flex; justify-content: center; align-items: center; gap: 5px; height: 15px; }
-        
-        .match-list.grid-view .btn-watch {
-            width: 100%; height: 34px;
-            background: var(--brand-primary); color: #fff;
-            border: none; border-radius: 6px;
-            font-size: 0.75rem; letter-spacing: 0.5px;
-            font-weight: 700;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-            transition: 0.2s;
-        }
-        .match-list.grid-view .btn-watch:hover { background: #fff; color: #000; }
-        .match-list.grid-view .btn-notify { width: 100%; height: 34px; border-radius: 6px; font-size: 0.75rem; }
-
-        /* LIST FALLBACK HIDING */
-        .match-list.grid-view .col-time, 
-        .match-list.grid-view .col-meta, 
-        .match-list.grid-view .teams-wrapper, 
-        .match-list.grid-view .col-action { display: none !important; }
-
-        /* --- BACKGROUND ANIMATIONS (VAST SELECTION) --- */
-        
-        /* 1. Gradient Flow */
-        body.anim-gradient {
-            background: linear-gradient(-45deg, #0f172a, #1e293b, #0f172a, #000000);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-        }
-        @keyframes gradientBG { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
-
-        /* 2. Tech Grid (Static) */
-        body.anim-grid {
-            background-color: var(--bg-body);
-            background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
-            background-size: 40px 40px;
-            background-position: center top;
-        }
-
-        /* 3. Dots (Static) */
-        body.anim-dots {
-            background-color: var(--bg-body);
-            background-image: radial-gradient(var(--border) 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-
-        /* 4. Mesh Gradient (Advanced) */
-        body.anim-mesh {
-            background-color: var(--bg-body);
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
-                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
-                radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
-        }
-
-        /* --- CARD STYLES --- */
-        
-        /* Glass Style override */
-        body:has(.match-list.grid-view) { /* Helper */ }
-        
-        /* In Render JS, we add class to match-list based on card style? 
-           Easier: Use CSS variable for background based on theme config */
-        /* SKELETON BUTTON */
-/* SKELETON BUTTON POSITIONING */
-/* SKELETON BUTTON */
-.skeleton-btn { 
-    height: 42px; 
-    width: 100%; 
-    max-width: 300px; 
-    margin: 20px auto; 
-    border-radius: 30px; 
-    display: block;
-    clear: both;
-    
-    /* FIX: Force remove the gradient so the color below shows */
-    background-image: none !important; 
-    
-    /* Your glass styles */
-    background-color: rgba(255, 255, 255, 0.05); 
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
     </style>
 </head>
-<body class="{{BODY_CLASSES}}">
-    <script>
-    // IMMEDIATE LAYOUT FIX: Force Grid Class if config says so
-    // This runs before content renders to prevent Layout Shift
-    try {
-        var cfg = {{JS_THEME_CONFIG}};
-        if(cfg && cfg.match_view_mode === 'grid') {
-            document.body.classList.add('view-mode-grid');
-        }
-    } catch(e) {}
-</script>
+<body>
     
     <div id="socialSidebar" class="social-sidebar"></div>
 
     <header class="{{HEADER_CLASSES}}">
-        <div class="header-container" data-align="{{THEME_HEADER_ALIGNMENT}}">
+        <div class="header-container">
             <a href="/" class="logo-link">{{LOGO_HTML}}</a>
             <nav class="nav-links" id="desktopNav">{{HEADER_MENU}}</nav>
             <button class="hamburger" onclick="toggleMenu()">☰</button>
@@ -741,7 +442,6 @@
                 <div class="skeleton skeleton-box"></div>
                 <div class="skeleton skeleton-box"></div>
             </div>
-            <div id="live-btn-skeleton" class="skeleton skeleton-btn"></div>
             <div id="live-content-wrapper" style="display:none;">
                 <div class="sec-head">
                     <h2 class="sec-title"><div class="live-dot"></div> {{TEXT_LIVE_SECTION_TITLE}}</h2>
@@ -757,9 +457,8 @@
         <div id="wildcard-container"></div>
 
         <!-- 3. TOP 5 UPCOMING -->
-        <!-- FIXED: Skeleton Header moved OUTSIDE the grid container so it spans full width -->
-        <div id="upcoming-sk-head" class="skeleton skeleton-header"><div class="sk-title"></div></div>
         <div id="upcoming-skeleton">
+             <div class="skeleton skeleton-header"><div class="sk-title"></div></div>
              <div class="skeleton skeleton-box"></div>
              <div class="skeleton skeleton-box"></div>
              <div class="skeleton skeleton-box"></div>
@@ -985,15 +684,8 @@
         function normalizeKey(str) { return str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : ""; }
 
         function renderApp(matches) {
-            // 1. Force Grid Mode CSS Class if needed
-            if (typeof THEME_CONFIG !== 'undefined' && THEME_CONFIG.match_view_mode === 'grid') {
-                document.body.classList.add('view-mode-grid');
-            } else {
-                document.body.classList.remove('view-mode-grid');
-            }
-
-            // --- CHANGED: ONLY HIDE UPCOMING HERE. LEAVE LIVE SKELETONS VISIBLE FOR NOW ---
-            if(document.getElementById('upcoming-sk-head')) document.getElementById('upcoming-sk-head').style.display = 'none';
+            document.getElementById('live-sk-head').style.display = 'none';
+            document.getElementById('live-skeleton').style.display = 'none';
             document.getElementById('upcoming-skeleton').style.display = 'none';
 
             const now = Date.now();
@@ -1017,22 +709,32 @@
                 if (wildcardMatches.length > 0) {
                     const wcContainer = document.getElementById('wildcard-container');
                     wcContainer.innerHTML = ''; 
+                    
+                    // 1. WILDCARD TITLE LOGIC
+                    // Use Admin Title OR fallback to "Prefix + Category"
                     let wcTitle = "{{TEXT_WILDCARD_TITLE}}";
                     if (!wcTitle) {
                         const prefix = "{{TEXT_SECTION_PREFIX}}".trim() || "Upcoming";
                         wcTitle = `${prefix} ${WILDCARD_CATEGORY}`;
                     }
+                    
+                    // Note: We pass skipPrefix=true because we manually constructed the title above
                     createSection(wcContainer, wcTitle, wildcardMatches, false, false, null, WILDCARD_CATEGORY, true);
                 }
             }
 
-            // --- TOP 5 UPCOMING ---
+            // --- TOP 5 UPCOMING LOGIC ---
             let top5Ids = new Set();
+            
             if (!isWildcardActive) {
                 const top24h = upcomingMatches.filter(m => (m.startTimeUnix - now) < oneDay);
                 const top5Display = top24h.slice(0, 5);
+                
                 if (top5Display.length > 0) {
+                    // 2. TOP 5 TITLE LOGIC
+                    // Use Admin Title OR fallback default
                     const topTitle = "{{TEXT_TOP_UPCOMING_TITLE}}" || "Top Matches in Next 24h";
+                    
                     createSection(document.getElementById('top-upcoming-container'), topTitle, top5Display, false, false, "🔥", null, true);
                     top5Display.forEach(m => top5Ids.add(m.id));
                 } else {
@@ -1044,13 +746,14 @@
 
             generateDynamicSchema(liveMatches, upcomingMatches);
 
-            // --- GROUPED SECTIONS ---
+            // --- GROUPED SECTIONS LOGIC ---
             const wcIds = new Set(wildcardMatches.map(m => m.id));
             const remainingMatches = upcomingMatches.filter(m => 
                 !wcIds.has(m.id) && 
                 !top5Ids.has(m.id) && 
                 (m.startTimeUnix - now) < oneDay
             );
+
             renderGroupedSections(remainingMatches);
         }
 
@@ -1115,58 +818,53 @@
             const hiddenList = document.getElementById('hidden-live-list');
             const btn = document.getElementById('show-more-live');
             
-            // 1. VISUAL PRIORITY LOGIC (Your existing logic)
+            // 1. VISUAL PRIORITY LOGIC
+            // We do NOT strictly hide non-wildcard matches here. 
+            // Instead, we push Wildcard matches to the very top.
             let displayMatches = matches;
+
             if (WILDCARD_CATEGORY && WILDCARD_CATEGORY.length > 2) {
                 const wLower = WILDCARD_CATEGORY.toLowerCase();
-                const wcMatches = matches.filter(m => m.finalLeague.toLowerCase().includes(wLower) || (m.sport || "").toLowerCase().includes(wLower));
-                const otherMatches = matches.filter(m => !m.finalLeague.toLowerCase().includes(wLower) && !(m.sport || "").toLowerCase().includes(wLower));
+                
+                // Bucket A: The Wildcard Matches
+                const wcMatches = matches.filter(m => 
+                    m.finalLeague.toLowerCase().includes(wLower) || 
+                    (m.sport || "").toLowerCase().includes(wLower)
+                );
+                
+                // Bucket B: Everything Else (Non-Duplicate)
+                // Note: We used !includes so these are mutually exclusive
+                const otherMatches = matches.filter(m => 
+                    !m.finalLeague.toLowerCase().includes(wLower) && 
+                    !(m.sport || "").toLowerCase().includes(wLower)
+                );
+
+                // Merge: Wildcard First + Others Second
                 displayMatches = [...wcMatches, ...otherMatches];
             }
 
-            // 2. DEFINE ELEMENTS TO HIDE (Skeletons)
-            const skHead = document.getElementById('live-sk-head');
-            const skGrid = document.getElementById('live-skeleton');
-            const skBtn = document.getElementById('live-btn-skeleton');
-
-            // 3. IF NO MATCHES: Hide everything including section container
+            // 2. Rendering
             if (displayMatches.length === 0) { 
-                if(skHead) skHead.style.display = 'none';
-                if(skGrid) skGrid.style.display = 'none';
-                if(skBtn) skBtn.style.display = 'none';
                 wrapper.style.display = 'none'; 
                 document.getElementById('live-section').style.display = 'none';
                 return; 
             }
             
-            // 4. PREPARE CONTENT (Do this BEFORE hiding skeletons to ensure smooth swap)
+            wrapper.style.display = 'block';
             topList.innerHTML = ''; hiddenList.innerHTML = ''; btn.style.display='none';
             
-            if (THEME_CONFIG.match_view_mode === 'grid') {
-                topList.className = 'match-list grid-view';
-                hiddenList.className = 'match-list grid-view';
-            } else {
-                topList.className = 'match-list';
-                hiddenList.className = 'match-list';
-            }
-            
+            // Update counter text
             document.getElementById('live-count').innerText = `● ${displayMatches.length} Live Events`;
             
+            // Show Top 5 (Visuals)
             displayMatches.slice(0, 5).forEach(m => topList.appendChild(createMatchRow(m, { isLive: true }, null)));
             
+            // Hide the rest behind "Show More"
             if (displayMatches.length > 5) {
                 displayMatches.slice(5).forEach(m => hiddenList.appendChild(createMatchRow(m, { isLive: true }, null)));
-                btn.style.display = 'block'; 
-                btn.innerText = `{{TEXT_SHOW_MORE}} (${displayMatches.length - 5}) ▼`;
+                btn.style.display = 'block'; btn.innerText = `{{TEXT_SHOW_MORE}} (${displayMatches.length - 5}) ▼`;
                 btn.onclick = () => { hiddenList.style.display='block'; btn.style.display='none'; };
             }
-
-            // 5. INSTANT SWAP: Hide Skeletons & Show Content simultaneously
-            if(skHead) skHead.style.display = 'none';
-            if(skGrid) skGrid.style.display = 'none';
-            if(skBtn) skBtn.style.display = 'none'; // Hide the view more skeleton
-            
-            wrapper.style.display = 'block'; // Show the real content
         }
 
         function createSection(container, title, matches, hasLink, isLeague, customIcon, sectionTitle, skipPrefix=false) {
@@ -1204,12 +902,6 @@
                 </div>`;
             
             const list = document.createElement('div');
-// Check config for Grid Mode
-if (THEME_CONFIG.match_view_mode === 'grid') {
-    list.className = 'match-list grid-view';
-} else {
-    list.className = 'match-list';
-}
             matches.sort((a, b) => a.startTimeUnix - b.startTimeUnix).forEach(m => {
                 list.appendChild(createMatchRow(m, { isLive: false }, sectionTitle));
             });
@@ -1254,70 +946,75 @@ if (THEME_CONFIG.match_view_mode === 'grid') {
             const div = document.createElement('div');
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
-            // 1. Common Data
-            let timeDisplay, dateDisplay;
-            if (m.is_live) { timeDisplay = "LIVE"; dateDisplay = m.status_text || "Now"; }
-            else { const ft = formatMatchTime(m.startTimeUnix); timeDisplay = ft.time; dateDisplay = ft.date; }
-
-            const getLogo = (name) => (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) ? IMAGE_MAP.teams[name] : null;
-            const logoA = getLogo(m.displayHome);
-            const logoB = getLogo(m.displayAway);
-
-            // --- FIX START: Updated rLogo to accept 'name' and add alt tag ---
-            const rLogo = (url, c, name) => url 
-                ? `<img src="${url}" alt="${name}" loading="lazy">` 
-                : `<span class="t-logo" style="background:${getColor(c)}">${c}</span>`;
-            // --- FIX END ---
-            
-            const infoLink = `${SITE_DOMAIN}/watch/?info=${m.id}`;
-            const copyIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`;
-
-            // 2. GRID RENDER
-            if (THEME_CONFIG.match_view_mode === 'grid') {
-                const league = (sectionTitle === m.finalLeague) ? (m.sport||"") : m.finalLeague;
-                const badgeHtml = m.is_live ? `<span class="g-badge live">LIVE</span>` : `<span class="g-badge">${dateDisplay}</span>`;
-                
-                const midHtml = m.is_live 
-                    ? `<span class="g-vs-txt" style="color:#22c55e">${m.status_text}</span>` 
-                    : `<span class="g-vs-txt">VS</span><span class="g-time">${timeDisplay}</span>`;
-
-                let btn = "";
-                if(m.is_live) btn = `<button onclick="openMatch('${m.id}','live')" class="btn-watch">WATCH STREAM</button>`;
-                else if((m.startTimeUnix - Date.now()) < 1800000) btn = `<button onclick="openMatch('${m.id}','info')" class="btn-watch">ENTER STREAM</button>`;
-                else btn = `<button onclick="setNotify(this)" class="btn-notify">🔔 REMIND ME</button>`;
-
-                let meta = "";
-                if(m.is_live && m.live_viewers) meta = `<span style="color:#22c55e">● ${(m.live_viewers/1000).toFixed(1)}k Viewers</span>`;
-                else if(!m.is_live) meta = `<span onclick="copyText('${infoLink}')" style="cursor:pointer; display:flex; align-items:center; gap:4px;">${copyIcon} Copy Link</span>`;
-
-                // --- FIX START: Passed team names as the 3rd argument ---
-                div.innerHTML = `
-                    <div class="g-header"><span class="g-league">${league}</span>${badgeHtml}</div>
-                    <div class="g-body">
-                        <div class="g-team"><div class="g-logo-box">${rLogo(logoA, m.displayHome.charAt(0), m.displayHome)}</div><span>${m.displayHome}</span></div>
-                        <div class="g-vs">${midHtml}</div>
-                        <div class="g-team"><div class="g-logo-box">${rLogo(logoB, m.displayAway.charAt(0), m.displayAway)}</div><span>${m.displayAway}</span></div>
-                    </div>
-                    <div class="g-footer">${btn}<div class="g-meta">${meta}</div></div>
-                `;
-                // --- FIX END ---
-            } 
-            // 3. LIST RENDER (Legacy)
-            else {
-                let colTime = m.is_live ? `<span class="live-txt">LIVE</span><span class="time-sub">${dateDisplay}</span>` : `<span class="time-main">${timeDisplay}</span><span class="time-sub">${dateDisplay}</span>`;
-                
-                // --- FIX START: Passed team names as the 3rd argument ---
-                let logos = `<div class="logo-box">${rLogo(logoA, m.displayHome.charAt(0), m.displayHome)}</div>` + (m.displayAway!=='TBA' ? `<div class="logo-box">${rLogo(logoB, m.displayAway.charAt(0), m.displayAway)}</div>` : '');
-                // --- FIX END ---
-
-                let teams = `<div class="team-name">${logos} ${m.displayHome} ${m.displayAway!=='TBA' ? 'vs '+m.displayAway : ''}</div>`;
-                let action = m.is_live ? `<button onclick="openMatch('${m.id}')" class="btn-watch">WATCH</button>` : `<button onclick="setNotify(this)" class="btn-notify">🔔</button>`;
-                
-                div.innerHTML = `<div class="col-time">${colTime}</div><div class="teams-wrapper"><div class="league-tag">${m.finalLeague}</div>${teams}</div><div class="col-action">${action}</div>`;
+            let timeCol;
+            if (m.is_live) {
+                timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
+            } else { 
+                const ft = formatMatchTime(m.startTimeUnix);
+                timeCol = `<span class="time-main">${ft.time}</span><span class="time-sub">${ft.date}</span>`; 
             }
+            
+            const getLogo = (name) => {
+                if (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) {
+                    const p = IMAGE_MAP.teams[name];
+                    const full = p.startsWith('/') ? p : '/' + p;
+                    return `<div class="logo-box"><img src="${full}" class="t-img" alt="${name}" loading="lazy" width="20" height="20"></div>`;
+                }
+                return `<div class="logo-box"><span class="t-logo" style="background:${getColor(name.charAt(0))}">${name.charAt(0)}</span></div>`;
+            };
+            
+            let teamsHtml = '';
+            const isSingle = (m.displayAway === 'TBA');
+            
+            if (isSingle) {
+                teamsHtml = `<div class="team-name">${getLogo(m.displayHome)} ${m.displayHome}</div>`;
+            } else {
+                teamsHtml += `<div class="team-name">${getLogo(m.displayHome)} ${m.displayHome}</div>`;
+                teamsHtml += `<div class="team-name">${getLogo(m.displayAway)} ${m.displayAway}</div>`;
+            }
+            
+            let tagText = m.finalLeague;
+            if (sectionTitle && m.finalLeague === sectionTitle) {
+                tagText = m.sport || "General";
+            }
+            
+            let metaHtml = '';
+            if (m.is_live) {
+                const v = m.live_viewers || 0;
+                let vText = "⚡ Stable"; 
+                if (v > 5000) vText = `👀 ${(v/1000).toFixed(1)}k 🔥`;
+                else if (v >= 1000) vText = `👀 ${(v/1000).toFixed(1)}k 📈`;
+                metaHtml = `<div class="meta-top">${vText}</div>`;
+            } else {
+                 metaHtml = `
+                    <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                        <span style="font-size:0.55rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px;">Starts in</span>
+                        <span class="meta-top" style="color:var(--accent-gold); font-size:0.75rem;">${m.status_text}</span>
+                    </div>`;
+            }
+
+            let actionHtml = '';
+            const infoLink = `${SITE_DOMAIN}/watch/?info=${m.id}`;
+            const copyBtn = `<button class="btn-copy-link" onclick="copyText('${infoLink}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
+
+            if (m.is_live) {
+                actionHtml = `<button onclick="openMatch('${m.id}', 'live')" class="btn-watch" title="Watch ${m.displayHome}">{{TEXT_WATCH_BTN}} <span class="hd-badge">{{TEXT_HD_BADGE}}</span></button>`;
+            } else {
+                const now = Date.now();
+                const start = m.startTimeUnix || now;
+                const diffMin = (start - now) / 60000;
+                
+                if (diffMin <= 30) {
+                     actionHtml = `<button onclick="openMatch('${m.id}', 'info')" class="btn-watch">{{TEXT_WATCH_BTN}} <span class="hd-badge">{{TEXT_HD_BADGE}}</span></button>` + copyBtn;
+                } else {
+                     actionHtml = `<button onclick="setNotify(this)" class="btn-notify">🔔 Notify</button>` + copyBtn;
+                }
+            }
+            
+            div.innerHTML = `<div class="col-time">${timeCol}</div><div class="teams-wrapper"><div class="league-tag">${tagText.toUpperCase()}</div>${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${actionHtml}</div>`;
             return div;
         }
-        
+
         function generateDynamicSchema(liveList, upcomingList) {
             const now = Date.now();
             const twentyMin = 20 * 60 * 1000;
