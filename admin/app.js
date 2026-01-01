@@ -145,6 +145,7 @@ const THEME_FIELDS = {
     // Main Section Border (Outer/Full)
     'hero_main_border_width': 'themeHeroMainBorderWidth', // NEW
     'hero_main_border_color': 'themeHeroMainBorderColor', // NEW
+    'hero_main_border_pos': 'themeHeroMainBorderPos',
     'text_sys_status': 'themeTextSysStatus',
 
     // Section Borders (Width & Color)
@@ -481,8 +482,25 @@ function renderThemeSettings() {
 window.toggleHeroBoxSettings = () => {
     const mode = document.getElementById('themeHeroLayoutMode').value;
     const settings = document.getElementById('heroBoxSettings');
-    // If Boxed, show settings. If Full, hide.
+    
+    // Toggle Box Settings Panel
     settings.style.display = (mode === 'box') ? 'block' : 'none';
+
+    // Toggle Border Placement Options
+    const posSelect = document.getElementById('themeHeroMainBorderPos');
+    const boxOption = posSelect.querySelector('.opt-box-only');
+    
+    if (boxOption) {
+        if (mode === 'box') {
+            boxOption.disabled = false;
+            boxOption.innerText = "Match Box Width"; // Visual indicator
+        } else {
+            boxOption.disabled = true;
+            boxOption.innerText = "Match Box Width (Box Layout Only)";
+            // Auto-switch to Full if Box was selected but user switched layout
+            if (posSelect.value === 'box') posSelect.value = 'full';
+        }
+    }
 };
 
 // Inside admin/app.js
