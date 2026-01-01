@@ -110,6 +110,8 @@
             --header-text-color: #aaaaaa;
             --header-link-active-color: #ffffff;
         --header-link-hover-color: #000000;
+        --header-highlight-color: {{THEME_HEADER_HIGHLIGHT_COLOR}};
+            --header-highlight-hover: {{THEME_HEADER_HIGHLIGHT_HOVER}};
             --header-border-bottom: 1px solid var(--border);
             --logo-text-p1-color: #ffffff;
             --logo-text-p2-color: #d00000;
@@ -341,6 +343,16 @@
         /* New Hover Color Logic */
         .nav-links a:hover { color: var(--header-link-hover-color); }
         .nav-links a.active { color: var(--header-link-active-color); border-bottom-color: var(--header-link-active-color); }
+        /* ADD THIS BLOCK */
+        .nav-links a.highlighted { 
+            color: var(--header-highlight-color) !important; 
+            border-bottom-color: var(--header-highlight-color) !important; 
+        }
+        .nav-links a.highlighted:hover { 
+            color: var(--header-highlight-hover) !important; 
+            border-bottom-color: var(--header-highlight-hover) !important; 
+            background: rgba(255,255,255,0.05); /* Optional subtle BG effect */
+        }
         
         /* Mobile Toggle Default Styles */
         .hamburger { display: block; font-size: 1.4rem; color: var(--header-text-color); background: none; cursor: pointer; }
