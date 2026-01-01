@@ -125,6 +125,24 @@ const THEME_FIELDS = {
     'hero_pill_text': 'themeHeroPillText',
     'hero_pill_hover_bg': 'themeHeroPillActiveBg',
     'hero_pill_hover_text': 'themeHeroPillActiveText',
+    // ... inside THEME_FIELDS ...
+    'hero_border_bottom': 'themeHeroBorderBottom', // NEW
+
+    // Section Borders (Width & Color)
+    'sec_border_live_width': 'themeLiveBorderWidth',
+    'sec_border_live_color': 'themeLiveBorderColor',
+    
+    'sec_border_upcoming_width': 'themeUpcomingBorderWidth',
+    'sec_border_upcoming_color': 'themeUpcomingBorderColor',
+    
+    'sec_border_wildcard_width': 'themeWildcardBorderWidth',
+    'sec_border_wildcard_color': 'themeWildcardBorderColor',
+    
+    'sec_border_leagues_width': 'themeLeaguesBorderWidth',
+    'sec_border_leagues_color': 'themeLeaguesBorderColor',
+    'sec_border_grouped_width': 'themeGroupedBorderWidth',
+    'sec_border_grouped_color': 'themeGroupedBorderColor',
+    // ...
 
     // 5. Match Rows
     'match_row_bg': 'themeMatchRowBg',
@@ -314,107 +332,109 @@ function injectMissingThemeUI() {
     const themeTab = document.getElementById('tab-theme');
     if(!themeTab) return;
 
-    // 1. FORCE UPDATE: Check if the section exists and REMOVE it so we can rebuild it with new fields
-    // This fixes the issue where the code stops because "themeWildcardCat" already exists.
+    // Clean up old injections
     const existingInput = document.getElementById('themeWildcardCat');
     if (existingInput) {
-        // Find the container div (grid-3) and remove it. 
-        // In your structure: Input -> div (range-wrapper) -> div (card) -> div (grid-3)
         const container = existingInput.closest('.grid-3');
         if (container) container.remove();
     }
 
-    // 2. Create and Append the New Section
     const newSection = document.createElement('div');
     newSection.className = 'grid-3';
     newSection.innerHTML = `
-        <!-- CARD 1: CONTENT & WILDCARD -->
+        <!-- CARD 1: CONTENT & LOGIC -->
         <div class="card">
             <h3>⚡ Content & Logic</h3>
             <div class="range-wrapper" style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;">
                 <label style="color:#facc15;">🔥 Wildcard Category</label>
                 <input type="text" id="themeWildcardCat" placeholder="e.g. NFL, Premier League">
-                <small style="color:#666; font-size:0.7rem;">Shows full schedule, hides 'Top 5', sets Schema.</small>
             </div>
             
-            <label>Hero Section Visibility</label>
-            <select id="themeDisplayHero">
-                <option value="block">Show Hero</option>
-                <option value="none">Hide Hero</option>
-            </select>
+            <label>Hero Visibility</label>
+            <select id="themeDisplayHero"><option value="block">Show</option><option value="none">Hide</option></select>
 
-            <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Text Labels & Titles</h4>
+            <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Titles</h4>
             <div class="grid-2" style="gap:10px;">
-                <!-- NEW: Full Title Replacements -->
-                <div style="grid-column: span 2;">
-                    <label style="color:#facc15;">★ Wildcard Section Title</label>
-                    <input type="text" id="themeTextWildcardTitle" placeholder="Overrides default (e.g. UFC 300 Full Card)">
-                </div>
-                <div style="grid-column: span 2;">
-                    <label>Top 5 Section Title</label>
-                    <input type="text" id="themeTextTopUpcoming" placeholder="e.g. Trending Matches">
-                </div>
-
-                <!-- Existing Labels -->
-                <div><label>Live Title</label><input type="text" id="themeTextLiveTitle" placeholder="Trending Live"></div>
-                <div><label>Show More</label><input type="text" id="themeTextShowMore" placeholder="Show More"></div>
-                <div><label>Watch Btn</label><input type="text" id="themeTextWatch" placeholder="WATCH"></div>
-                <div><label>HD Badge</label><input type="text" id="themeTextHd" placeholder="HD"></div>
-                <div><label>Link Text</label><input type="text" id="themeTextSectionLink" placeholder="View All"></div>
-                <div><label>Prefix</label><input type="text" id="themeTextSectionPrefix" placeholder="Upcoming"></div>
+                <div style="grid-column: span 2;"><input type="text" id="themeTextWildcardTitle" placeholder="Wildcard Title"></div>
+                <div style="grid-column: span 2;"><input type="text" id="themeTextTopUpcoming" placeholder="Top 5 Title"></div>
+                <div><label>Live</label><input type="text" id="themeTextLiveTitle"></div>
+                <div><label>Show More</label><input type="text" id="themeTextShowMore"></div>
+                <div><label>Btn</label><input type="text" id="themeTextWatch"></div>
+                <div><label>Badge</label><input type="text" id="themeTextHd"></div>
+                <div><label>Link</label><input type="text" id="themeTextSectionLink"></div>
+                <div><label>Prefix</label><input type="text" id="themeTextSectionPrefix"></div>
             </div>
         </div>
 
-        <!-- CARD 2: BUTTONS & INTERACTION -->
+        <!-- CARD 2: STYLING & BORDERS (UPDATED) -->
         <div class="card">
-            <h3>🖱️ Buttons & Hover</h3>
+            <h3>🎨 Section Borders</h3>
+            <p style="font-size:0.75rem; color:#aaa; margin-bottom:15px;">Customize bottom borders for specific sections.</p>
+
+            <!-- Live -->
+            <label>Trending Live</label>
+            <div class="input-group">
+                <input type="number" id="themeLiveBorderWidth" placeholder="Width (px)" value="1">
+                <input type="color" id="themeLiveBorderColor" value="#334155">
+            </div>
+
+            <!-- Upcoming -->
+            <label>Top 5 Upcoming</label>
+            <div class="input-group">
+                <input type="number" id="themeUpcomingBorderWidth" placeholder="Width (px)" value="1">
+                <input type="color" id="themeUpcomingBorderColor" value="#334155">
+            </div>
+
+            <!-- Wildcard -->
+            <label>Wildcard Section</label>
+            <div class="input-group">
+                <input type="number" id="themeWildcardBorderWidth" placeholder="Width (px)" value="1">
+                <input type="color" id="themeWildcardBorderColor" value="#334155">
+            </div>
+            <!-- Grouped Sports (Main List) -->
+            <label>Grouped Sports/Leagues</label>
+            <div class="input-group">
+                <input type="number" id="themeGroupedBorderWidth" placeholder="Width (px)" value="1">
+                <input type="color" id="themeGroupedBorderColor" value="#334155">
+            </div>
+
+            <!-- Footer Leagues -->
+            <label>Footer Popular Leagues</label>
+            <div class="input-group">
+                <input type="number" id="themeLeaguesBorderWidth" placeholder="Width (px)" value="1">
+                <input type="color" id="themeLeaguesBorderColor" value="#334155">
+            </div>
             
-            <h4 style="margin:5px 0 5px 0; font-size:0.8rem; color:#aaa;">Live "Show More" Btn</h4>
+            <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Buttons</h4>
             <div class="color-grid">
-                <div><label>BG</label><input type="color" id="themeShowMoreBg"></div>
+                <div><label>Show More BG</label><input type="color" id="themeShowMoreBg"></div>
                 <div><label>Text</label><input type="color" id="themeShowMoreText"></div>
-                <div><label>Border</label><input type="color" id="themeShowMoreBorder"></div>
             </div>
             <div class="range-wrapper"><label>Radius</label><input type="text" id="themeShowMoreRadius" placeholder="30px"></div>
-
-            <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Match Row Hover</h4>
-            <div class="color-grid">
-                <div><label>Hover BG</label><input type="color" id="themeMatchRowHoverBg"></div>
-                <div><label>Hover Border</label><input type="color" id="themeMatchRowHoverBorder"></div>
-            </div>
-            
-            <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Section Headers</h4>
-            <div class="range-wrapper">
-                <label>Logo Size: <span id="val_secLogo">24px</span></label>
-                <input type="range" id="themeSectionLogoSize" min="0" max="60" step="1" oninput="document.getElementById('val_secLogo').innerText=this.value+'px'">
-            </div>
         </div>
 
         <!-- CARD 3: FLOATING ELEMENTS -->
         <div class="card">
-            <h3>📍 Floating Elements</h3>
-            
+            <h3>📍 Floating & Extras</h3>
             <h4 style="margin:5px 0 5px 0; font-size:0.8rem; color:#aaa;">Back to Top</h4>
             <div class="color-grid">
                 <div><label>BG</label><input type="color" id="themeBttBg"></div>
                 <div><label>Icon</label><input type="color" id="themeBttIcon"></div>
             </div>
-            <div class="grid-2" style="gap:10px; margin-top:5px;">
-                <input type="text" id="themeBttSize" placeholder="Size (40px)">
-                <input type="text" id="themeBttRadius" placeholder="Radius (50%)">
-            </div>
+            
+            <h4 style="margin:10px 0 5px 0; font-size:0.8rem; color:#aaa;">Section Logo Size</h4>
+             <input type="range" id="themeSectionLogoSize" min="0" max="60" step="1">
 
-            <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Desktop Share (Left)</h4>
+            <h4 style="margin:10px 0 5px 0; font-size:0.8rem; color:#aaa;">Social Sidebar</h4>
             <div class="grid-2" style="gap:10px;">
-                <div><label>Top</label><input type="text" id="themeSocialDeskTop" placeholder="50%"></div>
-                <div><label>Left</label><input type="text" id="themeSocialDeskLeft" placeholder="0"></div>
-                <div><label>Scale</label><input type="text" id="themeSocialDeskScale" placeholder="1.0"></div>
+                <div><label>Top</label><input type="text" id="themeSocialDeskTop"></div>
+                <div><label>Left</label><input type="text" id="themeSocialDeskLeft"></div>
+                <div><label>Scale</label><input type="text" id="themeSocialDeskScale"></div>
             </div>
-
-            <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Mobile Share (Bottom)</h4>
-            <div class="grid-2" style="gap:10px;">
-                <div><label>Height</label><input type="text" id="themeMobFootHeight" placeholder="60px"></div>
-                <div><label>BG</label><input type="color" id="themeMobFootBg"></div>
+             <h4 style="margin:10px 0 5px 0; font-size:0.8rem; color:#aaa;">Match Hover</h4>
+            <div class="color-grid">
+                <div><label>Hover BG</label><input type="color" id="themeMatchRowHoverBg"></div>
+                <div><label>Hover Border</label><input type="color" id="themeMatchRowHoverBorder"></div>
             </div>
         </div>
     `;
