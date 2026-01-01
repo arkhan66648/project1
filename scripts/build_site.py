@@ -122,6 +122,13 @@ def render_page(template, config, page_data):
         'hero_pill_bg': 'rgba(255,255,255,0.05)', 'hero_pill_text': '#f1f5f9', 'hero_pill_border': 'rgba(255,255,255,0.1)',
         'hero_pill_hover_bg': '#D00000', 'hero_pill_hover_text': '#ffffff', 'hero_pill_hover_border': '#D00000',
         'hero_border_bottom': '1px solid #334155',
+        'hero_layout_mode': 'full',
+        'hero_content_align': 'center',
+        'hero_menu_visible': 'flex',
+        'hero_box_width': '1000px',
+        'hero_border_width': '1', 
+        'hero_border_color': '#334155',
+        'hero_border_top': False, 'hero_border_left': False, 'hero_border_right': False,
         
         # Section Borders Defaults
         'sec_border_live_width': '1', 'sec_border_live_color': '#334155',
@@ -231,24 +238,66 @@ def render_page(template, config, page_data):
     if hero_style == 'gradient':
         start = theme.get('hero_gradient_start', '#1a0505')
         end = theme.get('hero_gradient_end', '#000000')
-        # MAKE SURE THIS SAYS 'radial-gradient(circle at top, ...)'
         hero_css = f"background: radial-gradient(circle at top, {start} 0%, {end} 100%);"
     elif hero_style == 'image':
         img = theme.get('hero_bg_image_url', '')
-        # Fallback if opacity is missing in config
         op = theme.get('hero_bg_image_overlay_opacity', '0.7')
-        # We assume black overlay for simplicity, or we could add overlay_color to theme config later
         hero_css = f"background: linear-gradient(rgba(0,0,0,{op}), rgba(0,0,0,{op})), url('{img}'); background-size: cover; background-position: center;"
-        # === ADD THIS BLOCK ===
     elif hero_style == 'transparent':
         hero_css = "background: transparent;"
-    # =====================
     else:
         # Solid
         solid = theme.get('hero_bg_solid', '#1a0505')
         hero_css = f"background: {solid};"
 
-    html = html.replace('{{HERO_BG_CSS}}', hero_css)
+    # ---------------------------------------------------------
+    # DELETE the old line: html = html.replace('{{HERO_BG_CSS}}', hero_css)
+    # PASTE THE NEW CODE BELOW:
+    # ---------------------------------------------------------
+
+    # --- HERO ALIGNMENT CSS ---
+    align = theme.get('hero_content_align', 'center')
+    align_items = 'center'
+    if align == 'left': align_items = 'flex-start'
+    if align == 'right': align_items = 'flex-end'
+    
+    html = html.replace('{{THEME_HERO_TEXT_ALIGN}}', align)
+    html = html.replace('{{THEME_HERO_ALIGN_ITEMS}}', align_items)
+    
+    # --- HERO BOX LOGIC ---
+    h_mode = theme.get('hero_layout_mode', 'full')
+    h_bg = hero_css # The BG generated earlier (gradient/solid/etc)
+    
+    # Variables for injection
+    hero_outer_style = ""
+    hero_inner_style = ""
+    
+    # Helper for box borders
+    bw = theme.get('hero_border_width', '1')
+    bc = theme.get('hero_border_color', '#334155')
+    b_str = f"{ensure_unit(bw, 'px')} solid {bc}"
+    
+    border_css = ""
+    if theme.get('hero_border_top'): border_css += f"border-top: {b_str}; "
+    if theme.get('hero_border_left'): border_css += f"border-left: {b_str}; "
+    if theme.get('hero_border_right'): border_css += f"border-right: {b_str}; "
+    
+    if h_mode == 'box':
+        # Outer: Transparent/Padding
+        hero_outer_style = "background: transparent; padding: 40px 15px;"
+        # Inner: Takes the BG, Borders, and Width
+        box_w = ensure_unit(theme.get('hero_box_width', '1000px'))
+        hero_inner_style = f"{h_bg} max-width: {box_w}; margin: 0 auto; padding: 30px; border-radius: var(--border-radius-base); {border_css}"
+    else:
+        # Full Width (Default)
+        # Outer: Takes BG
+        hero_outer_style = f"{h_bg} padding: 40px 15px 15px 15px;"
+        # Inner: Just specific width constraint
+        hero_inner_style = "max-width: var(--container-max-width); margin: 0 auto;"
+
+    html = html.replace('{{HERO_OUTER_STYLE}}', hero_outer_style)
+    html = html.replace('{{HERO_INNER_STYLE}}', hero_inner_style)
+    html = html.replace('{{HERO_MENU_DISPLAY}}', theme.get('hero_menu_visible', 'flex'))
     
     # Inject Raw Theme Config for JS
     html = html.replace('{{JS_THEME_CONFIG}}', json.dumps(theme))
