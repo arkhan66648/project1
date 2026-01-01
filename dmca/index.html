@@ -358,7 +358,22 @@
         
         .hd-badge { background: var(--match-row-hd-badge-bg); padding: 1px 4px; border-radius: 3px; font-size: 0.55rem; border: 1px solid var(--match-row-hd-badge-border); color: var(--match-row-hd-badge-text); }
         
-        .btn-notify { background: var(--match-row-btn-notify-bg); border: 1px solid var(--match-row-btn-notify-border); color: var(--match-row-btn-notify-text); padding: 0; box-shadow: none; justify-content: center; transition: all 0.25s ease; height: 26px; }
+        .btn-notify { 
+            background: var(--match-row-btn-notify-bg); 
+            border: 1px solid var(--match-row-btn-notify-border); 
+            color: var(--match-row-btn-notify-text); 
+            padding: 0 10px;                  /* Fixes padding issue */
+            width: 100%;                      /* Fixes shrinking: forces button to fill the grid cell */
+            display: flex;                    /* layout fix */
+            align-items: center;              /* layout fix */
+            justify-content: center;          /* layout fix */
+            box-shadow: none; 
+            transition: all 0.25s ease; 
+            height: 26px; 
+            border-radius: var(--button-border-radius); /* Ensures rounded corners match other buttons */
+            font-size: 0.65rem; 
+            font-weight: 700; 
+        }
         .btn-notify.active { border-color: var(--match-row-btn-notify-active-border); color: var(--match-row-btn-notify-active-text); background: var(--match-row-btn-notify-active-bg); cursor: default; }
         
         .btn-copy-link { background: none; border: none; color: var(--match-row-btn-copy-link-color); font-size: 0.65rem; font-weight: 700; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: 0.2s; padding: 0; margin-top: 5px; }
