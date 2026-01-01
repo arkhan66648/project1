@@ -121,6 +121,14 @@ def render_page(template, config, page_data):
         'hero_h1_color': '#ffffff', 'hero_intro_color': '#94a3b8',
         'hero_pill_bg': 'rgba(255,255,255,0.05)', 'hero_pill_text': '#f1f5f9', 'hero_pill_border': 'rgba(255,255,255,0.1)',
         'hero_pill_hover_bg': '#D00000', 'hero_pill_hover_text': '#ffffff', 'hero_pill_hover_border': '#D00000',
+        'hero_border_bottom': '1px solid #334155',
+        
+        # Section Borders Defaults
+        'sec_border_live_width': '1', 'sec_border_live_color': '#334155',
+        'sec_border_upcoming_width': '1', 'sec_border_upcoming_color': '#334155',
+        'sec_border_wildcard_width': '1', 'sec_border_wildcard_color': '#334155',
+        'sec_border_leagues_width': '1', 'sec_border_leagues_color': '#334155',
+        'sec_border_grouped_width': '1', 'sec_border_grouped_color': '#334155',
         'match_row_bg': '#1e293b', 'match_row_border': '#334155', 
         'match_row_live_border_left': '4px solid #22c55e', 
         'match_row_live_bg_start': 'rgba(34, 197, 94, 0.1)', 'match_row_live_bg_end': 'transparent',
@@ -188,6 +196,15 @@ def render_page(template, config, page_data):
             if val: val = ensure_unit(val, 'px')
         
         theme[k] = val if val else v
+        # Helper to build border string
+    def make_border(w, c):
+        return f"{ensure_unit(w, 'px')} solid {c}"
+
+    theme['sec_border_live'] = make_border(theme.get('sec_border_live_width'), theme.get('sec_border_live_color'))
+    theme['sec_border_upcoming'] = make_border(theme.get('sec_border_upcoming_width'), theme.get('sec_border_upcoming_color'))
+    theme['sec_border_wildcard'] = make_border(theme.get('sec_border_wildcard_width'), theme.get('sec_border_wildcard_color'))
+    theme['sec_border_leagues'] = make_border(theme.get('sec_border_leagues_width'), theme.get('sec_border_leagues_color'))
+    theme['sec_border_grouped'] = make_border(theme.get('sec_border_grouped_width'), theme.get('sec_border_grouped_color'))
 
     # Inject into HTML
     # We map the lowercase json key to the uppercase template placeholder {{THEME_KEY}}
