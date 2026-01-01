@@ -108,6 +108,7 @@ def render_page(template, config, page_data):
         'font_family_base': 'system-ui, -apple-system, sans-serif', 'font_family_headings': 'inherit',
         'base_font_size': '14px', 'base_line_height': '1.5', 
         'container_max_width': '1100px', 'border_radius_base': '6px', 'button_border_radius': '4px',
+        'header_max_width': '1100px',
         'hero_pill_radius': '50px',
         'card_shadow': '0 4px 6px -1px rgba(0,0,0,0.1)',
         'header_bg': 'rgba(5, 5, 5, 0.8)', 'header_text_color': '#f1f5f9', 'header_link_active_color': '#D00000',
@@ -206,7 +207,7 @@ def render_page(template, config, page_data):
         val = t.get(k)
         # Apply units to specific keys if they are raw numbers
         if k in ['border_radius_base', 'container_max_width', 'base_font_size', 'logo_image_size', 'button_border_radius', 
-                 'show_more_btn_radius', 'back_to_top_size', 'section_logo_size', 'hero_pill_radius', 'hero_box_width', 'hero_box_border_width', 'hero_main_border_width']:
+                 'show_more_btn_radius', 'back_to_top_size', 'header_max_width', 'section_logo_size', 'hero_pill_radius', 'hero_box_width', 'hero_box_border_width', 'hero_main_border_width']:
             if val: val = ensure_unit(val, 'px')
         
         theme[k] = val if val else v
