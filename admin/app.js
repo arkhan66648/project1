@@ -432,11 +432,14 @@ function renderThemeSettings() {
     toggleHeroInputs();
 }
 
+// Inside admin/app.js
+
 window.toggleHeroInputs = () => {
     const style = document.getElementById('themeHeroBgStyle').value;
     document.getElementById('heroSolidInput').style.display = style === 'solid' ? 'block' : 'none';
     document.getElementById('heroGradientInput').style.display = style === 'gradient' ? 'grid' : 'none';
     document.getElementById('heroImageInput').style.display = style === 'image' ? 'block' : 'none';
+    // Transparent triggers none of the above, so inputs remain hidden
 };
 
 // ==========================================
