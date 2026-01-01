@@ -346,14 +346,45 @@
         @keyframes fadeToast { 0% { opacity: 0; transform: translate(-50%, 10px); } 20% { opacity: 1; transform: translate(-50%, 0); } 80% { opacity: 1; } 100% { opacity: 0; } }
         @media (max-width: 768px) { .copy-toast { bottom: 85px; } }
 
-        /* HERO */
-        .hero { 
-            padding: 40px 15px 15px 15px; text-align: center; 
-            {{HERO_BG_CSS}}
-            border-bottom: 4px solid var(--brand-primary); 
-            display: none; 
+        /* HERO REFACTORED */
+        .hero-section {
+            /* Styles injected by build script based on mode (Full/Box) */
+            background: transparent; padding: 40px 15px 15px 15px;
+            /* Bottom border applies to the whole section regardless of mode (based on previous request) */
+            border-bottom: 4px solid var(--brand-primary);
+            display: none;
         }
-        @media (min-width: 900px) { .hero { padding-top: 60px; } }
+        @media (min-width: 900px) { .hero-section { padding-top: 80px; } }
+
+        .hero-inner {
+            /* Styles injected by build script (Width, BG if boxed, Alignment) */
+            max-width: var(--container-max-width); margin: 0 auto;
+            
+            /* Flex layout for alignment */
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            align-items: center;
+        }
+        
+        /* Elements inside Hero */
+        .sys-status { 
+            display: inline-flex; align-items: center; gap: 8px; 
+            background: var(--sys-status-bg); border: 1px solid var(--sys-status-border); 
+            padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; 
+            font-size: 0.75rem; font-weight: 700; color: var(--sys-status-text); 
+        }
+        
+        h1 { margin: 0 0 20px 0; font-size: 1.8rem; line-height: 1.2; color: var(--hero-h1-color); font-weight: 800; font-family: var(--font-family-headings); }
+        .entity-intro { color: var(--hero-intro-color); font-size: 0.9rem; line-height: 1.5; max-width: 800px; margin-bottom: 20px; }
+        
+        /* Hero Menu Visibility */
+        .cat-scroll { 
+            display: flex; 
+            gap: 10px; overflow-x: auto; padding: 10px 5px; 
+            justify-content: center; /* Matches hero alignment */
+            scrollbar-width: none; width: 100%;
+        }
         #live-section .sec-head, #live-content-wrapper .sec-head { 
             border-bottom: 3px solid #e70856; 
         }
@@ -506,11 +537,13 @@
     </header>
     <div class="mobile-menu" id="mobileMenu"><a href="#">Schedule</a><a href="/#faqs">FAQs</a><a href="/#comeback" style="color:var(--accent-gold); border-bottom:1px solid var(--accent-gold);">How we comeback</a></div>
 
-    <div class="hero">
-        <div class="sys-status"><div class="dot"></div> System Status: Online</div>
-        <h1>No. #1 NFL Streaming</h1>
-        <p class="entity-intro">tfdhgdfgd</p>
-        <div class="cat-scroll"><a href="#" class="cat-pill">⚾ MLB</a><a href="/nba" class="cat-pill">🏀 NBA</a><a href="/#ufc" class="cat-pill">🥊 UFC</a></div>
+    <div class="hero-section">
+        <div class="hero-inner">
+            <div class="sys-status"><div class="dot"></div> System Status: Online</div>
+            <h1>No. #1 NFL Streaming</h1>
+            <p class="entity-intro">tfdhgdfgd</p>
+            <div class="cat-scroll"><a href="#" class="cat-pill">⚾ MLB</a><a href="/nba" class="cat-pill">🏀 NBA</a><a href="/#ufc" class="cat-pill">🥊 UFC</a></div>
+        </div>
     </div>
 
     <main class="container ">
