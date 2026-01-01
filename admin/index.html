@@ -167,6 +167,7 @@
                 <!-- ROW 2: COMPONENTS -->
                 <div class="grid-3">
                     <!-- admin/index.html -> Hero Section Card -->
+<!-- admin/index.html -> Hero Section Card -->
 <div class="card">
     <h3>📢 Hero Configuration</h3>
     
@@ -188,7 +189,7 @@
             </select>
         </div>
         <div>
-            <label>Hero Menu (Pills)</label>
+            <label>Hero Menu</label>
             <select id="themeHeroMenuVisible">
                 <option value="flex">Show</option>
                 <option value="none">Hide</option>
@@ -196,7 +197,7 @@
         </div>
     </div>
 
-    <!-- ROW 2: Background Style -->
+    <!-- ROW 2: Background -->
     <label class="mt-2">Background Source</label>
     <select id="themeHeroBgStyle" onchange="toggleHeroInputs()">
         <option value="solid">Solid Color</option>
@@ -205,7 +206,6 @@
         <option value="transparent">Transparent</option>
     </select>
     
-    <!-- BG Inputs -->
     <div id="heroSolidInput" class="mt-2"><label>Solid Color</label><input type="color" id="themeHeroBgSolid"></div>
     <div id="heroGradientInput" class="color-grid mt-2" style="display:none;">
         <div><label>Grad Start</label><input type="color" id="themeHeroGradStart"></div>
@@ -216,39 +216,39 @@
         <div class="range-wrapper"><label>Overlay Opacity</label><input type="range" id="themeHeroOverlayOpacity" min="0" max="1" step="0.1"></div>
     </div>
 
-    <!-- ROW 3: Box Settings (Hidden unless Boxed) -->
+    <!-- ROW 3: Box Settings -->
     <div id="heroBoxSettings" style="display:none; border:1px dashed #444; padding:10px; margin-top:15px; border-radius:6px;">
         <h4 style="margin:0 0 10px 0; font-size:0.8rem; color:#facc15;">📦 Box Layout Settings</h4>
         
         <label>Box Max Width</label>
         <input type="text" id="themeHeroBoxWidth" placeholder="e.g. 1000px">
         
-        <label>Box Borders</label>
+        <label>Box Borders (Inner)</label>
         <div class="grid-2" style="gap:5px;">
-            <input type="number" id="themeHeroBorderWidth" placeholder="Width (px)" value="1">
-            <input type="color" id="themeHeroBorderColor" value="#334155">
+            <input type="number" id="themeHeroBoxBorderWidth" placeholder="Width (px)" value="1">
+            <input type="color" id="themeHeroBoxBorderColor" value="#334155">
         </div>
-        <div class="checkbox-group" style="margin-top:5px;">
+        <div class="checkbox-group" style="margin-top:5px; display:flex; gap:15px; flex-wrap:wrap;">
             <label style="font-size:0.75rem;"><input type="checkbox" id="themeHeroBorderTop"> Top</label>
+            <label style="font-size:0.75rem;"><input type="checkbox" id="themeHeroBorderBottomBox"> Bottom</label>
             <label style="font-size:0.75rem;"><input type="checkbox" id="themeHeroBorderLeft"> Left</label>
             <label style="font-size:0.75rem;"><input type="checkbox" id="themeHeroBorderRight"> Right</label>
         </div>
     </div>
 
-    <!-- ROW 4: Colors & Bottom Border (Shared) -->
+    <!-- ROW 4: Colors -->
     <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Text & Elements</h4>
     <div class="color-grid">
         <div><label>H1 Color</label><input type="color" id="themeHeroH1"></div>
         <div><label>Intro Text</label><input type="color" id="themeHeroIntro"></div>
     </div>
 
-    <label>Bottom Border (Main)</label>
-    <select id="themeHeroBorderBottom">
-        <option value="1px solid var(--border)">Thin (Default)</option>
-        <option value="none">None</option>
-        <option value="1px solid var(--brand-primary)">Brand Color Thin</option>
-        <option value="4px solid var(--brand-primary)">Brand Color Thick</option>
-    </select>
+    <!-- ROW 5: Main Bottom Border (Separator) -->
+    <label>Main Section Bottom Border</label>
+    <div class="input-group">
+        <input type="number" id="themeHeroMainBorderWidth" placeholder="Width (px)" value="1">
+        <input type="color" id="themeHeroMainBorderColor" value="#334155">
+    </div>
 
     <h4 style="margin:10px 0 5px 0; font-size:0.8rem; color:#aaa;">Category Pills</h4>
     <div class="color-grid">
