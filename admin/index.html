@@ -99,6 +99,11 @@
                             <label>Global Radius: <span id="val_borderRadius">6px</span></label>
                             <input type="range" id="themeBorderRadius" min="0" max="20" step="1" oninput="document.getElementById('val_borderRadius').innerText=this.value+'px'">
                         </div>
+                        <!-- NEW: Button Radius -->
+                        <div class="range-wrapper">
+                            <label>Button Radius (Watch/Notify): <span id="val_btnRadius">4px</span></label>
+                            <input type="range" id="themeBtnRadius" min="0" max="30" step="1" oninput="document.getElementById('val_btnRadius').innerText=this.value+'px'">
+                        </div>
                         <div class="range-wrapper">
                             <label>Max Width: <span id="val_maxWidth">1100px</span></label>
                             <input type="range" id="themeMaxWidth" min="800" max="1600" step="50" oninput="document.getElementById('val_maxWidth').innerText=this.value+'px'">
@@ -265,6 +270,11 @@
     </div>
 
     <h4 style="margin:10px 0 5px 0; font-size:0.8rem; color:#aaa;">Category Pills</h4>
+    <!-- NEW: Pill Radius Control -->
+    <div class="range-wrapper" style="margin-bottom:10px;">
+        <label>Pill Radius: <span id="val_pillRadius">50px</span></label>
+        <input type="range" id="themeHeroPillRadius" min="0" max="50" step="1" oninput="document.getElementById('val_pillRadius').innerText=this.value+'px'">
+    </div>
     <div class="color-grid">
         <div><label>Pill BG</label><input type="color" id="themeHeroPillBg"></div>
         <div><label>Pill Text</label><input type="color" id="themeHeroPillText"></div>
