@@ -41,16 +41,16 @@
     <style>
         :root {
             /* --- DYNAMIC THEME VARIABLES --- */
-            --brand-primary: #2563eb;
-            --brand-dark: #1e3a8a;
+            --brand-primary: #d00000;
+            --brand-dark: #8a0000;
             --status-green: #00e676;
-            --accent-gold: #38bdf8;
-            --bg-body: #020617;
-            --bg-panel: #0f172a;
+            --accent-gold: #ffd700;
+            --bg-body: #050505;
+            --bg-panel: #0f0f0f;
             --bg-glass: rgba(30, 41, 59, 0.7);
-            --border: #1e293b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --border: #222222;
+            --text-main: #ffffff;
+            --text-muted: #888888;
             
             --font-family-base: system-ui, -apple-system, sans-serif;
             --font-family-headings: 'Courier New', monospace;
@@ -62,43 +62,43 @@
             --card-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
 
             /* HEADER */
-            --header-bg: #020617;
-            --header-text-color: #94a3b8;
+            --header-bg: #050505;
+            --header-text-color: #aaaaaa;
             --header-link-active-color: #ffffff;
         --header-link-hover-color: #000000;
             --header-border-bottom: 1px solid var(--border);
-            --logo-text-p1-color: #f8fafc;
-            --logo-text-p2-color: #2563eb;
+            --logo-text-p1-color: #ffffff;
+            --logo-text-p2-color: #d00000;
             --logo-image-size: 40px;
 
             /* HERO */
             
             --hero-h1-color: #ffffff;
-            --hero-intro-color: #94a3b8;
-            --hero-pill-bg: #1e293b;
-            --hero-pill-text: #cbd5e1;
+            --hero-intro-color: #999999;
+            --hero-pill-bg: #111111;
+            --hero-pill-text: #cccccc;
             --hero-pill-border: rgba(255,255,255,0.1);
-            --hero-pill-hover-bg: #172554;
+            --hero-pill-hover-bg: #2a0a0a;
             --hero-pill-hover-text: #ffffff;
             --hero-pill-hover-border: #D00000;
 
             /* MATCH ROWS */
-            --match-row-bg: #0f172a;
-            --match-row-border: #1e293b;
+            --match-row-bg: #121212;
+            --match-row-border: #222222;
             --match-row-live-border-left: 3px solid var(--brand-primary);
-            --match-row-live-bg-start: #172554;
-            --match-row-live-bg-end: #0f172a;
-            --match-row-hover-border: #38bdf8;
-            --match-row-hover-bg: #1e293b; /* New: Hover BG */
+            --match-row-live-bg-start: #1a0505;
+            --match-row-live-bg-end: #141414;
+            --match-row-hover-border: #444444;
+            --match-row-hover-bg: #1a1a1a; /* New: Hover BG */
             --match-row-hover-transform: translateY(-2px);
-            --match-row-time-main-color: #94a3b8;
+            --match-row-time-main-color: #888888;
             --match-row-time-sub-color: #94a3b8;
-            --match-row-live-text-color: #60a5fa;
+            --match-row-live-text-color: #d00000;
             --match-row-league-tag-color: #94a3b8;
-            --match-row-team-name-color: #f1f5f9;
+            --match-row-team-name-color: #ffffff;
             
             /* BUTTONS */
-            --match-row-btn-watch-bg: #2563eb;
+            --match-row-btn-watch-bg: #d00000;
             --match-row-btn-watch-text: #ffffff;
             --match-row-btn-watch-hover-bg: #b91c1c;
             --match-row-btn-watch-hover-transform: scale(1.05);
@@ -117,8 +117,8 @@
             --match-row-btn-copy-link-hover-color: #D00000;
 
             /* FOOTER */
-            --footer-bg-start: #0f172a;
-            --footer-bg-end: #020617;
+            --footer-bg-start: #0e0e0e;
+            --footer-bg-end: #050505;
             --footer-border-top: 1px solid #334155;
             --footer-heading-color: #94a3b8;
             --footer-link-color: #94a3b8;
@@ -153,18 +153,18 @@
             --copy-toast-border: #16a34a;
 
             /* SHOW MORE BUTTON */
-            --show-more-btn-bg: #1e293b;
+            --show-more-btn-bg: #151515;
             --show-more-btn-border: #334155;
-            --show-more-btn-text: #cbd5e1;
+            --show-more-btn-text: #cccccc;
             --show-more-btn-radius: 30px; /* New */
             --show-more-btn-hover-bg: #D00000;
             --show-more-btn-hover-border: #D00000;
             --show-more-btn-hover-text: #ffffff;
 
             /* UTILITY */
-            --scrollbar-thumb-color: #334155;
+            --scrollbar-thumb-color: #333333;
             
-            --back-to-top-bg: #2563eb;
+            --back-to-top-bg: #d00000;
             --back-to-top-icon-color: #ffffff;
             --back-to-top-shadow: 0 4px 10px rgba(208,0,0,0.4);
             --back-to-top-radius: 50%; /* New */
@@ -349,7 +349,7 @@
         /* HERO REFACTORED */
         .hero-section {
             /* Styles injected by build script based on mode (Full/Box) */
-            background: transparent; padding: 40px 15px 15px 15px;
+            background: radial-gradient(circle at top, #2a0505 0%, #000000 100%); padding: 40px 15px 15px 15px;
             /* Bottom border applies to the whole section regardless of mode (based on previous request) */
             border-bottom: 4px solid var(--brand-primary);
             display: none;
@@ -363,8 +363,8 @@
             /* Flex layout for alignment */
             display: flex;
             flex-direction: column;
-            text-align: center;
-            align-items: center;
+            text-align: left;
+            align-items: flex-start;
         }
         
         /* Elements inside Hero */
@@ -382,7 +382,7 @@
         .cat-scroll { 
             display: flex; 
             gap: 10px; overflow-x: auto; padding: 10px 5px; 
-            justify-content: center; /* Matches hero alignment */
+            justify-content: flex-start; /* Matches hero alignment */
             scrollbar-width: none; width: 100%;
         }
         #live-section .sec-head, #live-content-wrapper .sec-head { 
@@ -539,7 +539,7 @@
 
     <div class="hero-section">
         <div class="hero-inner">
-            <div class="sys-status"><div class="dot"></div> System Status: Online</div>
+            <div class="sys-status"><div class="dot"></div> Status: Live</div>
             <h1>Streameast - #1 NBA Streaming Site</h1>
             <p class="entity-intro">dgdfgdgdgd</p>
             <div class="cat-scroll"><a href="#" class="cat-pill">⚾ MLB</a><a href="/nba" class="cat-pill">🏀 NBA</a><a href="/#ufc" class="cat-pill">🥊 UFC</a></div>
@@ -682,7 +682,7 @@
 
         const SHARE_CONFIG = {"excluded": ["dmca", "contact", "about", "privacy"], "counts": {"telegram": 12000, "whatsapp": 14400, "reddit": 60077, "twitter": 5544}};
 
-        const THEME_CONFIG = {"brand_primary": "#2563eb", "brand_dark": "#1e3a8a", "accent_gold": "#38bdf8", "status_green": "#00e676", "bg_body": "#020617", "bg_panel": "#0f172a", "bg_glass": "rgba(30, 41, 59, 0.7)", "text_main": "#f8fafc", "text_muted": "#94a3b8", "border_color": "#1e293b", "scrollbar_thumb_color": "#334155", "font_family_base": "system-ui, -apple-system, sans-serif", "font_family_headings": "'Courier New', monospace", "base_font_size": "14px", "base_line_height": "1.5", "container_max_width": "950px", "border_radius_base": "0px", "button_border_radius": "4px", "card_shadow": "0 4px 6px -1px rgba(0,0,0,0.1)", "header_bg": "#020617", "header_text_color": "#94a3b8", "header_link_active_color": "#ffffff", "header_border_bottom": "1px solid var(--border)", "logo_p1_color": "#f8fafc", "logo_p2_color": "#2563eb", "logo_image_size": "40px", "header_layout": "center", "header_icon_pos": "left", "header_link_hover_color": "#000000", "hero_bg_style": "transparent", "hero_bg_solid": "#ffffff", "hero_gradient_start": "#0f172a", "hero_gradient_end": "#020617", "hero_h1_color": "#ffffff", "hero_intro_color": "#94a3b8", "hero_pill_bg": "#1e293b", "hero_pill_text": "#cbd5e1", "hero_pill_border": "rgba(255,255,255,0.1)", "hero_pill_hover_bg": "#172554", "hero_pill_hover_text": "#ffffff", "hero_pill_hover_border": "#D00000", "hero_border_bottom": "4px solid var(--brand-primary)", "hero_layout_mode": "full", "hero_content_align": "center", "hero_menu_visible": "flex", "hero_box_width": "1000px", "hero_border_width": "1", "hero_border_color": "#334155", "hero_border_top": false, "hero_border_left": false, "hero_border_right": false, "text_sys_status": "System Status: Online", "sec_border_live_width": "3", "sec_border_live_color": "#e70856", "sec_border_upcoming_width": "2", "sec_border_upcoming_color": "#070e17", "sec_border_wildcard_width": "1", "sec_border_wildcard_color": "#334155", "sec_border_leagues_width": "3", "sec_border_leagues_color": "#1e4b8a", "sec_border_grouped_width": "3", "sec_border_grouped_color": "#00b37d", "match_row_bg": "#0f172a", "match_row_border": "#1e293b", "match_row_live_border_left": "3px solid var(--brand-primary)", "match_row_live_bg_start": "#172554", "match_row_live_bg_end": "#0f172a", "match_row_hover_border": "#38bdf8", "match_row_hover_transform": "translateY(-2px)", "match_row_hover_bg": "#1e293b", "match_row_time_main_color": "#94a3b8", "match_row_time_sub_color": "#94a3b8", "match_row_live_text_color": "#60a5fa", "match_row_league_tag_color": "#94a3b8", "match_row_team_name_color": "#f1f5f9", "match_row_btn_watch_bg": "#2563eb", "match_row_btn_watch_text": "#ffffff", "match_row_btn_watch_hover_bg": "#b91c1c", "match_row_btn_watch_hover_transform": "scale(1.05)", "match_row_hd_badge_bg": "rgba(0,0,0,0.3)", "match_row_hd_badge_border": "rgba(255,255,255,0.2)", "match_row_hd_badge_text": "#facc15", "match_row_btn_notify_bg": "transparent", "match_row_btn_notify_border": "#334155", "match_row_btn_notify_text": "#94a3b8", "match_row_btn_notify_active_bg": "#22c55e", "match_row_btn_notify_active_border": "#22c55e", "match_row_btn_notify_active_text": "#ffffff", "match_row_btn_copy_link_color": "#64748b", "match_row_btn_copy_link_hover_color": "#D00000", "footer_bg_start": "#0f172a", "footer_bg_end": "#020617", "footer_border_top": "1px solid #334155", "footer_heading_color": "#94a3b8", "footer_link_color": "#94a3b8", "footer_link_hover_color": "#f1f5f9", "footer_link_hover_transform": "translateX(5px)", "footer_copyright_color": "#475569", "footer_desc_color": "#64748b", "social_sidebar_bg": "rgba(15, 23, 42, 0.8)", "social_sidebar_border": "#334155", "social_sidebar_shadow": "0 4px 10px rgba(0,0,0,0.3)", "social_btn_bg": "rgba(30, 41, 59, 0.8)", "social_btn_border": "#334155", "social_btn_color": "#94a3b8", "social_btn_hover_bg": "#1e293b", "social_btn_hover_border": "#D00000", "social_btn_hover_transform": "translateX(5px)", "social_count_color": "#64748b", "mobile_footer_bg": "rgba(5, 5, 5, 0.9)", "mobile_footer_border_top": "1px solid #334155", "mobile_footer_shadow": "0 -4px 10px rgba(0,0,0,0.5)", "copy_toast_bg": "#22c55e", "copy_toast_text": "#ffffff", "copy_toast_border": "#16a34a", "back_to_top_bg": "#2563eb", "back_to_top_icon_color": "#ffffff", "back_to_top_shadow": "0 4px 10px rgba(208,0,0,0.4)", "sys_status_dot_color": "#22c55e", "sys_status_bg": "rgba(34, 197, 94, 0.1)", "sys_status_border": "rgba(34, 197, 94, 0.2)", "sys_status_text": "#22c55e", "skeleton_gradient_start": "#1e293b", "skeleton_gradient_mid": "#334155", "skeleton_gradient_end": "#1e293b", "skeleton_border_color": "#334155", "text_wildcard_title": "Section title test Single league", "text_top_upcoming_title": "Top 5 section title test", "logo_image_shadow_color": "rgba(208, 0, 0, 0.3)", "button_shadow_color": "rgba(0,0,0,0.2)", "show_more_btn_bg": "#1e293b", "show_more_btn_border": "#334155", "show_more_btn_text": "#cbd5e1", "show_more_btn_hover_bg": "#D00000", "show_more_btn_hover_border": "#D00000", "show_more_btn_hover_text": "#ffffff", "league_card_bg": "rgba(30, 41, 59, 0.5)", "league_card_border": "#334155", "league_card_text": "#f1f5f9", "league_card_hover_bg": "#1e293b", "league_card_hover_border": "#D00000", "footer_brand_color": "#ffffff", "mobile_footer_btn_active_bg": "rgba(255,255,255,0.1)", "social_telegram_color": "#0088cc", "social_whatsapp_color": "#25D366", "social_reddit_color": "#FF4500", "social_twitter_color": "#1DA1F2", "social_btn_hover_shadow_color": "rgba(0,0,0,0.3)", "footer_grid_columns": "1fr 1fr", "footer_text_align_mobile": "left", "footer_grid_columns_desktop": "2fr 1fr", "footer_text_align_desktop": "left", "footer_last_col_align_desktop": "right", "social_desktop_top": "50%", "social_desktop_left": "0", "social_desktop_scale": "1.0", "mobile_footer_height": "60px", "show_more_btn_radius": "30px", "back_to_top_radius": "50%", "back_to_top_size": "40px", "section_logo_size": "30px", "text_live_section_title": "Air On Now", "text_show_more": "View more", "text_watch_btn": "Streams", "text_hd_badge": "SD", "text_section_link": "Show More", "wildcard_category": "", "text_section_prefix": "Hey", "sec_border_live": "3px solid #e70856", "sec_border_upcoming": "2px solid #070e17", "sec_border_wildcard": "1px solid #334155", "sec_border_leagues": "3px solid #1e4b8a", "sec_border_grouped": "3px solid #00b37d"}; 
+        const THEME_CONFIG = {"brand_primary": "#d00000", "brand_dark": "#8a0000", "accent_gold": "#ffd700", "status_green": "#00e676", "bg_body": "#050505", "bg_panel": "#0f0f0f", "bg_glass": "rgba(30, 41, 59, 0.7)", "text_main": "#ffffff", "text_muted": "#888888", "border_color": "#222222", "scrollbar_thumb_color": "#333333", "font_family_base": "system-ui, -apple-system, sans-serif", "font_family_headings": "'Courier New', monospace", "base_font_size": "14px", "base_line_height": "1.5", "container_max_width": "950px", "border_radius_base": "0px", "button_border_radius": "4px", "card_shadow": "0 4px 6px -1px rgba(0,0,0,0.1)", "header_bg": "#050505", "header_text_color": "#aaaaaa", "header_link_active_color": "#ffffff", "header_border_bottom": "1px solid var(--border)", "logo_p1_color": "#ffffff", "logo_p2_color": "#d00000", "logo_image_size": "40px", "header_layout": "center", "header_icon_pos": "left", "header_link_hover_color": "#000000", "hero_bg_style": "gradient", "hero_bg_solid": "#ffffff", "hero_gradient_start": "#2a0505", "hero_gradient_end": "#000000", "hero_h1_color": "#ffffff", "hero_intro_color": "#999999", "hero_pill_bg": "#111111", "hero_pill_text": "#cccccc", "hero_pill_border": "rgba(255,255,255,0.1)", "hero_pill_hover_bg": "#2a0a0a", "hero_pill_hover_text": "#ffffff", "hero_pill_hover_border": "#D00000", "hero_border_bottom": "4px solid var(--brand-primary)", "hero_layout_mode": "full", "hero_content_align": "left", "hero_menu_visible": "flex", "hero_box_width": "1000px", "hero_border_width": "1", "hero_border_color": "#334155", "hero_border_top": false, "hero_border_left": false, "hero_border_right": false, "text_sys_status": "Status: Live", "sec_border_live_width": "3", "sec_border_live_color": "#e70856", "sec_border_upcoming_width": "2", "sec_border_upcoming_color": "#070e17", "sec_border_wildcard_width": "1", "sec_border_wildcard_color": "#334155", "sec_border_leagues_width": "3", "sec_border_leagues_color": "#1e4b8a", "sec_border_grouped_width": "3", "sec_border_grouped_color": "#00b37d", "match_row_bg": "#121212", "match_row_border": "#222222", "match_row_live_border_left": "3px solid var(--brand-primary)", "match_row_live_bg_start": "#1a0505", "match_row_live_bg_end": "#141414", "match_row_hover_border": "#444444", "match_row_hover_transform": "translateY(-2px)", "match_row_hover_bg": "#1a1a1a", "match_row_time_main_color": "#888888", "match_row_time_sub_color": "#94a3b8", "match_row_live_text_color": "#d00000", "match_row_league_tag_color": "#94a3b8", "match_row_team_name_color": "#ffffff", "match_row_btn_watch_bg": "#d00000", "match_row_btn_watch_text": "#ffffff", "match_row_btn_watch_hover_bg": "#b91c1c", "match_row_btn_watch_hover_transform": "scale(1.05)", "match_row_hd_badge_bg": "rgba(0,0,0,0.3)", "match_row_hd_badge_border": "rgba(255,255,255,0.2)", "match_row_hd_badge_text": "#facc15", "match_row_btn_notify_bg": "transparent", "match_row_btn_notify_border": "#334155", "match_row_btn_notify_text": "#94a3b8", "match_row_btn_notify_active_bg": "#22c55e", "match_row_btn_notify_active_border": "#22c55e", "match_row_btn_notify_active_text": "#ffffff", "match_row_btn_copy_link_color": "#64748b", "match_row_btn_copy_link_hover_color": "#D00000", "footer_bg_start": "#0e0e0e", "footer_bg_end": "#050505", "footer_border_top": "1px solid #334155", "footer_heading_color": "#94a3b8", "footer_link_color": "#94a3b8", "footer_link_hover_color": "#f1f5f9", "footer_link_hover_transform": "translateX(5px)", "footer_copyright_color": "#475569", "footer_desc_color": "#64748b", "social_sidebar_bg": "rgba(15, 23, 42, 0.8)", "social_sidebar_border": "#334155", "social_sidebar_shadow": "0 4px 10px rgba(0,0,0,0.3)", "social_btn_bg": "rgba(30, 41, 59, 0.8)", "social_btn_border": "#334155", "social_btn_color": "#94a3b8", "social_btn_hover_bg": "#1e293b", "social_btn_hover_border": "#D00000", "social_btn_hover_transform": "translateX(5px)", "social_count_color": "#64748b", "mobile_footer_bg": "rgba(5, 5, 5, 0.9)", "mobile_footer_border_top": "1px solid #334155", "mobile_footer_shadow": "0 -4px 10px rgba(0,0,0,0.5)", "copy_toast_bg": "#22c55e", "copy_toast_text": "#ffffff", "copy_toast_border": "#16a34a", "back_to_top_bg": "#d00000", "back_to_top_icon_color": "#ffffff", "back_to_top_shadow": "0 4px 10px rgba(208,0,0,0.4)", "sys_status_dot_color": "#22c55e", "sys_status_bg": "rgba(34, 197, 94, 0.1)", "sys_status_border": "rgba(34, 197, 94, 0.2)", "sys_status_text": "#22c55e", "skeleton_gradient_start": "#1e293b", "skeleton_gradient_mid": "#334155", "skeleton_gradient_end": "#1e293b", "skeleton_border_color": "#334155", "text_wildcard_title": "Section title test Single league", "text_top_upcoming_title": "Top 5 section title test", "logo_image_shadow_color": "rgba(208, 0, 0, 0.3)", "button_shadow_color": "rgba(0,0,0,0.2)", "show_more_btn_bg": "#151515", "show_more_btn_border": "#334155", "show_more_btn_text": "#cccccc", "show_more_btn_hover_bg": "#D00000", "show_more_btn_hover_border": "#D00000", "show_more_btn_hover_text": "#ffffff", "league_card_bg": "rgba(30, 41, 59, 0.5)", "league_card_border": "#334155", "league_card_text": "#f1f5f9", "league_card_hover_bg": "#1e293b", "league_card_hover_border": "#D00000", "footer_brand_color": "#ffffff", "mobile_footer_btn_active_bg": "rgba(255,255,255,0.1)", "social_telegram_color": "#0088cc", "social_whatsapp_color": "#25D366", "social_reddit_color": "#FF4500", "social_twitter_color": "#1DA1F2", "social_btn_hover_shadow_color": "rgba(0,0,0,0.3)", "footer_grid_columns": "1fr 1fr", "footer_text_align_mobile": "left", "footer_grid_columns_desktop": "2fr 1fr", "footer_text_align_desktop": "left", "footer_last_col_align_desktop": "right", "social_desktop_top": "50%", "social_desktop_left": "0", "social_desktop_scale": "1.0", "mobile_footer_height": "60px", "show_more_btn_radius": "30px", "back_to_top_radius": "50%", "back_to_top_size": "40px", "section_logo_size": "30px", "text_live_section_title": "Air On Now", "text_show_more": "View more", "text_watch_btn": "Streams", "text_hd_badge": "SD", "text_section_link": "Show More", "wildcard_category": "", "text_section_prefix": "Hey", "sec_border_live": "3px solid #e70856", "sec_border_upcoming": "2px solid #070e17", "sec_border_wildcard": "1px solid #334155", "sec_border_leagues": "3px solid #1e4b8a", "sec_border_grouped": "3px solid #00b37d"}; 
 
         let teamToLeagueMap = {};
         if (RAW_LEAGUE_MAP) {
