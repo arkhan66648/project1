@@ -46,7 +46,7 @@
     "hero_pill_text": "#cbd5e1",
     "hero_pill_hover_bg": "#172554",
     "hero_pill_hover_text": "#ffffff",
-    "hero_border_bottom": "1px solid var(--border)",
+    "hero_border_bottom": "4px solid var(--brand-primary)",
     "sec_border_live_width": "3",
     "sec_border_live_color": "#e70856",
     "sec_border_upcoming_width": "2",
