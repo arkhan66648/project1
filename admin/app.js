@@ -141,6 +141,8 @@ const THEME_FIELDS = {
     'hero_border_bottom_box': 'themeHeroBorderBottomBox', // Checkbox (NEW)
     'hero_border_left': 'themeHeroBorderLeft',       // Checkbox
     'hero_border_right': 'themeHeroBorderRight',     // Checkbox
+    'button_border_radius': 'themeBtnRadius',       // For Watch & Notify buttons
+    'hero_pill_radius': 'themeHeroPillRadius',      // For Hero Menu Items
     
     // Main Section Border (Outer/Full)
     'hero_main_border_width': 'themeHeroMainBorderWidth', // NEW
