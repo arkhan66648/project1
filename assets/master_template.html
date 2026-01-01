@@ -68,6 +68,8 @@
             --header-text-color: {{THEME_HEADER_TEXT_COLOR}};
             --header-link-active-color: {{THEME_HEADER_LINK_ACTIVE_COLOR}};
         --header-link-hover-color: {{THEME_HEADER_LINK_HOVER_COLOR}};
+        --header-highlight-color: {{THEME_HEADER_HIGHLIGHT_COLOR}};
+            --header-highlight-hover: {{THEME_HEADER_HIGHLIGHT_HOVER}};
             --header-border-bottom: {{THEME_HEADER_BORDER_BOTTOM}};
             --logo-text-p1-color: {{THEME_LOGO_P1_COLOR}};
             --logo-text-p2-color: {{THEME_LOGO_P2_COLOR}};
@@ -299,6 +301,16 @@
         /* New Hover Color Logic */
         .nav-links a:hover { color: var(--header-link-hover-color); }
         .nav-links a.active { color: var(--header-link-active-color); border-bottom-color: var(--header-link-active-color); }
+        /* ADD THIS BLOCK */
+        .nav-links a.highlighted { 
+            color: var(--header-highlight-color) !important; 
+            border-bottom-color: var(--header-highlight-color) !important; 
+        }
+        .nav-links a.highlighted:hover { 
+            color: var(--header-highlight-hover) !important; 
+            border-bottom-color: var(--header-highlight-hover) !important; 
+            background: rgba(255,255,255,0.05); /* Optional subtle BG effect */
+        }
         
         /* Mobile Toggle Default Styles */
         .hamburger { display: block; font-size: 1.4rem; color: var(--header-text-color); background: none; cursor: pointer; }
