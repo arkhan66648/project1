@@ -112,6 +112,8 @@ const THEME_FIELDS = {
     'header_layout': 'themeHeaderLayout',       // NEW
     'header_icon_pos': 'themeHeaderIconPos',    // NEW
     'header_link_hover_color': 'themeHeaderHover', // NEW
+    'header_highlight_color': 'themeHeaderHighlightColor',
+    'header_highlight_hover': 'themeHeaderHighlightHover',
 
     // 4. Hero
     'hero_bg_style': 'themeHeroBgStyle',
