@@ -351,7 +351,6 @@
             /* Styles injected by build script based on mode (Full/Box) */
             {{HERO_OUTER_STYLE}}
             /* Bottom border applies to the whole section regardless of mode (based on previous request) */
-            border-bottom: {{THEME_HERO_BORDER_BOTTOM}};
             display: {{DISPLAY_HERO}};
         }
         @media (min-width: 900px) { .hero-section { padding-top: 80px; } }
@@ -376,14 +375,14 @@
         }
         
         h1 { margin: 0 0 20px 0; font-size: 1.8rem; line-height: 1.2; color: var(--hero-h1-color); font-weight: 800; font-family: var(--font-family-headings); }
-        .entity-intro { color: var(--hero-intro-color); font-size: 0.9rem; line-height: 1.5; max-width: 800px; margin-bottom: 20px; }
+        .entity-intro { color: var(--hero-intro-color); font-size: 0.9rem; line-height: 1.5; max-width: 800px; margin: 0 0 20px 0; }
         
         /* Hero Menu Visibility */
         .cat-scroll { 
             display: {{HERO_MENU_DISPLAY}}; 
             gap: 10px; overflow-x: auto; padding: 10px 5px; 
             justify-content: {{THEME_HERO_ALIGN_ITEMS}}; /* Matches hero alignment */
-            scrollbar-width: none; width: 100%;
+            scrollbar-width: none; width: 100%; margin: 0;
         }
         #live-section .sec-head, #live-content-wrapper .sec-head { 
             border-bottom: {{THEME_SEC_BORDER_LIVE}}; 
