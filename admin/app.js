@@ -439,53 +439,54 @@ window.toggleHeroInputs = () => {
 };
 
 // 1. DEFINE PRESETS DATA (Based on Previous Master Template DNA)
+// ==========================================
+// 1. HIGH-FIDELITY THEME PRESETS
+// ==========================================
 const THEME_PRESETS = {
     red: {
-        // Base
+        // --- BASE ---
         themeBrandPrimary: '#D00000',
         themeBrandDark: '#8a0000',
         themeAccentGold: '#FFD700',
-        themeStatusGreen: '#00e676', // From previous template status dot
-        
-        // Backgrounds (Darker, "OLED" style from previous template)
+        themeStatusGreen: '#00e676',
         themeBgBody: '#050505',
-        themeBgPanel: '#0f0f0f', 
+        themeBgPanel: '#0f0f0f',
         themeTextMain: '#ffffff',
         themeTextMuted: '#888888',
         themeBorderColor: '#222222',
-        themeScrollThumb: '#475569',
+        themeScrollThumb: '#333333',
 
-        // Header
-        themeHeaderBg: '#050505',
-        themeHeaderText: '#cccccc',
-        themeHeaderActive: '#D00000',
+        // --- HEADER ---
+        themeHeaderBg: '#050505',    // Matches rgba(5,5,5,0.95) on dark
+        themeHeaderText: '#aaaaaa',  // Matches nav-links #aaa
+        themeHeaderActive: '#ffffff', // Active state text is white
         themeLogoP1: '#ffffff',
         themeLogoP2: '#D00000',
         themeHeaderBorderBottom: '1px solid var(--border)',
 
-        // Hero (Gradient Style)
+        // --- HERO (Exact Gradient Match) ---
         themeHeroBgStyle: 'gradient',
-        themeHeroGradStart: '#1a0505', // Reddish black
-        themeHeroGradEnd: '#050505',   // Pure black
+        themeHeroGradStart: '#1a0505', // Matches radial start
+        themeHeroGradEnd: '#050505',   // Matches var(--bg-body)
         themeHeroH1: '#ffffff',
         themeHeroIntro: '#999999',
         themeHeroPillBg: '#111111',
         themeHeroPillText: '#cccccc',
-        themeHeroPillActiveBg: '#2a0a0a', // Slight red tint
+        themeHeroPillActiveBg: '#1f0505', // Approx rgba(208,0,0,0.1) on dark
         themeHeroPillActiveText: '#ffffff',
 
-        // Match Rows (Glass/Dark style)
-        themeMatchRowBg: '#121212', // Approx for rgba(18,18,18)
+        // --- MATCH ROWS ---
+        themeMatchRowBg: '#121212',    // Approx var(--bg-glass) / rgba(18,18,18,0.85)
         themeMatchRowBorder: '#222222',
         themeMatchTeamColor: '#ffffff',
-        themeMatchTimeColor: '#888888',
-        
-        // Live Rows
-        themeMatchLiveBgStart: '#2a0a0a', 
-        themeMatchLiveBgEnd: '#141414',
+        themeMatchTimeColor: '#888888', // Matches .time-main
+
+        // --- LIVE ROWS (The "StreamEast" Glow) ---
+        themeMatchLiveBgStart: '#1a0505', // Very subtle red tint (approx rgba(208,0,0,0.06))
+        themeMatchLiveBgEnd: '#141414',   // Matches rgba(20,20,20,0.8)
         themeMatchLiveText: '#D00000',
 
-        // Buttons & Footer
+        // --- BUTTONS & FOOTER ---
         themeBtnWatchBg: '#D00000',
         themeBtnWatchText: '#ffffff',
         themeFooterBgStart: '#0e0e0e',
@@ -493,7 +494,7 @@ const THEME_PRESETS = {
         themeFooterText: '#64748b',
         themeFooterLink: '#94a3b8',
         
-        // New Features
+        // --- ELEMENTS ---
         themeShowMoreBg: '#151515',
         themeShowMoreText: '#cccccc',
         themeShowMoreBorder: '#333333',
@@ -504,44 +505,49 @@ const THEME_PRESETS = {
         themeMobFootBg: '#0a0a0a'
     },
     blue: {
+        // --- BASE ---
         themeBrandPrimary: '#2563EB', // Royal Blue
-        themeBrandDark: '#1e3a8a',    // Dark Blue
-        themeAccentGold: '#38bdf8',   // Sky Blue accent (replacing gold for tech look)
+        themeBrandDark: '#1e3a8a',
+        themeAccentGold: '#38bdf8',   // Cyan Accent
         themeStatusGreen: '#00e676',
-        
-        themeBgBody: '#020617',       // Slate 950
+        themeBgBody: '#020617',       // Slate 950 (Deep Blue Black)
         themeBgPanel: '#0f172a',      // Slate 900
         themeTextMain: '#f8fafc',
         themeTextMuted: '#94a3b8',
         themeBorderColor: '#1e293b',
         themeScrollThumb: '#334155',
 
-        themeHeaderBg: '#0f172a',
-        themeHeaderText: '#cbd5e1',
-        themeHeaderActive: '#38bdf8',
+        // --- HEADER ---
+        themeHeaderBg: '#020617',
+        themeHeaderText: '#94a3b8',
+        themeHeaderActive: '#ffffff',
         themeLogoP1: '#f8fafc',
         themeLogoP2: '#2563EB',
         themeHeaderBorderBottom: '1px solid var(--border)',
 
+        // --- HERO ---
         themeHeroBgStyle: 'gradient',
-        themeHeroGradStart: '#0f172a',
+        themeHeroGradStart: '#0f172a', // Deep Blue
         themeHeroGradEnd: '#020617',
         themeHeroH1: '#ffffff',
         themeHeroIntro: '#94a3b8',
         themeHeroPillBg: '#1e293b',
         themeHeroPillText: '#cbd5e1',
-        themeHeroPillActiveBg: '#2563EB',
+        themeHeroPillActiveBg: '#172554', // Blue tint
         themeHeroPillActiveText: '#ffffff',
 
-        themeMatchRowBg: '#1e293b',
-        themeMatchRowBorder: '#334155',
+        // --- MATCH ROWS ---
+        themeMatchRowBg: '#0f172a',   // Dark Blue Panel
+        themeMatchRowBorder: '#1e293b',
         themeMatchTeamColor: '#f1f5f9',
         themeMatchTimeColor: '#94a3b8',
-        
-        themeMatchLiveBgStart: '#172554', // Blue tint
-        themeMatchLiveBgEnd: '#0f172a',
-        themeMatchLiveText: '#60a5fa',
 
+        // --- LIVE ROWS ---
+        themeMatchLiveBgStart: '#172554', // Blue 950
+        themeMatchLiveBgEnd: '#0f172a',
+        themeMatchLiveText: '#60a5fa',    // Light Blue text
+
+        // --- FOOTER & BUTTONS ---
         themeBtnWatchBg: '#2563EB',
         themeBtnWatchText: '#ffffff',
         themeFooterBgStart: '#0f172a',
@@ -549,54 +555,60 @@ const THEME_PRESETS = {
         themeFooterText: '#64748b',
         themeFooterLink: '#94a3b8',
         
+        // --- ELEMENTS ---
         themeShowMoreBg: '#1e293b',
         themeShowMoreText: '#cbd5e1',
         themeShowMoreBorder: '#334155',
-        themeMatchRowHoverBg: '#334155',
+        themeMatchRowHoverBg: '#1e293b',
         themeMatchRowHoverBorder: '#38bdf8',
         themeBttBg: '#2563EB',
         themeBttIcon: '#ffffff',
-        themeMobFootBg: '#0f172a'
+        themeMobFootBg: '#020617'
     },
     green: {
+        // --- BASE ---
         themeBrandPrimary: '#16a34a', // Green 600
         themeBrandDark: '#14532d',    // Green 900
-        themeAccentGold: '#facc15',   // Yellow (Brazil style)
+        themeAccentGold: '#facc15',   // Yellow (Brazil/Sport style)
         themeStatusGreen: '#22c55e',
-        
-        themeBgBody: '#050505',
-        themeBgPanel: '#111111',
+        themeBgBody: '#050505',       // Pure Black
+        themeBgPanel: '#111111',      // Neutral Dark Gray
         themeTextMain: '#ffffff',
         themeTextMuted: '#a3a3a3',
         themeBorderColor: '#262626',
         themeScrollThumb: '#404040',
 
-        themeHeaderBg: '#0a0a0a',
-        themeHeaderText: '#d4d4d4',
-        themeHeaderActive: '#16a34a',
+        // --- HEADER ---
+        themeHeaderBg: '#050505',
+        themeHeaderText: '#a3a3a3',
+        themeHeaderActive: '#ffffff',
         themeLogoP1: '#ffffff',
         themeLogoP2: '#16a34a',
         themeHeaderBorderBottom: '1px solid var(--border)',
 
+        // --- HERO ---
         themeHeroBgStyle: 'gradient',
-        themeHeroGradStart: '#052e16', // Dark green
+        themeHeroGradStart: '#051a0d', // Deep Forest Green tint
         themeHeroGradEnd: '#000000',
         themeHeroH1: '#ffffff',
         themeHeroIntro: '#a3a3a3',
         themeHeroPillBg: '#262626',
         themeHeroPillText: '#d4d4d4',
-        themeHeroPillActiveBg: '#14532d',
+        themeHeroPillActiveBg: '#064e3b', // Green 900
         themeHeroPillActiveText: '#ffffff',
 
-        themeMatchRowBg: '#171717',
+        // --- MATCH ROWS ---
+        themeMatchRowBg: '#111111',
         themeMatchRowBorder: '#262626',
         themeMatchTeamColor: '#f5f5f5',
         themeMatchTimeColor: '#737373',
-        
-        themeMatchLiveBgStart: '#052e16',
-        themeMatchLiveBgEnd: '#000000',
-        themeMatchLiveText: '#22c55e',
 
+        // --- LIVE ROWS ---
+        themeMatchLiveBgStart: '#051a0d', // Subtle Green Black
+        themeMatchLiveBgEnd: '#111111',
+        themeMatchLiveText: '#22c55e',    // Neon Green
+
+        // --- FOOTER & BUTTONS ---
         themeBtnWatchBg: '#16a34a',
         themeBtnWatchText: '#ffffff',
         themeFooterBgStart: '#111111',
@@ -604,6 +616,7 @@ const THEME_PRESETS = {
         themeFooterText: '#737373',
         themeFooterLink: '#a3a3a3',
         
+        // --- ELEMENTS ---
         themeShowMoreBg: '#171717',
         themeShowMoreText: '#d4d4d4',
         themeShowMoreBorder: '#262626',
@@ -611,10 +624,9 @@ const THEME_PRESETS = {
         themeMatchRowHoverBorder: '#16a34a',
         themeBttBg: '#16a34a',
         themeBttIcon: '#ffffff',
-        themeMobFootBg: '#111111'
+        themeMobFootBg: '#050505'
     }
 };
-
 // 2. THE APPLY LOGIC
 window.applyPreset = (presetName) => {
     if(!THEME_PRESETS[presetName]) return;
