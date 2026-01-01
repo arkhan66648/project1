@@ -346,14 +346,45 @@
         @keyframes fadeToast { 0% { opacity: 0; transform: translate(-50%, 10px); } 20% { opacity: 1; transform: translate(-50%, 0); } 80% { opacity: 1; } 100% { opacity: 0; } }
         @media (max-width: 768px) { .copy-toast { bottom: 85px; } }
 
-        /* HERO */
-        .hero { 
-            padding: 40px 15px 15px 15px; text-align: center; 
-            {{HERO_BG_CSS}}
-            border-bottom: {{THEME_HERO_BORDER_BOTTOM}}; 
-            display: {{DISPLAY_HERO}}; 
+        /* HERO REFACTORED */
+        .hero-section {
+            /* Styles injected by build script based on mode (Full/Box) */
+            {{HERO_OUTER_STYLE}}
+            /* Bottom border applies to the whole section regardless of mode (based on previous request) */
+            border-bottom: {{THEME_HERO_BORDER_BOTTOM}};
+            display: {{DISPLAY_HERO}};
         }
-        @media (min-width: 900px) { .hero { padding-top: 60px; } }
+        @media (min-width: 900px) { .hero-section { padding-top: 80px; } }
+
+        .hero-inner {
+            /* Styles injected by build script (Width, BG if boxed, Alignment) */
+            {{HERO_INNER_STYLE}}
+            
+            /* Flex layout for alignment */
+            display: flex;
+            flex-direction: column;
+            text-align: {{THEME_HERO_TEXT_ALIGN}};
+            align-items: {{THEME_HERO_ALIGN_ITEMS}};
+        }
+        
+        /* Elements inside Hero */
+        .sys-status { 
+            display: inline-flex; align-items: center; gap: 8px; 
+            background: var(--sys-status-bg); border: 1px solid var(--sys-status-border); 
+            padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; 
+            font-size: 0.75rem; font-weight: 700; color: var(--sys-status-text); 
+        }
+        
+        h1 { margin: 0 0 20px 0; font-size: 1.8rem; line-height: 1.2; color: var(--hero-h1-color); font-weight: 800; font-family: var(--font-family-headings); }
+        .entity-intro { color: var(--hero-intro-color); font-size: 0.9rem; line-height: 1.5; max-width: 800px; margin-bottom: 20px; }
+        
+        /* Hero Menu Visibility */
+        .cat-scroll { 
+            display: {{HERO_MENU_DISPLAY}}; 
+            gap: 10px; overflow-x: auto; padding: 10px 5px; 
+            justify-content: {{THEME_HERO_ALIGN_ITEMS}}; /* Matches hero alignment */
+            scrollbar-width: none; width: 100%;
+        }
         #live-section .sec-head, #live-content-wrapper .sec-head { 
             border-bottom: {{THEME_SEC_BORDER_LIVE}}; 
         }
@@ -506,11 +537,13 @@
     </header>
     <div class="mobile-menu" id="mobileMenu">{{HEADER_MENU}}</div>
 
-    <div class="hero">
-        <div class="sys-status"><div class="dot"></div> System Status: Online</div>
-        <h1>{{H1_TITLE}}</h1>
-        <p class="entity-intro">{{HERO_TEXT}}</p>
-        <div class="cat-scroll">{{HERO_PILLS}}</div>
+    <div class="hero-section">
+        <div class="hero-inner">
+            <div class="sys-status"><div class="dot"></div> System Status: Online</div>
+            <h1>{{H1_TITLE}}</h1>
+            <p class="entity-intro">{{HERO_TEXT}}</p>
+            <div class="cat-scroll">{{HERO_PILLS}}</div>
+        </div>
     </div>
 
     <main class="container {{MAIN_CONTAINER_CLASSES}}">
