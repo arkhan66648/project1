@@ -129,6 +129,9 @@ def render_page(template, config, page_data):
         'hero_border_color': '#334155',
         'hero_border_top': False, 'hero_border_left': False, 'hero_border_right': False,
         'text_sys_status': 'System Status: Online',
+        'hero_main_border_pos': 'themeHeroMainBorderPos',
+        'hero_main_border_width': 'themeHeroMainBorderWidth',
+        'hero_main_border_color': 'themeHeroMainBorderColor',
         
         # Section Borders Defaults
         'sec_border_live_width': '1', 'sec_border_live_color': '#334155',
@@ -246,37 +249,35 @@ def render_page(template, config, page_data):
     elif hero_style == 'transparent':
         hero_css = "background: transparent;"
     else:
-        # Solid
         solid = theme.get('hero_bg_solid', '#1a0505')
         hero_css = f"background: {solid};"
 
-    # ---------------------------------------------------------
-    # DELETE the old line: html = html.replace('{{HERO_BG_CSS}}', hero_css)
-    # PASTE THE NEW CODE BELOW:
-    # ---------------------------------------------------------
-
-    # --- HERO ALIGNMENT CSS & INTRO MARGIN ---
+    # --- HERO ALIGNMENT LOGIC ---
     align = theme.get('hero_content_align', 'center')
     
+    # Defaults for 'center'
     align_items = 'center'
-    intro_margin = '0 auto' # Default center
+    intro_margin = '0 auto' 
+    menu_justify = 'center'
     
     if align == 'left': 
         align_items = 'flex-start'
         intro_margin = '0' 
+        menu_justify = 'flex-start'
     if align == 'right': 
         align_items = 'flex-end'
         intro_margin = '0 0 0 auto'
+        menu_justify = 'flex-end'
     
     html = html.replace('{{THEME_HERO_TEXT_ALIGN}}', align)
     html = html.replace('{{THEME_HERO_ALIGN_ITEMS}}', align_items)
     html = html.replace('{{THEME_HERO_INTRO_MARGIN}}', intro_margin)
+    html = html.replace('{{THEME_HERO_MENU_JUSTIFY}}', menu_justify)
     
-    # --- HERO BOX LOGIC & BORDERS ---
+    # --- HERO BOX & BORDER LOGIC ---
     h_mode = theme.get('hero_layout_mode', 'full')
-    h_bg = hero_css 
     
-    # 1. Box Borders (Inner - applied only if Checked)
+    # 1. Inner Box Borders (Checkbox based)
     box_bw = theme.get('hero_box_border_width', '1')
     box_bc = theme.get('hero_box_border_color', '#334155')
     box_b_str = f"{ensure_unit(box_bw, 'px')} solid {box_bc}"
@@ -287,8 +288,9 @@ def render_page(template, config, page_data):
     if theme.get('hero_border_left'): box_border_css += f"border-left: {box_b_str}; "
     if theme.get('hero_border_right'): box_border_css += f"border-right: {box_b_str}; "
 
-    # 2. Main Section Bottom Border (Logic for Position)
-    main_pos = theme.get('hero_main_border_pos', 'full') # full, box, none
+    # 2. Main Section Bottom Border (Dropdown Logic)
+    # Important: Default to 'full' only if key is missing, but handle 'none' explicitly
+    main_pos = theme.get('hero_main_border_pos', 'full') 
     main_bw = theme.get('hero_main_border_width', '1')
     main_bc = theme.get('hero_main_border_color', '#334155')
     
@@ -297,25 +299,26 @@ def render_page(template, config, page_data):
     if main_pos != 'none':
         main_border_str = f"border-bottom: {ensure_unit(main_bw, 'px')} solid {main_bc};"
 
-    # Variables for injection
+    # 3. Construct CSS Strings
     hero_outer_style = ""
     hero_inner_style = ""
 
     if h_mode == 'box':
-        # Outer
+        # Outer: Transparent + Optional Main Border
         hero_outer_style = f"background: transparent; padding: 40px 15px;"
         if main_pos == 'full': hero_outer_style += f" {main_border_str}"
         
-        # Inner
+        # Inner: BG + Width + Box Borders + Optional Main Border
         box_w = ensure_unit(theme.get('hero_box_width', '1000px'))
-        hero_inner_style = f"{h_bg} max-width: {box_w}; margin: 0 auto; padding: 30px; border-radius: var(--border-radius-base); {box_border_css}"
+        hero_inner_style = f"{hero_css} max-width: {box_w}; margin: 0 auto; padding: 30px; border-radius: var(--border-radius-base); {box_border_css}"
         if main_pos == 'box': hero_inner_style += f" {main_border_str}"
 
     else:
         # Full Width Mode
-        hero_outer_style = f"{h_bg} padding: 40px 15px 15px 15px;"
+        hero_outer_style = f"{hero_css} padding: 40px 15px 15px 15px;"
         if main_pos == 'full': hero_outer_style += f" {main_border_str}"
         
+        # Inner: No Borders, just max-width
         hero_inner_style = "max-width: var(--container-max-width); margin: 0 auto;"
 
     html = html.replace('{{HERO_OUTER_STYLE}}', hero_outer_style)
