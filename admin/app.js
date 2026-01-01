@@ -180,23 +180,7 @@ const THEME_FIELDS = {
     'back_to_top_size': 'themeBttSize',
     
     // Logic Toggles
-    'display_hero': 'themeDisplayHero',
-    // --- NEW LAYOUT FIELDS ---
-    'match_view_mode': 'themeMatchView',
-    'heading_transform': 'themeHeadingTransform',
-    'heading_weight': 'themeHeadingWeight',
-    'seo_content_position': 'themeSeoPos',
-    'footer_leagues_position': 'themeLeaguesPos',
-    'header_alignment': 'themeHeaderAlign',
-    'layout_container_width': 'themeContainerWidth',
-    // --- VISUALS & GRID ---
-    'grid_columns_desk': 'themeGridColsDesk',
-    'grid_columns_mob': 'themeGridColsMob',
-    'grid_min_height': 'themeGridMinHeight',
-    'grid_gap': 'themeGridGap',
-    'global_bg_animation': 'themeGlobalBgAnim',
-    'card_style': 'themeCardStyle',
-    'row_animation': 'themeRowAnim'
+    'display_hero': 'themeDisplayHero'
 };
 
 let configData = {};
