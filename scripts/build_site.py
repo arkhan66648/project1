@@ -207,6 +207,10 @@ def render_page(template, config, page_data):
         op = theme.get('hero_bg_image_overlay_opacity', '0.7')
         # We assume black overlay for simplicity, or we could add overlay_color to theme config later
         hero_css = f"background: linear-gradient(rgba(0,0,0,{op}), rgba(0,0,0,{op})), url('{img}'); background-size: cover; background-position: center;"
+        # === ADD THIS BLOCK ===
+    elif hero_style == 'transparent':
+        hero_css = "background: transparent;"
+    # =====================
     else:
         # Solid
         solid = theme.get('hero_bg_solid', '#1a0505')
