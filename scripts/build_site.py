@@ -267,33 +267,38 @@ def render_page(template, config, page_data):
     
     # --- HERO BOX LOGIC ---
     h_mode = theme.get('hero_layout_mode', 'full')
-    h_bg = hero_css # The BG generated earlier (gradient/solid/etc)
+    h_bg = hero_css 
     
     # Variables for injection
     hero_outer_style = ""
     hero_inner_style = ""
     
-    # Helper for box borders
+    # Box Side Borders
     bw = theme.get('hero_border_width', '1')
     bc = theme.get('hero_border_color', '#334155')
     b_str = f"{ensure_unit(bw, 'px')} solid {bc}"
     
-    border_css = ""
-    if theme.get('hero_border_top'): border_css += f"border-top: {b_str}; "
-    if theme.get('hero_border_left'): border_css += f"border-left: {b_str}; "
-    if theme.get('hero_border_right'): border_css += f"border-right: {b_str}; "
+    side_border_css = ""
+    if theme.get('hero_border_top'): side_border_css += f"border-top: {b_str}; "
+    if theme.get('hero_border_left'): side_border_css += f"border-left: {b_str}; "
+    if theme.get('hero_border_right'): side_border_css += f"border-right: {b_str}; "
+
+    # Bottom Border Logic (Main)
+    bb_val = theme.get('hero_border_bottom', '1px solid #334155')
     
     if h_mode == 'box':
         # Outer: Transparent/Padding
         hero_outer_style = "background: transparent; padding: 40px 15px;"
-        # Inner: Takes the BG, Borders, and Width
+        
+        # Inner: BG + Side Borders + Bottom Border
         box_w = ensure_unit(theme.get('hero_box_width', '1000px'))
-        hero_inner_style = f"{h_bg} max-width: {box_w}; margin: 0 auto; padding: 30px; border-radius: var(--border-radius-base); {border_css}"
+        hero_inner_style = f"{h_bg} max-width: {box_w}; margin: 0 auto; padding: 30px; border-radius: var(--border-radius-base); {side_border_css} border-bottom: {bb_val};"
     else:
-        # Full Width (Default)
-        # Outer: Takes BG
-        hero_outer_style = f"{h_bg} padding: 40px 15px 15px 15px;"
-        # Inner: Just specific width constraint
+        # Full Width
+        # Outer: BG + Bottom Border
+        hero_outer_style = f"{h_bg} padding: 40px 15px 15px 15px; border-bottom: {bb_val};"
+        
+        # Inner: Constraint only
         hero_inner_style = "max-width: var(--container-max-width); margin: 0 auto;"
 
     html = html.replace('{{HERO_OUTER_STYLE}}', hero_outer_style)
