@@ -99,6 +99,7 @@
             --base-font-size: 14px; 
             --base-line-height: 1.5; 
             --container-max-width: 950px; 
+        --header-max-width: {{THEME_HEADER_MAX_WIDTH}};
             --border-radius-base: 0px; 
             --button-border-radius: 21px;
         --hero-pill-radius: 8px;
@@ -299,7 +300,8 @@
         @media (min-width: 900px) { header { position: fixed; top: 0; } body { padding-top: 60px; } }
 
         .header-container { 
-            max-width: var(--container-max-width); margin: 0 auto; height: 100%; padding: 0 15px; 
+            max-width: var(--header-max-width); /* UPDATE THIS */
+            margin: 0 auto; height: 100%; padding: 0 15px; 
             display: flex; align-items: center; position: relative;
         }
 
