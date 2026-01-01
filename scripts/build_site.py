@@ -113,6 +113,8 @@ def render_page(template, config, page_data):
         'header_border_bottom': '1px solid #334155', 'logo_p1_color': '#f1f5f9', 'logo_p2_color': '#D00000',
         'logo_image_size': '40px',
         'hero_bg_style': 'solid', 'hero_bg_solid': '#1a0505', 
+        'hero_gradient_start': '#1a0505', 
+        'hero_gradient_end': '#000000',
         'hero_h1_color': '#ffffff', 'hero_intro_color': '#94a3b8',
         'hero_pill_bg': 'rgba(255,255,255,0.05)', 'hero_pill_text': '#f1f5f9', 'hero_pill_border': 'rgba(255,255,255,0.1)',
         'hero_pill_hover_bg': '#D00000', 'hero_pill_hover_text': '#ffffff', 'hero_pill_hover_border': '#D00000',
