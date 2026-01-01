@@ -438,18 +438,200 @@ window.toggleHeroInputs = () => {
     document.getElementById('heroImageInput').style.display = style === 'image' ? 'block' : 'none';
 };
 
-window.randomizeTheme = () => {
-    if(!confirm("Overwrite with random theme?")) return;
-    const rCol = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
-    setVal('themeBrandPrimary', rCol());
-    setVal('themeBrandDark', rCol());
-    setVal('themeAccentGold', rCol());
-    setVal('themeBgBody', '#0f172a');
-    setVal('themeBgPanel', '#1e293b');
-    const rRad = Math.floor(Math.random() * 16);
-    setVal('themeBorderRadius', rRad);
-    document.getElementById('val_borderRadius').innerText = rRad + 'px';
-    alert("Theme Randomized!");
+// 1. DEFINE PRESETS DATA (Based on Previous Master Template DNA)
+const THEME_PRESETS = {
+    red: {
+        // Base
+        themeBrandPrimary: '#D00000',
+        themeBrandDark: '#8a0000',
+        themeAccentGold: '#FFD700',
+        themeStatusGreen: '#00e676', // From previous template status dot
+        
+        // Backgrounds (Darker, "OLED" style from previous template)
+        themeBgBody: '#050505',
+        themeBgPanel: '#0f0f0f', 
+        themeTextMain: '#ffffff',
+        themeTextMuted: '#888888',
+        themeBorderColor: '#222222',
+        themeScrollThumb: '#475569',
+
+        // Header
+        themeHeaderBg: '#050505',
+        themeHeaderText: '#cccccc',
+        themeHeaderActive: '#D00000',
+        themeLogoP1: '#ffffff',
+        themeLogoP2: '#D00000',
+        themeHeaderBorderBottom: '1px solid var(--border)',
+
+        // Hero (Gradient Style)
+        themeHeroBgStyle: 'gradient',
+        themeHeroGradStart: '#1a0505', // Reddish black
+        themeHeroGradEnd: '#050505',   // Pure black
+        themeHeroH1: '#ffffff',
+        themeHeroIntro: '#999999',
+        themeHeroPillBg: '#111111',
+        themeHeroPillText: '#cccccc',
+        themeHeroPillActiveBg: '#2a0a0a', // Slight red tint
+        themeHeroPillActiveText: '#ffffff',
+
+        // Match Rows (Glass/Dark style)
+        themeMatchRowBg: '#121212', // Approx for rgba(18,18,18)
+        themeMatchRowBorder: '#222222',
+        themeMatchTeamColor: '#ffffff',
+        themeMatchTimeColor: '#888888',
+        
+        // Live Rows
+        themeMatchLiveBgStart: '#2a0a0a', 
+        themeMatchLiveBgEnd: '#141414',
+        themeMatchLiveText: '#D00000',
+
+        // Buttons & Footer
+        themeBtnWatchBg: '#D00000',
+        themeBtnWatchText: '#ffffff',
+        themeFooterBgStart: '#0e0e0e',
+        themeFooterBgEnd: '#050505',
+        themeFooterText: '#64748b',
+        themeFooterLink: '#94a3b8',
+        
+        // New Features
+        themeShowMoreBg: '#151515',
+        themeShowMoreText: '#cccccc',
+        themeShowMoreBorder: '#333333',
+        themeMatchRowHoverBg: '#1a1a1a',
+        themeMatchRowHoverBorder: '#444444',
+        themeBttBg: '#D00000',
+        themeBttIcon: '#ffffff',
+        themeMobFootBg: '#0a0a0a'
+    },
+    blue: {
+        themeBrandPrimary: '#2563EB', // Royal Blue
+        themeBrandDark: '#1e3a8a',    // Dark Blue
+        themeAccentGold: '#38bdf8',   // Sky Blue accent (replacing gold for tech look)
+        themeStatusGreen: '#00e676',
+        
+        themeBgBody: '#020617',       // Slate 950
+        themeBgPanel: '#0f172a',      // Slate 900
+        themeTextMain: '#f8fafc',
+        themeTextMuted: '#94a3b8',
+        themeBorderColor: '#1e293b',
+        themeScrollThumb: '#334155',
+
+        themeHeaderBg: '#0f172a',
+        themeHeaderText: '#cbd5e1',
+        themeHeaderActive: '#38bdf8',
+        themeLogoP1: '#f8fafc',
+        themeLogoP2: '#2563EB',
+        themeHeaderBorderBottom: '1px solid var(--border)',
+
+        themeHeroBgStyle: 'gradient',
+        themeHeroGradStart: '#0f172a',
+        themeHeroGradEnd: '#020617',
+        themeHeroH1: '#ffffff',
+        themeHeroIntro: '#94a3b8',
+        themeHeroPillBg: '#1e293b',
+        themeHeroPillText: '#cbd5e1',
+        themeHeroPillActiveBg: '#2563EB',
+        themeHeroPillActiveText: '#ffffff',
+
+        themeMatchRowBg: '#1e293b',
+        themeMatchRowBorder: '#334155',
+        themeMatchTeamColor: '#f1f5f9',
+        themeMatchTimeColor: '#94a3b8',
+        
+        themeMatchLiveBgStart: '#172554', // Blue tint
+        themeMatchLiveBgEnd: '#0f172a',
+        themeMatchLiveText: '#60a5fa',
+
+        themeBtnWatchBg: '#2563EB',
+        themeBtnWatchText: '#ffffff',
+        themeFooterBgStart: '#0f172a',
+        themeFooterBgEnd: '#020617',
+        themeFooterText: '#64748b',
+        themeFooterLink: '#94a3b8',
+        
+        themeShowMoreBg: '#1e293b',
+        themeShowMoreText: '#cbd5e1',
+        themeShowMoreBorder: '#334155',
+        themeMatchRowHoverBg: '#334155',
+        themeMatchRowHoverBorder: '#38bdf8',
+        themeBttBg: '#2563EB',
+        themeBttIcon: '#ffffff',
+        themeMobFootBg: '#0f172a'
+    },
+    green: {
+        themeBrandPrimary: '#16a34a', // Green 600
+        themeBrandDark: '#14532d',    // Green 900
+        themeAccentGold: '#facc15',   // Yellow (Brazil style)
+        themeStatusGreen: '#22c55e',
+        
+        themeBgBody: '#050505',
+        themeBgPanel: '#111111',
+        themeTextMain: '#ffffff',
+        themeTextMuted: '#a3a3a3',
+        themeBorderColor: '#262626',
+        themeScrollThumb: '#404040',
+
+        themeHeaderBg: '#0a0a0a',
+        themeHeaderText: '#d4d4d4',
+        themeHeaderActive: '#16a34a',
+        themeLogoP1: '#ffffff',
+        themeLogoP2: '#16a34a',
+        themeHeaderBorderBottom: '1px solid var(--border)',
+
+        themeHeroBgStyle: 'gradient',
+        themeHeroGradStart: '#052e16', // Dark green
+        themeHeroGradEnd: '#000000',
+        themeHeroH1: '#ffffff',
+        themeHeroIntro: '#a3a3a3',
+        themeHeroPillBg: '#262626',
+        themeHeroPillText: '#d4d4d4',
+        themeHeroPillActiveBg: '#14532d',
+        themeHeroPillActiveText: '#ffffff',
+
+        themeMatchRowBg: '#171717',
+        themeMatchRowBorder: '#262626',
+        themeMatchTeamColor: '#f5f5f5',
+        themeMatchTimeColor: '#737373',
+        
+        themeMatchLiveBgStart: '#052e16',
+        themeMatchLiveBgEnd: '#000000',
+        themeMatchLiveText: '#22c55e',
+
+        themeBtnWatchBg: '#16a34a',
+        themeBtnWatchText: '#ffffff',
+        themeFooterBgStart: '#111111',
+        themeFooterBgEnd: '#000000',
+        themeFooterText: '#737373',
+        themeFooterLink: '#a3a3a3',
+        
+        themeShowMoreBg: '#171717',
+        themeShowMoreText: '#d4d4d4',
+        themeShowMoreBorder: '#262626',
+        themeMatchRowHoverBg: '#262626',
+        themeMatchRowHoverBorder: '#16a34a',
+        themeBttBg: '#16a34a',
+        themeBttIcon: '#ffffff',
+        themeMobFootBg: '#111111'
+    }
+};
+
+// 2. THE APPLY LOGIC
+window.applyPreset = (presetName) => {
+    if(!THEME_PRESETS[presetName]) return;
+    const p = THEME_PRESETS[presetName];
+
+    if(!confirm(`Apply ${presetName.toUpperCase()} preset? This will overwrite current color settings.`)) return;
+
+    // Loop through defined preset keys and update inputs
+    Object.keys(p).forEach(id => {
+        setVal(id, p[id]);
+    });
+
+    // Handle Hero Logic specifically (toggle visibility of inputs)
+    toggleHeroInputs();
+
+    // Visual feedback
+    alert(`${presetName.toUpperCase()} preset loaded! click 'Save' to build.`);
 };
 
 // ==========================================
