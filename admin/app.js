@@ -138,6 +138,7 @@ const THEME_FIELDS = {
     'hero_border_top': 'themeHeroBorderTop',    // Checkbox
     'hero_border_left': 'themeHeroBorderLeft',  // Checkbox
     'hero_border_right': 'themeHeroBorderRight', // Checkbox
+    'text_sys_status': 'themeTextSysStatus',
 
     // Section Borders (Width & Color)
     'sec_border_live_width': 'themeLiveBorderWidth',
@@ -368,6 +369,7 @@ function injectMissingThemeUI() {
             <div class="grid-2" style="gap:10px;">
                 <div style="grid-column: span 2;"><input type="text" id="themeTextWildcardTitle" placeholder="Wildcard Title"></div>
                 <div style="grid-column: span 2;"><input type="text" id="themeTextTopUpcoming" placeholder="Top 5 Title"></div>
+                <div><label>Status Text</label><input type="text" id="themeTextSysStatus" placeholder="System Status: Online"></div>
                 <div><label>Live</label><input type="text" id="themeTextLiveTitle"></div>
                 <div><label>Show More</label><input type="text" id="themeTextShowMore"></div>
                 <div><label>Btn</label><input type="text" id="themeTextWatch"></div>
