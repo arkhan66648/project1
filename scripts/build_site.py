@@ -112,6 +112,9 @@ def render_page(template, config, page_data):
         'header_bg': 'rgba(5, 5, 5, 0.8)', 'header_text_color': '#f1f5f9', 'header_link_active_color': '#D00000',
         'header_border_bottom': '1px solid #334155', 'logo_p1_color': '#f1f5f9', 'logo_p2_color': '#D00000',
         'logo_image_size': '40px',
+        'header_layout': 'standard',
+        'header_icon_pos': 'left',
+        'header_link_hover_color': '#ffffff',
         'hero_bg_style': 'solid', 'hero_bg_solid': '#1a0505', 
         'hero_gradient_start': '#1a0505', 
         'hero_gradient_end': '#000000',
@@ -191,6 +194,18 @@ def render_page(template, config, page_data):
     for key, val in theme.items():
         placeholder = f"{{{{THEME_{key.upper()}}}}}"
         html = html.replace(placeholder, str(val))
+
+    # ... after theme variable is created ...
+    
+    # Header Layout Logic
+    h_layout = theme.get('header_layout', 'standard')
+    h_icon = theme.get('header_icon_pos', 'left')
+    
+    header_class = f"h-layout-{h_layout}"
+    if h_layout == 'center':
+        header_class += f" h-icon-{h_icon}"
+        
+    html = html.replace('{{HEADER_CLASSES}}', header_class)
 
     # --- 2. COMPLEX THEME LOGIC (Hero & Layouts) ---
     hero_style = theme.get('hero_bg_style', 'solid')
