@@ -203,7 +203,7 @@ def render_page(template, config, page_data):
         val = t.get(k)
         # Apply units to specific keys if they are raw numbers
         if k in ['border_radius_base', 'container_max_width', 'base_font_size', 'logo_image_size', 'button_border_radius', 
-                 'show_more_btn_radius', 'back_to_top_size', 'section_logo_size', 'hero_pill_radius']:
+                 'show_more_btn_radius', 'back_to_top_size', 'section_logo_size', 'hero_pill_radius', 'hero_box_width', 'hero_box_border_width', 'hero_main_border_width']:
             if val: val = ensure_unit(val, 'px')
         
         theme[k] = val if val else v
