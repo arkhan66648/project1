@@ -33,7 +33,7 @@
     "header_border_bottom": "1px solid var(--border)",
     "hero_bg_style": "gradient",
     "hero_bg_solid": "#ffffff",
-    "hero_gradient_start": "#052e16",
+    "hero_gradient_start": "#00f566",
     "hero_gradient_end": "#000000",
     "hero_bg_image_url": "",
     "hero_bg_image_overlay_opacity": "0.5",
