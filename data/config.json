@@ -58,7 +58,7 @@
     "hero_border_left": true,
     "hero_border_right": true,
     "button_border_radius": "21",
-    "hero_pill_radius": "20",
+    "hero_pill_radius": "8",
     "hero_main_border_width": "5",
     "hero_main_border_color": "#1572f4",
     "hero_main_border_pos": "none",
