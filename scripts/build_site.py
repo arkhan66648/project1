@@ -133,6 +133,9 @@ def render_page(template, config, page_data):
         'hero_main_border_pos': 'themeHeroMainBorderPos',
         'hero_main_border_width': 'themeHeroMainBorderWidth',
         'hero_main_border_color': 'themeHeroMainBorderColor',
+        'hero_box_border_width': '1', 
+        'hero_box_border_color': '#334155',
+        'hero_border_bottom_box': False,
         
         # Section Borders Defaults
         'sec_border_live_width': '1', 'sec_border_live_color': '#334155',
