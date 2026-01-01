@@ -57,6 +57,7 @@
             --base-font-size: {{THEME_BASE_FONT_SIZE}}; 
             --base-line-height: {{THEME_BASE_LINE_HEIGHT}}; 
             --container-max-width: {{THEME_CONTAINER_MAX_WIDTH}}; 
+        --header-max-width: {{THEME_HEADER_MAX_WIDTH}};
             --border-radius-base: {{THEME_BORDER_RADIUS_BASE}}; 
             --button-border-radius: {{THEME_BUTTON_BORDER_RADIUS}};
         --hero-pill-radius: {{THEME_HERO_PILL_RADIUS}};
@@ -257,7 +258,8 @@
         @media (min-width: 900px) { header { position: fixed; top: 0; } body { padding-top: 60px; } }
 
         .header-container { 
-            max-width: var(--container-max-width); margin: 0 auto; height: 100%; padding: 0 15px; 
+            max-width: var(--header-max-width); /* UPDATE THIS */
+            margin: 0 auto; height: 100%; padding: 0 15px; 
             display: flex; align-items: center; position: relative;
         }
 
