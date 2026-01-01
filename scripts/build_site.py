@@ -129,6 +129,7 @@ def render_page(template, config, page_data):
         'hero_border_width': '1', 
         'hero_border_color': '#334155',
         'hero_border_top': False, 'hero_border_left': False, 'hero_border_right': False,
+        'text_sys_status': 'System Status: Online',
         
         # Section Borders Defaults
         'sec_border_live_width': '1', 'sec_border_live_color': '#334155',
@@ -314,6 +315,7 @@ def render_page(template, config, page_data):
     html = html.replace('{{TEXT_SECTION_LINK}}', theme.get('text_section_link', 'View All'))
     html = html.replace('{{TEXT_SECTION_PREFIX}}', theme.get('text_section_prefix', 'Upcoming'))
     html = html.replace('{{TEXT_WILDCARD_TITLE}}', theme.get('text_wildcard_title', ''))
+    html = html.replace('{{THEME_TEXT_SYS_STATUS}}', theme.get('text_sys_status', 'System Status: Online'))
     html = html.replace('{{TEXT_TOP_UPCOMING_TITLE}}', theme.get('text_top_upcoming_title', ''))
 
 
