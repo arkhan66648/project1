@@ -121,7 +121,6 @@ def render_page(template, config, page_data):
         'hero_h1_color': '#ffffff', 'hero_intro_color': '#94a3b8',
         'hero_pill_bg': 'rgba(255,255,255,0.05)', 'hero_pill_text': '#f1f5f9', 'hero_pill_border': 'rgba(255,255,255,0.1)',
         'hero_pill_hover_bg': '#D00000', 'hero_pill_hover_text': '#ffffff', 'hero_pill_hover_border': '#D00000',
-        'hero_border_bottom': '1px solid #334155',
         'hero_layout_mode': 'full',
         'hero_content_align': 'center',
         'hero_menu_visible': 'flex',
@@ -269,36 +268,39 @@ def render_page(template, config, page_data):
     h_mode = theme.get('hero_layout_mode', 'full')
     h_bg = hero_css 
     
+    # 1. Box Borders (Inner - applied only if Checked)
+    box_bw = theme.get('hero_box_border_width', '1')
+    box_bc = theme.get('hero_box_border_color', '#334155')
+    box_b_str = f"{ensure_unit(box_bw, 'px')} solid {box_bc}"
+    
+    box_border_css = ""
+    if theme.get('hero_border_top'): box_border_css += f"border-top: {box_b_str}; "
+    if theme.get('hero_border_bottom_box'): box_border_css += f"border-bottom: {box_b_str}; "
+    if theme.get('hero_border_left'): box_border_css += f"border-left: {box_b_str}; "
+    if theme.get('hero_border_right'): box_border_css += f"border-right: {box_b_str}; "
+
+    # 2. Main Section Bottom Border (Outer - applied to the section floor)
+    main_bw = theme.get('hero_main_border_width', '1')
+    main_bc = theme.get('hero_main_border_color', '#334155')
+    main_border_css = f"border-bottom: {ensure_unit(main_bw, 'px')} solid {main_bc};"
+    
     # Variables for injection
     hero_outer_style = ""
     hero_inner_style = ""
-    
-    # Box Side Borders
-    bw = theme.get('hero_border_width', '1')
-    bc = theme.get('hero_border_color', '#334155')
-    b_str = f"{ensure_unit(bw, 'px')} solid {bc}"
-    
-    side_border_css = ""
-    if theme.get('hero_border_top'): side_border_css += f"border-top: {b_str}; "
-    if theme.get('hero_border_left'): side_border_css += f"border-left: {b_str}; "
-    if theme.get('hero_border_right'): side_border_css += f"border-right: {b_str}; "
 
-    # Bottom Border Logic (Main)
-    bb_val = theme.get('hero_border_bottom', '1px solid #334155')
-    
     if h_mode == 'box':
-        # Outer: Transparent/Padding
-        hero_outer_style = "background: transparent; padding: 40px 15px;"
+        # Outer: Transparent/Padding + Main Separator Border
+        hero_outer_style = f"background: transparent; padding: 40px 15px; {main_border_css}"
         
-        # Inner: BG + Side Borders + Bottom Border
+        # Inner: BG + Width + Box Borders
         box_w = ensure_unit(theme.get('hero_box_width', '1000px'))
-        hero_inner_style = f"{h_bg} max-width: {box_w}; margin: 0 auto; padding: 30px; border-radius: var(--border-radius-base); {side_border_css} border-bottom: {bb_val};"
+        hero_inner_style = f"{h_bg} max-width: {box_w}; margin: 0 auto; padding: 30px; border-radius: var(--border-radius-base); {box_border_css}"
     else:
         # Full Width
-        # Outer: BG + Bottom Border
-        hero_outer_style = f"{h_bg} padding: 40px 15px 15px 15px; border-bottom: {bb_val};"
+        # Outer: BG + Main Separator Border
+        hero_outer_style = f"{h_bg} padding: 40px 15px 15px 15px; {main_border_css}"
         
-        # Inner: Constraint only
+        # Inner: Width Constraint Only (No borders)
         hero_inner_style = "max-width: var(--container-max-width); margin: 0 auto;"
 
     html = html.replace('{{HERO_OUTER_STYLE}}', hero_outer_style)
