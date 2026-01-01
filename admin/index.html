@@ -145,6 +145,12 @@
             <option value="right">Right</option>
         </select>
     </div>
+    <div class="range-wrapper" style="margin-top: 15px; border-top: 1px dashed #444; padding-top: 15px;">
+        <label>Header Inner Width: <span id="val_headerWidth">1100px</span></label>
+        <input type="range" id="themeHeaderWidth" min="800" max="1800" step="10" 
+               oninput="document.getElementById('val_headerWidth').innerText=this.value+'px'">
+        <p style="font-size:0.7rem; color:#666; margin-top:5px;">Adjust to match your Box Hero width.</p>
+    </div>
 
     <label class="mt-2">Colors</label>
     <div class="color-grid">
