@@ -361,9 +361,6 @@ function injectMissingThemeUI() {
                 <label style="color:#facc15;">🔥 Wildcard Category</label>
                 <input type="text" id="themeWildcardCat" placeholder="e.g. NFL, Premier League">
             </div>
-            
-            <label>Hero Visibility</label>
-            <select id="themeDisplayHero"><option value="block">Show</option><option value="none">Hide</option></select>
 
             <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Titles</h4>
             <div class="grid-2" style="gap:10px;">
