@@ -57,7 +57,7 @@
     "hero_box_border_width": "4",
     "hero_box_border_color": "#acf410",
     "hero_border_top": true,
-    "hero_border_bottom_box": true,
+    "hero_border_bottom_box": false,
     "hero_border_left": true,
     "hero_border_right": true,
     "button_border_radius": "21",
