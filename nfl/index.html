@@ -350,10 +350,25 @@
         .hero { 
             padding: 40px 15px 15px 15px; text-align: center; 
             background: transparent;
-            border-bottom: 1px solid var(--border); 
+            border-bottom: 1px solid #334155; 
             display: none; 
         }
         @media (min-width: 900px) { .hero { padding-top: 60px; } }
+        #live-section .sec-head, #live-content-wrapper .sec-head { 
+            border-bottom: 1px solid #334155; 
+        }
+        #top-upcoming-container .sec-head { 
+            border-bottom: 1px solid #334155; 
+        }
+        #wildcard-container .sec-head { 
+            border-bottom: 1px solid #334155; 
+        }
+        #footer-leagues-section .sec-head { 
+            border-bottom: 1px solid #334155; 
+        }
+        #grouped-container .sec-head {
+            border-bottom: 1px solid #334155;
+        }
         
         .sys-status { display: inline-flex; align-items: center; gap: 8px; background: var(--sys-status-bg); border: 1px solid var(--sys-status-border); padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; font-size: 0.75rem; font-weight: 700; color: var(--sys-status-text); }
         .dot { width: 6px; height: 6px; background: var(--sys-status-dot-color); border-radius: 50%; box-shadow: 0 0 8px var(--sys-status-dot-color); animation: pulse 2s infinite; }
@@ -542,7 +557,7 @@
         
         <div class="seo-box" style="margin-top:40px; color:var(--text-muted); font-size:0.9rem; line-height:1.6;"><p>dgdgdgdd</p></div>
 
-        <div class="section-box" style="margin-top:50px;">
+        <div id="footer-leagues-section" class="section-box" style="margin-top:50px;">
             <div class="sec-head"><h2 class="sec-title">🏆 Popular Leagues</h2></div>
             <div class="leagues-grid">
             <a href="/nfl-streams/" class="league-card">
