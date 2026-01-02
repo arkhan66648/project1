@@ -354,6 +354,10 @@ function populateUI() {
     setVal('tplLeagueArticle', configData.articles?.league || "");
     setVal('tplSportArticle', configData.articles?.sport || "");
     setVal('tplExcludePages', configData.articles?.excluded || "");
+    setVal('tplLeagueH1', configData.articles?.league_h1 || "");
+    setVal('tplLeagueIntro', configData.articles?.league_intro || "");
+    setVal('tplLeagueLiveTitle', configData.articles?.league_live_title || "");
+    setVal('tplLeagueUpcomingTitle', configData.articles?.league_upcoming_title || "");
 }
 
 // ==========================================
@@ -986,6 +990,10 @@ configData.articles = {
     league: getVal('tplLeagueArticle'),
     sport: getVal('tplSportArticle'),
     excluded: getVal('tplExcludePages')
+    league_h1: getVal('tplLeagueH1'),
+    league_intro: getVal('tplLeagueIntro'),
+    league_live_title: getVal('tplLeagueLiveTitle'),
+    league_upcoming_title: getVal('tplLeagueUpcomingTitle')
 };
 // === NEW SAVE LOGIC END ===
 
