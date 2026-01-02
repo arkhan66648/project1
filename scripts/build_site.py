@@ -12,6 +12,7 @@ TEMPLATE_PATH = 'assets/master_template.html'
 WATCH_TEMPLATE_PATH = 'assets/watch_template.html'
 LEAGUE_TEMPLATE_PATH = 'assets/league_template.html'
 OUTPUT_DIR = '.' 
+
 # ==========================================
 # SMART ENTITY MAPPING (LEAGUE -> SPORT)
 # ==========================================
@@ -53,7 +54,6 @@ LEAGUE_PARENT_MAP = {
 # 2. UTILS
 # ==========================================
 def load_json(path):
-    """Safely loads a JSON file."""
     if os.path.exists(path):
         try:
             with open(path, 'r', encoding='utf-8') as f: 
@@ -179,7 +179,6 @@ def render_page(template, config, page_data, theme_override=None):
         'text_show_more': 'Show More', 'text_watch_btn': 'WATCH', 'text_hd_badge': 'HD', 'text_section_link': 'View All',
         'wildcard_category': '', 'text_section_prefix': 'Upcoming'
     }
-
 
     theme = {}
     for k, v in defaults.items():
@@ -341,7 +340,6 @@ def render_page(template, config, page_data, theme_override=None):
     league_map_data = load_json(LEAGUE_MAP_PATH)
     
     # 2. CREATE REVERSE MAP (Team -> League) SERVER SIDE
-    # This removes the CPU heavy lifting from the frontend!
     reverse_map = {}
     if league_map_data:
         for league_name, teams in league_map_data.items():
@@ -401,8 +399,9 @@ def build_site():
         
         out_dir = os.path.join(OUTPUT_DIR, slug) if slug != 'home' else OUTPUT_DIR
         os.makedirs(out_dir, exist_ok=True)
-        with open(os.path.join(out_dir, 'index.html'), 'w', encoding='utf-8') as f: f.write(final_html)
-            # ==========================================
+        with open(os.path.join(out_dir, 'index.html'), 'w', encoding='utf-8') as f:
+            f.write(final_html)
+    
     # ==========================================
     # 5. BUILD LEAGUE PAGES
     # ==========================================
@@ -471,7 +470,7 @@ def build_site():
             
             # Page Data for render_page
             page_data = {
-                'title': page_h1, # Fallback title
+                'title': page_h1, 
                 'meta_title': f"{page_h1} - Free {parent_sport} Streams",
                 'meta_desc': page_intro,
                 'meta_keywords': f"{name} stream, watch {name}, {name} live, {parent_sport} streams",
@@ -483,7 +482,6 @@ def build_site():
             }
             
             # Render using LEAGUE THEME
-            # IMPORTANT: render_page handles {{HERO_OUTER_STYLE}} based on theme_override
             final_html = render_page(league_template_content, config, page_data, theme_override=theme_league)
             
             # Specific League Page Injections
