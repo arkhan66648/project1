@@ -140,6 +140,7 @@ def render_page(template, config, page_data):
         'hero_box_border_width': '1', 
         'hero_box_border_color': '#334155',
         'hero_border_bottom_box': False,
+        'hero_featured_match': False,
         
         # Section Borders Defaults
         'sec_border_live_width': '1', 'sec_border_live_color': '#334155',
@@ -229,6 +230,9 @@ def render_page(template, config, page_data):
     for key, val in theme.items():
         placeholder = f"{{{{THEME_{key.upper()}}}}}"
         html = html.replace(placeholder, str(val))
+        # Feature Match Boolean Injection
+    feat_enabled = "true" if theme.get('hero_featured_match') else "false"
+    html = html.replace('{{FEATURED_ENABLED}}', feat_enabled)
 
     # ... after theme variable is created ...
     
