@@ -143,6 +143,42 @@ def render_page(template, config, page_data, theme_override=None):
         'text_show_more': 'Show More', 'text_watch_btn': 'WATCH', 'text_hd_badge': 'HD', 'text_section_link': 'View All',
         'wildcard_category': '', 'text_section_prefix': 'Upcoming'
     }
+    # ==========================================
+# SMART ENTITY MAPPING (LEAGUE -> SPORT)
+# ==========================================
+LEAGUE_PARENT_MAP = {
+    # SOCCER
+    "Premier League": "Soccer", "La Liga": "Soccer", "Bundesliga": "Soccer", 
+    "Serie A": "Soccer", "Ligue 1": "Soccer", "Champions League": "Soccer", 
+    "Europa League": "Soccer", "MLS": "Soccer", "Eredivisie": "Soccer",
+    "FA Cup": "Soccer", "Carabao Cup": "Soccer", "Copa America": "Soccer",
+    "Euro 2024": "Soccer", "World Cup": "Soccer", "Liga MX": "Soccer",
+    
+    # BASKETBALL
+    "NBA": "Basketball", "NCAA": "Basketball", "EuroLeague": "Basketball", 
+    "WNBA": "Basketball", "College Basketball": "Basketball",
+    
+    # AMERICAN FOOTBALL
+    "NFL": "American Football", "NCAA Football": "American Football", 
+    "College Football": "American Football", "Super Bowl": "American Football",
+    "XFL": "American Football", "CFL": "American Football",
+    
+    # FIGHTING
+    "UFC": "MMA", "Bellator": "MMA", "PFL": "MMA", "Boxing": "Boxing",
+    "WWE": "Pro Wrestling", "AEW": "Pro Wrestling",
+    
+    # MOTORSPORTS
+    "F1": "Formula 1", "Formula 1": "Motorsport", "NASCAR": "Motorsport", 
+    "MotoGP": "Motorsport", "IndyCar": "Motorsport",
+    
+    # OTHERS
+    "MLB": "Baseball", "NHL": "Ice Hockey", "AFL": "Australian Rules Football",
+    "NRL": "Rugby", "Rugby Union": "Rugby", "Six Nations": "Rugby",
+    "Cricket": "Cricket", "IPL": "Cricket", "Big Bash": "Cricket",
+    "Tennis": "Tennis", "Wimbledon": "Tennis", "US Open": "Tennis",
+    "Golf": "Golf", "PGA Tour": "Golf", "LIV Golf": "Golf",
+    "Darts": "Darts", "Snooker": "Snooker"
+}
 
     theme = {}
     for k, v in defaults.items():
@@ -394,7 +430,35 @@ def build_site():
             
             # Prepare Article
             raw_article = articles.get('league', '') if is_league else articles.get('sport', '')
-            final_article = raw_article.replace('{{NAME}}', name).replace('{{YEAR}}', "2025").replace('{{DOMAIN}}', domain)
+            # --- ENTITY INTELLIGENCE ---
+            # 1. Identify Parent Sport
+            # If name is in map, use it. If not, check if name IS a sport (e.g. "Tennis"). 
+            # If unknown, fallback to "Sports".
+            parent_sport = LEAGUE_PARENT_MAP.get(name)
+            if not parent_sport:
+                # Fallback: If the name itself looks like a sport
+                lower_name = name.lower()
+                if "football" in lower_name or "soccer" in lower_name: parent_sport = "Soccer"
+                elif "basket" in lower_name: parent_sport = "Basketball"
+                elif "fight" in lower_name: parent_sport = "Combat Sports"
+                elif "racing" in lower_name or "motor" in lower_name: parent_sport = "Motorsport"
+                else: parent_sport = name # Fallback to using the name itself if it's generic like "Tennis"
+
+            # 2. Inject Variables
+            final_article = raw_article.replace('{{NAME}}', name) \
+                                       .replace('{{SPORT}}', parent_sport) \
+                                       .replace('{{YEAR}}', "2025") \
+                                       .replace('{{DOMAIN}}', domain)
+            
+            # 3. Enhanced Meta Data (SEO Boost)
+            page_data = {
+                'title': f"{name} Live Streams | Watch {parent_sport} Online",
+                'meta_title': f"Watch {name} Live Streams Free - Best {parent_sport} Streaming Site",
+                'meta_desc': f"Stream every {name} game live. The best free {parent_sport} streaming site for {name} schedules, scores, and HD links.",
+                'meta_keywords': f"{name} stream, watch {name}, {name} live, {parent_sport} streams, free {parent_sport}",
+                'canonical_url': f"https://{domain}/{slug}/",
+                'slug': slug
+            }
             
             page_data = {
                 'title': f"{name} Live Streams",
