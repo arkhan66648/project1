@@ -48,9 +48,11 @@
 
     <style>
         :root {
-            /* --- DYNAMIC THEME VARIABLES (INJECTED BY ADMIN 'LEAGUE CONTEXT') --- */
+            /* --- DYNAMIC THEME VARIABLES (From Admin 'League Context') --- */
             --brand-primary: {{THEME_BRAND_PRIMARY}};
             --brand-dark: {{THEME_BRAND_DARK}};
+            --status-green: {{THEME_STATUS_GREEN}};
+            --accent-gold: {{THEME_ACCENT_GOLD}};
             --bg-body: {{THEME_BG_BODY}};
             --bg-panel: {{THEME_BG_PANEL}};
             --text-main: {{THEME_TEXT_MAIN}};
@@ -59,181 +61,329 @@
             
             --font-family-base: {{THEME_FONT_FAMILY_BASE}};
             --font-family-headings: {{THEME_FONT_FAMILY_HEADINGS}};
+            --base-font-size: {{THEME_BASE_FONT_SIZE}};
             --container-max-width: {{THEME_CONTAINER_MAX_WIDTH}}; 
             --header-max-width: {{THEME_HEADER_MAX_WIDTH}};
             --border-radius-base: {{THEME_BORDER_RADIUS_BASE}}; 
+            --button-border-radius: {{THEME_BUTTON_BORDER_RADIUS}};
             
             /* HEADER */
             --header-bg: {{THEME_HEADER_BG}};
             --header-text-color: {{THEME_HEADER_TEXT_COLOR}};
             --header-link-active-color: {{THEME_HEADER_LINK_ACTIVE_COLOR}};
+            --header-link-hover-color: {{THEME_HEADER_LINK_HOVER_COLOR}};
             --header-border-bottom: {{THEME_HEADER_BORDER_BOTTOM}};
             --logo-text-p1-color: {{THEME_LOGO_P1_COLOR}};
             --logo-text-p2-color: {{THEME_LOGO_P2_COLOR}};
             --logo-image-size: {{THEME_LOGO_IMAGE_SIZE}};
 
-            /* HERO (Simplified for League Pages) */
-            --hero-bg-style: {{THEME_HERO_BG_STYLE}}; 
+            /* HERO */
             --hero-h1-color: {{THEME_HERO_H1_COLOR}};
+            --hero-intro-color: {{THEME_HERO_INTRO_COLOR}};
             
             /* MATCH ROWS */
             --match-row-bg: {{THEME_MATCH_ROW_BG}};
             --match-row-border: {{THEME_MATCH_ROW_BORDER}};
             --match-row-hover-bg: {{THEME_MATCH_ROW_HOVER_BG}};
             --match-row-hover-border: {{THEME_MATCH_ROW_HOVER_BORDER}};
+            --match-row-live-border-left: {{THEME_MATCH_ROW_LIVE_BORDER_LEFT}};
+            --match-row-live-bg-start: {{THEME_MATCH_ROW_LIVE_BG_START}};
+            --match-row-live-bg-end: {{THEME_MATCH_ROW_LIVE_BG_END}};
             
             --match-row-time-main-color: {{THEME_MATCH_ROW_TIME_MAIN_COLOR}};
+            --match-row-time-sub-color: {{THEME_MATCH_ROW_TIME_SUB_COLOR}};
             --match-row-team-name-color: {{THEME_MATCH_ROW_TEAM_NAME_COLOR}};
+            --match-row-live-text-color: {{THEME_MATCH_ROW_LIVE_TEXT_COLOR}};
+            --match-row-league-tag-color: {{THEME_MATCH_ROW_LEAGUE_TAG_COLOR}};
             
-            --btn-watch-bg: {{THEME_MATCH_ROW_BTN_WATCH_BG}};
-            --btn-watch-text: {{THEME_MATCH_ROW_BTN_WATCH_TEXT}};
+            --match-row-btn-watch-bg: {{THEME_MATCH_ROW_BTN_WATCH_BG}};
+            --match-row-btn-watch-text: {{THEME_MATCH_ROW_BTN_WATCH_TEXT}};
+            --match-row-btn-watch-hover-bg: {{THEME_MATCH_ROW_BTN_WATCH_HOVER_BG}};
+            
+            --match-row-hd-badge-bg: {{THEME_MATCH_ROW_HD_BADGE_BG}};
+            --match-row-hd-badge-border: {{THEME_MATCH_ROW_HD_BADGE_BORDER}};
+            --match-row-hd-badge-text: {{THEME_MATCH_ROW_HD_BADGE_TEXT}};
 
             /* FOOTER */
             --footer-bg-start: {{THEME_FOOTER_BG_START}};
             --footer-bg-end: {{THEME_FOOTER_BG_END}};
-            --footer-text: {{THEME_FOOTER_DESC_COLOR}};
+            --footer-heading-color: {{THEME_FOOTER_HEADING_COLOR}};
+            --footer-link-color: {{THEME_FOOTER_LINK_COLOR}};
+            --footer-link-hover-color: {{THEME_FOOTER_LINK_HOVER_COLOR}};
+            --footer-desc-color: {{THEME_FOOTER_DESC_COLOR}};
+            --footer-copyright-color: {{THEME_FOOTER_COPYRIGHT_COLOR}};
+            --footer-border-top: {{THEME_FOOTER_BORDER_TOP}};
+
+            /* SOCIALS & EXTRAS */
+            --social-sidebar-bg: {{THEME_SOCIAL_SIDEBAR_BG}};
+            --social-sidebar-border: {{THEME_SOCIAL_SIDEBAR_BORDER}};
+            --social-btn-bg: {{THEME_SOCIAL_BTN_BG}};
+            --social-btn-border: {{THEME_SOCIAL_BTN_BORDER}};
+            --social-btn-color: {{THEME_SOCIAL_BTN_COLOR}};
+            --social-btn-hover-bg: {{THEME_SOCIAL_BTN_HOVER_BG}};
+            --social-count-color: {{THEME_SOCIAL_COUNT_COLOR}};
+            
+            --mobile-footer-bg: {{THEME_MOBILE_FOOTER_BG}};
+            --mobile-footer-border-top: {{THEME_MOBILE_FOOTER_BORDER_TOP}};
+            --copy-toast-bg: {{THEME_COPY_TOAST_BG}};
+            
+            --back-to-top-bg: {{THEME_BACK_TO_TOP_BG}};
+            --back-to-top-icon-color: {{THEME_BACK_TO_TOP_ICON_COLOR}};
+            --back-to-top-radius: {{THEME_BACK_TO_TOP_RADIUS}};
             
             --section-logo-size: {{THEME_SECTION_LOGO_SIZE}};
+            --sys-status-bg: {{THEME_SYS_STATUS_BG}};
+            --sys-status-text: {{THEME_SYS_STATUS_TEXT}};
+            
+            --league-card-bg: {{THEME_LEAGUE_CARD_BG}};
+            --league-card-border: {{THEME_LEAGUE_CARD_BORDER}};
+            --league-card-text: {{THEME_LEAGUE_CARD_TEXT}};
+            --league-card-hover-bg: {{THEME_LEAGUE_CARD_HOVER_BG}};
 
-            /* FIXED HEIGHTS (CLS) */
+            /* FIXED HEIGHTS */
             --row-h-mob: 76px;
             --row-h-desk: 96px;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: var(--font-family-base); background: var(--bg-body); color: var(--text-main); padding-bottom: 80px; }
+        body { margin: 0; font-family: var(--font-family-base); background: var(--bg-body); color: var(--text-main); font-size: var(--base-font-size); padding-bottom: 80px; }
         a { text-decoration: none; color: inherit; transition: 0.2s; }
+        button { cursor: pointer; border: none; font-family: inherit; }
         
         /* HEADER */
-        header { background: var(--header-bg); border-bottom: var(--header-border-bottom); height: 60px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
-        .header-container { max-width: var(--header-max-width); margin: 0 auto; height: 100%; padding: 0 15px; display: flex; align-items: center; justify-content: space-between; }
+        header { background: var(--header-bg); border-bottom: var(--header-border-bottom); height: 60px; width: 100%; position: relative; z-index: 100; backdrop-filter: blur(10px); }
+        @media (min-width: 900px) { header { position: fixed; top: 0; } body { padding-top: 60px; } }
+        
+        .header-container { max-width: var(--header-max-width); margin: 0 auto; height: 100%; padding: 0 15px; display: flex; align-items: center; }
+        .h-layout-standard .header-container { justify-content: space-between; }
+        .h-layout-center .header-container { justify-content: center; }
         
         .logo-link { display: flex; align-items: center; gap: 10px; }
-        .logo-img { height: var(--logo-image-size); width: var(--logo-image-size); border-radius: var(--border-radius-base); }
+        .logo-img { height: var(--logo-image-size); width: var(--logo-image-size); border-radius: var(--border-radius-base); object-fit: cover; }
         .logo-text { font-size: 1.4rem; font-weight: 900; font-style: italic; letter-spacing: -1px; text-transform: uppercase; line-height: 1; color: var(--logo-text-p1-color); }
         .logo-text span { color: var(--logo-text-p2-color); }
 
         .nav-links { display: none; gap: 20px; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: var(--header-text-color); }
-        @media (min-width: 900px) { .nav-links { display: flex; } }
-        
-        /* HERO (League Specific) */
-        .league-hero { 
-            /* Injected via build script based on theme settings */
-            {{HERO_CSS}}
-            padding: 40px 15px; text-align: center; border-bottom: 1px solid var(--border);
+        .nav-links a:hover { color: var(--header-link-hover-color); }
+        .hamburger { display: block; font-size: 1.4rem; color: var(--header-text-color); background: none; }
+        @media (min-width: 900px) { 
+            .h-layout-standard .nav-links { display: flex; } 
+            .h-layout-standard .hamburger { display: none; } 
         }
-        .league-hero h1 { margin: 0; font-size: 2rem; color: var(--hero-h1-color); font-family: var(--font-family-headings); text-transform: uppercase; letter-spacing: -1px; }
-        .league-hero p { margin: 10px 0 0 0; color: var(--text-muted); max-width: 600px; margin-left: auto; margin-right: auto; }
+        .mobile-menu { position: absolute; top: 60px; left: 0; width: 100%; background: var(--bg-panel); border-bottom: var(--header-border-bottom); display: none; flex-direction: column; z-index: 99; }
+        .mobile-menu.active { display: flex; }
+        .mobile-menu a { padding: 15px 20px; border-bottom: 1px solid var(--border); font-weight: 600; color: var(--text-muted); }
+
+        /* HERO SECTION */
+        .hero-section {
+            /* Injected by Build Script (Full/Box, Background, Borders) */
+            {{HERO_OUTER_STYLE}}
+        }
+        .hero-inner {
+            {{HERO_INNER_STYLE}}
+            display: flex; flex-direction: column; 
+            text-align: {{THEME_HERO_TEXT_ALIGN}}; 
+            align-items: {{THEME_HERO_ALIGN_ITEMS}};
+        }
+        .sys-status { display: inline-flex; align-items: center; gap: 8px; background: var(--sys-status-bg); border: 1px solid var(--border); padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; font-size: 0.75rem; font-weight: 700; color: var(--sys-status-text); }
+        .hero-section h1 { margin: 0 0 15px 0; font-size: 2rem; color: var(--hero-h1-color); font-family: var(--font-family-headings); font-weight: 800; line-height:1.2; }
+        .hero-section p { margin: 0; color: var(--hero-intro-color); max-width: 700px; font-size: 0.95rem; line-height: 1.6; }
 
         /* CONTENT */
-        .container { max-width: var(--container-max-width); margin: 0 auto; padding: 30px 15px; min-height: 60vh; }
+        .container { max-width: var(--container-max-width); margin: 0 auto; padding: 20px 15px; min-height: 60vh; }
         
-        .sec-head { display: flex; align-items: center; gap: 10px; margin: 40px 0 20px 0; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-        .sec-title { font-size: 1.2rem; font-weight: 800; margin: 0; text-transform: uppercase; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+        .sec-head { display: flex; align-items: center; gap: 10px; margin: 40px 0 15px 0; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+        /* Special Border Variable for League Page Upcoming Section */
+        #upcoming-container .sec-head { border-bottom: {{THEME_SEC_BORDER_UPCOMING}}; }
+        
+        .sec-title { font-size: 1.2rem; font-weight: 800; margin: 0; text-transform: uppercase; color: var(--text-main); display: flex; align-items: center; gap: 10px; font-family: var(--font-family-headings); }
         .sec-logo { width: var(--section-logo-size); height: var(--section-logo-size); object-fit: contain; }
+        .live-dot { width: 8px; height: 8px; background: var(--brand-primary); border-radius: 50%; box-shadow: 0 0 10px var(--brand-primary); }
 
         /* MATCH ROW */
         .match-row { 
             display: grid; grid-template-columns: 45px 1fr 50px 75px; align-items: center; gap: 8px; 
             background: var(--match-row-bg); border: 1px solid var(--match-row-border); 
-            border-radius: var(--border-radius-base); padding: 10px 8px 5px 8px; margin-bottom: 10px; 
+            border-radius: var(--border-radius-base); padding: 10px 8px 5px 8px; margin-bottom: 8px; 
             position: relative; transition: 0.2s; height: var(--row-h-mob); overflow: hidden;
         }
         .match-row:hover { border-color: var(--match-row-hover-border); background: var(--match-row-hover-bg); transform: translateY(-2px); }
+        .match-row.live { border-left: var(--match-row-live-border-left); background: linear-gradient(90deg, var(--match-row-live-bg-start) 0%, var(--match-row-live-bg-end) 100%); }
         @media (min-width: 768px) { .match-row { grid-template-columns: 80px 1fr 100px 110px; padding: 15px 20px 10px 20px; gap: 20px; height: var(--row-h-desk); } }
         
-        .col-time { text-align: center; display: flex; flex-direction: column; justify-content: center; }
+        .col-time { text-align: center; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
         .time-main { font-size: 0.75rem; font-weight: 700; color: var(--match-row-time-main-color); }
-        .time-sub { font-size: 0.6rem; color: var(--text-muted); }
-        .live-txt { color: #22c55e; font-weight: 900; animation: blink 1.5s infinite; font-size: 0.65rem; }
+        .time-sub { font-size: 0.6rem; color: var(--match-row-time-sub-color); }
+        .live-txt { color: var(--match-row-live-text-color); font-weight: 900; animation: blink 1.5s infinite; font-size: 0.65rem; }
 
-        .teams-wrapper { display: flex; flex-direction: column; gap: 3px; justify-content: center; }
+        .teams-wrapper { display: flex; flex-direction: column; gap: 3px; justify-content: center; height:100%; }
+        .league-tag { font-size: 0.6rem; color: var(--match-row-league-tag-color); font-weight: 700; text-transform: uppercase; }
         .team-name { font-size: 0.75rem; font-weight: 600; color: var(--match-row-team-name-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
         @media (min-width: 768px) { .team-name { font-size: 0.95rem; } }
 
-        .logo-box { width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .logo-box { width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; margin-right: 4px; }
         .t-img { width: 100%; height: 100%; object-fit: contain; }
-        
-        .btn-watch { 
-            background: var(--btn-watch-bg); color: var(--btn-watch-text); 
-            font-size: 0.65rem; font-weight: 800; padding: 6px 10px; 
-            border-radius: 4px; width: 100%; text-transform: uppercase; 
-            display:flex; align-items:center; justify-content:center; gap:5px; height: 26px; 
-        }
+        .t-logo { width: 100%; height: 100%; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; color: #fff; position: absolute; top: 0; left: 0; }
 
-        /* ARTICLE CONTENT (Entity Stacking) */
-        .seo-article { margin-top: 60px; padding-top: 30px; border-top: 1px solid var(--border); color: var(--text-muted); line-height: 1.7; font-size: 0.95rem; }
-        .seo-article h2, .seo-article h3 { color: var(--text-main); margin-top: 30px; }
+        .col-meta { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
+        .meta-top { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); white-space: nowrap; }
+
+        .col-action { margin-left: auto; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+        .btn-watch { 
+            background: var(--match-row-btn-watch-bg); color: var(--match-row-btn-watch-text); 
+            font-size: 0.65rem; font-weight: 800; padding: 6px 10px; 
+            border-radius: var(--button-border-radius); width: 100%; text-transform: uppercase; 
+            display:flex; align-items:center; justify-content:center; gap:5px; height: 26px; transition: 0.2s;
+        }
+        .btn-watch:hover { background: var(--match-row-btn-watch-hover-bg); transform: scale(1.05); }
+        .hd-badge { background: var(--match-row-hd-badge-bg); padding: 1px 4px; border-radius: 3px; font-size: 0.55rem; border: 1px solid var(--match-row-hd-badge-border); color: var(--match-row-hd-badge-text); }
+
+        /* ENTITY STACKING ARTICLE */
+        .seo-article { margin-top: 50px; padding-top: 30px; border-top: 1px solid var(--border); color: var(--text-muted); line-height: 1.7; font-size: 0.9rem; }
+        .seo-article h1 { font-size: 1.5rem; color: var(--text-main); margin-bottom: 15px; }
+        .seo-article h2 { font-size: 1.2rem; color: var(--text-main); margin: 25px 0 10px 0; }
+        .seo-article h3 { font-size: 1.1rem; color: var(--text-main); margin: 20px 0 10px 0; }
         .seo-article a { color: var(--brand-primary); text-decoration: underline; }
 
-        /* FOOTER */
-        footer { background: linear-gradient(180deg, var(--footer-bg-start) 0%, var(--footer-bg-end) 100%); padding: 40px 20px; margin-top: 60px; text-align: center; color: var(--footer-text); font-size: 0.85rem; border-top: 1px solid var(--border); }
+        /* FOOTER & EXTRAS */
+        .leagues-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 15px; }
+        .league-card { background: var(--league-card-bg); border: 1px solid var(--league-card-border); padding: 10px 15px; border-radius: var(--border-radius-base); display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .league-card:hover { border-color: var(--league-card-hover-border); background: var(--league-card-hover-bg); transform: translateY(-2px); }
+        .league-card span { font-size: 0.8rem; font-weight: 700; color: var(--league-card-text); }
         
+        footer { background: linear-gradient(180deg, var(--footer-bg-start) 0%, var(--footer-bg-end) 100%); border-top: var(--footer-border-top); padding: 60px 20px 30px 20px; margin-top: 60px; }
+        .footer-grid { display: grid; grid-template-columns: {{THEME_FOOTER_GRID_COLUMNS}}; gap: 40px; max-width: var(--container-max-width); margin: 0 auto; text-align: {{THEME_FOOTER_TEXT_ALIGN_MOBILE}}; }
+        @media(min-width: 768px) { .footer-grid { grid-template-columns: {{THEME_FOOTER_GRID_COLUMNS_DESKTOP}}; text-align: {{THEME_FOOTER_TEXT_ALIGN_DESKTOP}}; } }
+        .f-brand h2 { margin: 0 0 15px 0; font-style: italic; text-transform: uppercase; color: {{THEME_FOOTER_BRAND_COLOR}}; letter-spacing: -1px; }
+        .f-desc { color: var(--footer-desc-color); font-size: 0.85rem; line-height: 1.6; }
+        .f-links { display: flex; flex-direction: column; gap: 12px; }
+        .f-link { color: var(--footer-link-color); font-size: 0.9rem; font-weight: 500; transition: 0.2s; }
+        .f-link:hover { color: var(--footer-link-hover-color); transform: var(--footer-link-hover-transform); }
+        .copyright { margin-top: 50px; border-top: 1px solid var(--border); padding-top: 25px; text-align: center; font-size: 0.75rem; color: var(--footer-copyright-color); }
+
+        /* SOCIALS & BTT */
+        .social-sidebar { position: fixed; left: 0; top: var(--social-desktop-top); transform: translateY(-50%) scale(var(--social-desktop-scale)); z-index: 90; display: flex; flex-direction: column; gap: 8px; background: var(--social-sidebar-bg); border: 1px solid var(--social-sidebar-border); border-left: none; padding: 12px 8px; border-radius: 0 6px 6px 0; backdrop-filter: blur(5px); }
+        .social-btn { width: 44px; padding: 6px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--social-btn-color); background: var(--social-btn-bg); border: 1px solid var(--social-btn-border); border-radius: 4px; transition: 0.2s; cursor: pointer; }
+        .social-btn svg { width: 20px; height: 20px; fill: currentColor; }
+        .social-btn:hover { background: var(--social-btn-hover-bg); transform: translateX(5px); }
+        .s-count { font-size: 0.65rem; font-weight: 700; color: var(--social-count-color); }
+        @media (max-width: 1024px) { .social-sidebar { display: none; } }
+
+        .mobile-sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--mobile-footer-bg); backdrop-filter: blur(10px); border-top: var(--mobile-footer-border-top); padding: 0 5px; display: none; justify-content: space-between; align-items: center; z-index: 900; height: var(--mobile-footer-height); box-shadow: var(--mobile-footer-shadow); }
+        .mobile-sticky-footer .social-btn { border: none; flex: 1; height: 100%; border-radius: 0; transform: none !important; background: transparent; }
+        .mobile-sticky-footer .social-btn:active { background: {{THEME_MOBILE_FOOTER_BTN_ACTIVE_BG}}; }
+        @media (max-width: 1024px) { .mobile-sticky-footer { display: flex; } }
+
+        .copy-toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: var(--copy-toast-bg); border: 1px solid var(--border); color: #fff; padding: 8px 14px; font-size: 0.75rem; border-radius: 6px; z-index: 9999; opacity: 0; animation: fadeToast 1.6s ease forwards; }
+        @keyframes fadeToast { 0% { opacity: 0; transform: translate(-50%, 10px); } 20% { opacity: 1; transform: translate(-50%, 0); } 80% { opacity: 1; } 100% { opacity: 0; } }
+
+        .back-to-top { position: fixed; bottom: 80px; right: 20px; background: var(--back-to-top-bg); width: var(--back-to-top-size); height: var(--back-to-top-size); border-radius: var(--back-to-top-radius); display: flex; align-items: center; justify-content: center; color: var(--back-to-top-icon-color); cursor: pointer; opacity: 0; visibility: hidden; transition: 0.3s; z-index: 90; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .back-to-top.show { opacity: 1; visibility: visible; }
+        .back-to-top svg { width: 24px; height: 24px; fill: currentColor; }
+        @media (min-width: 768px) { .back-to-top { bottom: 30px; } }
+
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
     </style>
 </head>
 <body>
 
-    <header>
+    <div id="socialSidebar" class="social-sidebar"></div>
+
+    <header class="{{HEADER_CLASSES}}">
         <div class="header-container">
             <a href="/" class="logo-link">{{LOGO_HTML}}</a>
-            <nav class="nav-links">{{HEADER_MENU}}</nav>
+            <nav class="nav-links" id="desktopNav">{{HEADER_MENU}}</nav>
+            <button class="hamburger" onclick="toggleMenu()">☰</button>
         </div>
     </header>
+    <div class="mobile-menu" id="mobileMenu">{{HEADER_MENU}}</div>
 
-    <div class="league-hero">
-        <h1>{{PAGE_TITLE}}</h1>
-        <p>Watch {{PAGE_FILTER}} live streams. Full schedule, live scores, and HD streams.</p>
+    <!-- HERO SECTION (Admin Configured) -->
+    <div class="hero-section">
+        <div class="hero-inner">
+            <div class="sys-status"><div class="live-dot"></div> {{THEME_TEXT_SYS_STATUS}}</div>
+            <h1>{{PAGE_TITLE}}</h1>
+            <!-- Intro Text (Optional if set in Admin) -->
+            <p>{{THEME_TEXT_HERO_INTRO}}</p> 
+        </div>
     </div>
 
     <main class="container">
         
-        <!-- LIVE SECTION (Hidden if empty) -->
-        <div id="live-container" style="display:none;">
+        <!-- LIVE SECTION (Matches Homepage Structure) -->
+        <div id="live-section" style="display:none;">
             <div class="sec-head">
-                <div class="sec-logo" style="background:#ef4444; border-radius:50%; width:10px; height:10px; box-shadow:0 0 10px #ef4444;"></div>
-                <h2 class="sec-title">Live Now</h2>
+                <h2 class="sec-title"><div class="live-dot"></div> {{TEXT_LIVE_SECTION_TITLE}}</h2>
             </div>
             <div id="live-list"></div>
         </div>
 
-        <!-- UPCOMING SECTION -->
-        <div class="sec-head">
-            <span style="font-size:1.5rem;">📅</span>
-            <h2 class="sec-title">Full {{PAGE_FILTER}} Schedule</h2>
-        </div>
-        
-        <!-- LAZY LOADING CONTAINER -->
-        <div id="schedule-list" style="min-height:200px; content-visibility: auto; contain-intrinsic-size: 1000px;">
-            <div style="padding:20px; text-align:center; color:var(--text-muted);">Loading schedule...</div>
+        <!-- UPCOMING SECTION (Admin Configurable Title) -->
+        <div id="upcoming-container">
+            <div class="sec-head">
+                <!-- Using Configurable Upcoming Title -->
+                <h2 class="sec-title">
+                    <span style="font-size:1.2rem;">📅</span> 
+                    {{TEXT_UPCOMING_TITLE}}
+                </h2>
+            </div>
+            
+            <!-- LAZY LOADING CONTAINER (For Performance) -->
+            <div id="schedule-list" style="min-height:200px; content-visibility: auto; contain-intrinsic-size: 1000px;">
+                <div style="padding:20px; text-align:center; color:var(--text-muted);">Loading schedule...</div>
+            </div>
         </div>
 
-        <!-- ENTITY STACKING ARTICLE (Injected by Python) -->
+        <!-- ENTITY STACKING ARTICLE -->
         <article class="seo-article">
             {{LEAGUE_ARTICLE}}
         </article>
 
+        <!-- FOOTER LEAGUES (Same as Homepage) -->
+        <div class="section-box" style="margin-top:50px;">
+            <div class="sec-head"><h2 class="sec-title">🏆 Popular Leagues</h2></div>
+            <div class="leagues-grid">{{FOOTER_LEAGUES}}</div>
+        </div>
+
     </main>
 
     <footer>
-        <div style="margin-bottom:15px;">{{FOOTER_STATIC}}</div>
-        {{FOOTER_COPYRIGHT}}
+        <div class="footer-grid">
+            <div class="f-brand">
+                {{LOGO_HTML}}
+                <div class="f-desc">{{FOOTER_DISCLAIMER}}</div>
+            </div>
+            <div>
+                <div class="f-head" style="margin-bottom:15px;color:var(--footer-heading-color);font-weight:700;">Quick Links</div>
+                <div class="f-links">{{FOOTER_STATIC}}</div>
+            </div>
+        </div>
+        <div class="copyright">{{FOOTER_COPYRIGHT}}</div>
     </footer>
+
+    <!-- MOBILE STICKY FOOTER -->
+    <div id="mobileFooter" class="mobile-sticky-footer"></div>
+
+    <button id="backToTop" class="back-to-top" onclick="window.scrollTo(0,0)">
+        <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+    </button>
 
     <script>
         // CONFIG INJECTED BY PYTHON
         const API_URL = "{{API_URL}}";
         const TARGET_COUNTRY = "{{TARGET_COUNTRY}}"; 
         const SITE_DOMAIN = "https://{{DOMAIN}}";
-        
-        // FILTER: This page only cares about ONE league
         const PAGE_FILTER = "{{PAGE_FILTER}}"; 
 
-        // MAPS
+        // MAPS & CONFIG
         const TEAM_TO_LEAGUE = {{JS_LEAGUE_MAP}}; 
         const IMAGE_MAP = {{JS_IMAGE_MAP}};
+        const THEME_CONFIG = {{JS_THEME_CONFIG}};
         
-        // NAME FIXES (Same as Master)
+        // SOCIALS CONFIG (Injected by Python Regex)
+        const SHARE_CONFIG = { excluded: [], counts: {} }; 
+
+        // NAME FIXES
         const NAME_FIXES = {
             "icehockey": "Ice Hockey", "fieldhockey": "Field Hockey",
             "tabletennis": "Table Tennis", "americanfootball": "American Football",
@@ -243,7 +393,18 @@
             "motorsport": "Motorsport", "golf": "Golf"
         };
 
-        window.addEventListener('DOMContentLoaded', loadMatches);
+        // --- INIT ---
+        window.addEventListener('DOMContentLoaded', () => {
+            highlightActiveMenu();
+            setTimeout(renderSocials, 3000); // Defer socials
+            loadMatches();
+        });
+
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('backToTop');
+            if(window.scrollY > 300) btn.classList.add('show');
+            else btn.classList.remove('show');
+        });
 
         async function loadMatches() {
             try {
@@ -252,7 +413,6 @@
                 if (!res.ok) return;
                 const data = await res.json();
                 
-                // 1. FILTER & NORMALIZE
                 const matches = [];
                 const len = data.matches.length;
                 const filterLower = PAGE_FILTER.toLowerCase();
@@ -261,12 +421,9 @@
                     const m = data.matches[i];
                     if((m.home_team === 'TBA' || !m.home_team) && (m.away_team === 'TBA' || !m.away_team)) continue;
 
-                    // STRICT FILTER: Only allow matches for this Page's League/Sport
+                    // STRICT FILTER: Match League/Sport against Page Filter
                     const mLeague = (m.league || "").toLowerCase();
                     const mSport = (m.sport || "").toLowerCase();
-                    
-                    // We check if the filter (e.g., "NBA") is inside the match league/sport string
-                    // Or if the resolveLeagueData finds it matches our Map
                     const resolved = resolveLeagueData(m);
                     
                     if (resolved.name.toLowerCase().includes(filterLower) || mLeague.includes(filterLower) || mSport.includes(filterLower)) {
@@ -285,18 +442,16 @@
                         });
                     }
                 }
-
                 renderApp(matches);
-
             } catch(e) { console.error(e); }
         }
 
         function renderApp(matches) {
             const liveList = document.getElementById('live-list');
             const schedList = document.getElementById('schedule-list');
-            const liveContainer = document.getElementById('live-container');
+            const liveSec = document.getElementById('live-section');
 
-            matches.sort((a,b) => a.startTimeUnix - b.startTimeUnix); // Chronological
+            matches.sort((a,b) => a.startTimeUnix - b.startTimeUnix);
 
             const liveFrag = document.createDocumentFragment();
             const schedFrag = document.createDocumentFragment();
@@ -314,7 +469,7 @@
             if (liveCount > 0) {
                 liveList.innerHTML = '';
                 liveList.appendChild(liveFrag);
-                liveContainer.style.display = 'block';
+                liveSec.style.display = 'block';
             }
 
             schedList.innerHTML = '';
@@ -327,18 +482,16 @@
 
         function createRow(m) {
             const div = document.createElement('div');
-            div.className = 'match-row';
+            div.className = m.is_live ? 'match-row live' : 'match-row';
             
             let timeCol;
             if (m.is_live) {
-                div.style.borderLeft = "4px solid #22c55e"; // Hardcoded Live indicator
                 timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
             } else { 
                 const ft = formatMatchTime(m.startTimeUnix);
                 timeCol = `<span class="time-main">${ft.time}</span><span class="time-sub">${ft.date}</span>`; 
             }
 
-            // Logo Logic
             const getLogo = (name) => {
                 if (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) {
                     const p = IMAGE_MAP.teams[name];
@@ -358,9 +511,28 @@
                 teamsHtml += `<div class="team-name">${getLogo(m.displayAway)} ${m.displayAway}</div>`;
             }
 
-            const actionHtml = `<button onclick="window.location.href='${SITE_DOMAIN}/watch/?info=${m.id}'" class="btn-watch">WATCH</button>`;
+            let metaHtml = '';
+            if (m.is_live) {
+                const v = m.live_viewers || 0;
+                let vText = v > 5000 ? `👀 ${(v/1000).toFixed(1)}k 🔥` : (v >= 1000 ? `👀 ${(v/1000).toFixed(1)}k 📈` : "⚡ Stable");
+                metaHtml = `<div class="meta-top">${vText}</div>`;
+            } else {
+                 metaHtml = `<div style="display:flex; flex-direction:column; align-items:flex-end;"><span style="font-size:0.55rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px;">Starts in</span><span class="meta-top" style="color:var(--accent-gold); font-size:0.75rem;">${m.status_text}</span></div>`;
+            }
+
+            let actionHtml = '';
+            const link = `${SITE_DOMAIN}/watch/?info=${m.id}`;
+            const copyBtn = `<button class="btn-copy-link" onclick="copyText('${link}')" style="background:none;border:none;color:var(--text-muted);font-size:0.65rem;font-weight:700;cursor:pointer;margin-top:5px;display:flex;align-items:center;gap:4px;">Link</button>`;
+
+            if (m.is_live) {
+                actionHtml = `<button onclick="window.location.href='${link}'" class="btn-watch">{{TEXT_WATCH_BTN}} <span class="hd-badge">{{TEXT_HD_BADGE}}</span></button>`;
+            } else {
+                const start = m.startTimeUnix || Date.now();
+                if ((start - Date.now()) / 60000 <= 30) actionHtml = `<button onclick="window.location.href='${link}'" class="btn-watch">{{TEXT_WATCH_BTN}} <span class="hd-badge">{{TEXT_HD_BADGE}}</span></button>` + copyBtn;
+                else actionHtml = `<button onclick="setNotify(this)" class="btn-notify" style="background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:4px 8px;border-radius:4px;font-size:0.65rem;width:100%;font-weight:700;">🔔 Notify</button>` + copyBtn;
+            }
             
-            div.innerHTML = `<div class="col-time">${timeCol}</div><div class="teams-wrapper">${teamsHtml}</div><div class="col-meta"></div><div class="col-action">${actionHtml}</div>`;
+            div.innerHTML = `<div class="col-time">${timeCol}</div><div class="teams-wrapper"><div class="league-tag">${m.finalLeague.toUpperCase()}</div>${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${actionHtml}</div>`;
             return div;
         }
 
@@ -368,7 +540,11 @@
         function slugify(text) { return (text || "").toString().toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/^-+|-+$/g, ''); }
         function unslugify(slug) { return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '); }
         function escapeHtml(text) { if (!text) return text; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
-        
+        function copyText(text) { navigator.clipboard.writeText(text); const t = document.createElement('div'); t.className = 'copy-toast'; t.innerText = 'Link copied ✓'; document.body.appendChild(t); setTimeout(() => t.remove(), 1600); }
+        function highlightActiveMenu() { const path = window.location.pathname; document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(link => { if(link.getAttribute('href') === path) link.classList.add('active'); }); }
+        function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
+        function setNotify(btn) { btn.style.borderColor = "#22c55e"; btn.style.color = "#fff"; btn.style.background = "#22c55e"; btn.innerText = "✓ Set"; btn.disabled = true; }
+
         function resolveLeagueData(match) {
             const hSlug = slugify(match.home_team);
             const aSlug = slugify(match.away_team);
@@ -378,7 +554,6 @@
             }
             if (TEAM_TO_LEAGUE && TEAM_TO_LEAGUE[hSlug]) return { name: TEAM_TO_LEAGUE[hSlug], source: "MapHome" };
             
-            // Name Fix
             let apiName = (match.league || match.sport || "Other").trim();
             const lowerApi = apiName.toLowerCase().replace(/\s/g, '');
             if(NAME_FIXES[lowerApi]) apiName = NAME_FIXES[lowerApi];
@@ -411,6 +586,100 @@
                 return { time: t + suffix, date: dt };
             } catch (e) { return { time: "--:--", date: "Invalid" }; }
         }
+
+        function renderSocials() {
+            const currentSlug = window.location.pathname.replace(/\//g, '');
+            if(SHARE_CONFIG.excluded.includes(currentSlug)) return;
+            const makeUrl = (p) => {
+                const u = encodeURIComponent(SITE_DOMAIN);
+                if(p==='telegram') return `https://t.me/share/url?url=${u}`;
+                if(p==='whatsapp') return `https://api.whatsapp.com/send?text=${u}`;
+                if(p==='reddit') return `https://www.reddit.com/submit?url=${u}`;
+                if(p==='twitter') return `https://twitter.com/intent/tweet?url=${u}`;
+                return null;
+            };
+            const icons = { telegram:
+
+
+                }; // End of icons object
+
+            let html = '';
+            ['telegram', 'whatsapp', 'reddit', 'twitter', 'copy'].forEach(p => {
+                const count = SHARE_CONFIG.counts[p] ? ((n)=>(n>=1000?(n/1000).toFixed(1)+'k':n))(SHARE_CONFIG.counts[p]) : '';
+                const onclick = p === 'copy' ? `copyText('${SITE_DOMAIN}')` : `window.open('${makeUrl(p)}', '_blank')`;
+                html += `<div class="social-btn ${p}" onclick="${onclick}">${icons[p]}<span class="s-count">${count}</span></div>`;
+            });
+
+            if(document.getElementById('socialSidebar')) document.getElementById('socialSidebar').innerHTML = html;
+            if(document.getElementById('mobileFooter')) document.getElementById('mobileFooter').innerHTML = html;
+        }
+
+        function getSportIcon(n) { 
+            n=(n||"").toLowerCase(); 
+            if(n.includes('soccer')||n.includes('premier')) return '⚽'; 
+            if(n.includes('basket')||n.includes('nba')) return '🏀'; 
+            if(n.includes('football')||n.includes('nfl')) return '🏈'; 
+            if(n.includes('baseball')||n.includes('mlb')) return '⚾'; 
+            if(n.includes('fight')||n.includes('ufc')||n.includes('box')||n.includes('mma')) return '🥊'; 
+            if(n.includes('motor')||n.includes('f1')) return '🏎️'; 
+            return '🏆'; 
+        }
+        
+        function generateDynamicSchema(liveList, upcomingList) {
+            const now = Date.now();
+            const existing = document.getElementById('dynamic-schema-script');
+            if (existing) existing.remove();
+            
+            // Generate schema for top 20 items on this specific league page
+            const allItems = [...liveList, ...upcomingList].slice(0, 20);
+            if (allItems.length === 0) return;
+
+            const mainImage = (document.querySelector('meta[property="og:image"]') || {}).content || `${SITE_DOMAIN}/assets/logo.png`;
+            const listItems = allItems.map((m, index) => {
+                const isLive = m.is_live;
+                
+                // Entity Stacking Schema Construction
+                const schemaItem = {
+                    "@type": "SportsEvent", 
+                    "startDate": new Date(m.startTimeUnix).toISOString(),
+                    "eventStatus": isLive ? "https://schema.org/EventLive" : "https://schema.org/EventScheduled",
+                    "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+                    "url": `${SITE_DOMAIN}/watch/?info=${m.id}`, 
+                    "image": [ mainImage ],
+                    "organizer": { "@id": `${SITE_DOMAIN}/#organization` },
+                    "offers": { 
+                        "@type": "Offer", 
+                        "price": "0", 
+                        "priceCurrency": "USD", 
+                        "availability": isLive ? "https://schema.org/InStock" : "https://schema.org/PreOrder", 
+                        "url": `${SITE_DOMAIN}/watch/?info=${m.id}` 
+                    },
+                    "name": `${m.displayHome} vs ${m.displayAway}`,
+                    "description": `Watch ${m.displayHome} vs ${m.displayAway} live stream. ${m.finalLeague} coverage.`
+                };
+                
+                // Add Competitor Entities
+                schemaItem.homeTeam = { "@type": "SportsTeam", "name": m.displayHome };
+                schemaItem.awayTeam = { "@type": "SportsTeam", "name": m.displayAway };
+
+                return { "@type": "ListItem", "position": index + 1, "item": schemaItem };
+            });
+
+            const schema = { 
+                "@context": "https://schema.org", 
+                "@type": "ItemList", 
+                "@id": `${CANONICAL_URL}#events`, 
+                "name": `Upcoming ${PAGE_FILTER} Schedule`, 
+                "itemListElement": listItems 
+            };
+            
+            const script = document.createElement('script'); 
+            script.id = 'dynamic-schema-script'; 
+            script.type = 'application/ld+json'; 
+            script.text = JSON.stringify(schema); 
+            document.head.appendChild(script);
+        }
     </script>
 </body>
 </html>
+                           
