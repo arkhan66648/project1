@@ -575,234 +575,6 @@
 
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        /* --- FEATURED MATCH STYLES (OPTIMIZED) --- */
-        /* --- FEATURED MATCH STYLES (MODERN GRID LAYOUT) --- */
-        .feat-card {
-            margin-top: 20px;
-    
-    /* WIDTH FIX: Matches the skeleton exactly */
-    width: 100%; 
-    max-width: 800px; /* Same as skeleton */
-    margin-left: auto; /* Centers the box */
-    margin-right: auto; /* Centers the box */
-    
-    /* HEIGHT FIX: Locks height to prevent layout shift */
-    height: 243px; 
-    
-    box-sizing: border-box; 
-    background: linear-gradient(180deg, rgba(20,20,20,0.6) 0%, rgba(10,10,10,0.9) 100%);
-    border: 1px solid var(--border);
-    border-top: 2px solid var(--brand-primary); 
-    border-radius: 12px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    display: flex;
-    flex-direction: column;
-    animation: fadeIn 0.5s ease;
-}
-
-/* Desktop Adjustment */
-@media (min-width: 768px) {
-    .feat-card {
-        margin-top: 30px;
-        height: 230px; /* Fixed height for desktop */
-    }
-}
-
-        /* TOP SECTION: Meta Info */
-        .feat-header {
-            padding: 12px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            background: rgba(0,0,0,0.2);
-        }
-
-        .feat-meta-left { display: flex; flex-direction: column; gap: 4px; }
-        
-        .feat-tag { 
-            align-self: flex-start;
-            background: var(--accent-gold); color: #000; 
-            font-size: 0.65rem; font-weight: 800; padding: 2px 8px; 
-            border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-
-        .feat-status-text {
-            font-size: 0.75rem; font-weight: 700; color: var(--brand-primary);
-            text-transform: uppercase;
-            display: flex; align-items: center; gap: 5px;
-        }
-        .feat-status-text.live { color: #ef4444; animation: pulse 1.5s infinite; }
-        .feat-status-text.upcoming { color: var(--text-muted); }
-
-        .feat-league {
-            text-align: right;
-            font-size: 0.75rem; font-weight: 600; color: var(--text-muted);
-            text-transform: uppercase; max-width: 50%;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-        }
-
-        /* MIDDLE SECTION: The Matchup (GRID) */
-        .feat-match-grid {
-            padding: 10px; 
-            display: grid;
-            grid-template-columns: 1fr auto 1fr; 
-            align-items: center;
-            gap: 8px;
-            /* FIXED HEIGHT: Ensures card size is same with or without logos */
-            height: 90px; 
-            overflow: hidden;
-        }
-
-        .feat-team { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; /* Vertically centers text if logo is missing */
-            text-align: center; 
-            gap: 4px; 
-            height: 100%; /* Fills the fixed grid height */
-            position: relative; 
-            z-index: 2;
-        }
-
-        .feat-logo { 
-            height: 35px; 
-            width: auto; 
-            max-width: 100%;
-            object-fit: contain; 
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6)); 
-            transition: transform 0.3s;
-        }
-        .feat-team:hover .feat-logo { transform: scale(1.1); }
-
-        .feat-name { 
-            font-size: 0.85rem; 
-            font-weight: 700; 
-            color: var(--text-main); 
-            line-height: 1.1;
-            /* Text Truncation to prevent overflow */
-            display: -webkit-box; 
-            -webkit-line-clamp: 2; 
-            -webkit-box-orient: vertical; 
-            overflow: hidden;
-            max-width: 100%;
-        }
-
-        .feat-vs-box {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 80px; /* Slightly wider to fit clock */
-        }
-        .feat-vs { 
-            font-size: 1.8rem; font-weight: 900; color: rgba(255,255,255,0.05); 
-            font-style: italic; user-select: none; line-height: 1;
-        }
-        
-        /* NEW: Match Clock (e.g. 45') */
-        .feat-match-clock {
-            font-size: 0.85rem; font-weight: 700; color: var(--brand-primary);
-            margin-top: 4px;
-            text-shadow: 0 0 10px rgba(0,0,0,0.5);
-            animation: pulse 2s infinite;
-        }
-
-        /* BOTTOM SECTION: Date & Buttons */
-        .feat-footer {
-            padding: 12px 15px;
-            background: rgba(255,255,255,0.02);
-            border-top: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .feat-date-row {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            font-size: 0.8rem; font-weight: 600; color: var(--text-muted);
-        }
-        .feat-date-icon { width: 14px; height: 14px; fill: var(--text-muted); }
-
-        .feat-actions {
-            display: flex; gap: 10px; width: 100%;
-        }
-
-        .feat-btn {
-            flex: 1; /* Both buttons take equal width or main button takes more */
-            border: none; padding: 10px; border-radius: 6px;
-            font-size: 0.70rem; font-weight: 700; text-transform: uppercase;
-            cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-        }
-
-        .feat-btn.primary {
-            background: var(--brand-primary); color: #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        .feat-btn.primary:hover { background: var(--brand-dark); transform: translateY(-1px); }
-
-        .feat-btn.secondary {
-            background: transparent; border: 1px solid var(--border); color: var(--text-muted);
-        }
-        .feat-btn.secondary:hover { border-color: var(--text-main); color: var(--text-main); background: rgba(255,255,255,0.05); }
-
-        /* DESKTOP TWEAKS */
-        @media (min-width: 768px) {
-            .feat-match-grid {
-    padding: 10px; 
-    display: grid;
-    grid-template-columns: 1fr auto 1fr; 
-    align-items: center;
-    gap: 8px;
-    
-    /* IMPORTANT: Makes the grid fill the remaining height automatically */
-    flex: 1; 
-    
-    overflow: hidden;
-}
-            .feat-logo { height: 60px; }
-            .feat-name { font-size: 1.1rem; }
-            .feat-footer { flex-direction: row; justify-content: space-between; align-items: center; }
-            .feat-actions { width: auto; gap: 15px; }
-            .feat-btn { padding: 8px 20px; width: auto; min-width: 140px; }
-            .feat-date-row { justify-content: flex-start; }
-            .feat-header { align-items: center; }
-            .feat-league { max-width: 60%; font-size: 0.85rem; }
-        }
-        /* FEATURED SKELETON (Prevents Layout Shift) */
-        /* FEATURED SKELETON */
-.feat-skel {
-    /* 1. Sizing & Box Model */
-    width: 100%;
-    max-width: 800px; /* Prevents overflow */
-    box-sizing: border-box; /* Ensures padding/borders are included in height */
-    
-    /* 2. Centering & Positioning */
-    margin-top: 20px;    /* Match Mobile Card Margin */
-    margin-left: auto;   /* Force Horizontal Center */
-    margin-right: auto;  /* Force Horizontal Center */
-    
-    /* 3. Height (Calculated previously) */
-    height: 243px; 
-    
-    /* 4. Appearance */
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-@media (min-width: 768px) {
-    .feat-skel { 
-        margin-top: 30px; /* Match Desktop Card Margin */
-        height: 230px;    /* Match Desktop Card Height */
-    }
-}
-        #hero-featured-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Ensures the max-width card stays centered */
-}
     </style>
 <style>#live-section, #upcoming-container { display: none !important; }</style></head>
 <body>
@@ -824,11 +596,6 @@
             <h1>Streameast - #1 NBA Streaming Site</h1>
             <p class="entity-intro">dgdfgdgdgd</p>
             <div class="cat-scroll"><a href="#" class="cat-pill">⚾ MLB</a><a href="/nba" class="cat-pill">🏀 NBA</a><a href="/#ufc" class="cat-pill">🥊 UFC</a></div>
-            <!-- FEATURED SKELETON (Injected by Build Script if Enabled) -->
-            <div id="feat-skeleton" class="skeleton feat-skel"></div>
-
-            <!-- FEATURED MATCH CONTAINER -->
-            <div id="hero-featured-container" style="display:none;"></div>
         </div>
     </div>
 
@@ -968,8 +735,7 @@
 
         const SHARE_CONFIG = {"excluded": ["dmca", "contact", "about", "privacy"], "counts": {"telegram": 12000, "whatsapp": 14400, "reddit": 60077, "twitter": 5544}};
 
-        const THEME_CONFIG = {"brand_primary": "#d00000", "brand_dark": "#8a0000", "accent_gold": "#ffd700", "status_green": "#00e676", "bg_body": "#050505", "bg_panel": "#0f0f0f", "bg_glass": "rgba(30, 41, 59, 0.7)", "text_main": "#ffffff", "text_muted": "#888888", "border_color": "#222222", "scrollbar_thumb_color": "#333333", "font_family_base": "system-ui, -apple-system, sans-serif", "font_family_headings": "'Courier New', monospace", "base_font_size": "14px", "base_line_height": "1.5", "container_max_width": "950px", "border_radius_base": "0px", "button_border_radius": "21px", "header_max_width": "1000px", "hero_pill_radius": "8px", "card_shadow": "0 4px 6px -1px rgba(0,0,0,0.1)", "header_bg": "#050505", "header_text_color": "#aaaaaa", "header_link_active_color": "#ffffff", "header_border_bottom": "1px solid var(--border)", "logo_p1_color": "#ffffff", "logo_p2_color": "#d00000", "logo_image_size": "40px", "header_layout": "standard", "header_icon_pos": "left", "header_link_hover_color": "#3e0a0a", "header_highlight_color": "#02ed12", "header_highlight_hover": "#bf1d1d", "hero_bg_style": "gradient", "hero_bg_solid": "#ffffff", "hero_gradient_start": "#1c0202", "hero_gradient_end": "#000000", "hero_h1_color": "#ffffff", "hero_intro_color": "#999999", "hero_pill_bg": "#111111", "hero_pill_text": "#cccccc", "hero_pill_border": "rgba(255,255,255,0.1)", "hero_pill_hover_bg": "#2a0a0a", "hero_pill_hover_text": "#ffffff", "hero_pill_hover_border": "#D00000", "hero_layout_mode": "full", "hero_content_align": "center", "hero_menu_visible": "flex", "hero_box_width": "1100px", "hero_border_width": "1", "hero_border_color": "#334155", "hero_border_top": true, "hero_border_left": true, "hero_border_right": true, "text_sys_status": "System Status: Online", "hero_main_border_pos": "full", "hero_main_border_width": "5px", "hero_main_border_color": "#4416e9", "hero_box_border_width": "4px", "hero_box_border_color": "#acf410", "hero_border_bottom_box": false, "hero_featured_match": true, "sec_border_live_width": "3", "sec_border_live_color": "#e70856", "sec_border_upcoming_width": "2", "sec_border_upcoming_color": "#070e17", "sec_border_wildcard_width": "1", "sec_border_wildcard_color": "#334155", "sec_border_leagues_width": "3", "sec_border_leagues_color": "#1e4b8a", "sec_border_grouped_width": "3", "sec_border_grouped_color": "#00b37d", "match_row_bg": "#121212", "match_row_border": "#222222", "match_row_live_border_left": "3px solid var(--brand-primary)", "match_row_live_bg_start": "#1a0505", "match_row_live_bg_end": "#141414", "match_row_hover_border": "#444444", "match_row_hover_transform": "translateY(-2px)", "match_row_hover_bg": "#1a1a1a", "match_row_time_main_color": "#888888", "match_row_time_sub_color": "#94a3b8", "match_row_live_text_color": "#d00000", "match_row_league_tag_color": "#94a3b8", "match_row_team_name_color": "#ffffff", "match_row_btn_watch_bg": "#d00000", "match_row_btn_watch_text": "#ffffff", "match_row_btn_watch_hover_bg": "#b91c1c", "match_row_btn_watch_hover_transform": "scale(1.05)", "match_row_hd_badge_bg": "rgba(0,0,0,0.3)", "match_row_hd_badge_border": "rgba(255,255,255,0.2)", "match_row_hd_badge_text": "#facc15", "match_row_btn_notify_bg": "transparent", "match_row_btn_notify_border": "#334155", "match_row_btn_notify_text": "#94a3b8", "match_row_btn_notify_active_bg": "#22c55e", "match_row_btn_notify_active_border": "#22c55e", "match_row_btn_notify_active_text": "#ffffff", "match_row_btn_copy_link_color": "#64748b", "match_row_btn_copy_link_hover_color": "#D00000", "footer_bg_start": "#0e0e0e", "footer_bg_end": "#050505", "footer_border_top": "1px solid #334155", "footer_heading_color": "#94a3b8", "footer_link_color": "#94a3b8", "footer_link_hover_color": "#f1f5f9", "footer_link_hover_transform": "translateX(5px)", "footer_copyright_color": "#475569", "footer_desc_color": "#64748b", "social_sidebar_bg": "rgba(15, 23, 42, 0.8)", "social_sidebar_border": "#334155", "social_sidebar_shadow": "0 4px 10px rgba(0,0,0,0.3)", "social_btn_bg": "rgba(30, 41, 59, 0.8)", "social_btn_border": "#334155", "social_btn_color": "#94a3b8", "social_btn_hover_bg": "#1e293b", "social_btn_hover_border": "#D00000", "social_btn_hover_transform": "translateX(5px)", "social_count_color": "#64748b", "mobile_footer_bg": "rgba(5, 5, 5, 0.9)", "mobile_footer_border_top": "1px solid #334155", "mobile_footer_shadow": "0 -4px 10px rgba(0,0,0,0.5)", "copy_toast_bg": "#22c55e", "copy_toast_text": "#ffffff", "copy_toast_border": "#16a34a", "back_to_top_bg": "#d00000", "back_to_top_icon_color": "#ffffff", "back_to_top_shadow": "0 4px 10px rgba(208,0,0,0.4)", "sys_status_dot_color": "#22c55e", "sys_status_bg": "rgba(34, 197, 94, 0.1)", "sys_status_border": "rgba(34, 197, 94, 0.2)", "sys_status_text": "#22c55e", "skeleton_gradient_start": "#1e293b", "skeleton_gradient_mid": "#334155", "skeleton_gradient_end": "#1e293b", "skeleton_border_color": "#334155", "text_wildcard_title": "Section title test Single league", "text_top_upcoming_title": "Top 5 section title test", "logo_image_shadow_color": "rgba(208, 0, 0, 0.3)", "button_shadow_color": "rgba(0,0,0,0.2)", "show_more_btn_bg": "#151515", "show_more_btn_border": "#334155", "show_more_btn_text": "#cccccc", "show_more_btn_hover_bg": "#D00000", "show_more_btn_hover_border": "#D00000", "show_more_btn_hover_text": "#ffffff", "league_card_bg": "rgba(30, 41, 59, 0.5)", "league_card_border": "#334155", "league_card_text": "#f1f5f9", "league_card_hover_bg": "#1e293b", "league_card_hover_border": "#D00000", "footer_brand_color": "#ffffff", "mobile_footer_btn_active_bg": "rgba(255,255,255,0.1)", "social_telegram_color": "#0088cc", "social_whatsapp_color": "#25D366", "social_reddit_color": "#FF4500", "social_twitter_color": "#1DA1F2", "social_btn_hover_shadow_color": "rgba(0,0,0,0.3)", "footer_grid_columns": "1fr 1fr", "footer_text_align_mobile": "left", "footer_grid_columns_desktop": "2fr 1fr", "footer_text_align_desktop": "left", "footer_last_col_align_desktop": "right", "social_desktop_top": "50%", "social_desktop_left": "0", "social_desktop_scale": "1.0", "mobile_footer_height": "60px", "show_more_btn_radius": "30px", "back_to_top_radius": "50%", "back_to_top_size": "40px", "section_logo_size": "30px", "text_live_section_title": "Air On Now", "text_show_more": "View more", "text_watch_btn": "Streams", "text_hd_badge": "SD", "text_section_link": "Show More", "wildcard_category": "", "text_section_prefix": "Hey", "sec_border_live": "3px solid #e70856", "sec_border_upcoming": "2px solid #070e17", "sec_border_wildcard": "1px solid #334155", "sec_border_leagues": "3px solid #1e4b8a", "sec_border_grouped": "3px solid #00b37d"};
-        const FEATURED_ENABLED = true;
+        const THEME_CONFIG = {"brand_primary": "#d00000", "brand_dark": "#8a0000", "accent_gold": "#ffd700", "status_green": "#00e676", "bg_body": "#050505", "bg_panel": "#0f0f0f", "bg_glass": "rgba(30, 41, 59, 0.7)", "text_main": "#ffffff", "text_muted": "#888888", "border_color": "#222222", "scrollbar_thumb_color": "#333333", "font_family_base": "system-ui, -apple-system, sans-serif", "font_family_headings": "'Courier New', monospace", "base_font_size": "14px", "base_line_height": "1.5", "container_max_width": "950px", "border_radius_base": "0px", "button_border_radius": "21px", "header_max_width": "1000px", "hero_pill_radius": "8px", "card_shadow": "0 4px 6px -1px rgba(0,0,0,0.1)", "header_bg": "#050505", "header_text_color": "#aaaaaa", "header_link_active_color": "#ffffff", "header_border_bottom": "1px solid var(--border)", "logo_p1_color": "#ffffff", "logo_p2_color": "#d00000", "logo_image_size": "40px", "header_layout": "standard", "header_icon_pos": "left", "header_link_hover_color": "#3e0a0a", "header_highlight_color": "#02ed12", "header_highlight_hover": "#bf1d1d", "hero_bg_style": "gradient", "hero_bg_solid": "#ffffff", "hero_gradient_start": "#1c0202", "hero_gradient_end": "#000000", "hero_h1_color": "#ffffff", "hero_intro_color": "#999999", "hero_pill_bg": "#111111", "hero_pill_text": "#cccccc", "hero_pill_border": "rgba(255,255,255,0.1)", "hero_pill_hover_bg": "#2a0a0a", "hero_pill_hover_text": "#ffffff", "hero_pill_hover_border": "#D00000", "hero_layout_mode": "full", "hero_content_align": "center", "hero_menu_visible": "flex", "hero_box_width": "1100px", "hero_border_width": "1", "hero_border_color": "#334155", "hero_border_top": true, "hero_border_left": true, "hero_border_right": true, "text_sys_status": "System Status: Online", "hero_main_border_pos": "full", "hero_main_border_width": "5px", "hero_main_border_color": "#4416e9", "hero_box_border_width": "4px", "hero_box_border_color": "#acf410", "hero_border_bottom_box": false, "hero_featured_match": true, "sec_border_live_width": "3", "sec_border_live_color": "#e70856", "sec_border_upcoming_width": "2", "sec_border_upcoming_color": "#070e17", "sec_border_wildcard_width": "1", "sec_border_wildcard_color": "#334155", "sec_border_leagues_width": "3", "sec_border_leagues_color": "#1e4b8a", "sec_border_grouped_width": "3", "sec_border_grouped_color": "#00b37d", "match_row_bg": "#121212", "match_row_border": "#222222", "match_row_live_border_left": "3px solid var(--brand-primary)", "match_row_live_bg_start": "#1a0505", "match_row_live_bg_end": "#141414", "match_row_hover_border": "#444444", "match_row_hover_transform": "translateY(-2px)", "match_row_hover_bg": "#1a1a1a", "match_row_time_main_color": "#888888", "match_row_time_sub_color": "#94a3b8", "match_row_live_text_color": "#d00000", "match_row_league_tag_color": "#94a3b8", "match_row_team_name_color": "#ffffff", "match_row_btn_watch_bg": "#d00000", "match_row_btn_watch_text": "#ffffff", "match_row_btn_watch_hover_bg": "#b91c1c", "match_row_btn_watch_hover_transform": "scale(1.05)", "match_row_hd_badge_bg": "rgba(0,0,0,0.3)", "match_row_hd_badge_border": "rgba(255,255,255,0.2)", "match_row_hd_badge_text": "#facc15", "match_row_btn_notify_bg": "transparent", "match_row_btn_notify_border": "#334155", "match_row_btn_notify_text": "#94a3b8", "match_row_btn_notify_active_bg": "#22c55e", "match_row_btn_notify_active_border": "#22c55e", "match_row_btn_notify_active_text": "#ffffff", "match_row_btn_copy_link_color": "#64748b", "match_row_btn_copy_link_hover_color": "#D00000", "footer_bg_start": "#0e0e0e", "footer_bg_end": "#050505", "footer_border_top": "1px solid #334155", "footer_heading_color": "#94a3b8", "footer_link_color": "#94a3b8", "footer_link_hover_color": "#f1f5f9", "footer_link_hover_transform": "translateX(5px)", "footer_copyright_color": "#475569", "footer_desc_color": "#64748b", "social_sidebar_bg": "rgba(15, 23, 42, 0.8)", "social_sidebar_border": "#334155", "social_sidebar_shadow": "0 4px 10px rgba(0,0,0,0.3)", "social_btn_bg": "rgba(30, 41, 59, 0.8)", "social_btn_border": "#334155", "social_btn_color": "#94a3b8", "social_btn_hover_bg": "#1e293b", "social_btn_hover_border": "#D00000", "social_btn_hover_transform": "translateX(5px)", "social_count_color": "#64748b", "mobile_footer_bg": "rgba(5, 5, 5, 0.9)", "mobile_footer_border_top": "1px solid #334155", "mobile_footer_shadow": "0 -4px 10px rgba(0,0,0,0.5)", "copy_toast_bg": "#22c55e", "copy_toast_text": "#ffffff", "copy_toast_border": "#16a34a", "back_to_top_bg": "#d00000", "back_to_top_icon_color": "#ffffff", "back_to_top_shadow": "0 4px 10px rgba(208,0,0,0.4)", "sys_status_dot_color": "#22c55e", "sys_status_bg": "rgba(34, 197, 94, 0.1)", "sys_status_border": "rgba(34, 197, 94, 0.2)", "sys_status_text": "#22c55e", "skeleton_gradient_start": "#1e293b", "skeleton_gradient_mid": "#334155", "skeleton_gradient_end": "#1e293b", "skeleton_border_color": "#334155", "text_wildcard_title": "Section title test Single league", "text_top_upcoming_title": "Top 5 section title test", "logo_image_shadow_color": "rgba(208, 0, 0, 0.3)", "button_shadow_color": "rgba(0,0,0,0.2)", "show_more_btn_bg": "#151515", "show_more_btn_border": "#334155", "show_more_btn_text": "#cccccc", "show_more_btn_hover_bg": "#D00000", "show_more_btn_hover_border": "#D00000", "show_more_btn_hover_text": "#ffffff", "league_card_bg": "rgba(30, 41, 59, 0.5)", "league_card_border": "#334155", "league_card_text": "#f1f5f9", "league_card_hover_bg": "#1e293b", "league_card_hover_border": "#D00000", "footer_brand_color": "#ffffff", "mobile_footer_btn_active_bg": "rgba(255,255,255,0.1)", "social_telegram_color": "#0088cc", "social_whatsapp_color": "#25D366", "social_reddit_color": "#FF4500", "social_twitter_color": "#1DA1F2", "social_btn_hover_shadow_color": "rgba(0,0,0,0.3)", "footer_grid_columns": "1fr 1fr", "footer_text_align_mobile": "left", "footer_grid_columns_desktop": "2fr 1fr", "footer_text_align_desktop": "left", "footer_last_col_align_desktop": "right", "social_desktop_top": "50%", "social_desktop_left": "0", "social_desktop_scale": "1.0", "mobile_footer_height": "60px", "show_more_btn_radius": "30px", "back_to_top_radius": "50%", "back_to_top_size": "40px", "section_logo_size": "30px", "text_live_section_title": "Air On Now", "text_show_more": "View more", "text_watch_btn": "Streams", "text_hd_badge": "SD", "text_section_link": "Show More", "wildcard_category": "", "text_section_prefix": "Hey", "sec_border_live": "3px solid #e70856", "sec_border_upcoming": "2px solid #070e17", "sec_border_wildcard": "1px solid #334155", "sec_border_leagues": "3px solid #1e4b8a", "sec_border_grouped": "3px solid #00b37d"}; 
 
         let teamToLeagueMap = {};
         if (RAW_LEAGUE_MAP) {
@@ -1137,206 +903,70 @@
 
         function normalizeKey(str) { return str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : ""; }
 
-        function renderFeaturedMatch(m, type) {
-            const container = document.getElementById('hero-featured-container');
-            container.style.display = 'block';
-            
-            const getLogoUrl = (name) => (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) ? IMAGE_MAP.teams[name] : null;
-            const logoA = getLogoUrl(m.displayHome);
-            const logoB = getLogoUrl(m.displayAway);
-            
-            const imgA = logoA ? `<img src="${logoA}" class="feat-logo" alt="${m.displayHome}">` : '';
-            const imgB = logoB ? `<img src="${logoB}" class="feat-logo" alt="${m.displayAway}">` : '';
-            
-            const sportIcon = getSportIcon(m.sport || m.finalLeague);
-            const infoLink = `${SITE_DOMAIN}/watch/?info=${m.id}`;
-
-            let statusText = '';     // Top Left (Below Tag)
-            let statusClass = '';    // Color for Top Left
-            let matchClockHtml = ''; // Center (Below VS)
-            let dateString = '';     // Bottom Left
-            let mainBtnHtml = '';
-
-            if (type === 'live') {
-                // --- LIVE MATCH LOGIC ---
-                
-                // 1. Top Left: Viewer Count
-                const v = m.live_viewers || 0;
-                statusText = `🔴 ${(v/1000).toFixed(1)}k Watching`; 
-                statusClass = 'live';
-                
-                // 2. Center: Playing Time (e.g. 43')
-                // We use m.status_text here because for Live matches, API usually puts time here
-                if (m.status_text) {
-                    matchClockHtml = `<div class="feat-match-clock">${m.status_text}</div>`;
-                }
-
-                // 3. Footer: Text
-                dateString = 'Happening Now';
-                
-                mainBtnHtml = `
-                    <button onclick="openMatch('${m.id}', 'live')" class="feat-btn primary">
-                        <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> WATCH LIVE
-                    </button>`;
-            } else {
-                // --- UPCOMING MATCH LOGIC ---
-                
-                const ft = formatMatchTime(m.startTimeUnix);
-                dateString = `${ft.date} &nbsp;•&nbsp; ${ft.time}`;
-                
-                // 1. Top Left: Countdown (e.g. Starts in 2h)
-                statusText = m.status_text ? `Starts in ${m.status_text}` : 'Upcoming'; 
-                statusClass = 'upcoming';
-                
-                // 2. Center: Empty (No clock for upcoming)
-                matchClockHtml = ''; 
-
-                const now = Date.now();
-                const start = m.startTimeUnix || now;
-                const diffMin = (start - now) / 60000;
-
-                if (diffMin <= 30) {
-                     mainBtnHtml = `<button onclick="openMatch('${m.id}', 'info')" class="feat-btn primary">WATCH STREAM</button>`;
-                } else {
-                     mainBtnHtml = `<button onclick="setNotify(this)" class="feat-btn secondary" style="background:var(--brand-primary);color:white;border:none;">🔔 SET REMINDER</button>`;
-                }
-            }
-
-            container.innerHTML = `
-                <div class="feat-card">
-                    <!-- HEADER -->
-                    <div class="feat-header">
-                        <div class="feat-meta-left">
-                            <span class="feat-tag">FEATURED</span>
-                            <!-- Status Text (Watching Count or Countdown) -->
-                            <div class="feat-status-text ${statusClass}">${statusText}</div>
-                        </div>
-                        <div class="feat-league">${sportIcon} ${m.finalLeague}</div>
-                    </div>
-
-                    <!-- GRID -->
-                    <div class="feat-match-grid">
-                        <div class="feat-team">
-                            ${imgA}
-                            <div class="feat-name">${m.displayHome}</div>
-                        </div>
-                        
-                        <div class="feat-vs-box">
-                            <div class="feat-vs">VS</div>
-                            <!-- Match Clock (45') appears here -->
-                            ${matchClockHtml}
-                        </div>
-                        
-                        <div class="feat-team">
-                            ${imgB}
-                            <div class="feat-name">${m.displayAway}</div>
-                        </div>
-                    </div>
-
-                    <!-- FOOTER -->
-                    <div class="feat-footer">
-                        <div class="feat-date-row">
-                            <svg class="feat-date-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                            ${dateString}
-                        </div>
-                        <div class="feat-actions">
-                            ${mainBtnHtml}
-                            <button class="feat-btn secondary" onclick="copyText('${infoLink}')">
-                                <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> 
-                                Copy
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
         function renderApp(matches) {
-    // 1. Hide skeletons immediately
-    document.getElementById('live-sk-head').style.display = 'none';
-    document.getElementById('live-skeleton').style.display = 'none';
-    document.getElementById('upcoming-skeleton').style.display = 'none';
-    const featSkel = document.getElementById('feat-skeleton'); // Ensure this ID matches your HTML
-    if (featSkel) featSkel.style.display = 'none';
+            document.getElementById('live-sk-head').style.display = 'none';
+            document.getElementById('live-skeleton').style.display = 'none';
+            document.getElementById('upcoming-skeleton').style.display = 'none';
 
-    const now = Date.now();
-    const oneDay = 24 * 60 * 60 * 1000;
+            const now = Date.now();
+            const oneDay = 24 * 60 * 60 * 1000;
 
-    // 2. Sort lists (Fast data operations)
-    let liveMatches = matches.filter(m => m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
-    const upcomingMatches = matches.filter(m => !m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
+            const liveMatches = matches.filter(m => m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
+            const upcomingMatches = matches.filter(m => !m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
 
-    // --- CRITICAL RENDER START (Execution: Immediate) ---
-    // We only render what is "Above the Fold" or High Priority first
-    
-    // A. FEATURED MATCH
-    if (FEATURED_ENABLED) {
-        let featMatch = null;
-        let featType = null;
-        if (liveMatches.length > 0 && (liveMatches[0].live_viewers || 0) > 5000) {
-            featMatch = liveMatches[0];
-            featType = 'live';
-            liveMatches = liveMatches.slice(1);
-        } else if (upcomingMatches.length > 0) {
-            featMatch = upcomingMatches[0];
-            featType = 'upcoming';
-        }
-        if (featMatch) renderFeaturedMatch(featMatch, featType);
-    }
+            renderLiveSection(liveMatches);
 
-    // B. LIVE SECTION
-    renderLiveSection(liveMatches);
+            // --- WILDCARD LOGIC ---
+            let wildcardMatches = [];
+            const isWildcardActive = WILDCARD_CATEGORY && WILDCARD_CATEGORY.length > 2;
 
-    // --- CRITICAL RENDER END ---
+            if (isWildcardActive) {
+                wildcardMatches = upcomingMatches.filter(m => 
+                    m.finalLeague.toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase()) || 
+                    (m.sport || "").toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase())
+                ).sort((a,b) => a.startTimeUnix - b.startTimeUnix);
 
-    // 3. DEFER NON-CRITICAL RENDERING (Execution: Delayed 0ms - Next Frame)
-    // This breaks the "Long Task" and reduces TBT significantly.
-    setTimeout(() => {
-        
-        // C. WILDCARD SECTION
-        let wildcardMatches = [];
-        const isWildcardActive = WILDCARD_CATEGORY && WILDCARD_CATEGORY.length > 2;
-
-        if (isWildcardActive) {
-            wildcardMatches = upcomingMatches.filter(m => 
-                m.finalLeague.toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase()) || 
-                (m.sport || "").toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase())
-            ).sort((a,b) => a.startTimeUnix - b.startTimeUnix);
-
-            if (wildcardMatches.length > 0) {
-                const wcContainer = document.getElementById('wildcard-container');
-                wcContainer.innerHTML = ''; 
-                let wcTitle = "Section title test Single league";
-                if (!wcTitle) {
-                    const prefix = "Hey".trim() || "Upcoming";
-                    wcTitle = `${prefix} ${WILDCARD_CATEGORY}`;
+                if (wildcardMatches.length > 0) {
+                    const wcContainer = document.getElementById('wildcard-container');
+                    wcContainer.innerHTML = ''; 
+                    
+                    // 1. WILDCARD TITLE LOGIC
+                    // Use Admin Title OR fallback to "Prefix + Category"
+                    let wcTitle = "Section title test Single league";
+                    if (!wcTitle) {
+                        const prefix = "Hey".trim() || "Upcoming";
+                        wcTitle = `${prefix} ${WILDCARD_CATEGORY}`;
+                    }
+                    
+                    // Note: We pass skipPrefix=true because we manually constructed the title above
+                    createSection(wcContainer, wcTitle, wildcardMatches, false, false, null, WILDCARD_CATEGORY, true);
                 }
-                createSection(wcContainer, wcTitle, wildcardMatches, false, false, null, WILDCARD_CATEGORY, true);
             }
-        }
 
-        // D. TOP 5 UPCOMING
-        let top5Ids = new Set();
-        if (!isWildcardActive) {
-            const top24h = upcomingMatches.filter(m => (m.startTimeUnix - now) < oneDay);
-            const top5Display = top24h.slice(0, 5);
-            const topContainer = document.getElementById('top-upcoming-container');
-
-            if (top5Display.length > 0) {
-                topContainer.style.display = 'block'; 
-                const topTitle = "Top 5 section title test" || "Top Matches in Next 24h";
-                createSection(topContainer, topTitle, top5Display, false, false, "🔥", null, true);
-                top5Display.forEach(m => top5Ids.add(m.id));
+            // --- TOP 5 UPCOMING LOGIC ---
+            let top5Ids = new Set();
+            
+            if (!isWildcardActive) {
+                const top24h = upcomingMatches.filter(m => (m.startTimeUnix - now) < oneDay);
+                const top5Display = top24h.slice(0, 5);
+                
+                if (top5Display.length > 0) {
+                    // 2. TOP 5 TITLE LOGIC
+                    // Use Admin Title OR fallback default
+                    const topTitle = "Top 5 section title test" || "Top Matches in Next 24h";
+                    
+                    createSection(document.getElementById('top-upcoming-container'), topTitle, top5Display, false, false, "🔥", null, true);
+                    top5Display.forEach(m => top5Ids.add(m.id));
+                } else {
+                    document.getElementById('top-upcoming-container').innerHTML = '<div style="padding:15px;color:var(--text-muted);text-align:center;">No upcoming matches in next 24h.</div>';
+                }
             } else {
-                topContainer.style.display = 'none';
+                document.getElementById('top-upcoming-container').style.display = 'none';
             }
-        } else {
-            document.getElementById('top-upcoming-container').style.display = 'none';
-        }
 
-        // E. GROUPED SECTIONS (Heavy Loop) & SCHEMA
-        // Defer this again slightly to keep UI responsive
-        setTimeout(() => {
+            generateDynamicSchema(liveMatches, upcomingMatches);
+
+            // --- GROUPED SECTIONS LOGIC ---
             const wcIds = new Set(wildcardMatches.map(m => m.id));
             const remainingMatches = upcomingMatches.filter(m => 
                 !wcIds.has(m.id) && 
@@ -1345,11 +975,7 @@
             );
 
             renderGroupedSections(remainingMatches);
-            generateDynamicSchema(liveMatches, upcomingMatches);
-        }, 0);
-
-    }, 0);
-}
+        }
 
         function renderGroupedSections(matches) {
             const container = document.getElementById('grouped-container');
