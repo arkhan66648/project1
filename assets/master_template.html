@@ -575,6 +575,71 @@
 
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        /* --- FEATURED MATCH STYLES --- */
+        .feat-card {
+            margin-top: 25px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.08) 100%);
+            border: 1px solid var(--brand-primary);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            animation: fadeIn 0.5s ease;
+        }
+        /* Glow Effect */
+        .feat-card::before {
+            content:''; position: absolute; top:0; left:0; width:100%; height:100%;
+            background: radial-gradient(circle at center, var(--brand-primary) 0%, transparent 70%);
+            opacity: 0.15; pointer-events: none;
+        }
+        
+        .feat-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;
+            z-index: 2;
+        }
+        .feat-league { font-size: 0.8rem; font-weight: 700; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1px; display:flex; align-items:center; gap:6px; }
+        
+        /* Dynamic Badges */
+        .feat-badge { padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; }
+        .feat-badge.live { background: var(--brand-primary); color: #fff; box-shadow: 0 0 10px var(--brand-primary); animation: pulse 1.5s infinite; }
+        .feat-badge.up { background: rgba(255,255,255,0.1); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.2); }
+
+        .feat-content { display: flex; align-items: center; justify-content: space-between; margin: 10px 0; z-index: 2; }
+        
+        .feat-team { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+        .feat-logo { width: 60px; height: 60px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+        .feat-name { font-size: 1.1rem; font-weight: 700; color: var(--text-main); line-height: 1.2; }
+        
+        .feat-vs { font-size: 1.5rem; font-weight: 900; color: var(--text-muted); opacity: 0.5; font-style: italic; margin: 0 15px; }
+
+        .feat-footer { display: flex; justify-content: center; margin-top: 5px; z-index: 2; }
+        
+        .feat-btn {
+            background: var(--brand-primary); color: #fff; 
+            padding: 12px 40px; border-radius: 30px; 
+            font-weight: 800; text-transform: uppercase; font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            transition: 0.3s; width: 100%; max-width: 300px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .feat-btn:hover { transform: scale(1.05); background: var(--brand-dark); box-shadow: 0 0 20px var(--brand-primary); }
+        .feat-btn.notify { background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); box-shadow: none; }
+        .feat-btn.notify:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
+
+        @media (min-width: 768px) {
+            .feat-card { flex-direction: row; align-items: center; padding: 20px 40px; text-align: left; }
+            .feat-header { position: absolute; top: 15px; left: 20px; border: none; }
+            .feat-badge { position: absolute; top: 15px; right: 20px; }
+            .feat-content { flex: 1; justify-content: center; gap: 40px; margin: 0; }
+            .feat-logo { width: 70px; height: 70px; }
+            .feat-name { font-size: 1.3rem; }
+            .feat-footer { margin: 0; min-width: 200px; }
+        }
     </style>
 </head>
 <body>
@@ -596,6 +661,8 @@
             <h1>{{H1_TITLE}}</h1>
             <p class="entity-intro">{{HERO_TEXT}}</p>
             <div class="cat-scroll">{{HERO_PILLS}}</div>
+            <!-- FEATURED MATCH CONTAINER -->
+            <div id="hero-featured-container" style="display:none;"></div>
         </div>
     </div>
 
@@ -686,7 +753,8 @@
             counts: { telegram: 1240, whatsapp: 850, reddit: 340, twitter: 510 } 
         };
 
-        const THEME_CONFIG = {{JS_THEME_CONFIG}}; 
+        const THEME_CONFIG = {{JS_THEME_CONFIG}};
+        const FEATURED_ENABLED = {{FEATURED_ENABLED}};
 
         let teamToLeagueMap = {};
         if (RAW_LEAGUE_MAP) {
@@ -853,6 +921,58 @@
         }
 
         function normalizeKey(str) { return str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : ""; }
+
+        function renderFeaturedMatch(m, type) {
+            const container = document.getElementById('hero-featured-container');
+            container.style.display = 'block';
+            
+            // Logic for Logos
+            const getLogoUrl = (name) => (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) ? IMAGE_MAP.teams[name] : null;
+            const logoA = getLogoUrl(m.displayHome);
+            const logoB = getLogoUrl(m.displayAway);
+            
+            const imgA = logoA ? `<img src="${logoA}" class="feat-logo">` : `<div class="logo-box" style="width:60px;height:60px;font-size:24px;"><span class="t-logo" style="background:${getColor(m.displayHome.charAt(0))}">${m.displayHome.charAt(0)}</span></div>`;
+            const imgB = logoB ? `<img src="${logoB}" class="feat-logo">` : `<div class="logo-box" style="width:60px;height:60px;font-size:24px;"><span class="t-logo" style="background:${getColor(m.displayAway.charAt(0))}">${m.displayAway.charAt(0)}</span></div>`;
+            const sportIcon = getSportIcon(m.sport || m.finalLeague);
+
+            // Logic for Badge & Button
+            let badgeHtml = '';
+            let btnHtml = '';
+
+            if (type === 'live') {
+                badgeHtml = `<div class="feat-badge live">● LIVE</div>`;
+                btnHtml = `<button onclick="openMatch('${m.id}', 'live')" class="feat-btn"><svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Watch Live</button>`;
+            } else {
+                // Upcoming
+                const ft = formatMatchTime(m.startTimeUnix);
+                badgeHtml = `<div class="feat-badge up">Starts: ${ft.time}</div>`;
+                
+                const now = Date.now();
+                const start = m.startTimeUnix || now;
+                const diffMin = (start - now) / 60000;
+
+                if (diffMin <= 30) {
+                     btnHtml = `<button onclick="openMatch('${m.id}', 'info')" class="feat-btn">{{TEXT_WATCH_BTN}}</button>`;
+                } else {
+                     btnHtml = `<button onclick="setNotify(this)" class="feat-btn notify">🔔 Remind Me</button>`;
+                }
+            }
+
+            container.innerHTML = `
+                <div class="feat-card">
+                    <div class="feat-header">
+                        <div class="feat-league">${sportIcon} ${m.finalLeague}</div>
+                        ${badgeHtml}
+                    </div>
+                    <div class="feat-content">
+                        <div class="feat-team">${imgA}<div class="feat-name">${m.displayHome}</div></div>
+                        <div class="feat-vs">VS</div>
+                        <div class="feat-team">${imgB}<div class="feat-name">${m.displayAway}</div></div>
+                    </div>
+                    <div class="feat-footer">${btnHtml}</div>
+                </div>
+            `;
+        }
 
         function renderApp(matches) {
             document.getElementById('live-sk-head').style.display = 'none';
