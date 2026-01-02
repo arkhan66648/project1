@@ -9,7 +9,8 @@ CONFIG_PATH = 'data/config.json'
 LEAGUE_MAP_PATH = 'assets/data/league_map.json' 
 IMAGE_MAP_PATH = 'assets/data/image_map.json'
 TEMPLATE_PATH = 'assets/master_template.html'
-WATCH_TEMPLATE_PATH = 'assets/watch_template.html' 
+WATCH_TEMPLATE_PATH = 'assets/watch_template.html'
+LEAGUE_TEMPLATE_PATH = 'assets/league_template.html'
 OUTPUT_DIR = '.' 
 
 # ==========================================
@@ -70,9 +71,9 @@ def build_menu_html(menu_items, section):
 # ==========================================
 # 3. PAGE RENDERER
 # ==========================================
-def render_page(template, config, page_data):
+def render_page(template, config, page_data, theme_override=None):
     s = config.get('site_settings', {})
-    t = config.get('theme', {})
+    t = theme_override if theme_override else config.get('theme', {})
     m = config.get('menus', {})
     
     html = template
@@ -364,6 +365,60 @@ def build_site():
         out_dir = os.path.join(OUTPUT_DIR, slug) if slug != 'home' else OUTPUT_DIR
         os.makedirs(out_dir, exist_ok=True)
         with open(os.path.join(out_dir, 'index.html'), 'w', encoding='utf-8') as f: f.write(final_html)
+            # ==========================================
+    # 5. BUILD LEAGUE PAGES
+    # ==========================================
+    print("🏆 Building League Pages...")
+    
+    league_template_content = None
+    if os.path.exists(LEAGUE_TEMPLATE_PATH):
+        with open(LEAGUE_TEMPLATE_PATH, 'r', encoding='utf-8') as f:
+            league_template_content = f.read()
+    
+    if league_template_content:
+        target_country = config.get('site_settings', {}).get('target_country', 'US')
+        priorities = config.get('sport_priorities', {}).get(target_country, {})
+        articles = config.get('articles', {})
+        
+        # Get League Theme or fallback
+        theme_league = config.get('theme_league', {})
+        if not theme_league: theme_league = config.get('theme', {})
+
+        domain = config.get('site_settings', {}).get('domain', 'example.com')
+
+        for name, data in priorities.items():
+            if name.startswith('_') or not data.get('hasLink'): continue
+            
+            slug = normalize_key(name) + "-streams"
+            is_league = data.get('isLeague', False)
+            
+            # Prepare Article
+            raw_article = articles.get('league', '') if is_league else articles.get('sport', '')
+            final_article = raw_article.replace('{{NAME}}', name).replace('{{YEAR}}', "2025").replace('{{DOMAIN}}', domain)
+            
+            page_data = {
+                'title': f"{name} Live Streams",
+                'meta_title': f"Watch {name} Live Streams Free | {config.get('site_settings',{}).get('title_part_1','')} {config.get('site_settings',{}).get('title_part_2','')}",
+                'meta_desc': f"Best free {name} live streams. Watch all {name} games live in HD.",
+                'meta_keywords': f"{name} stream, watch {name}, {name} live free",
+                'canonical_url': f"https://{domain}/{slug}/",
+                'slug': slug
+            }
+            
+            # Render with LEAGUE THEME override
+            final_html = render_page(league_template_content, config, page_data, theme_override=theme_league)
+            
+            # Inject Variables
+            final_html = final_html.replace('{{PAGE_FILTER}}', name)
+            final_html = final_html.replace('{{PAGE_TITLE}}', f"{name} Streams")
+            final_html = final_html.replace('{{LEAGUE_ARTICLE}}', final_article)
+            
+            out_dir = os.path.join(OUTPUT_DIR, slug)
+            os.makedirs(out_dir, exist_ok=True)
+            with open(os.path.join(out_dir, 'index.html'), 'w', encoding='utf-8') as f:
+                f.write(final_html)
+            
+            print(f"   -> Built: {slug}")
 
     print("✅ Build Complete.")
 
