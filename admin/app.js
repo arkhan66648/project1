@@ -136,6 +136,7 @@ const THEME_FIELDS = {
     'hero_menu_visible': 'themeHeroMenuVisible', // flex or none
     
     'hero_box_width': 'themeHeroBoxWidth',
+    'hero_featured_match': 'themeHeroFeaturedMatch',
     
     // Box Borders (Inner)
     'hero_box_border_width': 'themeHeroBoxBorderWidth',
