@@ -1252,48 +1252,104 @@
         }
 
         function renderApp(matches) {
-            // 1. Hide skeletons
-            document.getElementById('live-sk-head').style.display = 'none';
-            document.getElementById('live-skeleton').style.display = 'none';
-            document.getElementById('upcoming-skeleton').style.display = 'none';
-            const featSkel = document.getElementById('feat-skeleton');
-            if (featSkel) featSkel.style.display = 'none';
+    // 1. Hide skeletons immediately
+    document.getElementById('live-sk-head').style.display = 'none';
+    document.getElementById('live-skeleton').style.display = 'none';
+    document.getElementById('upcoming-skeleton').style.display = 'none';
+    const featSkel = document.getElementById('feat-skeleton'); // Ensure this ID matches your HTML
+    if (featSkel) featSkel.style.display = 'none';
 
-            const now = Date.now();
-            const oneDay = 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
 
-            // 2. Sort lists based on your Priority Score logic
-            let liveMatches = matches.filter(m => m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
-            const upcomingMatches = matches.filter(m => !m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
+    // 2. Sort lists (Fast data operations)
+    let liveMatches = matches.filter(m => m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
+    const upcomingMatches = matches.filter(m => !m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
 
-            // --- FEATURED MATCH LOGIC START ---
-            if (FEATURED_ENABLED) {
-                let featMatch = null;
-                let featType = null;
+    // --- CRITICAL RENDER START (Execution: Immediate) ---
+    // We only render what is "Above the Fold" or High Priority first
+    
+    // A. FEATURED MATCH
+    if (FEATURED_ENABLED) {
+        let featMatch = null;
+        let featType = null;
+        if (liveMatches.length > 0 && (liveMatches[0].live_viewers || 0) > 5000) {
+            featMatch = liveMatches[0];
+            featType = 'live';
+            liveMatches = liveMatches.slice(1);
+        } else if (upcomingMatches.length > 0) {
+            featMatch = upcomingMatches[0];
+            featType = 'upcoming';
+        }
+        if (featMatch) renderFeaturedMatch(featMatch, featType);
+    }
 
-                // Condition A: Check #1 Live Match viewers (> 5000)
-                if (liveMatches.length > 0 && (liveMatches[0].live_viewers || 0) > 5000) {
-                    featMatch = liveMatches[0];
-                    featType = 'live';
-                    // RULE: Remove from Live List (Move)
-                    liveMatches = liveMatches.slice(1);
-                } 
-                // Condition B: Fallback to #1 Upcoming Match
-                else if (upcomingMatches.length > 0) {
-                    featMatch = upcomingMatches[0];
-                    featType = 'upcoming';
-                    // RULE: Do NOT remove from Upcoming List (Duplicate only)
+    // B. LIVE SECTION
+    renderLiveSection(liveMatches);
+
+    // --- CRITICAL RENDER END ---
+
+    // 3. DEFER NON-CRITICAL RENDERING (Execution: Delayed 0ms - Next Frame)
+    // This breaks the "Long Task" and reduces TBT significantly.
+    setTimeout(() => {
+        
+        // C. WILDCARD SECTION
+        let wildcardMatches = [];
+        const isWildcardActive = WILDCARD_CATEGORY && WILDCARD_CATEGORY.length > 2;
+
+        if (isWildcardActive) {
+            wildcardMatches = upcomingMatches.filter(m => 
+                m.finalLeague.toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase()) || 
+                (m.sport || "").toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase())
+            ).sort((a,b) => a.startTimeUnix - b.startTimeUnix);
+
+            if (wildcardMatches.length > 0) {
+                const wcContainer = document.getElementById('wildcard-container');
+                wcContainer.innerHTML = ''; 
+                let wcTitle = "Section title test Single league";
+                if (!wcTitle) {
+                    const prefix = "Hey".trim() || "Upcoming";
+                    wcTitle = `${prefix} ${WILDCARD_CATEGORY}`;
                 }
-
-                // Render the Featured Card if a match was found
-                if (featMatch) {
-                    renderFeaturedMatch(featMatch, featType);
-                }
+                createSection(wcContainer, wcTitle, wildcardMatches, false, false, null, WILDCARD_CATEGORY, true);
             }
-            // --- FEATURED MATCH LOGIC END ---
+        }
 
-            // 3. Render remaining live matches (Standard Logic)
-            renderLiveSection(liveMatches);
+        // D. TOP 5 UPCOMING
+        let top5Ids = new Set();
+        if (!isWildcardActive) {
+            const top24h = upcomingMatches.filter(m => (m.startTimeUnix - now) < oneDay);
+            const top5Display = top24h.slice(0, 5);
+            const topContainer = document.getElementById('top-upcoming-container');
+
+            if (top5Display.length > 0) {
+                topContainer.style.display = 'block'; 
+                const topTitle = "Top 5 section title test" || "Top Matches in Next 24h";
+                createSection(topContainer, topTitle, top5Display, false, false, "🔥", null, true);
+                top5Display.forEach(m => top5Ids.add(m.id));
+            } else {
+                topContainer.style.display = 'none';
+            }
+        } else {
+            document.getElementById('top-upcoming-container').style.display = 'none';
+        }
+
+        // E. GROUPED SECTIONS (Heavy Loop) & SCHEMA
+        // Defer this again slightly to keep UI responsive
+        setTimeout(() => {
+            const wcIds = new Set(wildcardMatches.map(m => m.id));
+            const remainingMatches = upcomingMatches.filter(m => 
+                !wcIds.has(m.id) && 
+                !top5Ids.has(m.id) && 
+                (m.startTimeUnix - now) < oneDay
+            );
+
+            renderGroupedSections(remainingMatches);
+            generateDynamicSchema(liveMatches, upcomingMatches);
+        }, 0);
+
+    }, 0);
+}
 
             // 4. Wildcard Logic (Standard Logic - Unchanged)
             let wildcardMatches = [];
