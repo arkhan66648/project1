@@ -1393,65 +1393,6 @@
     }, 0);
 }
 
-            // 4. Wildcard Logic (Standard Logic - Unchanged)
-            let wildcardMatches = [];
-            const isWildcardActive = WILDCARD_CATEGORY && WILDCARD_CATEGORY.length > 2;
-
-            if (isWildcardActive) {
-                wildcardMatches = upcomingMatches.filter(m => 
-                    m.finalLeague.toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase()) || 
-                    (m.sport || "").toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase())
-                ).sort((a,b) => a.startTimeUnix - b.startTimeUnix);
-
-                if (wildcardMatches.length > 0) {
-                    const wcContainer = document.getElementById('wildcard-container');
-                    wcContainer.innerHTML = ''; 
-                    let wcTitle = "Section title test Single league";
-                    if (!wcTitle) {
-                        const prefix = "Hey".trim() || "Upcoming";
-                        wcTitle = `${prefix} ${WILDCARD_CATEGORY}`;
-                    }
-                    createSection(wcContainer, wcTitle, wildcardMatches, false, false, null, WILDCARD_CATEGORY, true);
-                }
-            }
-
-            // 5. Top 5 Upcoming Logic (FIXED: Hides if empty)
-            let top5Ids = new Set();
-            if (!isWildcardActive) {
-                const top24h = upcomingMatches.filter(m => (m.startTimeUnix - now) < oneDay);
-                const top5Display = top24h.slice(0, 5);
-                
-                const topContainer = document.getElementById('top-upcoming-container');
-
-                if (top5Display.length > 0) {
-                    topContainer.style.display = 'block'; // Ensure it's visible if we have matches
-                    const topTitle = "Top 5 section title test" || "Top Matches in Next 24h";
-                    createSection(topContainer, topTitle, top5Display, false, false, "🔥", null, true);
-                    top5Display.forEach(m => top5Ids.add(m.id));
-                } else {
-                    // FIXED: Completely hide the section if no matches found
-                    topContainer.style.display = 'none';
-                }
-            } else {
-                document.getElementById('top-upcoming-container').style.display = 'none';
-            }
-
-            // 6. Generate SEO Schema (Standard Logic)
-            generateDynamicSchema(liveMatches, upcomingMatches);
-
-            // 7. Grouped Sections Logic (Standard Logic - Unchanged)
-            const wcIds = new Set(wildcardMatches.map(m => m.id));
-            
-            // Filter out matches that are already shown in Wildcard or Top 5
-            const remainingMatches = upcomingMatches.filter(m => 
-                !wcIds.has(m.id) && 
-                !top5Ids.has(m.id) && 
-                (m.startTimeUnix - now) < oneDay
-            );
-
-            renderGroupedSections(remainingMatches);
-        }
-
         function renderGroupedSections(matches) {
             const container = document.getElementById('grouped-container');
             container.innerHTML = '';
