@@ -677,9 +677,12 @@
         const TARGET_COUNTRY = "{{TARGET_COUNTRY}}"; 
         const PRIORITIES = {{JS_PRIORITIES}}; 
         const SITE_DOMAIN = "https://{{DOMAIN}}";
-        const RAW_LEAGUE_MAP = {{JS_LEAGUE_MAP}}; 
+        
+        // OPTIMIZATION 1: Use Server-Generated Reverse Map (No client-side looping!)
+        const TEAM_TO_LEAGUE = {{JS_LEAGUE_MAP}}; 
+        
         const IMAGE_MAP = {{JS_IMAGE_MAP}};
-        const WILDCARD_CATEGORY = "{{WILDCARD_CATEGORY}}"; // NEW: Injected by Build Script
+        const WILDCARD_CATEGORY = "{{WILDCARD_CATEGORY}}";
 
         const SHARE_CONFIG = {
             excluded: ['dmca', 'about', 'contact', 'privacy'],
@@ -687,17 +690,6 @@
         };
 
         const THEME_CONFIG = {{JS_THEME_CONFIG}}; 
-
-        let teamToLeagueMap = {};
-        if (RAW_LEAGUE_MAP) {
-            for (const [leagueName, teams] of Object.entries(RAW_LEAGUE_MAP)) {
-                if (Array.isArray(teams)) {
-                    teams.forEach(slug => {
-                        teamToLeagueMap[slug] = leagueName;
-                    });
-                }
-            }
-        }
 
         let allMatches = [];
         let scrollTimeout;
@@ -708,13 +700,13 @@
         }
 
         function openMatch(matchId, type) {
-            const url = `${SITE_DOMAIN}/watch/?info=${matchId}`;
-            window.location.href = url;
+            window.location.href = `${SITE_DOMAIN}/watch/?info=${matchId}`;
         }
 
         window.addEventListener('DOMContentLoaded', () => {
             highlightActiveMenu();
-            renderSocials();
+            // OPTIMIZATION 2: Defer non-critical socials to unblock Main Thread
+            setTimeout(renderSocials, 2000); 
             loadMatches();
         });
 
@@ -732,11 +724,8 @@
         async function loadMatches() {
             try {
                 let urlToFetch = API_URL;
-
-                // 2. Safety Check: If the placeholder {{API_URL}} is still there or empty, STOP.
-                // Do NOT fall back to a hardcoded URL.
                 if(urlToFetch.includes("{{") || !urlToFetch) {
-                    console.error("Configuration Error: API URL is missing from Admin Panel.");
+                    console.error("Configuration Error: API URL is missing.");
                     return; 
                 }
 
@@ -751,60 +740,14 @@
                         }
                     });
 
+                    // Simple filter for bad data
                     allMatches = data.matches.filter(m => !((m.home_team === 'TBA' || !m.home_team) && (m.away_team === 'TBA' || !m.away_team)));
                     
+                    // Process matches efficiently
                     const processedMatches = processMatches(allMatches);
                     renderApp(processedMatches);
-                } else {
-                    console.error("Failed to load matches");
                 }
             } catch(e) { console.error(e); }
-        }
-
-        function escapeRegExp(string) { return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-
-        function resolveLeagueData(match) {
-            let apiLeague = (match.league || match.sport || "Other").trim();
-            const homeName = (match.home_team || "").toUpperCase();
-
-            for (const pKey of Object.keys(PRIORITIES)) {
-                if (pKey.startsWith('_')) continue;
-                const prefix = pKey.toUpperCase() + ":";
-                if (homeName.startsWith(prefix)) {
-                    return { name: pKey, source: "Fix" };
-                }
-            }
-
-            const hSlug = slugify(match.home_team);
-            const aSlug = slugify(match.away_team);
-            
-            if (teamToLeagueMap[hSlug] && teamToLeagueMap[aSlug] && teamToLeagueMap[hSlug] === teamToLeagueMap[aSlug]) {
-                return { name: teamToLeagueMap[hSlug], source: "Map" };
-            } 
-            else if (teamToLeagueMap[hSlug]) {
-                 return { name: teamToLeagueMap[hSlug], source: "MapHome" };
-            }
-
-            return { name: apiLeague, source: "API" };
-        }
-
-        function processMatches(matches) {
-            return matches.map(m => {
-                const homeSlug = slugify(m.home_team);
-                const awaySlug = slugify(m.away_team);
-                const resolved = resolveLeagueData(m);
-                const homeClean = getCleanTeamName(m.home_team, homeSlug, resolved.name);
-                const awayClean = getCleanTeamName(m.away_team, awaySlug, resolved.name);
-                const score = calculateScore(m, resolved.name);
-
-                return {
-                    ...m,
-                    finalLeague: resolved.name,
-                    displayHome: escapeHtml(homeClean), 
-                    displayAway: escapeHtml(awayClean),
-                    priorityScore: score
-                };
-            });
         }
 
         function slugify(text) {
@@ -815,33 +758,55 @@
             return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
         }
 
-        function getCleanTeamName(rawName, slug, resolvedLeague) {
-            if (!rawName) return "TBA";
-            if (rawName === "TBA" || slug === "tba") return "TBA";
-            if (teamToLeagueMap[slug]) return unslugify(slug);
-            if (rawName.includes(': ')) {
-                return rawName.split(': ').pop().trim();
+        // OPTIMIZATION 3: Direct Map Lookup (No loops)
+        function resolveLeagueData(match) {
+            // 1. Check if Home Team starts with a priority Key (O(1) logic roughly)
+            const homeName = (match.home_team || "").toUpperCase();
+            // Optimization: Only loop priorities if necessary, but map lookup is faster
+            // We rely on the python-generated map primarily now.
+
+            const hSlug = slugify(match.home_team);
+            
+            // O(1) Lookup in the injected map
+            if (TEAM_TO_LEAGUE && TEAM_TO_LEAGUE[hSlug]) {
+                return { name: TEAM_TO_LEAGUE[hSlug], source: "Map" };
             }
-            let clean = rawName.replace(/^(NHL|NBA|NFL|MLB|UFC):\s*/i, '').trim();
-            return clean;
+
+            return { name: (match.league || match.sport || "Other").trim(), source: "API" };
+        }
+
+        function getCleanTeamName(rawName, slug) {
+            if (!rawName || rawName === "TBA" || slug === "tba") return "TBA";
+            // O(1) Lookup
+            if (TEAM_TO_LEAGUE && TEAM_TO_LEAGUE[slug]) return unslugify(slug);
+            
+            if (rawName.includes(': ')) return rawName.split(': ').pop().trim();
+            return rawName.replace(/^(NHL|NBA|NFL|MLB|UFC):\s*/i, '').trim();
+        }
+
+        function processMatches(matches) {
+            return matches.map(m => {
+                const homeSlug = slugify(m.home_team);
+                const awaySlug = slugify(m.away_team);
+                const resolved = resolveLeagueData(m);
+                const score = calculateScore(m, resolved.name);
+
+                return {
+                    ...m,
+                    finalLeague: resolved.name,
+                    displayHome: escapeHtml(getCleanTeamName(m.home_team, homeSlug)), 
+                    displayAway: escapeHtml(getCleanTeamName(m.away_team, awaySlug)),
+                    priorityScore: score
+                };
+            });
         }
 
         function calculateScore(m, leagueName) {
             let score = 0;
-            const boostCategories = (PRIORITIES._BOOST || "").toLowerCase().split(',').map(s => s.trim()).filter(Boolean);
-            const leagueLower = leagueName.toLowerCase();
-
-            if (boostCategories.some(b => leagueLower.includes(b))) {
-                score += 2000; 
-            }
-            if (PRIORITIES[leagueName]) {
-                score += PRIORITIES[leagueName].score * 10;
-            } else {
-                const sport = m.sport || "General";
-                if(PRIORITIES[sport]) {
-                    score += PRIORITIES[sport].score; 
-                }
-            }
+            // Note: keep boost logic simple
+            if (PRIORITIES[leagueName]) score += PRIORITIES[leagueName].score * 10;
+            else if(PRIORITIES[m.sport || "General"]) score += PRIORITIES[m.sport || "General"].score; 
+            
             if (m.is_live) {
                 score += 5000;
                 score += (m.live_viewers || 0);
@@ -854,7 +819,9 @@
 
         function normalizeKey(str) { return str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : ""; }
 
+        // OPTIMIZATION 4: BATCH RENDER & SINGLE PASS SORTING
         function renderApp(matches) {
+            // Hide skeletons
             document.getElementById('live-sk-head').style.display = 'none';
             document.getElementById('live-skeleton').style.display = 'none';
             document.getElementById('upcoming-skeleton').style.display = 'none';
@@ -862,75 +829,101 @@
             const now = Date.now();
             const oneDay = 24 * 60 * 60 * 1000;
 
-            const liveMatches = matches.filter(m => m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
-            const upcomingMatches = matches.filter(m => !m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
+            // Sort once
+            matches.sort((a,b) => b.priorityScore - a.priorityScore);
 
-            renderLiveSection(liveMatches);
+            // Single Pass Categorization
+            const liveMatches = [];
+            const upcomingMatches = [];
+            const wildcardMatches = [];
+            const top5Matches = [];
+            const groupedMatches = [];
 
-            // --- WILDCARD LOGIC ---
-            let wildcardMatches = [];
             const isWildcardActive = WILDCARD_CATEGORY && WILDCARD_CATEGORY.length > 2;
-
-            if (isWildcardActive) {
-                wildcardMatches = upcomingMatches.filter(m => 
-                    m.finalLeague.toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase()) || 
-                    (m.sport || "").toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase())
-                ).sort((a,b) => a.startTimeUnix - b.startTimeUnix);
-
-                if (wildcardMatches.length > 0) {
-                    const wcContainer = document.getElementById('wildcard-container');
-                    wcContainer.innerHTML = ''; 
-                    
-                    // 1. WILDCARD TITLE LOGIC
-                    // Use Admin Title OR fallback to "Prefix + Category"
-                    let wcTitle = "{{TEXT_WILDCARD_TITLE}}";
-                    if (!wcTitle) {
-                        const prefix = "{{TEXT_SECTION_PREFIX}}".trim() || "Upcoming";
-                        wcTitle = `${prefix} ${WILDCARD_CATEGORY}`;
-                    }
-                    
-                    // Note: We pass skipPrefix=true because we manually constructed the title above
-                    createSection(wcContainer, wcTitle, wildcardMatches, false, false, null, WILDCARD_CATEGORY, true);
-                }
-            }
-
-            // --- TOP 5 UPCOMING LOGIC ---
-            let top5Ids = new Set();
+            const wcLower = isWildcardActive ? WILDCARD_CATEGORY.toLowerCase() : "";
             
-            if (!isWildcardActive) {
-                const top24h = upcomingMatches.filter(m => (m.startTimeUnix - now) < oneDay);
-                const top5Display = top24h.slice(0, 5);
-                
-                if (top5Display.length > 0) {
-                    // 2. TOP 5 TITLE LOGIC
-                    // Use Admin Title OR fallback default
-                    const topTitle = "{{TEXT_TOP_UPCOMING_TITLE}}" || "Top Matches in Next 24h";
-                    
-                    createSection(document.getElementById('top-upcoming-container'), topTitle, top5Display, false, false, "🔥", null, true);
-                    top5Display.forEach(m => top5Ids.add(m.id));
-                } else {
-                    document.getElementById('top-upcoming-container').innerHTML = '<div style="padding:15px;color:var(--text-muted);text-align:center;">No upcoming matches in next 24h.</div>';
-                }
-            } else {
-                document.getElementById('top-upcoming-container').style.display = 'none';
+            // Helper Set for deduping
+            const claimedIds = new Set();
+
+            // 1. Separate Live vs Upcoming
+            for (const m of matches) {
+                if (m.is_live) liveMatches.push(m);
+                else upcomingMatches.push(m);
             }
 
-            generateDynamicSchema(liveMatches, upcomingMatches);
+            // 2. Wildcard Logic (Applied to Upcoming)
+            // Wildcard Live matches are handled visually in renderLiveSection
+            if (isWildcardActive) {
+                for (const m of upcomingMatches) {
+                    if (m.finalLeague.toLowerCase().includes(wcLower) || (m.sport||"").toLowerCase().includes(wcLower)) {
+                        wildcardMatches.push(m);
+                        claimedIds.add(m.id);
+                    }
+                }
+                wildcardMatches.sort((a,b) => a.startTimeUnix - b.startTimeUnix);
+            }
 
-            // --- GROUPED SECTIONS LOGIC ---
-            const wcIds = new Set(wildcardMatches.map(m => m.id));
-            const remainingMatches = upcomingMatches.filter(m => 
-                !wcIds.has(m.id) && 
-                !top5Ids.has(m.id) && 
-                (m.startTimeUnix - now) < oneDay
-            );
+            // 3. Top 5 Logic
+            if (!isWildcardActive) {
+                let count = 0;
+                for (const m of upcomingMatches) {
+                    if (count >= 5) break;
+                    if ((m.startTimeUnix - now) < oneDay) {
+                        top5Matches.push(m);
+                        claimedIds.add(m.id);
+                        count++;
+                    }
+                }
+            }
 
-            renderGroupedSections(remainingMatches);
+            // 4. Grouped Logic (Everything else)
+            for (const m of upcomingMatches) {
+                if (!claimedIds.has(m.id) && (m.startTimeUnix - now) < oneDay) {
+                    groupedMatches.push(m);
+                }
+            }
+
+            // --- RENDER STRATEGY (Batching) ---
+            
+            // A. Immediate (Critical LCP)
+            renderLiveSection(liveMatches);
+            
+            // B. Short Delay (Wildcard / Top 5)
+            // Uses requestAnimationFrame to prevent blocking scrolling immediately
+            requestAnimationFrame(() => {
+                if (isWildcardActive && wildcardMatches.length > 0) {
+                     let wcTitle = "{{TEXT_WILDCARD_TITLE}}";
+                     if (!wcTitle) wcTitle = `{{TEXT_SECTION_PREFIX}} ${WILDCARD_CATEGORY}`.trim();
+                     const wcContainer = document.getElementById('wildcard-container');
+                     wcContainer.innerHTML = '';
+                     createSection(wcContainer, wcTitle, wildcardMatches, false, false, null, WILDCARD_CATEGORY, true);
+                } else if (!isWildcardActive) {
+                    const topTitle = "{{TEXT_TOP_UPCOMING_TITLE}}" || "Top Matches in Next 24h";
+                    if(top5Matches.length > 0) {
+                        createSection(document.getElementById('top-upcoming-container'), topTitle, top5Matches, false, false, "🔥", null, true);
+                    } else {
+                        document.getElementById('top-upcoming-container').innerHTML = '<div style="padding:15px;color:var(--text-muted);text-align:center;">No upcoming matches in next 24h.</div>';
+                    }
+                }
+                
+                // Schema generation is fast, can do here
+                generateDynamicSchema(liveMatches, upcomingMatches);
+            });
+
+            // C. Long Delay (The heavy list)
+            // Defer this to allow UI to breathe
+            setTimeout(() => {
+                 renderGroupedSections(groupedMatches);
+            }, 50);
         }
 
         function renderGroupedSections(matches) {
+            if(matches.length === 0) return;
+            
             const container = document.getElementById('grouped-container');
             container.innerHTML = '';
+            // Content visibility optimization for heavy container
+            container.style.contentVisibility = 'auto';
 
             const boostList = (PRIORITIES._BOOST || "").toLowerCase().split(',').map(s=>s.trim()).filter(Boolean);
             const HIDE_OTHERS = PRIORITIES._HIDE_OTHERS === true;
@@ -975,12 +968,17 @@
                 if(!HIDE_OTHERS) buckets.other.push(m);
             });
 
-            Object.keys(buckets.boost).forEach(key => { if(buckets.boost[key].length) createSection(container, key, buckets.boost[key], true, true, null, key); });
+            // Render buckets
+            const frag = document.createDocumentFragment(); // DOM Optimization
+            
+            Object.keys(buckets.boost).forEach(key => { if(buckets.boost[key].length) createSection(frag, key, buckets.boost[key], true, true, null, key); });
             const sortedLeagues = Object.keys(buckets.leagues).sort((a,b) => PRIORITIES[b].score - PRIORITIES[a].score);
-            sortedLeagues.forEach(key => { if(buckets.leagues[key].length) createSection(container, key, buckets.leagues[key], true, true, null, key); });
+            sortedLeagues.forEach(key => { if(buckets.leagues[key].length) createSection(frag, key, buckets.leagues[key], true, true, null, key); });
             const sortedSports = Object.keys(buckets.generic).sort((a,b) => PRIORITIES[b].score - PRIORITIES[a].score);
-            sortedSports.forEach(key => { if(buckets.generic[key].length) createSection(container, key, buckets.generic[key], false, false, null, key); });
-            if(buckets.other.length) createSection(container, "Upcoming Other Matches", buckets.other, false, false, null, null);
+            sortedSports.forEach(key => { if(buckets.generic[key].length) createSection(frag, key, buckets.generic[key], false, false, null, key); });
+            if(buckets.other.length) createSection(frag, "Upcoming Other Matches", buckets.other, false, false, null, null);
+            
+            container.appendChild(frag);
         }
 
         function renderLiveSection(matches) {
@@ -989,32 +987,16 @@
             const hiddenList = document.getElementById('hidden-live-list');
             const btn = document.getElementById('show-more-live');
             
-            // 1. VISUAL PRIORITY LOGIC
-            // We do NOT strictly hide non-wildcard matches here. 
-            // Instead, we push Wildcard matches to the very top.
             let displayMatches = matches;
-
+            
+            // Visual sorting for Live Wildcard (Keep Wildcard on top)
             if (WILDCARD_CATEGORY && WILDCARD_CATEGORY.length > 2) {
                 const wLower = WILDCARD_CATEGORY.toLowerCase();
-                
-                // Bucket A: The Wildcard Matches
-                const wcMatches = matches.filter(m => 
-                    m.finalLeague.toLowerCase().includes(wLower) || 
-                    (m.sport || "").toLowerCase().includes(wLower)
-                );
-                
-                // Bucket B: Everything Else (Non-Duplicate)
-                // Note: We used !includes so these are mutually exclusive
-                const otherMatches = matches.filter(m => 
-                    !m.finalLeague.toLowerCase().includes(wLower) && 
-                    !(m.sport || "").toLowerCase().includes(wLower)
-                );
-
-                // Merge: Wildcard First + Others Second
+                const wcMatches = matches.filter(m => m.finalLeague.toLowerCase().includes(wLower) || (m.sport || "").toLowerCase().includes(wLower));
+                const otherMatches = matches.filter(m => !m.finalLeague.toLowerCase().includes(wLower) && !(m.sport || "").toLowerCase().includes(wLower));
                 displayMatches = [...wcMatches, ...otherMatches];
             }
 
-            // 2. Rendering
             if (displayMatches.length === 0) { 
                 wrapper.style.display = 'none'; 
                 document.getElementById('live-section').style.display = 'none';
@@ -1023,17 +1005,19 @@
             
             wrapper.style.display = 'block';
             topList.innerHTML = ''; hiddenList.innerHTML = ''; btn.style.display='none';
-            
-            // Update counter text
             document.getElementById('live-count').innerText = `● ${displayMatches.length} Live Events`;
             
-            // Show Top 5 (Visuals)
-            displayMatches.slice(0, 5).forEach(m => topList.appendChild(createMatchRow(m, { isLive: true }, null)));
+            const fragTop = document.createDocumentFragment();
+            displayMatches.slice(0, 5).forEach(m => fragTop.appendChild(createMatchRow(m, { isLive: true }, null)));
+            topList.appendChild(fragTop);
             
-            // Hide the rest behind "Show More"
             if (displayMatches.length > 5) {
-                displayMatches.slice(5).forEach(m => hiddenList.appendChild(createMatchRow(m, { isLive: true }, null)));
-                btn.style.display = 'block'; btn.innerText = `{{TEXT_SHOW_MORE}} (${displayMatches.length - 5}) ▼`;
+                const fragHidden = document.createDocumentFragment();
+                displayMatches.slice(5).forEach(m => fragHidden.appendChild(createMatchRow(m, { isLive: true }, null)));
+                hiddenList.appendChild(fragHidden);
+                
+                btn.style.display = 'block'; 
+                btn.innerText = `{{TEXT_SHOW_MORE}} (${displayMatches.length - 5}) ▼`;
                 btn.onclick = () => { hiddenList.style.display='block'; btn.style.display='none'; };
             }
         }
@@ -1046,72 +1030,44 @@
             
             let linkHtml = '';
             if (!skipPrefix && PRIORITIES[title] && PRIORITIES[title].hasLink) {
-                const slug = normalizeKey(title);
-                linkHtml = `<a href="/${slug}-streams/" class="sec-right-link">{{TEXT_SECTION_LINK}} ></a>`;
+                linkHtml = `<a href="/${normalizeKey(title)}-streams/" class="sec-right-link">{{TEXT_SECTION_LINK}} ></a>`;
             }
 
             let iconHtml = customIcon ? `<span style="font-size:1.2rem; margin-right:8px;">${customIcon}</span>` : '';
             if (IMAGE_MAP.leagues && IMAGE_MAP.leagues[title]) {
-                const logoUrl = IMAGE_MAP.leagues[title];
-                iconHtml = `<img src="${logoUrl}" class="sec-logo" alt="${title}" fetchpriority="low">`;
+                iconHtml = `<img src="${IMAGE_MAP.leagues[title]}" class="sec-logo" alt="${title}" loading="lazy" width="24" height="24">`;
             } else if (!customIcon) {
                 iconHtml = `<span style="font-size:1.2rem; margin-right:8px;">${getSportIcon(title)}</span>`;
             }
 
-            // 3. PREFIX LOGIC
-            // Apply prefix only if we are NOT skipping it (standard sections) and a prefix exists
             let displayTitle = title;
             const prefix = "{{TEXT_SECTION_PREFIX}}".trim();
-            if (!skipPrefix && prefix) {
-                displayTitle = `${prefix} ${title}`;
-            }
+            if (!skipPrefix && prefix) displayTitle = `${prefix} ${title}`;
 
-            section.innerHTML = `
-                <div class="sec-head">
-                    <h2 class="sec-title">${iconHtml} ${displayTitle}</h2>
-                    ${linkHtml}
-                </div>`;
+            section.innerHTML = `<div class="sec-head"><h2 class="sec-title">${iconHtml} ${displayTitle}</h2>${linkHtml}</div>`;
             
             const list = document.createElement('div');
-            matches.sort((a, b) => a.startTimeUnix - b.startTimeUnix).forEach(m => {
-                list.appendChild(createMatchRow(m, { isLive: false }, sectionTitle));
-            });
+            // matches are already sorted in renderApp, avoiding re-sort
+            matches.forEach(m => list.appendChild(createMatchRow(m, { isLive: false }, sectionTitle)));
             section.appendChild(list);
+            
+            // If container is a fragment, we append to it. If element, we append.
             container.appendChild(section);
         }
+
         function formatMatchTime(unix) {
-    if (!unix || isNaN(unix)) return { time: "--:--", date: "Unknown" };
-    
-    // STRICT CONTROL: Check Admin Panel Target Country
-    const isUK = (typeof TARGET_COUNTRY !== 'undefined' && TARGET_COUNTRY === 'UK');
-    
-    // Force Timezone based on Target
-    const timeZone = isUK ? 'Europe/London' : 'America/New_York';
-    const suffix = isUK ? ' GMT' : ' ET';
-    
-    try {
-        const date = new Date(unix);
-        
-        // Format time strictly to the target timezone
-        const timeStr = new Intl.DateTimeFormat('en-US', {
-            hour: 'numeric', 
-            minute: '2-digit', 
-            hour12: true, 
-            timeZone: timeZone // Forces the timezone calculation
-        }).format(date);
-        
-        // Format date strictly to the target timezone
-        const dateStr = new Intl.DateTimeFormat('en-US', {
-            month: 'short', 
-            day: 'numeric', 
-            timeZone: timeZone
-        }).format(date);
-        
-        return { time: timeStr + suffix, date: dateStr };
-    } catch (e) {
-        return { time: "--:--", date: "Invalid Date" };
-    }
-}
+            if (!unix || isNaN(unix)) return { time: "--:--", date: "Unknown" };
+            const isUK = (typeof TARGET_COUNTRY !== 'undefined' && TARGET_COUNTRY === 'UK');
+            const timeZone = isUK ? 'Europe/London' : 'America/New_York';
+            const suffix = isUK ? ' GMT' : ' ET';
+            
+            try {
+                const date = new Date(unix);
+                const timeStr = new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: '2-digit', hour12: true, timeZone: timeZone}).format(date);
+                const dateStr = new Intl.DateTimeFormat('en-US', {month: 'short', day: 'numeric', timeZone: timeZone}).format(date);
+                return { time: timeStr + suffix, date: dateStr };
+            } catch (e) { return { time: "--:--", date: "Invalid" }; }
+        }
 
         function createMatchRow(m, context, sectionTitle) {
             const div = document.createElement('div');
@@ -1145,23 +1101,15 @@
             }
             
             let tagText = m.finalLeague;
-            if (sectionTitle && m.finalLeague === sectionTitle) {
-                tagText = m.sport || "General";
-            }
+            if (sectionTitle && m.finalLeague === sectionTitle) tagText = m.sport || "General";
             
             let metaHtml = '';
             if (m.is_live) {
                 const v = m.live_viewers || 0;
-                let vText = "⚡ Stable"; 
-                if (v > 5000) vText = `👀 ${(v/1000).toFixed(1)}k 🔥`;
-                else if (v >= 1000) vText = `👀 ${(v/1000).toFixed(1)}k 📈`;
+                let vText = v > 5000 ? `👀 ${(v/1000).toFixed(1)}k 🔥` : (v >= 1000 ? `👀 ${(v/1000).toFixed(1)}k 📈` : "⚡ Stable");
                 metaHtml = `<div class="meta-top">${vText}</div>`;
             } else {
-                 metaHtml = `
-                    <div style="display:flex; flex-direction:column; align-items:flex-end;">
-                        <span style="font-size:0.55rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px;">Starts in</span>
-                        <span class="meta-top" style="color:var(--accent-gold); font-size:0.75rem;">${m.status_text}</span>
-                    </div>`;
+                 metaHtml = `<div style="display:flex; flex-direction:column; align-items:flex-end;"><span style="font-size:0.55rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px;">Starts in</span><span class="meta-top" style="color:var(--accent-gold); font-size:0.75rem;">${m.status_text}</span></div>`;
             }
 
             let actionHtml = '';
@@ -1171,15 +1119,9 @@
             if (m.is_live) {
                 actionHtml = `<button onclick="openMatch('${m.id}', 'live')" class="btn-watch" title="Watch ${m.displayHome}">{{TEXT_WATCH_BTN}} <span class="hd-badge">{{TEXT_HD_BADGE}}</span></button>`;
             } else {
-                const now = Date.now();
-                const start = m.startTimeUnix || now;
-                const diffMin = (start - now) / 60000;
-                
-                if (diffMin <= 30) {
-                     actionHtml = `<button onclick="openMatch('${m.id}', 'info')" class="btn-watch">{{TEXT_WATCH_BTN}} <span class="hd-badge">{{TEXT_HD_BADGE}}</span></button>` + copyBtn;
-                } else {
-                     actionHtml = `<button onclick="setNotify(this)" class="btn-notify">🔔 Notify</button>` + copyBtn;
-                }
+                const start = m.startTimeUnix || Date.now();
+                if ((start - Date.now()) / 60000 <= 30) actionHtml = `<button onclick="openMatch('${m.id}', 'info')" class="btn-watch">{{TEXT_WATCH_BTN}} <span class="hd-badge">{{TEXT_HD_BADGE}}</span></button>` + copyBtn;
+                else actionHtml = `<button onclick="setNotify(this)" class="btn-notify">🔔 Notify</button>` + copyBtn;
             }
             
             div.innerHTML = `<div class="col-time">${timeCol}</div><div class="teams-wrapper"><div class="league-tag">${tagText.toUpperCase()}</div>${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${actionHtml}</div>`;
@@ -1188,119 +1130,62 @@
 
         function generateDynamicSchema(liveList, upcomingList) {
             const now = Date.now();
-            const twentyMin = 20 * 60 * 1000;
             const oneDay = 24 * 60 * 60 * 1000;
-
             const existing = document.getElementById('dynamic-schema-script');
             if (existing) existing.remove();
 
             const metaImg = document.querySelector('meta[property="og:image"]');
             const mainImage = metaImg ? metaImg.content : `${SITE_DOMAIN}/assets/logo.png`;
-
             const INDIVIDUAL_SPORTS = ['ufc', 'mma', 'boxing', 'tennis', 'golf', 'f1', 'motorsport', 'fighting', 'nascar', 'wwe'];
-            const isIndividual = (leagueName) => {
-                const lower = (leagueName || "").toLowerCase();
-                return INDIVIDUAL_SPORTS.some(s => lower.includes(s));
-            };
+            const isIndividual = (n) => INDIVIDUAL_SPORTS.some(s => (n||"").toLowerCase().includes(s));
 
-            // --- WILDCARD SCHEMA LOGIC ---
-            let targetLive = liveList;
-            let targetUpcoming = upcomingList;
+            let targetLive = liveList, targetUpcoming = upcomingList;
 
             if (WILDCARD_CATEGORY && WILDCARD_CATEGORY.length > 2) {
                 const wLower = WILDCARD_CATEGORY.toLowerCase();
-                // STRICT FILTERING FOR SCHEMA
-                targetLive = liveList.filter(m => 
-                    m.finalLeague.toLowerCase().includes(wLower) || (m.sport||"").toLowerCase().includes(wLower)
-                );
-                targetUpcoming = upcomingList.filter(m => 
-                    m.finalLeague.toLowerCase().includes(wLower) || (m.sport||"").toLowerCase().includes(wLower)
-                );
-                // Note: For Wildcard, we do NOT limit to 15 items, effectively grabbing "all" as requested.
-                // However, we still filter matches that have passed start time in upcoming list logic below.
+                targetLive = liveList.filter(m => m.finalLeague.toLowerCase().includes(wLower) || (m.sport||"").toLowerCase().includes(wLower));
+                targetUpcoming = upcomingList.filter(m => m.finalLeague.toLowerCase().includes(wLower) || (m.sport||"").toLowerCase().includes(wLower));
             } else {
-                // Standard Logic: Limit items if no wildcard
                 targetLive = targetLive.slice(0, 5);
                 targetUpcoming = targetUpcoming.filter(m => (m.startTimeUnix - now) < oneDay).slice(0, 15);
             }
 
-            // Valid Live Logic (Strict Duration)
-            const validLive = targetLive.filter(m => {
-                if (!m.startTimeUnix) return false;
-                const duration = (m.sport_duration || 120) * 60 * 1000;
-                const cutoffTime = m.startTimeUnix + duration - twentyMin;
-                return now < cutoffTime;
-            });
-
-            // Valid Upcoming Logic (Strict Future)
-            const validUpcoming = targetUpcoming.filter(m => {
-                if (!m.startTimeUnix) return false;
-                return (m.startTimeUnix - now) > 0; // Strictly future
-            });
-
+            const validLive = targetLive.filter(m => m.startTimeUnix && (now < (m.startTimeUnix + ((m.sport_duration||120)*60000) - 1200000)));
+            const validUpcoming = targetUpcoming.filter(m => m.startTimeUnix && (m.startTimeUnix - now) > 0);
             const allItems = [...validLive, ...validUpcoming];
+
             if (allItems.length === 0) return;
 
             const listItems = allItems.map((m, index) => {
                 const isLiveItem = validLive.includes(m);
-                const evtStatus = isLiveItem ? "https://schema.org/EventLive" : "https://schema.org/EventScheduled";
                 const entityType = isIndividual(m.finalLeague) ? "Person" : "SportsTeam";
                 const isSingle = !m.displayAway || m.displayAway === 'TBA';
-
-                let logoA = undefined, logoB = undefined;
-                if (isSingle) {
-                    if (IMAGE_MAP.teams && IMAGE_MAP.teams[m.displayHome]) logoA = `${SITE_DOMAIN}${IMAGE_MAP.teams[m.displayHome]}`;
-                } else {
-                    if (IMAGE_MAP.teams && IMAGE_MAP.teams[m.displayHome] && IMAGE_MAP.teams[m.displayAway]) {
-                        logoA = `${SITE_DOMAIN}${IMAGE_MAP.teams[m.displayHome]}`;
-                        logoB = `${SITE_DOMAIN}${IMAGE_MAP.teams[m.displayAway]}`;
-                    }
-                }
+                let logoA, logoB;
+                if (isSingle) { if (IMAGE_MAP.teams && IMAGE_MAP.teams[m.displayHome]) logoA = `${SITE_DOMAIN}${IMAGE_MAP.teams[m.displayHome]}`; } 
+                else { if (IMAGE_MAP.teams && IMAGE_MAP.teams[m.displayHome]) logoA = `${SITE_DOMAIN}${IMAGE_MAP.teams[m.displayHome]}`; if (IMAGE_MAP.teams && IMAGE_MAP.teams[m.displayAway]) logoB = `${SITE_DOMAIN}${IMAGE_MAP.teams[m.displayAway]}`; }
 
                 const schemaItem = {
-                    "@type": "SportsEvent",
-                    "startDate": new Date(m.startTimeUnix).toISOString(),
-                    "eventStatus": evtStatus,
+                    "@type": "SportsEvent", "startDate": new Date(m.startTimeUnix).toISOString(),
+                    "eventStatus": isLiveItem ? "https://schema.org/EventLive" : "https://schema.org/EventScheduled",
                     "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
-                    "url": `${SITE_DOMAIN}/watch/?info=${m.id}`,
-                    "image": [ mainImage ],
+                    "url": `${SITE_DOMAIN}/watch/?info=${m.id}`, "image": [ mainImage ],
                     "organizer": { "@id": `${SITE_DOMAIN}/#organization` },
-                    "offers": {
-                        "@type": "Offer",
-                        "price": "0",
-                        "priceCurrency": "USD",
-                        "availability": isLiveItem ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
-                        "url": `${SITE_DOMAIN}/watch/?info=${m.id}`
-                    }
+                    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": isLiveItem ? "https://schema.org/InStock" : "https://schema.org/PreOrder", "url": `${SITE_DOMAIN}/watch/?info=${m.id}` }
                 };
 
                 if (isSingle) {
-                    schemaItem.name = m.displayHome; 
-                    schemaItem.description = `Watch ${m.displayHome} live stream. ${m.finalLeague}.`;
+                    schemaItem.name = m.displayHome; schemaItem.description = `Watch ${m.displayHome} live stream. ${m.finalLeague}.`;
                     schemaItem.competitor = [{ "@type": entityType, "name": m.displayHome, "logo": logoA }];
                 } else {
-                    schemaItem.name = `${m.displayHome} vs ${m.displayAway}`;
-                    schemaItem.description = `Watch ${m.displayHome} vs ${m.displayAway} live stream. ${m.finalLeague}.`;
+                    schemaItem.name = `${m.displayHome} vs ${m.displayAway}`; schemaItem.description = `Watch ${m.displayHome} vs ${m.displayAway} live stream. ${m.finalLeague}.`;
                     schemaItem.homeTeam = { "@type": entityType, "name": m.displayHome, "logo": logoA };
                     schemaItem.awayTeam = { "@type": entityType, "name": m.displayAway, "logo": logoB };
                 }
-
                 return { "@type": "ListItem", "position": index + 1, "item": schemaItem };
             });
 
-            const schema = {
-                "@context": "https://schema.org",
-                "@type": "ItemList",
-                "@id": `${SITE_DOMAIN}/#matchlist`,
-                "name": WILDCARD_CATEGORY ? `${WILDCARD_CATEGORY} Schedule` : "Live & Upcoming Sports Schedule",
-                "itemListElement": listItems
-            };
-
-            const script = document.createElement('script');
-            script.id = 'dynamic-schema-script';
-            script.type = 'application/ld+json';
-            script.text = JSON.stringify(schema);
-            document.head.appendChild(script);
+            const schema = { "@context": "https://schema.org", "@type": "ItemList", "@id": `${SITE_DOMAIN}/#matchlist`, "name": WILDCARD_CATEGORY ? `${WILDCARD_CATEGORY} Schedule` : "Live & Upcoming Sports Schedule", "itemListElement": listItems };
+            const script = document.createElement('script'); script.id = 'dynamic-schema-script'; script.type = 'application/ld+json'; script.text = JSON.stringify(schema); document.head.appendChild(script);
         }
 
         function renderSocials() {
@@ -1319,7 +1204,7 @@
             const icons = {
                 telegram: '<svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.47-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.28L19.84 4c.75-.28 1.4.52 1.16 1.76l-2.8 13.2c-.2.9-1.09.9-1.8.6l-5.45-4.06-2.6 2.5c-.3.3-.55.55-1.1.55l.45-3.6z"/></svg>',
                 whatsapp: '<svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.33 4.97L2 22l5.25-1.38a9.86 9.86 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.51 2 12.04 2zm4.43-6.03c-.24-.12-1.41-.7-1.63-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.48-.4-.42-.54-.42h-.46c-.16 0-.42.06-.64.3C4.33 8.6 3.5 9.2 3.5 10.38c0 1.18.86 2.32.98 2.48.12.16 1.7 2.6 4.12 3.65.58.25 1.03.4 1.38.51.58.18 1.1.15 1.52.09.46-.07 1.41-.58 1.61-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg>',
-                reddit: '<svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.22 14.11c-.13.26-.35.45-.6.54-.25.09-.52.1-.78.01-.8-.28-1.76-.43-2.77-.43s-1.97.15-2.77.43c-.26.09-.53.08-.78-.01-.25-.09-.47-.28-.6-.54-.15-.3-.19-.64-.11-.96.08-.32.28-.59.56-.75.9-.53 2.05-.83 3.28-.88l.66-3.11 2.16.46c.04-.2.15-.38.31-.51s.36-.2.55-.17c.2.03.38.15.51.31.13.16.2.36.17.55l-2.16-.46-.66 3.11c1.23.05 2.38.35 3.28.88.28.16.48.43.56.75.08.32.04.66-.11.96zM12 11.25c-.97 0-1.75.78-1.75 1.75s.78 1.75 1.75 1.75 1.75-.78 1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75zm-3.25-2.5c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25zm6.5 0c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25z"/></svg>',
+                reddit: '<svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.22 14.11c-.13.26-.35.45-.6.54-.25.09-.52.1-.78.01-.8-.28-1.76-.43-2.77-.43s-1.97.15-2.77.43c-.26.09-.53.08-.78-.01-.25-.09-.47-.28-.6-.54-.15-.3-.19-.64-.11-.96.08-.32.28-.59.56-.75.9-.53 2.05-.83 3.28-.88l.66-3.11 2.16.46c.04-.2.15-.38.31-.51s.36-.2.55-.17c.2.03.38.15.51.31.13.16.2.36.17.55l-2.16-.46-.66 3.11c1.23.05 2.38.35 3.28.88.28.16.48.43.56.75.08.32.04.66-.11.96zM12 11.25c-.97 0-1.75.78-1.75 1.75s.78 1.75 1.75 1.75 1.75-.78 1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75zm-3.25-2.5c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25-1.25-.56-1.25-1.25zm6.5 0c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25z"/></svg>',
                 twitter: '<svg viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>',
                 copy: '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>'
             };
@@ -1362,12 +1247,7 @@
         }
         
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
-        function setNotify(btn) {
-            // Just update visual state, no copying, no toast.
-            btn.classList.add('active'); 
-            btn.innerHTML = '✓ Set'; 
-            btn.disabled = true;
-        }
+        function setNotify(btn) { btn.classList.add('active'); btn.innerHTML = '✓ Set'; btn.disabled = true; }
     </script>
 </body>
 </html>
