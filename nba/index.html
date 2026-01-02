@@ -576,129 +576,144 @@
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
         /* --- FEATURED MATCH STYLES (OPTIMIZED) --- */
+        /* --- FEATURED MATCH STYLES (MODERN GRID LAYOUT) --- */
         .feat-card {
             margin-top: 20px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.06) 100%);
-            border: 1px solid var(--brand-primary);
+            width: 100%; /* Fix mobile cropping */
+            box-sizing: border-box; /* Fix padding causing overflow */
+            background: linear-gradient(180deg, rgba(20,20,20,0.6) 0%, rgba(10,10,10,0.9) 100%);
+            border: 1px solid var(--border);
+            border-top: 2px solid var(--brand-primary); /* Top accent only for modern look */
             border-radius: 12px;
-            padding: 15px; /* Reduced padding for mobile */
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
             display: flex;
             flex-direction: column;
-            gap: 10px;
             animation: fadeIn 0.5s ease;
         }
-        /* Background Glow */
-        .feat-card::before {
-            content:''; position: absolute; top:0; left:0; width:100%; height:100%;
-            background: radial-gradient(circle at center, var(--brand-primary) 0%, transparent 80%);
-            opacity: 0.1; pointer-events: none;
-        }
-        
-        /* HEADER: Tag, League, Badge */
+
+        /* TOP SECTION: Meta Info */
         .feat-header {
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;
-            z-index: 2; position: relative;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: rgba(0,0,0,0.2);
         }
-        .feat-label-group { display: flex; align-items: center; gap: 8px; overflow: hidden; }
+
+        .feat-meta-left { display: flex; flex-direction: column; gap: 4px; }
         
-        .feat-tag-star { 
+        .feat-tag { 
+            align-self: flex-start;
             background: var(--accent-gold); color: #000; 
-            font-size: 0.6rem; font-weight: 800; padding: 2px 6px; 
-            border-radius: 4px; text-transform: uppercase; white-space: nowrap;
+            font-size: 0.65rem; font-weight: 800; padding: 2px 8px; 
+            border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;
         }
-        
-        .feat-league { 
-            font-size: 0.75rem; font-weight: 700; color: var(--text-muted); 
-            text-transform: uppercase; letter-spacing: 0.5px; 
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+
+        .feat-status-text {
+            font-size: 0.75rem; font-weight: 700; color: var(--brand-primary);
+            text-transform: uppercase;
             display: flex; align-items: center; gap: 5px;
         }
-        
-        .feat-badge { padding: 3px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; white-space: nowrap; margin-left: 10px; }
-        .feat-badge.live { background: var(--brand-primary); color: #fff; box-shadow: 0 0 10px var(--brand-primary); animation: pulse 1.5s infinite; }
-        .feat-badge.up { background: rgba(255,255,255,0.1); color: var(--text-main); border: 1px solid rgba(255,255,255,0.2); }
+        .feat-status-text.live { color: #ef4444; animation: pulse 1.5s infinite; }
+        .feat-status-text.upcoming { color: var(--text-muted); }
 
-        /* CONTENT: Teams & Status */
-        .feat-content { 
-            display: grid; 
-            grid-template-columns: 1fr auto 1fr; /* Teams take space, center is auto */
-            align-items: center; 
-            gap: 5px; 
-            z-index: 2; 
-            margin: 5px 0;
-        }
-        
-        .feat-team { 
-            display: flex; flex-direction: column; align-items: center; 
-            text-align: center; gap: 6px; 
-        }
-        .feat-logo { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
-        /* Only show name if logo missing, else standard style */
-        .feat-name { 
-            font-size: 0.9rem; font-weight: 700; color: var(--text-main); 
-            line-height: 1.1; 
+        .feat-league {
+            text-align: right;
+            font-size: 0.75rem; font-weight: 600; color: var(--text-muted);
+            text-transform: uppercase; max-width: 50%;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-            max-width: 100%;
         }
 
-        .feat-center { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 70px; }
-        .feat-vs { font-size: 1.1rem; font-weight: 900; color: var(--text-muted); opacity: 0.3; font-style: italic; }
-        .feat-status { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); margin-top: 2px; text-align: center; }
-        .feat-realtime { font-size: 0.65rem; color: var(--text-muted); margin-top: 2px; }
+        /* MIDDLE SECTION: The Matchup (GRID) */
+        .feat-match-grid {
+            padding: 20px 10px;
+            display: grid;
+            /* 1fr (Team A) - Auto (VS) - 1fr (Team B) ensures perfect centering */
+            grid-template-columns: 1fr auto 1fr; 
+            align-items: center;
+            gap: 10px;
+        }
 
-        /* FOOTER: Actions */
-        .feat-footer { display: flex; gap: 10px; justify-content: center; margin-top: 5px; z-index: 2; }
-        
+        .feat-team { 
+            display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; 
+            position: relative; z-index: 2;
+        }
+
+        .feat-logo { 
+            width: 50px; height: 50px; object-fit: contain; 
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6)); 
+            transition: transform 0.3s;
+        }
+        .feat-team:hover .feat-logo { transform: scale(1.1); }
+
+        .feat-name { 
+            font-size: 0.95rem; font-weight: 700; color: var(--text-main); line-height: 1.2;
+            word-break: break-word; max-width: 100%;
+        }
+
+        .feat-vs-box {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 50px;
+        }
+        .feat-vs { 
+            font-size: 1.8rem; font-weight: 900; color: rgba(255,255,255,0.05); 
+            font-style: italic; user-select: none;
+        }
+
+        /* BOTTOM SECTION: Date & Buttons */
+        .feat-footer {
+            padding: 12px 15px;
+            background: rgba(255,255,255,0.02);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .feat-date-row {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-size: 0.8rem; font-weight: 600; color: var(--text-muted);
+        }
+        .feat-date-icon { width: 14px; height: 14px; fill: var(--text-muted); }
+
+        .feat-actions {
+            display: flex; gap: 10px; width: 100%;
+        }
+
         .feat-btn {
-            background: var(--brand-primary); color: #fff; 
-            padding: 10px 0; border-radius: 6px; 
-            font-weight: 700; text-transform: uppercase; font-size: 0.8rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: 0.2s; 
-            flex: 2; /* Takes more space */
+            flex: 1; /* Both buttons take equal width or main button takes more */
+            border: none; padding: 10px; border-radius: 6px;
+            font-size: 0.85rem; font-weight: 700; text-transform: uppercase;
+            cursor: pointer; transition: 0.2s;
             display: flex; align-items: center; justify-content: center; gap: 6px;
         }
-        .feat-btn:hover { background: var(--brand-dark); transform: translateY(-2px); }
-        
-        .feat-btn-copy {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-muted); padding: 10px; border-radius: 6px;
-            cursor: pointer; flex: 0 0 40px; /* Square button */
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.2s;
-        }
-        .feat-btn-copy:hover { border-color: var(--brand-primary); color: var(--brand-primary); background: rgba(255,255,255,0.1); }
-        .feat-btn-copy svg { width: 18px; height: 18px; fill: currentColor; }
 
-        /* DESKTOP OPTIMIZATIONS */
+        .feat-btn.primary {
+            background: var(--brand-primary); color: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .feat-btn.primary:hover { background: var(--brand-dark); transform: translateY(-1px); }
+
+        .feat-btn.secondary {
+            background: transparent; border: 1px solid var(--border); color: var(--text-muted);
+        }
+        .feat-btn.secondary:hover { border-color: var(--text-main); color: var(--text-main); background: rgba(255,255,255,0.05); }
+
+        /* DESKTOP TWEAKS */
         @media (min-width: 768px) {
-            .feat-card { 
-                flex-direction: row; /* Horizontal layout */
-                align-items: center; 
-                padding: 15px 30px; 
-                gap: 30px;
-            }
-            .feat-header { 
-                position: absolute; top: 10px; left: 20px; right: 20px; 
-                border-bottom: none; 
-            }
-            .feat-label-group { max-width: 60%; }
-            .feat-badge { margin-left: auto; } /* Pushes badge to far right */
-            
-            .feat-content { flex: 1; gap: 20px; margin-top: 25px; /* Space for absolute header */ }
-            .feat-logo { width: 60px; height: 60px; }
-            .feat-name { font-size: 1.1rem; }
-            .feat-vs { font-size: 1.5rem; }
-            .feat-status { font-size: 0.85rem; }
-            
-            .feat-footer { flex-direction: column; gap: 8px; min-width: 160px; margin-top: 25px; }
-            .feat-btn { width: 100%; flex: initial; }
-            .feat-btn-copy { width: 100%; flex: initial; gap: 8px; }
-            .feat-btn-copy::after { content: 'Copy Link'; font-size: 0.8rem; font-weight: 600; }
+            .feat-card { margin-top: 30px; }
+            .feat-match-grid { padding: 30px 40px; gap: 30px; }
+            .feat-logo { width: 70px; height: 70px; }
+            .feat-name { font-size: 1.2rem; }
+            .feat-footer { flex-direction: row; justify-content: space-between; align-items: center; }
+            .feat-actions { width: auto; gap: 15px; }
+            .feat-btn { padding: 8px 20px; width: auto; min-width: 140px; }
+            .feat-date-row { justify-content: flex-start; }
+            .feat-header { align-items: center; }
+            .feat-league { max-width: 60%; font-size: 0.85rem; }
         }
     </style>
 <style>#live-section, #upcoming-container { display: none !important; }</style></head>
@@ -1035,90 +1050,77 @@
             const container = document.getElementById('hero-featured-container');
             container.style.display = 'block';
             
-            // 1. Logo Logic: Empty string if no logo (Clean look)
+            // 1. Safe Logo Logic
             const getLogoUrl = (name) => (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) ? IMAGE_MAP.teams[name] : null;
             const logoA = getLogoUrl(m.displayHome);
             const logoB = getLogoUrl(m.displayAway);
             
-            // If logo exists show it, else nothing (text name is enough)
+            // Render Image if exists, else nothing (Clean Look)
             const imgA = logoA ? `<img src="${logoA}" class="feat-logo" alt="${m.displayHome}">` : '';
             const imgB = logoB ? `<img src="${logoB}" class="feat-logo" alt="${m.displayAway}">` : '';
             
-            // 2. Icon & League
             const sportIcon = getSportIcon(m.sport || m.finalLeague);
-
-            // 3. Status & Badge Logic
-            let badgeHtml = '';
-            let btnHtml = '';
-            let centerStatus = '';
-            let bottomTime = '';
-            
             const infoLink = `${SITE_DOMAIN}/watch/?info=${m.id}`;
-            const copyBtn = `
-                <button class="feat-btn-copy" onclick="copyText('${infoLink}')" title="Copy Link">
-                    <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                </button>`;
+
+            // 2. Data Formatting
+            let statusText = '';
+            let statusClass = '';
+            let dateString = '';
+            let mainBtnHtml = '';
 
             if (type === 'live') {
-                // LIVE MATCH
-                badgeHtml = `<div class="feat-badge live">● LIVE</div>`;
-                // Show live timer/status (e.g. 45') in center
-                centerStatus = `<div class="feat-status" style="color:var(--brand-primary)">${m.status_text || 'In Play'}</div>`;
-                // Show Viewer count below
+                // LIVE
                 const v = m.live_viewers || 0;
-                bottomTime = `<div class="feat-realtime">👁️ ${(v/1000).toFixed(1)}k watching</div>`;
+                statusText = `● LIVE &nbsp; • &nbsp; ${(v/1000).toFixed(1)}k Watching`;
+                statusClass = 'live';
+                dateString = 'Happening Now';
                 
-                btnHtml = `
-                    <button onclick="openMatch('${m.id}', 'live')" class="feat-btn">
+                mainBtnHtml = `
+                    <button onclick="openMatch('${m.id}', 'live')" class="feat-btn primary">
                         <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> WATCH LIVE
-                    </button>
-                    ${copyBtn}
-                `;
+                    </button>`;
             } else {
-                // UPCOMING MATCH
-                const ft = formatMatchTime(m.startTimeUnix); // Get formatted time (e.g. 8:00 PM)
-                badgeHtml = `<div class="feat-badge up">Today, ${ft.time}</div>`;
+                // UPCOMING
+                const ft = formatMatchTime(m.startTimeUnix);
+                dateString = `${ft.date} &nbsp;•&nbsp; ${ft.time}`; // "Jan 2 • 12:00 PM ET"
                 
-                // Show Countdown (e.g. Starts in 2h)
-                centerStatus = `<div class="feat-status">${m.status_text || 'Upcoming'}</div>`;
-                // Show Exact Date
-                bottomTime = `<div class="feat-realtime">${ft.date}</div>`;
-                
-                // Logic for Watch vs Notify button based on time (30 mins rule)
+                // Countdown text logic
+                statusText = m.status_text || 'Upcoming';
+                statusClass = 'upcoming';
+
+                // Check 30 min rule for button
                 const now = Date.now();
                 const start = m.startTimeUnix || now;
                 const diffMin = (start - now) / 60000;
 
-                let actionBtn = '';
                 if (diffMin <= 30) {
-                     actionBtn = `<button onclick="openMatch('${m.id}', 'info')" class="feat-btn">WATCH STREAM</button>`;
+                     mainBtnHtml = `<button onclick="openMatch('${m.id}', 'info')" class="feat-btn primary">WATCH STREAM</button>`;
                 } else {
-                     actionBtn = `<button onclick="setNotify(this)" class="feat-btn notify">🔔 SET REMINDER</button>`;
+                     mainBtnHtml = `<button onclick="setNotify(this)" class="feat-btn secondary" style="background:var(--brand-primary);color:white;border:none;">🔔 SET REMINDER</button>`;
                 }
-                
-                btnHtml = actionBtn + copyBtn;
             }
 
+            // 3. Render HTML
             container.innerHTML = `
                 <div class="feat-card">
+                    <!-- HEADER: Featured Tag + Status + League -->
                     <div class="feat-header">
-                        <div class="feat-label-group">
-                            <span class="feat-tag-star">FEATURED</span>
-                            <div class="feat-league">${sportIcon} ${m.finalLeague}</div>
+                        <div class="feat-meta-left">
+                            <span class="feat-tag">FEATURED</span>
+                            <div class="feat-status-text ${statusClass}">${statusText}</div>
                         </div>
-                        ${badgeHtml}
+                        <div class="feat-league">${sportIcon} ${m.finalLeague}</div>
                     </div>
-                    
-                    <div class="feat-content">
+
+                    <!-- GRID: Team A | VS | Team B -->
+                    <div class="feat-match-grid">
                         <div class="feat-team">
                             ${imgA}
                             <div class="feat-name">${m.displayHome}</div>
                         </div>
                         
-                        <div class="feat-center">
+                        <div class="feat-vs-box">
                             <div class="feat-vs">VS</div>
-                            ${centerStatus}
-                            ${bottomTime}
                         </div>
                         
                         <div class="feat-team">
@@ -1126,9 +1128,20 @@
                             <div class="feat-name">${m.displayAway}</div>
                         </div>
                     </div>
-                    
+
+                    <!-- FOOTER: Date/Time + Buttons -->
                     <div class="feat-footer">
-                        ${btnHtml}
+                        <div class="feat-date-row">
+                            <svg class="feat-date-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                            ${dateString}
+                        </div>
+                        <div class="feat-actions">
+                            ${mainBtnHtml}
+                            <button class="feat-btn secondary" onclick="copyText('${infoLink}')">
+                                <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> 
+                                Copy
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
