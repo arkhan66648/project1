@@ -989,7 +989,7 @@ captureThemeState(currentThemeContext);
 configData.articles = {
     league: getVal('tplLeagueArticle'),
     sport: getVal('tplSportArticle'),
-    excluded: getVal('tplExcludePages')
+    excluded: getVal('tplExcludePages'),
     league_h1: getVal('tplLeagueH1'),
     league_intro: getVal('tplLeagueIntro'),
     league_live_title: getVal('tplLeagueLiveTitle'),
