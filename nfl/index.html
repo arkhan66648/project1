@@ -743,6 +743,17 @@
             .feat-header { align-items: center; }
             .feat-league { max-width: 60%; font-size: 0.85rem; }
         }
+        /* FEATURED SKELETON (Prevents Layout Shift) */
+        .feat-skel {
+            margin-top: 20px;
+            width: 100%;
+            border-radius: 12px;
+            /* Height matches the calculated height of the real card */
+            height: 210px; 
+        }
+        @media (min-width: 768px) {
+            .feat-skel { height: 180px; }
+        }
     </style>
 <style>#live-section, #upcoming-container { display: none !important; }</style></head>
 <body>
@@ -764,6 +775,9 @@
             <h1>No. #1 NFL Streaming</h1>
             <p class="entity-intro">tfdhgdfgd</p>
             <div class="cat-scroll"><a href="#" class="cat-pill">⚾ MLB</a><a href="/nba" class="cat-pill">🏀 NBA</a><a href="/#ufc" class="cat-pill">🥊 UFC</a></div>
+            <!-- FEATURED SKELETON (Injected by Build Script if Enabled) -->
+            <div id="feat-skeleton" class="skeleton feat-skel"></div>
+
             <!-- FEATURED MATCH CONTAINER -->
             <div id="hero-featured-container" style="display:none;"></div>
         </div>
@@ -1193,6 +1207,8 @@
             document.getElementById('live-sk-head').style.display = 'none';
             document.getElementById('live-skeleton').style.display = 'none';
             document.getElementById('upcoming-skeleton').style.display = 'none';
+            const featSkel = document.getElementById('feat-skeleton');
+            if (featSkel) featSkel.style.display = 'none';
 
             const now = Date.now();
             const oneDay = 24 * 60 * 60 * 1000;
