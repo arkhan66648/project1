@@ -1024,6 +1024,7 @@
         }
 
         function renderApp(matches) {
+            // 1. Hide skeletons
             document.getElementById('live-sk-head').style.display = 'none';
             document.getElementById('live-skeleton').style.display = 'none';
             document.getElementById('upcoming-skeleton').style.display = 'none';
@@ -1031,12 +1032,40 @@
             const now = Date.now();
             const oneDay = 24 * 60 * 60 * 1000;
 
-            const liveMatches = matches.filter(m => m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
+            // 2. Sort lists based on your Priority Score logic
+            let liveMatches = matches.filter(m => m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
             const upcomingMatches = matches.filter(m => !m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
 
+            // --- FEATURED MATCH LOGIC START ---
+            if (FEATURED_ENABLED) {
+                let featMatch = null;
+                let featType = null;
+
+                // Condition A: Check #1 Live Match viewers (> 5000)
+                if (liveMatches.length > 0 && (liveMatches[0].live_viewers || 0) > 5000) {
+                    featMatch = liveMatches[0];
+                    featType = 'live';
+                    // RULE: Remove from Live List (Move)
+                    liveMatches = liveMatches.slice(1);
+                } 
+                // Condition B: Fallback to #1 Upcoming Match
+                else if (upcomingMatches.length > 0) {
+                    featMatch = upcomingMatches[0];
+                    featType = 'upcoming';
+                    // RULE: Do NOT remove from Upcoming List (Duplicate only)
+                }
+
+                // Render the Featured Card if a match was found
+                if (featMatch) {
+                    renderFeaturedMatch(featMatch, featType);
+                }
+            }
+            // --- FEATURED MATCH LOGIC END ---
+
+            // 3. Render remaining live matches (Standard Logic)
             renderLiveSection(liveMatches);
 
-            // --- WILDCARD LOGIC ---
+            // 4. Wildcard Logic (Standard Logic - Unchanged)
             let wildcardMatches = [];
             const isWildcardActive = WILDCARD_CATEGORY && WILDCARD_CATEGORY.length > 2;
 
@@ -1049,45 +1078,43 @@
                 if (wildcardMatches.length > 0) {
                     const wcContainer = document.getElementById('wildcard-container');
                     wcContainer.innerHTML = ''; 
-                    
-                    // 1. WILDCARD TITLE LOGIC
-                    // Use Admin Title OR fallback to "Prefix + Category"
                     let wcTitle = "Section title test Single league";
                     if (!wcTitle) {
                         const prefix = "Hey".trim() || "Upcoming";
                         wcTitle = `${prefix} ${WILDCARD_CATEGORY}`;
                     }
-                    
-                    // Note: We pass skipPrefix=true because we manually constructed the title above
                     createSection(wcContainer, wcTitle, wildcardMatches, false, false, null, WILDCARD_CATEGORY, true);
                 }
             }
 
-            // --- TOP 5 UPCOMING LOGIC ---
+            // 5. Top 5 Upcoming Logic (FIXED: Hides if empty)
             let top5Ids = new Set();
-            
             if (!isWildcardActive) {
                 const top24h = upcomingMatches.filter(m => (m.startTimeUnix - now) < oneDay);
                 const top5Display = top24h.slice(0, 5);
                 
+                const topContainer = document.getElementById('top-upcoming-container');
+
                 if (top5Display.length > 0) {
-                    // 2. TOP 5 TITLE LOGIC
-                    // Use Admin Title OR fallback default
+                    topContainer.style.display = 'block'; // Ensure it's visible if we have matches
                     const topTitle = "Top 5 section title test" || "Top Matches in Next 24h";
-                    
-                    createSection(document.getElementById('top-upcoming-container'), topTitle, top5Display, false, false, "🔥", null, true);
+                    createSection(topContainer, topTitle, top5Display, false, false, "🔥", null, true);
                     top5Display.forEach(m => top5Ids.add(m.id));
                 } else {
-                    document.getElementById('top-upcoming-container').innerHTML = '<div style="padding:15px;color:var(--text-muted);text-align:center;">No upcoming matches in next 24h.</div>';
+                    // FIXED: Completely hide the section if no matches found
+                    topContainer.style.display = 'none';
                 }
             } else {
                 document.getElementById('top-upcoming-container').style.display = 'none';
             }
 
+            // 6. Generate SEO Schema (Standard Logic)
             generateDynamicSchema(liveMatches, upcomingMatches);
 
-            // --- GROUPED SECTIONS LOGIC ---
+            // 7. Grouped Sections Logic (Standard Logic - Unchanged)
             const wcIds = new Set(wildcardMatches.map(m => m.id));
+            
+            // Filter out matches that are already shown in Wildcard or Top 5
             const remainingMatches = upcomingMatches.filter(m => 
                 !wcIds.has(m.id) && 
                 !top5Ids.has(m.id) && 
