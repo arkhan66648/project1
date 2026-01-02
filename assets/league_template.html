@@ -346,6 +346,8 @@
         const API_URL = "{{API_URL}}";
         const TARGET_COUNTRY = "{{TARGET_COUNTRY}}"; 
         const SITE_DOMAIN = "https://{{DOMAIN}}";
+        
+        // CRITICAL FIX: Ensure this is treated as a string literal
         const PAGE_FILTER = "{{PAGE_FILTER}}"; 
 
         const TEAM_TO_LEAGUE = {{JS_LEAGUE_MAP}}; 
@@ -369,11 +371,7 @@
             loadMatches();
         });
 
-        window.addEventListener('scroll', () => {
-            const btn = document.getElementById('backToTop');
-            if(window.scrollY > 300) btn.classList.add('show');
-            else btn.classList.remove('show');
-        });
+        // ... (keep window scroll listener) ...
 
         function resolveLeagueData(match) {
             const hSlug = slugify(match.home_team);
@@ -381,7 +379,6 @@
 
             // A. Auto-Fix: Priority Prefix Check
             const homeUpper = (match.home_team || "").toUpperCase();
-            // SAFETY CHECK: Ensure PRIORITIES is an object
             if (PRIORITIES && typeof PRIORITIES === 'object') {
                 for (const pKey of Object.keys(PRIORITIES)) {
                     if (pKey.startsWith('_')) continue;
@@ -408,8 +405,6 @@
         async function loadMatches() {
             try {
                 const loadingEl = document.getElementById('loading-msg');
-                
-                // 1. Check API URL Config
                 if(!API_URL || API_URL.includes("{{")) {
                     if(loadingEl) loadingEl.innerText = "Error: API URL not configured.";
                     return;
@@ -420,18 +415,13 @@
                     if(loadingEl) loadingEl.innerText = "Error loading matches.";
                     return;
                 }
-                
                 const data = await res.json();
                 
-                // 2. Validate Data
-                if(!data || !data.matches) {
-                    if(loadingEl) loadingEl.innerText = "No match data available.";
-                    return;
-                }
-
                 const matches = [];
                 const len = data.matches.length;
-                const filterLower = PAGE_FILTER.toLowerCase();
+                
+                // CRITICAL FIX: Safe Lowercase Comparison
+                const filterLower = (PAGE_FILTER || "").trim().toLowerCase();
 
                 for(let i=0; i<len; i++) {
                     const m = data.matches[i];
@@ -444,11 +434,11 @@
                     const mSport = (m.sport || "").toLowerCase();
                     const resolvedLower = resolved.name.toLowerCase();
 
-                    // CHECK 1: Exact Name Match (Preferred)
+                    // CHECK 1: Exact Name Match
                     let matchFound = resolvedLower === filterLower;
 
-                    // CHECK 2: Fuzzy Containment (Backup)
-                    if (!matchFound) {
+                    // CHECK 2: Fuzzy Containment (e.g. "NBA" inside "NBA Preseason")
+                    if (!matchFound && filterLower.length > 2) {
                         if (resolvedLower.includes(filterLower) || mLeague.includes(filterLower) || mSport.includes(filterLower)) {
                             matchFound = true;
                         }
@@ -457,7 +447,6 @@
                     if (matchFound) {
                         const homeSlug = slugify(m.home_team);
                         const awaySlug = slugify(m.away_team);
-                        
                         matches.push({
                             ...m,
                             displayHome: escapeHtml(getCleanTeamName(m.home_team, homeSlug, resolved.name)),
