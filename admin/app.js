@@ -73,6 +73,8 @@ const DEMO_CONFIG = {
         brand_primary: "#D00000", brand_dark: "#8a0000", accent_gold: "#FFD700",
         bg_body: "#050505", font_family_base: "system-ui"
     },
+    theme_league: {}, 
+articles: { league: "", sport: "", excluded: "" },
     sport_priorities: JSON.parse(JSON.stringify(DEFAULT_PRIORITIES)), 
     menus: { header: [], hero: [], footer_static: [] },
     pages: [
@@ -231,6 +233,7 @@ const THEME_FIELDS = {
 };
 
 let configData = {};
+let currentThemeContext = 'home';
 let leagueMapData = {}; 
 let currentSha = null;
 let leagueMapSha = null; 
@@ -347,7 +350,10 @@ function populateUI() {
     renderPriorities();
     renderMenus();
     renderPageList();
-    renderLeagues(); 
+    renderLeagues();
+    setVal('tplLeagueArticle', configData.articles?.league || "");
+    setVal('tplSportArticle', configData.articles?.sport || "");
+    setVal('tplExcludePages', configData.articles?.excluded || "");
 }
 
 // ==========================================
@@ -971,16 +977,17 @@ document.getElementById('saveBtn').onclick = async () => {
         excluded_pages: getVal('socialExcluded')
     };
     
-    // CAPTURE ALL THEME DATA
-    configData.theme = {};
-    for (const [jsonKey, htmlId] of Object.entries(THEME_FIELDS)) {
-        const el = document.getElementById(htmlId);
-        if(el && el.type === 'checkbox') {
-             configData.theme[jsonKey] = el.checked; // Capture checkbox boolean
-        } else {
-             configData.theme[jsonKey] = getVal(htmlId);
-        }
-    }
+    // === NEW SAVE LOGIC START ===
+// 1. Capture whatever is currently on screen to the active context variable
+captureThemeState(currentThemeContext);
+
+// 2. Capture Articles
+configData.articles = {
+    league: getVal('tplLeagueArticle'),
+    sport: getVal('tplSportArticle'),
+    excluded: getVal('tplExcludePages')
+};
+// === NEW SAVE LOGIC END ===
 
     if(document.querySelector('.team-list-editor')) leagueMapData = rebuildLeagueMapFromUI();
 
@@ -1041,3 +1048,68 @@ window.switchTab = (id) => {
 
 function setVal(id, v) { if(document.getElementById(id)) document.getElementById(id).value = v || ""; }
 function getVal(id) { return document.getElementById(id)?.value || ""; }
+// ==========================================
+// NEW: THEME CONTEXT SWITCHER LOGIC
+// ==========================================
+window.switchThemeContext = (mode) => {
+    // 1. Save current UI values to the OLD context memory
+    captureThemeState(currentThemeContext);
+
+    // 2. Switch Context
+    currentThemeContext = mode;
+
+    // 3. Update UI Buttons
+    document.querySelectorAll('.ctx-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`ctxBtn-${mode}`).classList.add('active');
+    
+    const desc = mode === 'home' 
+        ? "Editing global styles for the <strong>Homepage</strong>."
+        : "Editing styles for <strong>Inner League Pages</strong> (e.g. /nba-streams/).";
+    document.getElementById('ctxDesc').innerHTML = desc;
+
+    // 4. Load NEW context values into UI
+    // If switching to league for first time, copy home theme as base
+    const targetData = (mode === 'home') ? configData.theme : (configData.theme_league || {});
+    const dataToLoad = (mode === 'league' && Object.keys(targetData).length === 0) ? configData.theme : targetData;
+
+    applyThemeState(dataToLoad);
+};
+
+function captureThemeState(mode) {
+    // Ensure objects exist
+    if(!configData.theme) configData.theme = {};
+    if(!configData.theme_league) configData.theme_league = {};
+
+    const target = (mode === 'home') ? configData.theme : configData.theme_league;
+    
+    for (const [jsonKey, htmlId] of Object.entries(THEME_FIELDS)) {
+        const el = document.getElementById(htmlId);
+        if(!el) continue;
+        target[jsonKey] = (el.type === 'checkbox') ? el.checked : el.value;
+    }
+}
+
+function applyThemeState(data) {
+    for (const [jsonKey, htmlId] of Object.entries(THEME_FIELDS)) {
+        const el = document.getElementById(htmlId);
+        if(!el) continue;
+        const val = data[jsonKey];
+        
+        if (el.type === 'checkbox') {
+            el.checked = (val === true);
+        } else {
+            el.value = (val !== undefined && val !== null) ? val : "";
+        }
+    }
+    // Refresh visual toggles
+    if(window.toggleHeroInputs) toggleHeroInputs();
+    if(window.toggleHeaderInputs) toggleHeaderInputs();
+    if(window.toggleHeroBoxSettings) toggleHeroBoxSettings();
+    
+    // Refresh Sliders text
+    ['themeBorderRadius', 'themeMaxWidth', 'themeSectionLogoSize', 'themeBtnRadius', 'themeHeroPillRadius'].forEach(id => {
+         const el = document.getElementById(id);
+         const display = document.getElementById(id.replace('theme','val_').replace('BorderRadius','borderRadius').replace('MaxWidth','maxWidth').replace('SectionLogoSize','secLogo').replace('BtnRadius','btnRadius').replace('HeroPillRadius','pillRadius'));
+         if(el && display) display.innerText = el.value + 'px';
+    });
+}
