@@ -468,7 +468,7 @@ def build_site():
             live_sec_title = replace_vars(tpl_live_title, vars_map)
             upcoming_sec_title = replace_vars(tpl_upcoming_title, vars_map)
             
-            # Page Data for render_page
+            # Page Data
             page_data = {
                 'title': page_h1, 
                 'meta_title': f"{page_h1} - Free {parent_sport} Streams",
@@ -476,33 +476,34 @@ def build_site():
                 'meta_keywords': f"{name} stream, watch {name}, {name} live, {parent_sport} streams",
                 'canonical_url': f"https://{domain}/{slug}/",
                 'slug': slug,
-                # Pass explicit hero content to be used by template placeholders
                 'hero_h1': page_h1,
                 'hero_text': page_intro
             }
             
-            # Render using LEAGUE THEME
+            # 1. Render Base Template
             final_html = render_page(league_template_content, config, page_data, theme_override=theme_league)
             
-            # Specific League Page Injections
+            # 2. CRITICAL: Inject the Page Filter (League Name)
+            # We use replace() explicitly here to ensure it overwrites the placeholder
             final_html = final_html.replace('{{PAGE_FILTER}}', name)
+            
+            # 3. Inject Other League Specifics
             final_html = final_html.replace('{{LEAGUE_ARTICLE}}', final_article)
             final_html = final_html.replace('{{TEXT_LIVE_SECTION_TITLE}}', live_sec_title)
             final_html = final_html.replace('{{TEXT_UPCOMING_TITLE}}', upcoming_sec_title)
-            
-            # INJECT PRIORITIES (Crucial for JS Filtering to work like Home Page)
             final_html = final_html.replace('{{JS_PRIORITIES}}', json.dumps(priorities))
 
-            # Final Cleanup of placeholders render_page might have missed if keys didn't match
+            # 4. Final Fallback for Header/Hero if render_page missed them
             final_html = final_html.replace('{{H1_TITLE}}', page_h1)
             final_html = final_html.replace('{{HERO_TEXT}}', page_intro)
             
+            # Write File
             out_dir = os.path.join(OUTPUT_DIR, slug)
             os.makedirs(out_dir, exist_ok=True)
             with open(os.path.join(out_dir, 'index.html'), 'w', encoding='utf-8') as f:
                 f.write(final_html)
             
-            print(f"   -> Built: {slug}")
+            print(f"   -> Built: {slug} (Filter: {name})")
 
     print("✅ Build Complete.")
 
