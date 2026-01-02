@@ -656,11 +656,19 @@
 
         .feat-vs-box {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 50px;
+            width: 80px; /* Slightly wider to fit clock */
         }
         .feat-vs { 
             font-size: 1.8rem; font-weight: 900; color: rgba(255,255,255,0.05); 
-            font-style: italic; user-select: none;
+            font-style: italic; user-select: none; line-height: 1;
+        }
+        
+        /* NEW: Match Clock (e.g. 45') */
+        .feat-match-clock {
+            font-size: 0.85rem; font-weight: 700; color: var(--brand-primary);
+            margin-top: 4px;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            animation: pulse 2s infinite;
         }
 
         /* BOTTOM SECTION: Date & Buttons */
@@ -1050,29 +1058,37 @@
             const container = document.getElementById('hero-featured-container');
             container.style.display = 'block';
             
-            // 1. Safe Logo Logic
             const getLogoUrl = (name) => (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) ? IMAGE_MAP.teams[name] : null;
             const logoA = getLogoUrl(m.displayHome);
             const logoB = getLogoUrl(m.displayAway);
             
-            // Render Image if exists, else nothing (Clean Look)
             const imgA = logoA ? `<img src="${logoA}" class="feat-logo" alt="${m.displayHome}">` : '';
             const imgB = logoB ? `<img src="${logoB}" class="feat-logo" alt="${m.displayAway}">` : '';
             
             const sportIcon = getSportIcon(m.sport || m.finalLeague);
             const infoLink = `${SITE_DOMAIN}/watch/?info=${m.id}`;
 
-            // 2. Data Formatting
-            let statusText = '';
-            let statusClass = '';
-            let dateString = '';
+            let statusText = '';     // Top Left (Below Tag)
+            let statusClass = '';    // Color for Top Left
+            let matchClockHtml = ''; // Center (Below VS)
+            let dateString = '';     // Bottom Left
             let mainBtnHtml = '';
 
             if (type === 'live') {
-                // LIVE
+                // --- LIVE MATCH LOGIC ---
+                
+                // 1. Top Left: Viewer Count
                 const v = m.live_viewers || 0;
-                statusText = `● LIVE &nbsp; • &nbsp; ${(v/1000).toFixed(1)}k Watching`;
+                statusText = `🔴 ${(v/1000).toFixed(1)}k Watching`; 
                 statusClass = 'live';
+                
+                // 2. Center: Playing Time (e.g. 43')
+                // We use m.status_text here because for Live matches, API usually puts time here
+                if (m.status_text) {
+                    matchClockHtml = `<div class="feat-match-clock">${m.status_text}</div>`;
+                }
+
+                // 3. Footer: Text
                 dateString = 'Happening Now';
                 
                 mainBtnHtml = `
@@ -1080,15 +1096,18 @@
                         <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> WATCH LIVE
                     </button>`;
             } else {
-                // UPCOMING
-                const ft = formatMatchTime(m.startTimeUnix);
-                dateString = `${ft.date} &nbsp;•&nbsp; ${ft.time}`; // "Jan 2 • 12:00 PM ET"
+                // --- UPCOMING MATCH LOGIC ---
                 
-                // Countdown text logic
-                statusText = m.status_text || 'Upcoming';
+                const ft = formatMatchTime(m.startTimeUnix);
+                dateString = `${ft.date} &nbsp;•&nbsp; ${ft.time}`;
+                
+                // 1. Top Left: Countdown (e.g. Starts in 2h)
+                statusText = m.status_text || 'Upcoming'; 
                 statusClass = 'upcoming';
+                
+                // 2. Center: Empty (No clock for upcoming)
+                matchClockHtml = ''; 
 
-                // Check 30 min rule for button
                 const now = Date.now();
                 const start = m.startTimeUnix || now;
                 const diffMin = (start - now) / 60000;
@@ -1100,19 +1119,19 @@
                 }
             }
 
-            // 3. Render HTML
             container.innerHTML = `
                 <div class="feat-card">
-                    <!-- HEADER: Featured Tag + Status + League -->
+                    <!-- HEADER -->
                     <div class="feat-header">
                         <div class="feat-meta-left">
                             <span class="feat-tag">FEATURED</span>
+                            <!-- Status Text (Watching Count or Countdown) -->
                             <div class="feat-status-text ${statusClass}">${statusText}</div>
                         </div>
                         <div class="feat-league">${sportIcon} ${m.finalLeague}</div>
                     </div>
 
-                    <!-- GRID: Team A | VS | Team B -->
+                    <!-- GRID -->
                     <div class="feat-match-grid">
                         <div class="feat-team">
                             ${imgA}
@@ -1121,6 +1140,8 @@
                         
                         <div class="feat-vs-box">
                             <div class="feat-vs">VS</div>
+                            <!-- Match Clock (45') appears here -->
+                            ${matchClockHtml}
                         </div>
                         
                         <div class="feat-team">
@@ -1129,7 +1150,7 @@
                         </div>
                     </div>
 
-                    <!-- FOOTER: Date/Time + Buttons -->
+                    <!-- FOOTER -->
                     <div class="feat-footer">
                         <div class="feat-date-row">
                             <svg class="feat-date-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
