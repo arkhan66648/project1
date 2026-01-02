@@ -74,6 +74,17 @@
         <button class="btn-secondary" style="border:1px solid #16a34a; color:#ccffcc;" onclick="applyPreset('green')">🟢 Pitch Green</button>
     </div>
                 </div>
+                <!-- === NEW CODE START: CONTEXT SWITCHER === -->
+<div class="context-switcher">
+    <span style="color:#aaa; font-size:0.9rem; font-weight:600;">Editing Mode:</span>
+    <div class="btn-group">
+        <button id="ctxBtn-home" class="ctx-btn active" onclick="switchThemeContext('home')">🏠 Homepage</button>
+        <button id="ctxBtn-league" class="ctx-btn" onclick="switchThemeContext('league')">🏆 League Pages</button>
+    </div>
+    <p class="desc" id="ctxDesc" style="margin-top:10px;">Editing global styles for the <strong>Homepage</strong>.</p>
+</div>
+<hr style="border:0; border-top:1px solid #333; margin: 20px 0;">
+<!-- === NEW CODE END === -->
                 
                 <!-- ROW 1: BASE -->
                 <div class="grid-3">
@@ -462,6 +473,27 @@
                     </div>
                     <div class="card" style="padding:0;"><textarea id="pageContentEditor"></textarea></div>
                 </div>
+                <!-- === NEW CODE START: ARTICLE EDITORS === -->
+<div class="card" style="margin-top:40px; border-color:#8b5cf6;">
+    <h3 style="color:#a78bfa;">🤖 Entity Stacking Articles</h3>
+    <p class="desc">Templates for League/Sport pages. Variables: <code>{{NAME}}</code> (e.g. NBA), <code>{{YEAR}}</code> (2025), <code>{{DOMAIN}}</code>.</p>
+    
+    <div class="grid-2">
+        <div>
+            <label style="color:#fff;">🏆 League Article Template</label>
+            <textarea id="tplLeagueArticle" rows="12" style="font-family:monospace; line-height:1.4; color:#d1d5db;" placeholder="<h1>Watch {{NAME}} Live...</h1>"></textarea>
+        </div>
+        <div>
+            <label style="color:#fff;">⚽ Sport/Generic Article Template</label>
+            <textarea id="tplSportArticle" rows="12" style="font-family:monospace; line-height:1.4; color:#d1d5db;" placeholder="<h1>{{NAME}} Live Streams...</h1>"></textarea>
+        </div>
+    </div>
+    <div style="margin-top:10px;">
+        <label>Exclude Pages (Comma separated)</label>
+        <input type="text" id="tplExcludePages" placeholder="home, about, contact">
+    </div>
+</div>
+<!-- === NEW CODE END === -->
             </section>
 
             <!-- PRIORITIES & BOOST -->
