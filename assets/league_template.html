@@ -48,6 +48,19 @@
             --header-max-width: {{THEME_HEADER_MAX_WIDTH}};
             --border-radius-base: {{THEME_BORDER_RADIUS_BASE}}; 
             --button-border-radius: {{THEME_BUTTON_BORDER_RADIUS}};
+        /* SKELETON LOADERS */
+        .skeleton { 
+            background: var(--bg-panel); 
+            border-radius: var(--border-radius-base); 
+            animation: shimmer 1.5s infinite linear; 
+            background: linear-gradient(to right, var(--bg-panel) 4%, var(--border) 25%, var(--bg-panel) 36%); 
+            background-size: 1000px 100%; 
+        }
+        .skeleton-header { display: flex; justify-content: space-between; align-items: flex-end; margin: 40px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid var(--border); height: 38px; }
+        .sk-title { height: 22px; width: 140px; }
+        .skeleton-box { height: var(--row-h-mob); width: 100%; margin-bottom: 8px; border-radius: var(--border-radius-base); border: 1px solid var(--border); }
+        @media (min-width: 768px) { .skeleton-box { height: var(--row-h-desk); } }
+        @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
             
             /* HEADER */
             --header-bg: {{THEME_HEADER_BG}};
@@ -285,6 +298,14 @@
     </div>
 
     <main class="container">
+        <!-- SKELETON (Visible on Load) -->
+        <div id="league-skeleton">
+             <div class="skeleton skeleton-header"><div class="sk-title"></div></div>
+             <div class="skeleton skeleton-box"></div>
+             <div class="skeleton skeleton-box"></div>
+             <div class="skeleton skeleton-box"></div>
+             <div class="skeleton skeleton-box"></div>
+        </div>
         
         <!-- LIVE SECTION -->
         <div id="live-section" style="display:none;">
@@ -304,7 +325,7 @@
             </div>
             <!-- FIXED: Added style to ensure visibility and prevent collapse -->
             <div id="schedule-list" style="min-height:100px; display:block;">
-                <div style="padding:20px; text-align:center; color:var(--text-muted);" id="loading-msg">Loading schedule...</div>
+                
             </div>
         </div>
 
@@ -464,6 +485,8 @@
         }
 
         function renderApp(matches) {
+            const skel = document.getElementById('league-skeleton');
+            if(skel) skel.style.display = 'none';
             const liveList = document.getElementById('live-list');
             const schedList = document.getElementById('schedule-list');
             const liveSec = document.getElementById('live-section');
