@@ -262,3 +262,10 @@ input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px;
 .modal-content { background: var(--bg-panel); padding: 30px; border-radius: 10px; width: 450px; border: 1px solid var(--border); display:flex; flex-direction:column; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
 .modal-content h3 { margin-top: 0; color: white; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+/* === NEW CODE: CONTEXT SWITCHER STYLES === */
+.context-switcher { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px dashed #444; margin-bottom: 20px; display:flex; flex-direction:column; align-items:center; gap:10px; }
+.btn-group { display: flex; background: #0f172a; padding: 4px; border-radius: 6px; border: 1px solid #334155; }
+.ctx-btn { background: transparent; border: none; color: #94a3b8; padding: 8px 20px; font-weight: 600; cursor: pointer; border-radius: 4px; transition: 0.2s; }
+.ctx-btn:hover { color: white; }
+.ctx-btn.active { background: #3b82f6; color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+#ctxBtn-league.active { background: #8b5cf6; } /* Purple for League Context */
