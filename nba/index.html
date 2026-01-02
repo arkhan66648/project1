@@ -748,11 +748,12 @@
             margin-top: 20px;
             width: 100%;
             border-radius: 12px;
-            /* Height matches the calculated height of the real card */
-            height: 210px; 
+            /* Exact height of Header + Fixed Grid (90+20) + Footer + Borders */
+            height: 240px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
         }
         @media (min-width: 768px) {
-            .feat-skel { height: 180px; }
+            .feat-skel { margin-top: 30px; height: 210px; }
         }
     </style>
 <style>#live-section, #upcoming-container { display: none !important; }</style></head>
