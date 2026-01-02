@@ -12,6 +12,42 @@ TEMPLATE_PATH = 'assets/master_template.html'
 WATCH_TEMPLATE_PATH = 'assets/watch_template.html'
 LEAGUE_TEMPLATE_PATH = 'assets/league_template.html'
 OUTPUT_DIR = '.' 
+# ==========================================
+# SMART ENTITY MAPPING (LEAGUE -> SPORT)
+# ==========================================
+LEAGUE_PARENT_MAP = {
+    # SOCCER
+    "Premier League": "Soccer", "La Liga": "Soccer", "Bundesliga": "Soccer", 
+    "Serie A": "Soccer", "Ligue 1": "Soccer", "Champions League": "Soccer", 
+    "Europa League": "Soccer", "MLS": "Soccer", "Eredivisie": "Soccer",
+    "FA Cup": "Soccer", "Carabao Cup": "Soccer", "Copa America": "Soccer",
+    "Euro 2024": "Soccer", "World Cup": "Soccer", "Liga MX": "Soccer",
+    
+    # BASKETBALL
+    "NBA": "Basketball", "NCAA": "Basketball", "EuroLeague": "Basketball", 
+    "WNBA": "Basketball", "College Basketball": "Basketball",
+    
+    # AMERICAN FOOTBALL
+    "NFL": "American Football", "NCAA Football": "American Football", 
+    "College Football": "American Football", "Super Bowl": "American Football",
+    "XFL": "American Football", "CFL": "American Football",
+    
+    # FIGHTING
+    "UFC": "MMA", "Bellator": "MMA", "PFL": "MMA", "Boxing": "Boxing",
+    "WWE": "Pro Wrestling", "AEW": "Pro Wrestling",
+    
+    # MOTORSPORTS
+    "F1": "Formula 1", "Formula 1": "Motorsport", "NASCAR": "Motorsport", 
+    "MotoGP": "Motorsport", "IndyCar": "Motorsport",
+    
+    # OTHERS
+    "MLB": "Baseball", "NHL": "Ice Hockey", "AFL": "Australian Rules Football",
+    "NRL": "Rugby", "Rugby Union": "Rugby", "Six Nations": "Rugby",
+    "Cricket": "Cricket", "IPL": "Cricket", "Big Bash": "Cricket",
+    "Tennis": "Tennis", "Wimbledon": "Tennis", "US Open": "Tennis",
+    "Golf": "Golf", "PGA Tour": "Golf", "LIV Golf": "Golf",
+    "Darts": "Darts", "Snooker": "Snooker"
+}
 
 # ==========================================
 # 2. UTILS
@@ -143,42 +179,7 @@ def render_page(template, config, page_data, theme_override=None):
         'text_show_more': 'Show More', 'text_watch_btn': 'WATCH', 'text_hd_badge': 'HD', 'text_section_link': 'View All',
         'wildcard_category': '', 'text_section_prefix': 'Upcoming'
     }
-    # ==========================================
-# SMART ENTITY MAPPING (LEAGUE -> SPORT)
-# ==========================================
-LEAGUE_PARENT_MAP = {
-    # SOCCER
-    "Premier League": "Soccer", "La Liga": "Soccer", "Bundesliga": "Soccer", 
-    "Serie A": "Soccer", "Ligue 1": "Soccer", "Champions League": "Soccer", 
-    "Europa League": "Soccer", "MLS": "Soccer", "Eredivisie": "Soccer",
-    "FA Cup": "Soccer", "Carabao Cup": "Soccer", "Copa America": "Soccer",
-    "Euro 2024": "Soccer", "World Cup": "Soccer", "Liga MX": "Soccer",
-    
-    # BASKETBALL
-    "NBA": "Basketball", "NCAA": "Basketball", "EuroLeague": "Basketball", 
-    "WNBA": "Basketball", "College Basketball": "Basketball",
-    
-    # AMERICAN FOOTBALL
-    "NFL": "American Football", "NCAA Football": "American Football", 
-    "College Football": "American Football", "Super Bowl": "American Football",
-    "XFL": "American Football", "CFL": "American Football",
-    
-    # FIGHTING
-    "UFC": "MMA", "Bellator": "MMA", "PFL": "MMA", "Boxing": "Boxing",
-    "WWE": "Pro Wrestling", "AEW": "Pro Wrestling",
-    
-    # MOTORSPORTS
-    "F1": "Formula 1", "Formula 1": "Motorsport", "NASCAR": "Motorsport", 
-    "MotoGP": "Motorsport", "IndyCar": "Motorsport",
-    
-    # OTHERS
-    "MLB": "Baseball", "NHL": "Ice Hockey", "AFL": "Australian Rules Football",
-    "NRL": "Rugby", "Rugby Union": "Rugby", "Six Nations": "Rugby",
-    "Cricket": "Cricket", "IPL": "Cricket", "Big Bash": "Cricket",
-    "Tennis": "Tennis", "Wimbledon": "Tennis", "US Open": "Tennis",
-    "Golf": "Golf", "PGA Tour": "Golf", "LIV Golf": "Golf",
-    "Darts": "Darts", "Snooker": "Snooker"
-}
+
 
     theme = {}
     for k, v in defaults.items():
@@ -456,15 +457,6 @@ def build_site():
                 'meta_title': f"Watch {name} Live Streams Free - Best {parent_sport} Streaming Site",
                 'meta_desc': f"Stream every {name} game live. The best free {parent_sport} streaming site for {name} schedules, scores, and HD links.",
                 'meta_keywords': f"{name} stream, watch {name}, {name} live, {parent_sport} streams, free {parent_sport}",
-                'canonical_url': f"https://{domain}/{slug}/",
-                'slug': slug
-            }
-            
-            page_data = {
-                'title': f"{name} Live Streams",
-                'meta_title': f"Watch {name} Live Streams Free | {config.get('site_settings',{}).get('title_part_1','')} {config.get('site_settings',{}).get('title_part_2','')}",
-                'meta_desc': f"Best free {name} live streams. Watch all {name} games live in HD.",
-                'meta_keywords': f"{name} stream, watch {name}, {name} live free",
                 'canonical_url': f"https://{domain}/{slug}/",
                 'slug': slug
             }
