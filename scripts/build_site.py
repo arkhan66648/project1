@@ -322,8 +322,11 @@ def render_page(template, config, page_data, theme_override=None):
 
     html = html.replace('{{META_KEYWORDS}}', f'<meta name="keywords" content="{page_data.get("meta_keywords")}">' if page_data.get('meta_keywords') else '')
     
-    if layout == 'home': html = html.replace('{{DISPLAY_HERO}}', theme.get('display_hero', 'block'))
+    # FIX: Allow 'league' layout to show Hero and Match Sections
+    if layout in ['home', 'league']: 
+        html = html.replace('{{DISPLAY_HERO}}', theme.get('display_hero', 'block'))
     elif layout != 'watch': 
+        # Only hide sections for static pages (About, Contact, etc.)
         html = html.replace('{{DISPLAY_HERO}}', 'none')
         html = html.replace('</head>', '<style>#live-section, #upcoming-container { display: none !important; }</style></head>')
 
@@ -477,7 +480,8 @@ def build_site():
                 'canonical_url': f"https://{domain}/{slug}/",
                 'slug': slug,
                 'hero_h1': page_h1,
-                'hero_text': page_intro
+                'hero_text': page_intro,
+                'layout': 'league'
             }
             
             # 1. Render Base Template
