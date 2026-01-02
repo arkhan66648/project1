@@ -403,6 +403,7 @@ def build_site():
         os.makedirs(out_dir, exist_ok=True)
         with open(os.path.join(out_dir, 'index.html'), 'w', encoding='utf-8') as f: f.write(final_html)
             # ==========================================
+    # ==========================================
     # 5. BUILD LEAGUE PAGES
     # ==========================================
     print("🏆 Building League Pages...")
@@ -423,6 +424,12 @@ def build_site():
 
         domain = config.get('site_settings', {}).get('domain', 'example.com')
 
+        # Templates from Admin
+        tpl_h1 = articles.get('league_h1', 'Watch {{NAME}} Live Streams')
+        tpl_intro = articles.get('league_intro', 'Best free {{NAME}} streams online.')
+        tpl_live_title = articles.get('league_live_title', 'Live {{NAME}} Matches')
+        tpl_upcoming_title = articles.get('league_upcoming_title', 'Upcoming {{NAME}} Schedule')
+
         for name, data in priorities.items():
             if name.startswith('_') or not data.get('hasLink'): continue
             
@@ -431,43 +438,66 @@ def build_site():
             
             # Prepare Article
             raw_article = articles.get('league', '') if is_league else articles.get('sport', '')
-            # --- ENTITY INTELLIGENCE ---
-            # 1. Identify Parent Sport
-            # If name is in map, use it. If not, check if name IS a sport (e.g. "Tennis"). 
-            # If unknown, fallback to "Sports".
+            
+            # Entity Intelligence
             parent_sport = LEAGUE_PARENT_MAP.get(name)
             if not parent_sport:
-                # Fallback: If the name itself looks like a sport
                 lower_name = name.lower()
                 if "football" in lower_name or "soccer" in lower_name: parent_sport = "Soccer"
                 elif "basket" in lower_name: parent_sport = "Basketball"
                 elif "fight" in lower_name: parent_sport = "Combat Sports"
                 elif "racing" in lower_name or "motor" in lower_name: parent_sport = "Motorsport"
-                else: parent_sport = name # Fallback to using the name itself if it's generic like "Tennis"
+                else: parent_sport = name
 
-            # 2. Inject Variables
-            final_article = raw_article.replace('{{NAME}}', name) \
-                                       .replace('{{SPORT}}', parent_sport) \
-                                       .replace('{{YEAR}}', "2025") \
-                                       .replace('{{DOMAIN}}', domain)
+            # Variables for Injection
+            vars_map = {
+                '{{NAME}}': name,
+                '{{SPORT}}': parent_sport,
+                '{{YEAR}}': "2025",
+                '{{DOMAIN}}': domain
+            }
+
+            def replace_vars(text, v_map):
+                for k, v in v_map.items():
+                    text = text.replace(k, v)
+                return text
+
+            # Process Titles & Meta using Admin Templates
+            page_h1 = replace_vars(tpl_h1, vars_map)
+            page_intro = replace_vars(tpl_intro, vars_map)
+            final_article = replace_vars(raw_article, vars_map)
+            live_sec_title = replace_vars(tpl_live_title, vars_map)
+            upcoming_sec_title = replace_vars(tpl_upcoming_title, vars_map)
             
-            # 3. Enhanced Meta Data (SEO Boost)
+            # Page Data for render_page
             page_data = {
-                'title': f"{name} Live Streams | Watch {parent_sport} Online",
-                'meta_title': f"Watch {name} Live Streams Free - Best {parent_sport} Streaming Site",
-                'meta_desc': f"Stream every {name} game live. The best free {parent_sport} streaming site for {name} schedules, scores, and HD links.",
-                'meta_keywords': f"{name} stream, watch {name}, {name} live, {parent_sport} streams, free {parent_sport}",
+                'title': page_h1, # Fallback title
+                'meta_title': f"{page_h1} - Free {parent_sport} Streams",
+                'meta_desc': page_intro,
+                'meta_keywords': f"{name} stream, watch {name}, {name} live, {parent_sport} streams",
                 'canonical_url': f"https://{domain}/{slug}/",
-                'slug': slug
+                'slug': slug,
+                # Pass explicit hero content to be used by template placeholders
+                'hero_h1': page_h1,
+                'hero_text': page_intro
             }
             
-            # Render with LEAGUE THEME override
+            # Render using LEAGUE THEME
+            # IMPORTANT: render_page handles {{HERO_OUTER_STYLE}} based on theme_override
             final_html = render_page(league_template_content, config, page_data, theme_override=theme_league)
             
-            # Inject Variables
+            # Specific League Page Injections
             final_html = final_html.replace('{{PAGE_FILTER}}', name)
-            final_html = final_html.replace('{{PAGE_TITLE}}', f"{name} Streams")
             final_html = final_html.replace('{{LEAGUE_ARTICLE}}', final_article)
+            final_html = final_html.replace('{{TEXT_LIVE_SECTION_TITLE}}', live_sec_title)
+            final_html = final_html.replace('{{TEXT_UPCOMING_TITLE}}', upcoming_sec_title)
+            
+            # INJECT PRIORITIES (Crucial for JS Filtering to work like Home Page)
+            final_html = final_html.replace('{{JS_PRIORITIES}}', json.dumps(priorities))
+
+            # Final Cleanup of placeholders render_page might have missed if keys didn't match
+            final_html = final_html.replace('{{H1_TITLE}}', page_h1)
+            final_html = final_html.replace('{{HERO_TEXT}}', page_intro)
             
             out_dir = os.path.join(OUTPUT_DIR, slug)
             os.makedirs(out_dir, exist_ok=True)
