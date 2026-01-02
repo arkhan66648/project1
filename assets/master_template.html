@@ -676,12 +676,16 @@
     </button>
 
     <script>
-        // CONFIG
+        // ==========================================
+        // 1. CONFIGURATION & STATE
+        // ==========================================
         const API_URL = "{{API_URL}}";
         const TARGET_COUNTRY = "{{TARGET_COUNTRY}}"; 
         const PRIORITIES = {{JS_PRIORITIES}}; 
         const SITE_DOMAIN = "https://{{DOMAIN}}";
-        const TEAM_TO_LEAGUE = {{JS_LEAGUE_MAP}}; // Server-side optimization
+        
+        // SERVER-SIDE INJECTED MAPS (Performance Optimized)
+        const TEAM_TO_LEAGUE = {{JS_LEAGUE_MAP}}; 
         const IMAGE_MAP = {{JS_IMAGE_MAP}};
         const WILDCARD_CATEGORY = "{{WILDCARD_CATEGORY}}";
 
@@ -691,19 +695,29 @@
         };
         const THEME_CONFIG = {{JS_THEME_CONFIG}}; 
 
-        // STATE
+        // NAME FIXES DICTIONARY (From Testing Index)
+        const NAME_FIXES = {
+            "icehockey": "Ice Hockey", "fieldhockey": "Field Hockey",
+            "tabletennis": "Table Tennis", "americanfootball": "American Football",
+            "australianfootball": "AFL", "basketball": "Basketball",
+            "football": "Soccer", "soccer": "Soccer", "baseball": "Baseball",
+            "fighting": "Fighting", "mma": "MMA", "boxing": "Boxing",
+            "motorsport": "Motorsport", "golf": "Golf"
+        };
+
         let allMatches = [];
-        let groupedMatchesCache = []; // Store heavy matches here
+        let groupedMatchesCache = []; 
         let scrollTimeout;
 
-        // --- INIT ---
+        // ==========================================
+        // 2. INITIALIZATION
+        // ==========================================
         window.addEventListener('DOMContentLoaded', () => {
             highlightActiveMenu();
-            setTimeout(renderSocials, 3000); // Delay non-critical JS even longer
+            setTimeout(renderSocials, 3000); // Defer non-critical JS
             loadMatches();
         });
 
-        // --- BACK TO TOP ---
         window.addEventListener('scroll', () => {
             const btn = document.getElementById('backToTop');
             if(window.scrollY > 300) {
@@ -715,57 +729,115 @@
             }
         });
 
-        // --- DATA LOADING ---
         async function loadMatches() {
             try {
                 if(!API_URL || API_URL.includes("{{")) return;
                 
-                // Fetch ASAP
                 const res = await fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`);
                 if (!res.ok) return;
                 const data = await res.json();
                 
-                // Fast Filter
+                // Fast Data Normalization
                 allMatches = [];
                 const len = data.matches.length;
                 for(let i=0; i<len; i++) {
                     const m = data.matches[i];
+                    // Skip invalid matches
                     if((m.home_team === 'TBA' || !m.home_team) && (m.away_team === 'TBA' || !m.away_team)) continue;
+                    // Timestamp fix
                     if (!m.startTimeUnix && m.timestamp) m.startTimeUnix = new Date(m.timestamp).getTime();
                     allMatches.push(m);
                 }
 
-                // Process & Render
                 const processed = processMatches(allMatches);
                 renderApp(processed);
 
             } catch(e) { console.error(e); }
         }
 
-        // --- PROCESSING LOGIC ---
+        // ==========================================
+        // 3. LOGIC UPDATES (STRICT CHECK & NAMING)
+        // ==========================================
+
         function slugify(text) { return (text || "").toString().toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/^-+|-+$/g, ''); }
+        
         function unslugify(slug) { return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '); }
 
+        // UPDATE 1: Strict League Detection (Both Teams Check)
         function resolveLeagueData(match) {
             const hSlug = slugify(match.home_team);
-            if (TEAM_TO_LEAGUE && TEAM_TO_LEAGUE[hSlug]) return { name: TEAM_TO_LEAGUE[hSlug], source: "Map" };
-            return { name: (match.league || match.sport || "Other").trim(), source: "API" };
+            const aSlug = slugify(match.away_team);
+
+            // A. Auto-Fix: Priority Prefix Check (e.g. "NFL: New England")
+            // Captures API data that isn't in map yet but has clear naming
+            const homeUpper = (match.home_team || "").toUpperCase();
+            for (const pKey of Object.keys(PRIORITIES)) {
+                if (pKey.startsWith('_')) continue;
+                const prefix = pKey.toUpperCase() + ":";
+                if (homeUpper.startsWith(prefix)) {
+                    return { name: pKey, source: "Fix" };
+                }
+            }
+
+            // B. Strict Map Check (Prevents Cross-League Mislabeling)
+            // Checks if BOTH teams are in the map AND belong to the same league
+            if (TEAM_TO_LEAGUE && TEAM_TO_LEAGUE[hSlug] && TEAM_TO_LEAGUE[aSlug] && TEAM_TO_LEAGUE[hSlug] === TEAM_TO_LEAGUE[aSlug]) {
+                return { name: TEAM_TO_LEAGUE[hSlug], source: "Map" };
+            }
+            
+            // C. Semi-Strict Check (Home team only - Fallback)
+            if (TEAM_TO_LEAGUE && TEAM_TO_LEAGUE[hSlug]) {
+                 return { name: TEAM_TO_LEAGUE[hSlug], source: "MapHome" };
+            }
+
+            // D. Fallback to API Data
+            let apiName = (match.league || match.sport || "Other").trim();
+            // Apply simple name fix if it exists in dictionary
+            const lowerApi = apiName.toLowerCase().replace(/\s/g, '');
+            if(NAME_FIXES[lowerApi]) apiName = NAME_FIXES[lowerApi];
+            
+            return { name: apiName, source: "API" };
         }
 
-        function getCleanTeamName(rawName, slug) {
+        // UPDATE 2: Advanced Name Correction
+        function getCleanTeamName(rawName, slug, resolvedLeague) {
             if (!rawName || rawName === "TBA" || slug === "tba") return "TBA";
-            if (TEAM_TO_LEAGUE && TEAM_TO_LEAGUE[slug]) return unslugify(slug);
-            if (rawName.includes(': ')) return rawName.split(': ').pop().trim();
-            return rawName.replace(/^(NHL|NBA|NFL|MLB|UFC):\s*/i, '').trim();
+
+            // A. Map-Based Reconstruction (Highest Quality)
+            if (TEAM_TO_LEAGUE && TEAM_TO_LEAGUE[slug]) {
+                return unslugify(slug);
+            }
+
+            // B. Text Cleaning (Regex)
+            let clean = rawName;
+            
+            // Remove League Prefix if present (e.g. "Premier League: Man Utd")
+            if (resolvedLeague) {
+                try {
+                    const safeLeague = resolvedLeague.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const regex = new RegExp(`^${safeLeague}:\\s*`, 'i');
+                    clean = clean.replace(regex, '');
+                } catch(e) {}
+            }
+            
+            // Standard US Sport Prefix Removal
+            clean = clean.replace(/^(NHL|NBA|NFL|MLB|UFC):\s*/i, '').trim();
+
+            return clean;
         }
 
         function calculateScore(m, leagueName) {
             let score = 0;
+            // Admin Priorities Score
             if (PRIORITIES[leagueName]) score += PRIORITIES[leagueName].score * 10;
             else if(PRIORITIES[m.sport || "General"]) score += PRIORITIES[m.sport || "General"].score; 
             
-            if (m.is_live) { score += 5000; score += (m.live_viewers || 0); } 
-            else {
+            // Live Boost
+            if (m.is_live) { 
+                score += 5000; 
+                score += (m.live_viewers || 0); 
+            } else {
+                // Time Proximity Boost (Closer = Higher)
                 const hoursUntil = (m.startTimeUnix - Date.now()) / 3600000;
                 if (hoursUntil < 24) score += (24 - hoursUntil);
             }
@@ -773,45 +845,50 @@
         }
 
         function processMatches(matches) {
-            // Map is faster than for-loop for transformations
             return matches.map(m => {
                 const homeSlug = slugify(m.home_team);
                 const awaySlug = slugify(m.away_team);
                 const resolved = resolveLeagueData(m);
+                
+                // Pass resolved league to name cleaner for better prefix removal
+                const cleanHome = getCleanTeamName(m.home_team, homeSlug, resolved.name);
+                const cleanAway = getCleanTeamName(m.away_team, awaySlug, resolved.name);
+
                 return {
                     ...m,
                     finalLeague: resolved.name,
-                    displayHome: escapeHtml(getCleanTeamName(m.home_team, homeSlug)), 
-                    displayAway: escapeHtml(getCleanTeamName(m.away_team, awaySlug)),
+                    displayHome: escapeHtml(cleanHome), 
+                    displayAway: escapeHtml(cleanAway),
                     priorityScore: calculateScore(m, resolved.name)
                 };
             });
         }
 
-        // --- RENDERING STRATEGY (FIXED FOR MOBILE) ---
+        // ==========================================
+        // 4. RENDERING (Lazy Load & LCP Optimized)
+        // ==========================================
         function renderApp(matches) {
             const now = Date.now();
-            const oneDay = 86400000; // 24*60*60*1000
+            const oneDay = 86400000; 
 
-            // 1. Sort (Fast enough on 200 items)
             matches.sort((a,b) => b.priorityScore - a.priorityScore);
 
             const liveMatches = [];
             const upcomingMatches = [];
             const wildcardMatches = [];
             const top5Matches = [];
-            
-            // 2. Bucketing (Single Pass)
-            const isWildcardActive = WILDCARD_CATEGORY && WILDCARD_CATEGORY.length > 2;
-            const wcLower = isWildcardActive ? WILDCARD_CATEGORY.toLowerCase() : "";
             const claimedIds = new Set();
 
+            const isWildcardActive = WILDCARD_CATEGORY && WILDCARD_CATEGORY.length > 2;
+            const wcLower = isWildcardActive ? WILDCARD_CATEGORY.toLowerCase() : "";
+
+            // 1. Separation
             for (const m of matches) {
                 if (m.is_live) liveMatches.push(m);
                 else upcomingMatches.push(m);
             }
 
-            // Wildcard Bucket
+            // 2. Wildcard Bucket
             if (isWildcardActive) {
                 for (const m of upcomingMatches) {
                     if (m.finalLeague.toLowerCase().includes(wcLower) || (m.sport||"").toLowerCase().includes(wcLower)) {
@@ -822,7 +899,7 @@
                 wildcardMatches.sort((a,b) => a.startTimeUnix - b.startTimeUnix);
             }
 
-            // Top 5 Bucket
+            // 3. Top 5 Bucket
             if (!isWildcardActive) {
                 let count = 0;
                 for (const m of upcomingMatches) {
@@ -835,18 +912,15 @@
                 }
             }
 
-            // Grouped Bucket (Stored for later)
-            groupedMatchesCache = []; // Clear cache
+            // 4. Grouped Bucket (Cache for Lazy Load)
+            groupedMatchesCache = []; 
             for (const m of upcomingMatches) {
                 if (!claimedIds.has(m.id) && (m.startTimeUnix - now) < oneDay) {
                     groupedMatchesCache.push(m);
                 }
             }
 
-            // 3. RENDER CRITICAL CONTENT SYNCHRONOUSLY (Fixes LCP)
-            // No rAF, no setTimeout. Draw it NOW.
-            
-            // Hide skeletons immediately
+            // 5. RENDER CRITICAL (Sync for LCP)
             document.getElementById('live-sk-head').style.display = 'none';
             document.getElementById('live-skeleton').style.display = 'none';
             document.getElementById('upcoming-skeleton').style.display = 'none';
@@ -869,34 +943,27 @@
                 }
             }
             
-            // Generate Schema (Low Priority, fast enough)
             generateDynamicSchema(liveMatches, upcomingMatches);
 
-            // 4. LAZY RENDER GROUPED MATCHES (Fixes TBT)
-            // We do NOT render the heavy list yet. We wait for the user to get close.
+            // 6. SETUP LAZY LOAD (Fix TBT)
             if(groupedMatchesCache.length > 0) {
                 setupLazyLoading();
             }
         }
 
-        // --- LAZY LOADING LOGIC ---
         function setupLazyLoading() {
             const container = document.getElementById('grouped-container');
-            // Add a "trigger" element
             const trigger = document.createElement('div');
             trigger.id = 'lazy-trigger';
-            trigger.style.height = '10px'; 
-            trigger.style.marginBottom = '20px';
+            trigger.style.height = '10px'; trigger.style.marginBottom = '20px';
             container.parentNode.insertBefore(trigger, container);
 
             const observer = new IntersectionObserver((entries) => {
                 if(entries[0].isIntersecting) {
-                    observer.disconnect(); // Run once
-                    trigger.remove();
-                    // Use setTimeout to ensure this runs in a new task, keeping scroll smooth
+                    observer.disconnect(); trigger.remove();
                     setTimeout(() => renderGroupedSections(groupedMatchesCache), 0);
                 }
-            }, { rootMargin: "200px" }); // Start loading when user is 200px away
+            }, { rootMargin: "200px" });
 
             observer.observe(trigger);
         }
@@ -905,11 +972,8 @@
             if(!matches || matches.length === 0) return;
             const container = document.getElementById('grouped-container');
             container.innerHTML = '';
-            
-            // Mobile Optimization: Content Visibility
-            // Tells browser not to paint these until on screen
             container.style.contentVisibility = 'auto'; 
-            container.style.containIntrinsicSize = '1000px'; // Estimate height to prevent scrollbar jumping
+            container.style.containIntrinsicSize = '1000px';
 
             const boostList = (PRIORITIES._BOOST || "").toLowerCase().split(',').map(s=>s.trim()).filter(Boolean);
             const HIDE_OTHERS = PRIORITIES._HIDE_OTHERS === true;
@@ -924,13 +988,11 @@
                 else buckets.generic[key] = [];
             });
 
-            // Bucket Sorting
             for (const m of matches) {
                 const leagueName = m.finalLeague;
                 const leagueLower = leagueName.toLowerCase();
                 const sport = m.sport || "General";
                 
-                // Boost
                 if (boostList.some(b => leagueLower.includes(b))) {
                     if (!buckets.boost[leagueName]) buckets.boost[leagueName] = [];
                     buckets.boost[leagueName].push(m);
@@ -938,7 +1000,6 @@
                 }
                 
                 let placed = false;
-                // Leagues
                 for (const pKey of Object.keys(buckets.leagues)) {
                     if (leagueLower.includes(pKey.toLowerCase())) {
                         buckets.leagues[pKey].push(m);
@@ -947,8 +1008,6 @@
                     }
                 }
                 if(placed) continue;
-                
-                // Sports
                 for (const pKey of Object.keys(buckets.generic)) {
                     if (leagueLower.includes(pKey.toLowerCase()) || sport.toLowerCase().includes(pKey.toLowerCase())) {
                         buckets.generic[pKey].push(m);
@@ -957,35 +1016,30 @@
                     }
                 }
                 if(placed) continue;
-                
-                // Other
                 if(!HIDE_OTHERS) buckets.other.push(m);
             }
 
-            // Render to Fragment (Batch DOM insertion)
             const frag = document.createDocumentFragment();
             
             Object.keys(buckets.boost).forEach(key => { if(buckets.boost[key].length) createSection(frag, key, buckets.boost[key], true, true, null, key); });
-            
             const sortedLeagues = Object.keys(buckets.leagues).sort((a,b) => PRIORITIES[b].score - PRIORITIES[a].score);
             sortedLeagues.forEach(key => { if(buckets.leagues[key].length) createSection(frag, key, buckets.leagues[key], true, true, null, key); });
-            
             const sortedSports = Object.keys(buckets.generic).sort((a,b) => PRIORITIES[b].score - PRIORITIES[a].score);
             sortedSports.forEach(key => { if(buckets.generic[key].length) createSection(frag, key, buckets.generic[key], false, false, null, key); });
-            
             if(buckets.other.length) createSection(frag, "Upcoming Other Matches", buckets.other, false, false, null, null);
             
             container.appendChild(frag);
         }
 
-        // --- UI HELPERS ---
+        // ==========================================
+        // 5. UI COMPONENTS
+        // ==========================================
         function renderLiveSection(matches) {
             const wrapper = document.getElementById('live-content-wrapper');
             const topList = document.getElementById('trending-list');
             const hiddenList = document.getElementById('hidden-live-list');
             const btn = document.getElementById('show-more-live');
             
-            // Filter Live Wildcards
             let displayMatches = matches;
             if (WILDCARD_CATEGORY && WILDCARD_CATEGORY.length > 2) {
                 const wLower = WILDCARD_CATEGORY.toLowerCase();
@@ -1004,7 +1058,6 @@
             topList.innerHTML = ''; hiddenList.innerHTML = ''; btn.style.display='none';
             document.getElementById('live-count').innerText = `● ${displayMatches.length} Live Events`;
             
-            // Use Fragment for atomic update
             const fragTop = document.createDocumentFragment();
             displayMatches.slice(0, 5).forEach(m => fragTop.appendChild(createMatchRow(m, { isLive: true }, null)));
             topList.appendChild(fragTop);
@@ -1023,7 +1076,7 @@
         function createSection(container, title, matches, hasLink, isLeague, customIcon, sectionTitle, skipPrefix=false) {
             if(!matches || matches.length === 0) return;
             const section = document.createElement('div');
-            section.className = 'section-box'; // Hook for CSS optimization
+            section.className = 'section-box'; 
             section.style.marginBottom = '30px';
             
             let linkHtml = '';
@@ -1053,7 +1106,6 @@
             const div = document.createElement('div');
             div.className = m.is_live ? 'match-row live' : 'match-row';
             
-            // Pre-calc Date
             let timeCol;
             if (m.is_live) {
                 timeCol = `<span class="live-txt">LIVE</span><span class="time-sub">${m.status_text || "Now"}</span>`;
@@ -1062,12 +1114,10 @@
                 timeCol = `<span class="time-main">${ft.time}</span><span class="time-sub">${ft.date}</span>`; 
             }
             
-            // Logo Helper
             const getLogo = (name) => {
                 if (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) {
                     const p = IMAGE_MAP.teams[name];
                     const full = p.startsWith('/') ? p : '/' + p;
-                    // Explicit Size for CLS prevention
                     return `<div class="logo-box"><img src="${full}" class="t-img" alt="${name}" loading="lazy" width="20" height="20"></div>`;
                 }
                 const c = ['#e53935','#d81b60','#8e24aa','#5e35b1','#3949ab','#1e88e5','#039be5','#00897b','#43a047','#7cb342','#c0ca33','#fdd835','#fb8c00'][(name.charCodeAt(0)||0)%13];
@@ -1111,7 +1161,9 @@
             return div;
         }
 
-        // --- UTILS ---
+        // ==========================================
+        // 6. UTILS
+        // ==========================================
         function formatMatchTime(unix) {
             if (!unix || isNaN(unix)) return { time: "--:--", date: "Unknown" };
             const isUK = (typeof TARGET_COUNTRY !== 'undefined' && TARGET_COUNTRY === 'UK');
@@ -1131,8 +1183,6 @@
         function highlightActiveMenu() { const path = window.location.pathname; document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(link => { if(link.getAttribute('href') === path) link.classList.add('active'); }); }
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
         function setNotify(btn) { btn.classList.add('active'); btn.innerHTML = '✓ Set'; btn.disabled = true; }
-        
-        // --- SOCIALS & SCHEMA ---
         function renderSocials() {
             const currentSlug = window.location.pathname.replace(/\//g, '');
             if(SHARE_CONFIG.excluded.includes(currentSlug)) return;
@@ -1144,7 +1194,7 @@
                 if(p==='twitter') return `https://twitter.com/intent/tweet?url=${u}`;
                 return null;
             };
-            const icons = { telegram: '<svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.47-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.28L19.84 4c.75-.28 1.4.52 1.16 1.76l-2.8 13.2c-.2.9-1.09.9-1.8.6l-5.45-4.06-2.6 2.5c-.3.3-.55.55-1.1.55l.45-3.6z"/></svg>', whatsapp: '<svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.33 4.97L2 22l5.25-1.38a9.86 9.86 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.51 2 12.04 2zm4.43-6.03c-.24-.12-1.41-.7-1.63-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.48-.4-.42-.54-.42h-.46c-.16 0-.42.06-.64.3C4.33 8.6 3.5 9.2 3.5 10.38c0 1.18.86 2.32.98 2.48.12.16 1.7 2.6 4.12 3.65.58.25 1.03.4 1.38.51.58.18 1.1.15 1.52.09.46-.07 1.41-.58 1.61-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg>', reddit: '<svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.22 14.11c-.13.26-.35.45-.6.54-.25.09-.52.1-.78.01-.8-.28-1.76-.43-2.77-.43s-1.97.15-2.77.43c-.26.09-.53.08-.78-.01-.25-.09-.47-.28-.6-.54-.15-.3-.19-.64-.11-.96.08-.32.28-.59.56-.75.9-.53 2.05-.83 3.28-.88l.66-3.11 2.16.46c.04-.2.15-.38.31-.51s.36-.2.55-.17c.2.03.38.15.51.31.13.16.2.36.17.55l-2.16-.46-.66 3.11c1.23.05 2.38.35 3.28.88.28.16.48.43.56.75.08.32.04.66-.11.96zM12 11.25c-.97 0-1.75.78-1.75 1.75s.78 1.75 1.75 1.75 1.75-.78 1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75zm-3.25-2.5c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25z"/></svg>', twitter: '<svg viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>', copy: '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>' };
+            const icons = { telegram: '<svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.47-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.28L19.84 4c.75-.28 1.4.52 1.16 1.76l-2.8 13.2c-.2.9-1.09.9-1.8.6l-5.45-4.06-2.6 2.5c-.3.3-.55.55-1.1.55l.45-3.6z"/></svg>', whatsapp: '<svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.33 4.97L2 22l5.25-1.38a9.86 9.86 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.51 2 12.04 2zm4.43-6.03c-.24-.12-1.41-.7-1.63-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.48-.4-.42-.54-.42h-.46c-.16 0-.42.06-.64.3C4.33 8.6 3.5 9.2 3.5 10.38c0 1.18.86 2.32.98 2.48.12.16 1.7 2.6 4.12 3.65.58.25 1.03.4 1.38.51.58.18 1.1.15 1.52.09.46-.07 1.41-.58 1.61-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg>', reddit: '<svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.22 14.11c-.13.26-.35.45-.6.54-.25.09-.52.1-.78.01-.8-.28-1.76-.43-2.77-.43s-1.97.15-2.77.43c-.26.09-.53.08-.78-.01-.25-.09-.47-.28-.6-.54-.15-.3-.19-.64-.11-.96.08-.32.28-.59.56-.75.9-.53 2.05-.83 3.28-.88l.66-3.11 2.16.46c.04-.2.15-.38.31-.51s.36-.2.55-.17c.2.03.38.15.51.31.13.16.2.36.17.55l-2.16-.46-.66 3.11c1.23.05 2.38.35 3.28.88.28.16.48.43.56.75.08.32.04.66-.11.96zM12 11.25c-.97 0-1.75.78-1.75 1.75s.78 1.75 1.75 1.75 1.75-.78 1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75zm-3.25-2.5c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25zm6.5 0c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25z"/></svg>', twitter: '<svg viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>', copy: '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>' };
             let html = '';
             ['telegram', 'whatsapp', 'reddit', 'twitter', 'copy'].forEach(p => {
                 const count = SHARE_CONFIG.counts[p] ? ((n)=>(n>=1000?(n/1000).toFixed(1)+'k':n))(SHARE_CONFIG.counts[p]) : '';
@@ -1154,7 +1204,6 @@
             if(document.getElementById('socialSidebar')) document.getElementById('socialSidebar').innerHTML = html;
             if(document.getElementById('mobileFooter')) document.getElementById('mobileFooter').innerHTML = html;
         }
-
         function getSportIcon(n) { n=(n||"").toLowerCase(); if(n.includes('soccer')||n.includes('premier')) return '⚽'; if(n.includes('basket')||n.includes('nba')) return '🏀'; if(n.includes('football')||n.includes('nfl')) return '🏈'; if(n.includes('baseball')||n.includes('mlb')) return '⚾'; if(n.includes('fight')||n.includes('ufc')||n.includes('box')||n.includes('mma')) return '🥊'; if(n.includes('motor')||n.includes('f1')) return '🏎️'; return '🏆'; }
         
         function generateDynamicSchema(liveList, upcomingList) {
@@ -1162,7 +1211,6 @@
             const existing = document.getElementById('dynamic-schema-script');
             if (existing) existing.remove();
             
-            // Only generate schema for top 10 items to save JS time on mobile
             const allItems = [...liveList, ...upcomingList].slice(0, 10);
             if (allItems.length === 0) return;
 
