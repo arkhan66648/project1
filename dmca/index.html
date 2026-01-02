@@ -744,17 +744,32 @@
             .feat-league { max-width: 60%; font-size: 0.85rem; }
         }
         /* FEATURED SKELETON (Prevents Layout Shift) */
-        .feat-skel {
-            margin-top: 20px;
-            width: 100%;
-            border-radius: 12px;
-            /* Exact height of Header + Fixed Grid (90+20) + Footer + Borders */
-            height: 240px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
-        }
-        @media (min-width: 768px) {
-            .feat-skel { margin-top: 30px; height: 210px; }
-        }
+        /* FEATURED SKELETON */
+.feat-skel {
+    /* 1. Sizing & Box Model */
+    width: 100%;
+    max-width: 100%; /* Prevents overflow */
+    box-sizing: border-box; /* Ensures padding/borders are included in height */
+    
+    /* 2. Centering & Positioning */
+    margin-top: 20px;    /* Match Mobile Card Margin */
+    margin-left: auto;   /* Force Horizontal Center */
+    margin-right: auto;  /* Force Horizontal Center */
+    
+    /* 3. Height (Calculated previously) */
+    height: 243px; 
+    
+    /* 4. Appearance */
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+@media (min-width: 768px) {
+    .feat-skel { 
+        margin-top: 30px; /* Match Desktop Card Margin */
+        height: 230px;    /* Match Desktop Card Height */
+    }
+}
     </style>
 <style>#live-section, #upcoming-container { display: none !important; }</style></head>
 <body>
