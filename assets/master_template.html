@@ -575,234 +575,6 @@
 
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        /* --- FEATURED MATCH STYLES (OPTIMIZED) --- */
-        /* --- FEATURED MATCH STYLES (MODERN GRID LAYOUT) --- */
-        .feat-card {
-            margin-top: 20px;
-    
-    /* WIDTH FIX: Matches the skeleton exactly */
-    width: 100%; 
-    max-width: 800px; /* Same as skeleton */
-    margin-left: auto; /* Centers the box */
-    margin-right: auto; /* Centers the box */
-    
-    /* HEIGHT FIX: Locks height to prevent layout shift */
-    height: 243px; 
-    
-    box-sizing: border-box; 
-    background: linear-gradient(180deg, rgba(20,20,20,0.6) 0%, rgba(10,10,10,0.9) 100%);
-    border: 1px solid var(--border);
-    border-top: 2px solid var(--brand-primary); 
-    border-radius: 12px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    display: flex;
-    flex-direction: column;
-    animation: fadeIn 0.5s ease;
-}
-
-/* Desktop Adjustment */
-@media (min-width: 768px) {
-    .feat-card {
-        margin-top: 30px;
-        height: 230px; /* Fixed height for desktop */
-    }
-}
-
-        /* TOP SECTION: Meta Info */
-        .feat-header {
-            padding: 12px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            background: rgba(0,0,0,0.2);
-        }
-
-        .feat-meta-left { display: flex; flex-direction: column; gap: 4px; }
-        
-        .feat-tag { 
-            align-self: flex-start;
-            background: var(--accent-gold); color: #000; 
-            font-size: 0.65rem; font-weight: 800; padding: 2px 8px; 
-            border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-
-        .feat-status-text {
-            font-size: 0.75rem; font-weight: 700; color: var(--brand-primary);
-            text-transform: uppercase;
-            display: flex; align-items: center; gap: 5px;
-        }
-        .feat-status-text.live { color: #ef4444; animation: pulse 1.5s infinite; }
-        .feat-status-text.upcoming { color: var(--text-muted); }
-
-        .feat-league {
-            text-align: right;
-            font-size: 0.75rem; font-weight: 600; color: var(--text-muted);
-            text-transform: uppercase; max-width: 50%;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-        }
-
-        /* MIDDLE SECTION: The Matchup (GRID) */
-        .feat-match-grid {
-            padding: 10px; 
-            display: grid;
-            grid-template-columns: 1fr auto 1fr; 
-            align-items: center;
-            gap: 8px;
-            /* FIXED HEIGHT: Ensures card size is same with or without logos */
-            height: 90px; 
-            overflow: hidden;
-        }
-
-        .feat-team { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; /* Vertically centers text if logo is missing */
-            text-align: center; 
-            gap: 4px; 
-            height: 100%; /* Fills the fixed grid height */
-            position: relative; 
-            z-index: 2;
-        }
-
-        .feat-logo { 
-            height: 35px; 
-            width: auto; 
-            max-width: 100%;
-            object-fit: contain; 
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6)); 
-            transition: transform 0.3s;
-        }
-        .feat-team:hover .feat-logo { transform: scale(1.1); }
-
-        .feat-name { 
-            font-size: 0.85rem; 
-            font-weight: 700; 
-            color: var(--text-main); 
-            line-height: 1.1;
-            /* Text Truncation to prevent overflow */
-            display: -webkit-box; 
-            -webkit-line-clamp: 2; 
-            -webkit-box-orient: vertical; 
-            overflow: hidden;
-            max-width: 100%;
-        }
-
-        .feat-vs-box {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 80px; /* Slightly wider to fit clock */
-        }
-        .feat-vs { 
-            font-size: 1.8rem; font-weight: 900; color: rgba(255,255,255,0.05); 
-            font-style: italic; user-select: none; line-height: 1;
-        }
-        
-        /* NEW: Match Clock (e.g. 45') */
-        .feat-match-clock {
-            font-size: 0.85rem; font-weight: 700; color: var(--brand-primary);
-            margin-top: 4px;
-            text-shadow: 0 0 10px rgba(0,0,0,0.5);
-            animation: pulse 2s infinite;
-        }
-
-        /* BOTTOM SECTION: Date & Buttons */
-        .feat-footer {
-            padding: 12px 15px;
-            background: rgba(255,255,255,0.02);
-            border-top: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .feat-date-row {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            font-size: 0.8rem; font-weight: 600; color: var(--text-muted);
-        }
-        .feat-date-icon { width: 14px; height: 14px; fill: var(--text-muted); }
-
-        .feat-actions {
-            display: flex; gap: 10px; width: 100%;
-        }
-
-        .feat-btn {
-            flex: 1; /* Both buttons take equal width or main button takes more */
-            border: none; padding: 10px; border-radius: 6px;
-            font-size: 0.70rem; font-weight: 700; text-transform: uppercase;
-            cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-        }
-
-        .feat-btn.primary {
-            background: var(--brand-primary); color: #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        .feat-btn.primary:hover { background: var(--brand-dark); transform: translateY(-1px); }
-
-        .feat-btn.secondary {
-            background: transparent; border: 1px solid var(--border); color: var(--text-muted);
-        }
-        .feat-btn.secondary:hover { border-color: var(--text-main); color: var(--text-main); background: rgba(255,255,255,0.05); }
-
-        /* DESKTOP TWEAKS */
-        @media (min-width: 768px) {
-            .feat-match-grid {
-    padding: 10px; 
-    display: grid;
-    grid-template-columns: 1fr auto 1fr; 
-    align-items: center;
-    gap: 8px;
-    
-    /* IMPORTANT: Makes the grid fill the remaining height automatically */
-    flex: 1; 
-    
-    overflow: hidden;
-}
-            .feat-logo { height: 60px; }
-            .feat-name { font-size: 1.1rem; }
-            .feat-footer { flex-direction: row; justify-content: space-between; align-items: center; }
-            .feat-actions { width: auto; gap: 15px; }
-            .feat-btn { padding: 8px 20px; width: auto; min-width: 140px; }
-            .feat-date-row { justify-content: flex-start; }
-            .feat-header { align-items: center; }
-            .feat-league { max-width: 60%; font-size: 0.85rem; }
-        }
-        /* FEATURED SKELETON (Prevents Layout Shift) */
-        /* FEATURED SKELETON */
-.feat-skel {
-    /* 1. Sizing & Box Model */
-    width: 100%;
-    max-width: 800px; /* Prevents overflow */
-    box-sizing: border-box; /* Ensures padding/borders are included in height */
-    
-    /* 2. Centering & Positioning */
-    margin-top: 20px;    /* Match Mobile Card Margin */
-    margin-left: auto;   /* Force Horizontal Center */
-    margin-right: auto;  /* Force Horizontal Center */
-    
-    /* 3. Height (Calculated previously) */
-    height: 243px; 
-    
-    /* 4. Appearance */
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-@media (min-width: 768px) {
-    .feat-skel { 
-        margin-top: 30px; /* Match Desktop Card Margin */
-        height: 230px;    /* Match Desktop Card Height */
-    }
-}
-        #hero-featured-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Ensures the max-width card stays centered */
-}
     </style>
 </head>
 <body>
@@ -824,11 +596,6 @@
             <h1>{{H1_TITLE}}</h1>
             <p class="entity-intro">{{HERO_TEXT}}</p>
             <div class="cat-scroll">{{HERO_PILLS}}</div>
-            <!-- FEATURED SKELETON (Injected by Build Script if Enabled) -->
-            {{FEATURED_SKELETON_HTML}}
-
-            <!-- FEATURED MATCH CONTAINER -->
-            <div id="hero-featured-container" style="display:none;"></div>
         </div>
     </div>
 
@@ -919,8 +686,7 @@
             counts: { telegram: 1240, whatsapp: 850, reddit: 340, twitter: 510 } 
         };
 
-        const THEME_CONFIG = {{JS_THEME_CONFIG}};
-        const FEATURED_ENABLED = {{FEATURED_ENABLED}};
+        const THEME_CONFIG = {{JS_THEME_CONFIG}}; 
 
         let teamToLeagueMap = {};
         if (RAW_LEAGUE_MAP) {
@@ -1088,206 +854,70 @@
 
         function normalizeKey(str) { return str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : ""; }
 
-        function renderFeaturedMatch(m, type) {
-            const container = document.getElementById('hero-featured-container');
-            container.style.display = 'block';
-            
-            const getLogoUrl = (name) => (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) ? IMAGE_MAP.teams[name] : null;
-            const logoA = getLogoUrl(m.displayHome);
-            const logoB = getLogoUrl(m.displayAway);
-            
-            const imgA = logoA ? `<img src="${logoA}" class="feat-logo" alt="${m.displayHome}">` : '';
-            const imgB = logoB ? `<img src="${logoB}" class="feat-logo" alt="${m.displayAway}">` : '';
-            
-            const sportIcon = getSportIcon(m.sport || m.finalLeague);
-            const infoLink = `${SITE_DOMAIN}/watch/?info=${m.id}`;
-
-            let statusText = '';     // Top Left (Below Tag)
-            let statusClass = '';    // Color for Top Left
-            let matchClockHtml = ''; // Center (Below VS)
-            let dateString = '';     // Bottom Left
-            let mainBtnHtml = '';
-
-            if (type === 'live') {
-                // --- LIVE MATCH LOGIC ---
-                
-                // 1. Top Left: Viewer Count
-                const v = m.live_viewers || 0;
-                statusText = `🔴 ${(v/1000).toFixed(1)}k Watching`; 
-                statusClass = 'live';
-                
-                // 2. Center: Playing Time (e.g. 43')
-                // We use m.status_text here because for Live matches, API usually puts time here
-                if (m.status_text) {
-                    matchClockHtml = `<div class="feat-match-clock">${m.status_text}</div>`;
-                }
-
-                // 3. Footer: Text
-                dateString = 'Happening Now';
-                
-                mainBtnHtml = `
-                    <button onclick="openMatch('${m.id}', 'live')" class="feat-btn primary">
-                        <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> WATCH LIVE
-                    </button>`;
-            } else {
-                // --- UPCOMING MATCH LOGIC ---
-                
-                const ft = formatMatchTime(m.startTimeUnix);
-                dateString = `${ft.date} &nbsp;•&nbsp; ${ft.time}`;
-                
-                // 1. Top Left: Countdown (e.g. Starts in 2h)
-                statusText = m.status_text ? `Starts in ${m.status_text}` : 'Upcoming'; 
-                statusClass = 'upcoming';
-                
-                // 2. Center: Empty (No clock for upcoming)
-                matchClockHtml = ''; 
-
-                const now = Date.now();
-                const start = m.startTimeUnix || now;
-                const diffMin = (start - now) / 60000;
-
-                if (diffMin <= 30) {
-                     mainBtnHtml = `<button onclick="openMatch('${m.id}', 'info')" class="feat-btn primary">WATCH STREAM</button>`;
-                } else {
-                     mainBtnHtml = `<button onclick="setNotify(this)" class="feat-btn secondary" style="background:var(--brand-primary);color:white;border:none;">🔔 SET REMINDER</button>`;
-                }
-            }
-
-            container.innerHTML = `
-                <div class="feat-card">
-                    <!-- HEADER -->
-                    <div class="feat-header">
-                        <div class="feat-meta-left">
-                            <span class="feat-tag">FEATURED</span>
-                            <!-- Status Text (Watching Count or Countdown) -->
-                            <div class="feat-status-text ${statusClass}">${statusText}</div>
-                        </div>
-                        <div class="feat-league">${sportIcon} ${m.finalLeague}</div>
-                    </div>
-
-                    <!-- GRID -->
-                    <div class="feat-match-grid">
-                        <div class="feat-team">
-                            ${imgA}
-                            <div class="feat-name">${m.displayHome}</div>
-                        </div>
-                        
-                        <div class="feat-vs-box">
-                            <div class="feat-vs">VS</div>
-                            <!-- Match Clock (45') appears here -->
-                            ${matchClockHtml}
-                        </div>
-                        
-                        <div class="feat-team">
-                            ${imgB}
-                            <div class="feat-name">${m.displayAway}</div>
-                        </div>
-                    </div>
-
-                    <!-- FOOTER -->
-                    <div class="feat-footer">
-                        <div class="feat-date-row">
-                            <svg class="feat-date-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                            ${dateString}
-                        </div>
-                        <div class="feat-actions">
-                            ${mainBtnHtml}
-                            <button class="feat-btn secondary" onclick="copyText('${infoLink}')">
-                                <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> 
-                                Copy
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
         function renderApp(matches) {
-    // 1. Hide skeletons immediately
-    document.getElementById('live-sk-head').style.display = 'none';
-    document.getElementById('live-skeleton').style.display = 'none';
-    document.getElementById('upcoming-skeleton').style.display = 'none';
-    const featSkel = document.getElementById('feat-skeleton'); // Ensure this ID matches your HTML
-    if (featSkel) featSkel.style.display = 'none';
+            document.getElementById('live-sk-head').style.display = 'none';
+            document.getElementById('live-skeleton').style.display = 'none';
+            document.getElementById('upcoming-skeleton').style.display = 'none';
 
-    const now = Date.now();
-    const oneDay = 24 * 60 * 60 * 1000;
+            const now = Date.now();
+            const oneDay = 24 * 60 * 60 * 1000;
 
-    // 2. Sort lists (Fast data operations)
-    let liveMatches = matches.filter(m => m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
-    const upcomingMatches = matches.filter(m => !m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
+            const liveMatches = matches.filter(m => m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
+            const upcomingMatches = matches.filter(m => !m.is_live).sort((a,b) => b.priorityScore - a.priorityScore);
 
-    // --- CRITICAL RENDER START (Execution: Immediate) ---
-    // We only render what is "Above the Fold" or High Priority first
-    
-    // A. FEATURED MATCH
-    if (FEATURED_ENABLED) {
-        let featMatch = null;
-        let featType = null;
-        if (liveMatches.length > 0 && (liveMatches[0].live_viewers || 0) > 5000) {
-            featMatch = liveMatches[0];
-            featType = 'live';
-            liveMatches = liveMatches.slice(1);
-        } else if (upcomingMatches.length > 0) {
-            featMatch = upcomingMatches[0];
-            featType = 'upcoming';
-        }
-        if (featMatch) renderFeaturedMatch(featMatch, featType);
-    }
+            renderLiveSection(liveMatches);
 
-    // B. LIVE SECTION
-    renderLiveSection(liveMatches);
+            // --- WILDCARD LOGIC ---
+            let wildcardMatches = [];
+            const isWildcardActive = WILDCARD_CATEGORY && WILDCARD_CATEGORY.length > 2;
 
-    // --- CRITICAL RENDER END ---
+            if (isWildcardActive) {
+                wildcardMatches = upcomingMatches.filter(m => 
+                    m.finalLeague.toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase()) || 
+                    (m.sport || "").toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase())
+                ).sort((a,b) => a.startTimeUnix - b.startTimeUnix);
 
-    // 3. DEFER NON-CRITICAL RENDERING (Execution: Delayed 0ms - Next Frame)
-    // This breaks the "Long Task" and reduces TBT significantly.
-    setTimeout(() => {
-        
-        // C. WILDCARD SECTION
-        let wildcardMatches = [];
-        const isWildcardActive = WILDCARD_CATEGORY && WILDCARD_CATEGORY.length > 2;
-
-        if (isWildcardActive) {
-            wildcardMatches = upcomingMatches.filter(m => 
-                m.finalLeague.toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase()) || 
-                (m.sport || "").toLowerCase().includes(WILDCARD_CATEGORY.toLowerCase())
-            ).sort((a,b) => a.startTimeUnix - b.startTimeUnix);
-
-            if (wildcardMatches.length > 0) {
-                const wcContainer = document.getElementById('wildcard-container');
-                wcContainer.innerHTML = ''; 
-                let wcTitle = "{{TEXT_WILDCARD_TITLE}}";
-                if (!wcTitle) {
-                    const prefix = "{{TEXT_SECTION_PREFIX}}".trim() || "Upcoming";
-                    wcTitle = `${prefix} ${WILDCARD_CATEGORY}`;
+                if (wildcardMatches.length > 0) {
+                    const wcContainer = document.getElementById('wildcard-container');
+                    wcContainer.innerHTML = ''; 
+                    
+                    // 1. WILDCARD TITLE LOGIC
+                    // Use Admin Title OR fallback to "Prefix + Category"
+                    let wcTitle = "{{TEXT_WILDCARD_TITLE}}";
+                    if (!wcTitle) {
+                        const prefix = "{{TEXT_SECTION_PREFIX}}".trim() || "Upcoming";
+                        wcTitle = `${prefix} ${WILDCARD_CATEGORY}`;
+                    }
+                    
+                    // Note: We pass skipPrefix=true because we manually constructed the title above
+                    createSection(wcContainer, wcTitle, wildcardMatches, false, false, null, WILDCARD_CATEGORY, true);
                 }
-                createSection(wcContainer, wcTitle, wildcardMatches, false, false, null, WILDCARD_CATEGORY, true);
             }
-        }
 
-        // D. TOP 5 UPCOMING
-        let top5Ids = new Set();
-        if (!isWildcardActive) {
-            const top24h = upcomingMatches.filter(m => (m.startTimeUnix - now) < oneDay);
-            const top5Display = top24h.slice(0, 5);
-            const topContainer = document.getElementById('top-upcoming-container');
-
-            if (top5Display.length > 0) {
-                topContainer.style.display = 'block'; 
-                const topTitle = "{{TEXT_TOP_UPCOMING_TITLE}}" || "Top Matches in Next 24h";
-                createSection(topContainer, topTitle, top5Display, false, false, "🔥", null, true);
-                top5Display.forEach(m => top5Ids.add(m.id));
+            // --- TOP 5 UPCOMING LOGIC ---
+            let top5Ids = new Set();
+            
+            if (!isWildcardActive) {
+                const top24h = upcomingMatches.filter(m => (m.startTimeUnix - now) < oneDay);
+                const top5Display = top24h.slice(0, 5);
+                
+                if (top5Display.length > 0) {
+                    // 2. TOP 5 TITLE LOGIC
+                    // Use Admin Title OR fallback default
+                    const topTitle = "{{TEXT_TOP_UPCOMING_TITLE}}" || "Top Matches in Next 24h";
+                    
+                    createSection(document.getElementById('top-upcoming-container'), topTitle, top5Display, false, false, "🔥", null, true);
+                    top5Display.forEach(m => top5Ids.add(m.id));
+                } else {
+                    document.getElementById('top-upcoming-container').innerHTML = '<div style="padding:15px;color:var(--text-muted);text-align:center;">No upcoming matches in next 24h.</div>';
+                }
             } else {
-                topContainer.style.display = 'none';
+                document.getElementById('top-upcoming-container').style.display = 'none';
             }
-        } else {
-            document.getElementById('top-upcoming-container').style.display = 'none';
-        }
 
-        // E. GROUPED SECTIONS (Heavy Loop) & SCHEMA
-        // Defer this again slightly to keep UI responsive
-        setTimeout(() => {
+            generateDynamicSchema(liveMatches, upcomingMatches);
+
+            // --- GROUPED SECTIONS LOGIC ---
             const wcIds = new Set(wildcardMatches.map(m => m.id));
             const remainingMatches = upcomingMatches.filter(m => 
                 !wcIds.has(m.id) && 
@@ -1296,11 +926,7 @@
             );
 
             renderGroupedSections(remainingMatches);
-            generateDynamicSchema(liveMatches, upcomingMatches);
-        }, 0);
-
-    }, 0);
-}
+        }
 
         function renderGroupedSections(matches) {
             const container = document.getElementById('grouped-container');
