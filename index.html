@@ -1144,7 +1144,7 @@
                 dateString = `${ft.date} &nbsp;•&nbsp; ${ft.time}`;
                 
                 // 1. Top Left: Countdown (e.g. Starts in 2h)
-                statusText = m.status_text || 'Upcoming'; 
+                statusText = m.status_text ? `Starts in ${m.status_text}` : 'Upcoming'; 
                 statusClass = 'upcoming';
                 
                 // 2. Center: Empty (No clock for upcoming)
