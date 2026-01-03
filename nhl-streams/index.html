@@ -203,6 +203,16 @@
             --mobile-footer-border-top: 1px solid #334155;
             --mobile-footer-shadow: 0 -4px 10px rgba(0,0,0,0.5);
             --mobile-footer-height: 60px; /* e.g. 60px */
+        /* ARTICLE STYLING */
+            --article-bg: {{THEME_ARTICLE_BG}};
+            --article-text: {{THEME_ARTICLE_TEXT}};
+            --article-line-height: {{THEME_ARTICLE_LINE_HEIGHT}};
+            --article-bullet: {{THEME_ARTICLE_BULLET_COLOR}};
+            --article-link: {{THEME_ARTICLE_LINK_COLOR}};
+            --article-h2-color: {{THEME_ARTICLE_H2_COLOR}};
+            --article-h2-border: {{THEME_ARTICLE_H2_BORDER_WIDTH}}px solid {{THEME_ARTICLE_H2_BORDER_COLOR}};
+            --article-h3-color: {{THEME_ARTICLE_H3_COLOR}};
+            --article-h4-color: {{THEME_ARTICLE_H4_COLOR}};
             
             --copy-toast-bg: #22c55e;
             --copy-toast-text: #ffffff;
@@ -501,8 +511,9 @@
         #live-section .sec-head, #live-content-wrapper .sec-head { 
             border-bottom: 3px solid #e70856; 
         }
-        #top-upcoming-container .sec-head { 
-            border-bottom: 2px solid #070e17; 
+        /* In assets/league_template.html */
+        #upcoming-container .sec-head { 
+            border-bottom: {{THEME_SEC_BORDER_LEAGUE_UPCOMING}}; 
         }
         #wildcard-container .sec-head { 
             border-bottom: 1px solid #334155; 
@@ -517,7 +528,23 @@
     content-visibility: auto; /* Magic performance fix for Mobile */
     contain-intrinsic-size: 1000px; /* Prevents scrollbar jumping */
 }
-        
+        /* ARTICLE CSS */
+        .seo-article { 
+            background: var(--article-bg); 
+            color: var(--article-text); 
+            line-height: var(--article-line-height); 
+            padding: 20px; 
+            border-radius: var(--border-radius-base); 
+            margin-top: 40px; 
+        }
+        .seo-article h2 { color: var(--article-h2-color); border-bottom: var(--article-h2-border); padding-bottom: 10px; margin-top: 30px; font-size: 1.5rem; }
+        .seo-article h3 { color: var(--article-h3-color); font-size: 1.25rem; margin-top: 25px; }
+        .seo-article h4 { color: var(--article-h4-color); font-size: 1.1rem; margin-top: 20px; }
+        .seo-article p { margin-bottom: 15px; }
+        .seo-article a { color: var(--article-link); text-decoration: underline; }
+        .seo-article ul, .seo-article ol { margin-left: 20px; margin-bottom: 15px; }
+        .seo-article li { margin-bottom: 5px; }
+        .seo-article li::marker { color: var(--article-bullet); }
         .container { max-width: var(--container-max-width); margin: 0 auto; padding: 20px 15px; min-height: 60vh; }
         .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 40px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
         .sec-title { font-size: 1.2rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; text-transform: uppercase; margin: 0; font-family: var(--font-family-headings); }
@@ -1043,15 +1070,17 @@ We aim for 1080p and 720p definition. <strong>Ice Hockey</strong> requires high 
         function renderSocials() {
             const currentSlug = window.location.pathname.replace(/\//g, '');
             if(SHARE_CONFIG.excluded.includes(currentSlug)) return;
+            
+            // FIX: Use window.location.href instead of SITE_DOMAIN
             const makeUrl = (p) => {
-                const u = encodeURIComponent(SITE_DOMAIN);
+                const u = encodeURIComponent(window.location.href);
                 if(p==='telegram') return `https://t.me/share/url?url=${u}`;
                 if(p==='whatsapp') return `https://api.whatsapp.com/send?text=${u}`;
                 if(p==='reddit') return `https://www.reddit.com/submit?url=${u}`;
                 if(p==='twitter') return `https://twitter.com/intent/tweet?url=${u}`;
                 return null;
             };
-            // FIXED REDDIT ICON (Corrected Path)
+
             const icons = { 
                 telegram: '<svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.47-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.28L19.84 4c.75-.28 1.4.52 1.16 1.76l-2.8 13.2c-.2.9-1.09.9-1.8.6l-5.45-4.06-2.6 2.5c-.3.3-.55.55-1.1.55l.45-3.6z"/></svg>', 
                 whatsapp: '<svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.33 4.97L2 22l5.25-1.38a9.86 9.86 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.51 2 12.04 2zm4.43-6.03c-.24-.12-1.41-.7-1.63-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.48-.4-.42-.54-.42h-.46c-.16 0-.42.06-.64.3C4.33 8.6 3.5 9.2 3.5 10.38c0 1.18.86 2.32.98 2.48.12.16 1.7 2.6 4.12 3.65.58.25 1.03.4 1.38.51.58.18 1.1.15 1.52.09.46-.07 1.41-.58 1.61-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg>', 
@@ -1063,9 +1092,10 @@ We aim for 1080p and 720p definition. <strong>Ice Hockey</strong> requires high 
             let html = '';
             ['telegram', 'whatsapp', 'reddit', 'twitter', 'copy'].forEach(p => {
                 const count = SHARE_CONFIG.counts[p] ? ((n)=>(n>=1000?(n/1000).toFixed(1)+'k':n))(SHARE_CONFIG.counts[p]) : '';
-                const onclick = p === 'copy' ? `copyText('${SITE_DOMAIN}')` : `window.open('${makeUrl(p)}', '_blank')`;
                 
-                // FIXED: Removed style="color:var(...)" to use Master CSS classes instead
+                // FIX: Use window.location.href for copy action
+                const onclick = p === 'copy' ? `copyText(window.location.href)` : `window.open('${makeUrl(p)}', '_blank')`;
+                
                 html += `<div class="social-btn ${p}" onclick="${onclick}">${icons[p]}<span class="s-count">${count}</span></div>`;
             });
             
