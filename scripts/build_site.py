@@ -182,7 +182,12 @@ def render_page(template, config, page_data, theme_override=None):
         'social_desktop_scale': '1.0', 'mobile_footer_height': '60px', 'show_more_btn_radius': '30px', 'back_to_top_radius': '50%',
         'back_to_top_size': '40px', 'section_logo_size': '24px', 'text_live_section_title': 'Trending Live',
         'text_show_more': 'Show More', 'text_watch_btn': 'WATCH', 'text_hd_badge': 'HD', 'text_section_link': 'View All',
-        'wildcard_category': '', 'text_section_prefix': 'Upcoming'
+        'wildcard_category': '', 'text_section_prefix': 'Upcoming',
+        'sec_border_league_upcoming_width': '1', 'sec_border_league_upcoming_color': '#334155',
+        'article_bg': 'transparent', 'article_text': '#94a3b8', 'article_line_height': '1.6',
+        'article_bullet_color': '#D00000', 'article_link_color': '#D00000',
+        'article_h2_color': '#f1f5f9', 'article_h2_border_width': '0', 'article_h2_border_color': '#334155',
+        'article_h3_color': '#f1f5f9', 'article_h4_color': '#cbd5e1'
     }
 
     theme = {}
@@ -199,6 +204,7 @@ def render_page(template, config, page_data, theme_override=None):
     theme['sec_border_wildcard'] = make_border(theme.get('sec_border_wildcard_width'), theme.get('sec_border_wildcard_color'))
     theme['sec_border_leagues'] = make_border(theme.get('sec_border_leagues_width'), theme.get('sec_border_leagues_color'))
     theme['sec_border_grouped'] = make_border(theme.get('sec_border_grouped_width'), theme.get('sec_border_grouped_color'))
+    theme['sec_border_league_upcoming'] = make_border(theme.get('sec_border_league_upcoming_width'), theme.get('sec_border_league_upcoming_color'))
 
     for key, val in theme.items():
         html = html.replace(f"{{{{THEME_{key.upper()}}}}}", str(val))
