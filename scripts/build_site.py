@@ -475,58 +475,34 @@ def build_site():
                 elif "racing" in lower_name or "motor" in lower_name: parent_sport = "Motorsport"
                 else: parent_sport = name
 
-            # Variables for Injection
-            vars_map = {
-                '{{NAME}}': name,
-                '{{SPORT}}': parent_sport,
-                '{{YEAR}}': "2025",
-                '{{DOMAIN}}': domain
-            }
+            # Replace Vars
+        vars_map = {'{{NAME}}': name, '{{SPORT}}': parent, '{{YEAR}}': "2025", '{{DOMAIN}}': config['site_settings']['domain']}
+        
+        # ... (keep existing title/article logic) ...
 
-            def replace_vars(text, v_map):
-                for k, v in v_map.items():
-                    text = text.replace(k, v)
-                return text
+        # PAGE DATA Construction
+        page_data = {
+            'title': p_h1, 
+            'meta_title': p_h1,
+            'meta_desc': p_intro, 
+            'hero_h1': p_h1, 
+            'hero_text': p_intro,
+            'canonical_url': f"https://{config['site_settings']['domain']}/{slug}/",
+            'slug': slug, 
+            'layout': 'league', 
+            'content': final_art,
+            'meta_keywords': f"{name} stream, watch {name} free, {name} live"
+        }
 
-            # Process Titles & Meta using Admin Templates
-            page_h1 = replace_vars(tpl_h1, vars_map)
-            page_intro = replace_vars(tpl_intro, vars_map)
-            final_article = replace_vars(raw_article, vars_map)
-            live_sec_title = replace_vars(tpl_live_title, vars_map)
-            upcoming_sec_title = replace_vars(tpl_upcoming_title, vars_map)
-            
-            # Page Data
-            page_data = {
-                'title': page_h1, 
-                'meta_title': page_h1,
-                'meta_desc': page_intro,
-                'meta_keywords': f"{name} stream, watch {name}, {name} live, {parent_sport} streams",
-                'canonical_url': f"https://{domain}/{slug}/",
-                'slug': slug,
-                'hero_h1': page_h1,
-                'hero_text': page_intro,
-                'layout': 'league'
-            }
-            
-            # 1. Render Base Template
-            final_html = render_page(league_template_content, config, page_data, theme_override=theme_league)
-            
-            # 2. CRITICAL: Inject the Page Filter (League Name)
-            # We use replace() explicitly here to ensure it overwrites the placeholder
-            final_html = final_html.replace('{{PAGE_FILTER}}', name)
-            
-            # 3. Inject Other League Specifics
-            final_html = final_html.replace('{{LEAGUE_ARTICLE}}', final_article)
-            final_html = final_html.replace('{{TEXT_LIVE_SECTION_TITLE}}', live_sec_title)
-            final_html = final_html.replace('{{TEXT_UPCOMING_TITLE}}', upcoming_sec_title)
-            final_html = final_html.replace('{{JS_PRIORITIES}}', json.dumps(priorities))
-
-            # 4. Final Fallback for Header/Hero if render_page missed them
-            final_html = final_html.replace('{{H1_TITLE}}', page_h1)
-            final_html = final_html.replace('{{HERO_TEXT}}', page_intro)
-            
-            # Write File
-            out_dir = os.path.join(OUTPUT_DIR, slug)
+        html = render_page(league_tpl, config, page_data, theme_override=theme_league)
+        
+        # INJECTIONS
+        html = html.replace('{{PAGE_FILTER}}', name)
+        html = html.replace('{{LEAGUE_ARTICLE}}', final_art)
+        # FIX: Inject Hero Pills into League Pages
+        html = html.replace('{{HERO_PILLS}}', build_menu_html(config.get('menus', {}).get('hero', []), 'hero'))
+        
+        out = os.path.join(OUTPUT_DIR, slug)
             os.makedirs(out_dir, exist_ok=True)
             with open(os.path.join(out_dir, 'index.html'), 'w', encoding='utf-8') as f:
                 f.write(final_html)
