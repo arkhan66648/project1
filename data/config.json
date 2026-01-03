@@ -107,19 +107,23 @@
     "match_row_hover_border": "#444444",
     "section_logo_size": "30",
     "show_more_btn_bg": "#151515",
-    "show_more_btn_border": "",
+    "show_more_btn_border": "#000000",
     "show_more_btn_text": "#cccccc",
     "show_more_btn_radius": "",
     "social_desktop_top": "",
     "social_desktop_left": "",
     "social_desktop_scale": "",
     "mobile_footer_height": "",
-    "mobile_footer_bg": "",
+    "mobile_footer_bg": "#000000",
     "back_to_top_bg": "#d00000",
     "back_to_top_icon_color": "#ffffff",
     "back_to_top_radius": "",
     "back_to_top_size": "",
-    "display_hero": ""
+    "display_hero": "block",
+    "social_telegram_color": "#0088cc",
+    "social_whatsapp_color": "#25d366",
+    "social_reddit_color": "#ff4500",
+    "social_twitter_color": "#1da1f2"
   },
   "sport_priorities": {
     "US": {
