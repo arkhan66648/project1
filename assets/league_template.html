@@ -848,20 +848,24 @@
             const schedList = document.getElementById('schedule-list');
             const liveSec = document.getElementById('live-section');
 
-            matches.sort((a,b) => a.startTimeUnix - b.startTimeUnix);
-
             const liveFrag = document.createDocumentFragment();
             const schedFrag = document.createDocumentFragment();
             let liveCount = 0;
 
-            matches.forEach(m => {
-                if (m.is_live) {
-                    liveFrag.appendChild(createRow(m));
-                    liveCount++;
-                } else {
-                    schedFrag.appendChild(createRow(m));
-                }
-            });
+            // 1. Process Live Matches (Sort by Viewers High -> Low)
+            matches.filter(m => m.is_live)
+                   .sort((a,b) => (b.live_viewers || 0) - (a.live_viewers || 0))
+                   .forEach(m => {
+                       liveFrag.appendChild(createRow(m));
+                       liveCount++;
+                   });
+
+            // 2. Process Upcoming Matches (Sort by Time Soon -> Later)
+            matches.filter(m => !m.is_live)
+                   .sort((a,b) => a.startTimeUnix - b.startTimeUnix)
+                   .forEach(m => {
+                       schedFrag.appendChild(createRow(m));
+                   });
 
             if (liveCount > 0) {
                 liveList.innerHTML = '';
@@ -923,8 +927,9 @@
 
             // SMART TAG LOGIC (Unified with Master)
             let tagText = m.finalLeague;
-            const filterLower = (PAGE_FILTER || "").toLowerCase();
-            const matchLeagueLower = m.finalLeague.toLowerCase();
+            if (!m.is_live) {
+                const filterLower = (PAGE_FILTER || "").toLowerCase();
+                const matchLeagueLower = m.finalLeague.toLowerCase();
             // If match league matches current page filter, show Sport instead
             if (matchLeagueLower === filterLower || matchLeagueLower.includes(filterLower)) {
                 let rawSport = (m.sport || "General").trim();
