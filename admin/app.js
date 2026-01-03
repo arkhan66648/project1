@@ -220,6 +220,10 @@ const THEME_FIELDS = {
     'social_desktop_left': 'themeSocialDeskLeft',
     'social_desktop_scale': 'themeSocialDeskScale',
     'mobile_footer_height': 'themeMobFootHeight',
+    'social_telegram_color': 'themeSocialTelegram',
+    'social_whatsapp_color': 'themeSocialWhatsapp',
+    'social_reddit_color': 'themeSocialReddit',
+    'social_twitter_color': 'themeSocialTwitter',
     'mobile_footer_bg': 'themeMobFootBg',
 
     // Back to Top
