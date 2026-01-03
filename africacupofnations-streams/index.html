@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watch Africa Cup of Nations Live Streams and Schedules</title>
     <meta name="description" content="The Best Free Africa Cup of Nations Live stream free online">
-    <meta name="keywords" content="Africa Cup of Nations stream, watch Africa Cup of Nations, Africa Cup of Nations live, Africa Cup of Nations streams">
+    <meta name="keywords" content="Africa Cup of Nations stream, watch Africa Cup of Nations free, Africa Cup of Nations live">
     <meta name="theme-color" content="{{THEME_META_COLOR}}">
 
     <!-- OPEN GRAPH -->
@@ -71,6 +71,11 @@
             --brand-dark: #8a0000;
             --status-green: #00e676;
             --accent-gold: #ffd700;
+        --social-telegram-color: #0088cc;
+            --social-whatsapp-color: #25D366;
+            --social-reddit-color: #FF4500;
+            --social-twitter-color: #1DA1F2;
+            --social-btn-hover-shadow-color: rgba(0,0,0,0.3);
             --bg-body: #050505;
             --bg-panel: #0f0f0f;
             --text-main: #ffffff;
@@ -84,6 +89,18 @@
             --header-max-width: 1000px;
             --border-radius-base: 0px; 
             --button-border-radius: 21px;
+        /* HIGHLIGHTED MENU ITEM */
+        .nav-links a.highlighted { color: #02ed12 !important; border-bottom-color: #02ed12 !important; }
+        .nav-links a.highlighted:hover { color: #bf1d1d !important; border-bottom-color: #bf1d1d !important; }
+
+        /* HERO PILLS (Missing on League Page) */
+        .cat-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 10px 5px; justify-content: center; scrollbar-width: none; width: 100%; margin: 15px 0 0 0; }
+        .cat-scroll::-webkit-scrollbar { display: none; }
+        .cat-pill { background: var(--bg-panel); border: 1px solid var(--border); padding: 8px 18px; border-radius: 50px; font-weight: 700; font-size: 0.8rem; white-space: nowrap; color: var(--text-muted); }
+        .cat-pill:hover { border-color: var(--brand-primary); color: white; background: var(--brand-primary); }
+
+        /* COPY BUTTON ICON FIX */
+        .btn-copy-link svg { width: 12px; height: 12px; fill: currentColor; }
         /* SKELETON LOADERS */
         .skeleton { 
             background: var(--bg-panel); 
@@ -227,6 +244,7 @@
         .live-dot { width: 8px; height: 8px; background: var(--brand-primary); border-radius: 50%; box-shadow: 0 0 10px var(--brand-primary); }
 
         /* MATCH ROW */
+        /* MATCH ROW: Exact copy from Master for consistency */
         .match-row { 
             display: grid; grid-template-columns: 45px 1fr 50px 75px; align-items: center; gap: 8px; 
             background: var(--match-row-bg); border: 1px solid var(--match-row-border); 
@@ -330,6 +348,7 @@
             <div class="sys-status"><div class="live-dot"></div> System Status: Online</div>
             <h1>Watch Africa Cup of Nations Live Streams and Schedules</h1>
             <p class="entity-intro">The Best Free Africa Cup of Nations Live stream free online</p> 
+            <div class="cat-scroll"><a href="#" class="cat-pill">⚾ MLB</a><a href="/nba" class="cat-pill">🏀 NBA</a><a href="/#ufc" class="cat-pill">🥊 UFC</a></div>
         </div>
     </div>
 
@@ -355,9 +374,9 @@
         <div id="upcoming-container">
             <div class="sec-head">
                 <h2 class="sec-title">
-                    <span style="font-size:1.2rem;">📅</span> 
-                    Upcoming Africa Cup of Nations Matches nnn
-                </h2>
+    <span id="upcoming-logo-container" style="font-size:1.2rem; display:inline-flex; align-items:center;">📅</span> 
+    {{TEXT_UPCOMING_TITLE}}
+</h2>
             </div>
             <!-- FIXED: Added style to ensure visibility and prevent collapse -->
             <div id="schedule-list" style="min-height:100px; display:block;">
@@ -445,37 +464,70 @@ We aim for 1080p and 720p definition. <strong>Africa Cup of Nations</strong> req
         window.addEventListener('DOMContentLoaded', () => {
             highlightActiveMenu();
             setTimeout(renderSocials, 3000);
+            
+            // 1. INJECT LEAGUE LOGO (Smart Lookup)
+            if (IMAGE_MAP.leagues) {
+                const slug = (PAGE_FILTER || "").toLowerCase().replace(/[^a-z0-9]/g, '');
+                let imgUrl = IMAGE_MAP.leagues[PAGE_FILTER]; // Exact
+                if (!imgUrl) { // Fuzzy
+                    for (let key in IMAGE_MAP.leagues) {
+                        if (key.toLowerCase().replace(/[^a-z0-9]/g, '') === slug) { imgUrl = IMAGE_MAP.leagues[key]; break; }
+                    }
+                }
+                if (imgUrl) {
+                    const iconSpan = document.getElementById('upcoming-logo-container');
+                    if (iconSpan) {
+                        iconSpan.innerHTML = `<img src="${imgUrl}" alt="${PAGE_FILTER}" style="width:28px; height:28px; object-fit:contain; margin-right:6px;">`;
+                    }
+                }
+            }
+            
             loadMatches();
+            
+            // 2. MOBILE MENU & BACK TO TOP
+            const ham = document.querySelector('.hamburger');
+            if(ham) ham.onclick = () => document.getElementById('mobileMenu').classList.toggle('active');
+            
+            window.addEventListener('scroll', () => {
+                const btn = document.getElementById('backToTop');
+                if(window.scrollY > 300) btn.classList.add('show');
+                else btn.classList.remove('show');
+            });
         });
 
         // ... (keep window scroll listener) ...
 
         function resolveLeagueData(match) {
-            const hSlug = slugify(match.home_team);
+            const hRaw = match.home_team || "";
+            const hSlug = slugify(hRaw);
             const aSlug = slugify(match.away_team);
 
-            // A. Auto-Fix: Priority Prefix Check
-            const homeUpper = (match.home_team || "").toUpperCase();
-            if (PRIORITIES && typeof PRIORITIES === 'object') {
-                for (const pKey of Object.keys(PRIORITIES)) {
-                    if (pKey.startsWith('_')) continue;
-                    const prefix = pKey.toUpperCase() + ":";
-                    if (homeUpper.startsWith(prefix)) {
-                        return { name: pKey, source: "Fix" };
-                    }
-                }
-            }
-
-            // B. Strict Map Check
+            // 1. Strict Map Check (Both Teams must match the league)
             if (TEAM_TO_LEAGUE && TEAM_TO_LEAGUE[hSlug] && TEAM_TO_LEAGUE[aSlug] && TEAM_TO_LEAGUE[hSlug] === TEAM_TO_LEAGUE[aSlug]) {
                 return { name: TEAM_TO_LEAGUE[hSlug], source: "Map" };
             }
-            if (TEAM_TO_LEAGUE && TEAM_TO_LEAGUE[hSlug]) return { name: TEAM_TO_LEAGUE[hSlug], source: "MapHome" };
-            
-            // C. API Fallback
+            // 2. Map Fallback (Home Team only)
+            if (TEAM_TO_LEAGUE && TEAM_TO_LEAGUE[hSlug]) {
+                 return { name: TEAM_TO_LEAGUE[hSlug], source: "MapHome" };
+            }
+
+            // 3. Prefix Rule (The (:) logic)
+            // If home team is like "NFL: Patriots", use "NFL"
+            if (hRaw.includes(':')) {
+                const parts = hRaw.split(':');
+                const candidate = parts[0].trim();
+                // Basic validation to ensure it's a league/sport name
+                if (candidate.length > 1 && candidate.length < 25) {
+                    return { name: candidate, source: "Split" };
+                }
+            }
+
+            // 4. API Fallback with Name Correction
             let apiName = (match.league || match.sport || "Other").trim();
             const lowerApi = apiName.toLowerCase().replace(/\s/g, '');
+            // Fix "ICEHOCKEY" -> "Ice Hockey"
             if(NAME_FIXES[lowerApi]) apiName = NAME_FIXES[lowerApi];
+            
             return { name: apiName, source: "API" };
         }
 
@@ -591,6 +643,7 @@ We aim for 1080p and 720p definition. <strong>Africa Cup of Nations</strong> req
                 timeCol = `<span class="time-main">${ft.time}</span><span class="time-sub">${ft.date}</span>`; 
             }
 
+            // LOGO LOGIC
             const getLogo = (name) => {
                 if (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) {
                     const p = IMAGE_MAP.teams[name];
@@ -619,9 +672,19 @@ We aim for 1080p and 720p definition. <strong>Africa Cup of Nations</strong> req
                  metaHtml = `<div style="display:flex; flex-direction:column; align-items:flex-end;"><span style="font-size:0.55rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px;">Starts in</span><span class="meta-top" style="color:var(--accent-gold); font-size:0.75rem;">${m.status_text}</span></div>`;
             }
 
+            // SMART TAG LOGIC (Unified with Master)
+            let tagText = m.finalLeague;
+            const filterLower = (PAGE_FILTER || "").toLowerCase();
+            const matchLeagueLower = m.finalLeague.toLowerCase();
+            // If match league matches current page filter, show Sport instead
+            if (matchLeagueLower === filterLower || matchLeagueLower.includes(filterLower)) {
+                tagText = m.sport || "General";
+            }
+
             let actionHtml = '';
             const link = `${SITE_DOMAIN}/watch/?info=${m.id}`;
-            const copyBtn = `<button class="btn-copy-link" onclick="copyText('${link}')" style="background:none;border:none;color:var(--match-row-btn-copy-link-color, #64748b);font-size:0.65rem;font-weight:700;cursor:pointer;margin-top:5px;display:flex;align-items:center;gap:4px;justify-content:center;">Link</button>`;
+            // FIXED: Added SVG Icon to Copy Button
+            const copyBtn = `<button class="btn-copy-link" onclick="copyText('${link}')" style="background:none;border:none;color:var(--match-row-btn-copy-link-color, #64748b);font-size:0.65rem;font-weight:700;cursor:pointer;margin-top:5px;display:flex;align-items:center;gap:4px;justify-content:center;"><svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
 
             if (m.is_live) {
                 actionHtml = `<button onclick="window.location.href='${link}'" class="btn-watch">Streams <span class="hd-badge">SD</span></button>`;
@@ -631,7 +694,7 @@ We aim for 1080p and 720p definition. <strong>Africa Cup of Nations</strong> req
                 else actionHtml = `<button onclick="setNotify(this)" class="btn-notify" style="background:var(--match-row-btn-notify-bg, transparent);border:1px solid var(--match-row-btn-notify-border, #333);color:var(--match-row-btn-notify-text, #999);padding:4px 8px;border-radius:4px;font-size:0.65rem;width:100%;font-weight:700;">🔔 Notify</button>` + copyBtn;
             }
             
-            div.innerHTML = `<div class="col-time">${timeCol}</div><div class="teams-wrapper"><div class="league-tag">${m.finalLeague.toUpperCase()}</div>${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${actionHtml}</div>`;
+            div.innerHTML = `<div class="col-time">${timeCol}</div><div class="teams-wrapper"><div class="league-tag">${tagText.toUpperCase()}</div>${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${actionHtml}</div>`;
             return div;
         }
 
@@ -688,34 +751,103 @@ We aim for 1080p and 720p definition. <strong>Africa Cup of Nations</strong> req
             ['telegram', 'whatsapp', 'reddit', 'twitter', 'copy'].forEach(p => {
                 const count = SHARE_CONFIG.counts[p] ? ((n)=>(n>=1000?(n/1000).toFixed(1)+'k':n))(SHARE_CONFIG.counts[p]) : '';
                 const onclick = p === 'copy' ? `copyText('${SITE_DOMAIN}')` : `window.open('${makeUrl(p)}', '_blank')`;
-                html += `<div class="social-btn ${p}" onclick="${onclick}">${icons[p]}<span class="s-count">${count}</span></div>`;
+                html += `<div class="social-btn ${p}" onclick="${onclick}" style="color:var(--social-${p}-color);">${icons[p]}<span class="s-count">${count}</span></div>`;
             });
             if(document.getElementById('socialSidebar')) document.getElementById('socialSidebar').innerHTML = html;
             if(document.getElementById('mobileFooter')) document.getElementById('mobileFooter').innerHTML = html;
         }
 
         function generateDynamicSchema(liveList, upcomingList) {
+            const now = Date.now();
+            const existing = document.getElementById('dynamic-schema-script');
+            if (existing) existing.remove();
+            
+            // Limit to top 20 events for SEO performance
             const allItems = [...liveList, ...upcomingList].slice(0, 20);
             if (allItems.length === 0) return;
+
             const mainImage = (document.querySelector('meta[property="og:image"]') || {}).content || `${SITE_DOMAIN}/assets/logo.png`;
+            
+            // LOGIC: Define Individual Sports (Person) vs Team Sports
+            const INDIVIDUAL_SPORTS = ['ufc', 'mma', 'boxing', 'tennis', 'golf', 'f1', 'motorsport', 'fighting', 'wwe', 'aew'];
+
             const listItems = allItems.map((m, index) => {
                 const isLive = m.is_live;
+                
+                // 1. Detect Type (Person vs SportsTeam)
+                const leagueLower = (m.finalLeague || "").toLowerCase();
+                const isIndividual = INDIVIDUAL_SPORTS.some(s => leagueLower.includes(s));
+                const entityType = isIndividual ? "Person" : "SportsTeam";
+
+                // 2. Detect Single vs Double (Check TBA)
+                const isDouble = (m.displayAway && m.displayAway !== 'TBA');
+
+                // 3. Detect Logos (Rule: Only use if BOTH are present)
+                let hLogo = null, aLogo = null;
+                if (IMAGE_MAP.teams) {
+                    const hL = IMAGE_MAP.teams[m.displayHome];
+                    const aL = IMAGE_MAP.teams[m.displayAway];
+                    // Only apply if both exist and are valid URLs
+                    if (hL && aL) {
+                        hLogo = hL.startsWith('http') ? hL : SITE_DOMAIN + (hL.startsWith('/')?'':'/') + hL;
+                        aLogo = aL.startsWith('http') ? aL : SITE_DOMAIN + (aL.startsWith('/')?'':'/') + aL;
+                    }
+                }
+
+                // 4. Construct Entities
+                const homeEntity = { "@type": entityType, "name": m.displayHome };
+                if (hLogo) homeEntity.image = hLogo;
+
+                const eventName = isDouble ? `${m.displayHome} vs ${m.displayAway}` : m.displayHome;
+
+                // 5. Build Event Schema
                 const schemaItem = {
-                    "@type": "SportsEvent", "startDate": new Date(m.startTimeUnix).toISOString(),
+                    "@type": "SportsEvent",
+                    "startDate": new Date(m.startTimeUnix).toISOString(),
                     "eventStatus": isLive ? "https://schema.org/EventLive" : "https://schema.org/EventScheduled",
                     "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
-                    "url": `${SITE_DOMAIN}/watch/?info=${m.id}`, "image": [ mainImage ],
+                    "url": `${SITE_DOMAIN}/watch/?info=${m.id}`,
+                    "image": [ mainImage ], // Main event image (fallback to site logo)
+                    "name": eventName,
+                    "description": `Watch ${eventName} live stream. ${m.finalLeague}.`,
                     "organizer": { "@id": `${SITE_DOMAIN}/#organization` },
-                    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": isLive ? "https://schema.org/InStock" : "https://schema.org/PreOrder", "url": `${SITE_DOMAIN}/watch/?info=${m.id}` },
-                    "name": `${m.displayHome} vs ${m.displayAway}`,
-                    "description": `Watch ${m.displayHome} vs ${m.displayAway} live. ${m.finalLeague} stream.`
+                    "offers": { 
+                        "@type": "Offer", 
+                        "price": "0", 
+                        "priceCurrency": "USD", 
+                        "availability": isLive ? "https://schema.org/InStock" : "https://schema.org/PreOrder", 
+                        "url": `${SITE_DOMAIN}/watch/?info=${m.id}` 
+                    },
+                    "homeTeam": homeEntity
                 };
-                schemaItem.homeTeam = { "@type": "SportsTeam", "name": m.displayHome };
-                schemaItem.awayTeam = { "@type": "SportsTeam", "name": m.displayAway };
+
+                // Add Away Team only if Double Match
+                if (isDouble) {
+                    const awayEntity = { "@type": entityType, "name": m.displayAway };
+                    if (aLogo) awayEntity.image = aLogo;
+                    schemaItem.awayTeam = awayEntity;
+                }
+
+                // Add Sport specification
+                if (m.finalLeague) {
+                    schemaItem.sport = m.finalLeague;
+                }
+
                 return { "@type": "ListItem", "position": index + 1, "item": schemaItem };
             });
-            const schema = { "@context": "https://schema.org", "@type": "ItemList", "@id": `${window.location.href}#events`, "name": `Upcoming ${PAGE_FILTER} Schedule`, "itemListElement": listItems };
-            const script = document.createElement('script'); script.type = 'application/ld+json'; script.text = JSON.stringify(schema); document.head.appendChild(script);
+
+            const schema = { 
+                "@context": "https://schema.org", 
+                "@type": "ItemList", 
+                "@id": `${window.location.href}#events`, 
+                "itemListElement": listItems 
+            };
+            
+            const script = document.createElement('script'); 
+            script.id = 'dynamic-schema-script'; 
+            script.type = 'application/ld+json'; 
+            script.textContent = JSON.stringify(schema); 
+            document.head.appendChild(script);
         }
     </script>
 </body>

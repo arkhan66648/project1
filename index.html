@@ -741,7 +741,7 @@
             "icehockey": "Ice Hockey", "fieldhockey": "Field Hockey",
             "tabletennis": "Table Tennis", "americanfootball": "American Football",
             "australianfootball": "AFL", "basketball": "Basketball",
-            "football": "Soccer", "soccer": "Soccer", "baseball": "Baseball",
+            "football": "Football", "soccer": "Soccer", "baseball": "Baseball",
             "fighting": "Fighting", "mma": "MMA", "boxing": "Boxing",
             "motorsport": "Motorsport", "golf": "Golf"
         };
@@ -1186,7 +1186,15 @@
             }
             
             let tagText = m.finalLeague;
-            if (sectionTitle && m.finalLeague === sectionTitle) tagText = m.sport || "General";
+            // If we are inside a specific section (e.g., "Premier League"), show Sport ("Soccer") instead of repeating "Premier League"
+            // Also handles fuzzy matching (e.g. Section "NBA" vs Match "NBA Preseason")
+            if (sectionTitle) {
+                const sLow = sectionTitle.toLowerCase();
+                const mLow = m.finalLeague.toLowerCase();
+                if (mLow === sLow || mLow.includes(sLow)) {
+                    tagText = m.sport || "General";
+                }
+            }
             
             let metaHtml = '';
             if (m.is_live) {
