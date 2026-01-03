@@ -468,6 +468,13 @@ function injectMissingThemeUI() {
                 <div><label>Left</label><input type="text" id="themeSocialDeskLeft"></div>
                 <div><label>Scale</label><input type="text" id="themeSocialDeskScale"></div>
             </div>
+            <h4 style="margin:10px 0 5px 0; font-size:0.8rem; color:#aaa;">Social Colors</h4>
+            <div class="color-grid">
+                <div><label>Telegram</label><input type="color" id="themeSocialTelegram"></div>
+                <div><label>WhatsApp</label><input type="color" id="themeSocialWhatsapp"></div>
+                <div><label>Reddit</label><input type="color" id="themeSocialReddit"></div>
+                <div><label>Twitter</label><input type="color" id="themeSocialTwitter"></div>
+            </div>
              <h4 style="margin:10px 0 5px 0; font-size:0.8rem; color:#aaa;">Match Hover</h4>
             <div class="color-grid">
                 <div><label>Hover BG</label><input type="color" id="themeMatchRowHoverBg"></div>
