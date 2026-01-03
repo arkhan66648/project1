@@ -936,7 +936,9 @@
             const matchLeagueLower = m.finalLeague.toLowerCase();
             // If match league matches current page filter, show Sport instead
             if (matchLeagueLower === filterLower || matchLeagueLower.includes(filterLower)) {
-                tagText = m.sport || "General";
+                let rawSport = (m.sport || "General").trim();
+        let sportKey = rawSport.toLowerCase().replace(/\s/g, '');
+        tagText = NAME_FIXES[sportKey] ? NAME_FIXES[sportKey] : rawSport;
             }
 
             let actionHtml = '';
