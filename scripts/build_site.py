@@ -391,7 +391,9 @@ def render_page(template, config, page_data, theme_override=None):
             "url": page_data.get('canonical_url'),
             "name": page_data.get('title'),
             "isPartOf": {"@id": website_id},
-            "about": {"@type": "SportsEvent", "name": f"{page_data.get('title')}"}
+            "about": {"@type": "SportsEvent", "name": f"{page_data.get('title')}"},
+            # THIS WAS MISSING: Connects Page to the Dynamic List
+            "mainEntity": {"@id": f"{page_data.get('canonical_url')}#events"} 
         })
 
     html = html.replace('{{SCHEMA_BLOCK}}', f'<script type="application/ld+json">{json.dumps({"@context": "https://schema.org", "@graph": schemas}, indent=2)}</script>' if schemas else '')
@@ -503,7 +505,8 @@ def build_site():
                 'slug': slug, 
                 'layout': 'league', 
                 'content': final_art,
-                'meta_keywords': f"{name} stream, watch {name} free, {name} live"
+                'meta_keywords': f"{name} stream, watch {name} free, {name} live",
+                'schemas': {'org': True, 'website': True}
             }
 
             # 4. Render
