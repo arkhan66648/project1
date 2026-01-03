@@ -462,7 +462,7 @@ def build_site():
             slug = normalize_key(name) + "-streams"
             is_league = data.get('isLeague', False)
             
-            # Entity Intelligence
+            # Entity Intelligence (Parent Sport)
             parent_sport = LEAGUE_PARENT_MAP.get(name)
             if not parent_sport:
                 lower_name = name.lower()
@@ -476,13 +476,18 @@ def build_site():
             vars_map = {'{{NAME}}': name, '{{SPORT}}': parent_sport, '{{YEAR}}': "2025", '{{DOMAIN}}': config['site_settings']['domain']}
             
             def replace_vars(text, v_map):
+                if not text: return ""
                 for k, v in v_map.items():
                     text = text.replace(k, v)
                 return text
 
-            # 2. Define Content (Fixes "Missing Definitions" error)
+            # 2. Define Content & TITLES (Fixes Title Issue)
             p_h1 = replace_vars(articles.get('league_h1', 'Watch {{NAME}} Live'), vars_map)
             p_intro = replace_vars(articles.get('league_intro', ''), vars_map)
+            
+            # Process Section Titles (NEW FIX)
+            sec_live = replace_vars(articles.get('league_live_title', 'Live {{NAME}}'), vars_map)
+            sec_upc = replace_vars(articles.get('league_upcoming_title', 'Upcoming {{NAME}}'), vars_map)
             
             raw_art = articles.get('league', '') if is_league else articles.get('sport', '')
             final_art = replace_vars(raw_art, vars_map)
@@ -504,16 +509,18 @@ def build_site():
             # 4. Render
             html = render_page(league_template_content, config, page_data, theme_override=theme_league)
             
-            # 5. Injections
+            # 5. Injections (Fixes Placeholder Issue)
             html = html.replace('{{PAGE_FILTER}}', name)
             html = html.replace('{{LEAGUE_ARTICLE}}', final_art)
+            html = html.replace('{{TEXT_LIVE_SECTION_TITLE}}', sec_live) # Inject Processed Title
+            html = html.replace('{{TEXT_UPCOMING_TITLE}}', sec_upc)      # Inject Processed Title
             html = html.replace('{{HERO_PILLS}}', build_menu_html(config.get('menus', {}).get('hero', []), 'hero'))
             
-            # 6. Write File (Fixes Indentation and Variable Name error)
+            # 6. Write File
             out_dir = os.path.join(OUTPUT_DIR, slug)
             os.makedirs(out_dir, exist_ok=True)
             with open(os.path.join(out_dir, 'index.html'), 'w', encoding='utf-8') as f:
-                f.write(html) # Changed from final_html to html
+                f.write(html)
             
             print(f"   -> Built: {slug} (Filter: {name})")
 
