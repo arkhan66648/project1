@@ -411,39 +411,54 @@
                     </div>
 
                     <!-- CARD 3: FLOATING ELEMENTS -->
-                    <div class="card">
-                        <h3>📍 Floating Elements</h3>
-                        
-                        <h4 style="margin:5px 0 5px 0; font-size:0.8rem; color:#aaa;">Back to Top</h4>
-                        <div class="color-grid">
-                            <div><label>BG</label><input type="color" id="themeBttBg"></div>
-                            <div><label>Icon</label><input type="color" id="themeBttIcon"></div>
-                        </div>
-                        <div class="grid-2" style="gap:10px; margin-top:5px;">
-                            <input type="text" id="themeBttSize" placeholder="Size (40px)">
-                            <input type="text" id="themeBttRadius" placeholder="Radius (50%)">
-                        </div>
+                    <!-- CARD 3: FLOATING ELEMENTS -->
+<div class="card">
+    <h3>📍 Floating & Extras</h3>
+    
+    <h4 style="margin:5px 0 5px 0; font-size:0.8rem; color:#aaa;">Back to Top</h4>
+    <div class="color-grid">
+        <div><label>BG</label><input type="color" id="themeBttBg"></div>
+        <div><label>Icon</label><input type="color" id="themeBttIcon"></div>
+    </div>
+    <div class="grid-2" style="gap:10px; margin-top:5px;">
+        <input type="text" id="themeBttSize" placeholder="Size (40px)">
+        <input type="text" id="themeBttRadius" placeholder="Radius (50%)">
+    </div>
 
-                        <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Desktop Share (Left)</h4>
-                        <div class="grid-2" style="gap:10px;">
-                            <div><label>Top</label><input type="text" id="themeSocialDeskTop" placeholder="50%"></div>
-                            <div><label>Left</label><input type="text" id="themeSocialDeskLeft" placeholder="0"></div>
-                            <div><label>Scale</label><input type="text" id="themeSocialDeskScale" placeholder="1.0"></div>
-                        </div>
-                        <h4 style="margin:10px 0 5px 0; font-size:0.8rem; color:#aaa;">Social Colors</h4>
-<div class="color-grid">
-    <div><label>Telegram</label><input type="color" id="themeSocialTelegram"></div>
-    <div><label>WhatsApp</label><input type="color" id="themeSocialWhatsapp"></div>
-    <div><label>Reddit</label><input type="color" id="themeSocialReddit"></div>
-    <div><label>Twitter</label><input type="color" id="themeSocialTwitter"></div>
+    <h4 style="margin:10px 0 5px 0; font-size:0.8rem; color:#aaa;">Section Logo Size</h4>
+    <div class="range-wrapper">
+        <label>Size: <span id="val_secLogo">24px</span></label>
+        <input type="range" id="themeSectionLogoSize" min="0" max="60" step="1" oninput="document.getElementById('val_secLogo').innerText=this.value+'px'">
+    </div>
+
+    <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Desktop Share (Left)</h4>
+    <div class="grid-2" style="gap:10px;">
+        <div><label>Top</label><input type="text" id="themeSocialDeskTop" placeholder="50%"></div>
+        <div><label>Left</label><input type="text" id="themeSocialDeskLeft" placeholder="0"></div>
+        <div><label>Scale</label><input type="text" id="themeSocialDeskScale" placeholder="1.0"></div>
+    </div>
+
+    <!-- NEW SOCIAL COLORS INPUTS -->
+    <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Social Colors</h4>
+    <div class="color-grid">
+        <div><label>Telegram</label><input type="color" id="themeSocialTelegram"></div>
+        <div><label>WhatsApp</label><input type="color" id="themeSocialWhatsapp"></div>
+        <div><label>Reddit</label><input type="color" id="themeSocialReddit"></div>
+        <div><label>Twitter</label><input type="color" id="themeSocialTwitter"></div>
+    </div>
+
+    <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Mobile Share (Bottom)</h4>
+    <div class="grid-2" style="gap:10px;">
+        <div><label>Height</label><input type="text" id="themeMobFootHeight" placeholder="60px"></div>
+        <div><label>BG</label><input type="color" id="themeMobFootBg"></div>
+    </div>
+
+    <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Match Row Hover</h4>
+    <div class="color-grid">
+        <div><label>Hover BG</label><input type="color" id="themeMatchRowHoverBg"></div>
+        <div><label>Hover Border</label><input type="color" id="themeMatchRowHoverBorder"></div>
+    </div>
 </div>
-
-                        <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Mobile Share (Bottom)</h4>
-                        <div class="grid-2" style="gap:10px;">
-                            <div><label>Height</label><input type="text" id="themeMobFootHeight" placeholder="60px"></div>
-                            <div><label>BG</label><input type="color" id="themeMobFootBg"></div>
-                        </div>
-                    </div>
                 </div>
             </section>
 
