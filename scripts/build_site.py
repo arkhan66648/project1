@@ -204,6 +204,7 @@ def render_page(template, config, page_data, theme_override=None):
     theme['sec_border_wildcard'] = make_border(theme.get('sec_border_wildcard_width'), theme.get('sec_border_wildcard_color'))
     theme['sec_border_leagues'] = make_border(theme.get('sec_border_leagues_width'), theme.get('sec_border_leagues_color'))
     theme['sec_border_grouped'] = make_border(theme.get('sec_border_grouped_width'), theme.get('sec_border_grouped_color'))
+    theme['article_h2_border'] = make_border(theme.get('article_h2_border_width'), theme.get('article_h2_border_color'))
     theme['sec_border_league_upcoming'] = make_border(theme.get('sec_border_league_upcoming_width'), theme.get('sec_border_league_upcoming_color'))
 
     for key, val in theme.items():
