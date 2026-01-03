@@ -124,7 +124,7 @@
   "sport_priorities": {
     "US": {
       "_HIDE_OTHERS": false,
-      "_BOOST": "PRO LEAGUE",
+      "_BOOST": "nhl",
       "NFL": {
         "score": 100,
         "isLeague": true,
