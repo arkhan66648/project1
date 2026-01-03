@@ -462,9 +462,6 @@ def build_site():
             slug = normalize_key(name) + "-streams"
             is_league = data.get('isLeague', False)
             
-            # Prepare Article
-            raw_article = articles.get('league', '') if is_league else articles.get('sport', '')
-            
             # Entity Intelligence
             parent_sport = LEAGUE_PARENT_MAP.get(name)
             if not parent_sport:
@@ -475,37 +472,48 @@ def build_site():
                 elif "racing" in lower_name or "motor" in lower_name: parent_sport = "Motorsport"
                 else: parent_sport = name
 
-            # Replace Vars
-        vars_map = {'{{NAME}}': name, '{{SPORT}}': parent, '{{YEAR}}': "2025", '{{DOMAIN}}': config['site_settings']['domain']}
-        
-        # ... (keep existing title/article logic) ...
+            # 1. Prepare Variables
+            vars_map = {'{{NAME}}': name, '{{SPORT}}': parent_sport, '{{YEAR}}': "2025", '{{DOMAIN}}': config['site_settings']['domain']}
+            
+            def replace_vars(text, v_map):
+                for k, v in v_map.items():
+                    text = text.replace(k, v)
+                return text
 
-        # PAGE DATA Construction
-        page_data = {
-            'title': p_h1, 
-            'meta_title': p_h1,
-            'meta_desc': p_intro, 
-            'hero_h1': p_h1, 
-            'hero_text': p_intro,
-            'canonical_url': f"https://{config['site_settings']['domain']}/{slug}/",
-            'slug': slug, 
-            'layout': 'league', 
-            'content': final_art,
-            'meta_keywords': f"{name} stream, watch {name} free, {name} live"
-        }
+            # 2. Define Content (Fixes "Missing Definitions" error)
+            p_h1 = replace_vars(articles.get('league_h1', 'Watch {{NAME}} Live'), vars_map)
+            p_intro = replace_vars(articles.get('league_intro', ''), vars_map)
+            
+            raw_art = articles.get('league', '') if is_league else articles.get('sport', '')
+            final_art = replace_vars(raw_art, vars_map)
 
-        html = render_page(league_tpl, config, page_data, theme_override=theme_league)
-        
-        # INJECTIONS
-        html = html.replace('{{PAGE_FILTER}}', name)
-        html = html.replace('{{LEAGUE_ARTICLE}}', final_art)
-        # FIX: Inject Hero Pills into League Pages
-        html = html.replace('{{HERO_PILLS}}', build_menu_html(config.get('menus', {}).get('hero', []), 'hero'))
-        
-        out = os.path.join(OUTPUT_DIR, slug)
+            # 3. PAGE DATA Construction
+            page_data = {
+                'title': p_h1, 
+                'meta_title': p_h1,
+                'meta_desc': p_intro, 
+                'hero_h1': p_h1, 
+                'hero_text': p_intro,
+                'canonical_url': f"https://{config['site_settings']['domain']}/{slug}/",
+                'slug': slug, 
+                'layout': 'league', 
+                'content': final_art,
+                'meta_keywords': f"{name} stream, watch {name} free, {name} live"
+            }
+
+            # 4. Render
+            html = render_page(league_template_content, config, page_data, theme_override=theme_league)
+            
+            # 5. Injections
+            html = html.replace('{{PAGE_FILTER}}', name)
+            html = html.replace('{{LEAGUE_ARTICLE}}', final_art)
+            html = html.replace('{{HERO_PILLS}}', build_menu_html(config.get('menus', {}).get('hero', []), 'hero'))
+            
+            # 6. Write File (Fixes Indentation and Variable Name error)
+            out_dir = os.path.join(OUTPUT_DIR, slug)
             os.makedirs(out_dir, exist_ok=True)
             with open(os.path.join(out_dir, 'index.html'), 'w', encoding='utf-8') as f:
-                f.write(final_html)
+                f.write(html) # Changed from final_html to html
             
             print(f"   -> Built: {slug} (Filter: {name})")
 
