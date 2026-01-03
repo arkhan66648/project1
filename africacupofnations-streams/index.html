@@ -717,8 +717,7 @@
 
         <!-- ARTICLE -->
         <article class="seo-article">
-            <h1>Watch Africa Cup of Nations Live Streams - The Best Africa Cup of Nations Coverage</h1>
-
+            
 <p>Experience the thrill of <strong>Africa Cup of Nations</strong>, the premier competition in <strong>Africa Cup of Nations</strong>. Whether you are a die-hard fan following the standings or a casual viewer catching a big game, <strong>crackstreams.help</strong> offers comprehensive access to every match of the 2025 season. We are dedicated to providing high-definition <strong>Africa Cup of Nations streams</strong> that connect you directly to the stadium atmosphere.</p>
 
 <h2>Why Africa Cup of Nations is the Pinnacle of Africa Cup of Nations</h2>
@@ -1009,15 +1008,17 @@ We aim for 1080p and 720p definition. <strong>Africa Cup of Nations</strong> req
 
             // SMART TAG LOGIC (Unified with Master)
             let tagText = m.finalLeague;
+            
             if (!m.is_live) {
                 const filterLower = (PAGE_FILTER || "").toLowerCase();
                 const matchLeagueLower = m.finalLeague.toLowerCase();
-            // If match league matches current page filter, show Sport instead
-            if (matchLeagueLower === filterLower || matchLeagueLower.includes(filterLower)) {
-                let rawSport = (m.sport || "General").trim();
-        let sportKey = rawSport.toLowerCase().replace(/\s/g, '');
-        tagText = NAME_FIXES[sportKey] ? NAME_FIXES[sportKey] : rawSport;
-            }
+                // If match league matches current page filter, show Sport instead
+                if (matchLeagueLower === filterLower || matchLeagueLower.includes(filterLower)) {
+                    let rawSport = (m.sport || "General").trim();
+                    let sportKey = rawSport.toLowerCase().replace(/\s/g, '');
+                    tagText = NAME_FIXES[sportKey] ? NAME_FIXES[sportKey] : rawSport;
+                }
+            } // <--- THIS WAS MISSING!
 
             let actionHtml = '';
             const link = `${SITE_DOMAIN}/watch/?info=${m.id}`;
