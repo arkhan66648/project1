@@ -980,8 +980,11 @@
             ['telegram', 'whatsapp', 'reddit', 'twitter', 'copy'].forEach(p => {
                 const count = SHARE_CONFIG.counts[p] ? ((n)=>(n>=1000?(n/1000).toFixed(1)+'k':n))(SHARE_CONFIG.counts[p]) : '';
                 const onclick = p === 'copy' ? `copyText('${SITE_DOMAIN}')` : `window.open('${makeUrl(p)}', '_blank')`;
-                html += `<div class="social-btn ${p}" onclick="${onclick}" style="color:var(--social-${p}-color);">${icons[p]}<span class="s-count">${count}</span></div>`;
+                
+                // FIXED: Removed style="color:var(...)" to use Master CSS classes instead
+                html += `<div class="social-btn ${p}" onclick="${onclick}">${icons[p]}<span class="s-count">${count}</span></div>`;
             });
+            
             if(document.getElementById('socialSidebar')) document.getElementById('socialSidebar').innerHTML = html;
             if(document.getElementById('mobileFooter')) document.getElementById('mobileFooter').innerHTML = html;
         }
