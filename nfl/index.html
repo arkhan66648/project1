@@ -859,6 +859,15 @@
 
         function calculateScore(m, leagueName) {
             let score = 0;
+            // 1. CHECK BOOST LIST (New Logic)
+    const boostList = (PRIORITIES._BOOST || "").toLowerCase().split(',').map(s=>s.trim()).filter(Boolean);
+    const leagueLow = (leagueName || "").toLowerCase();
+    const sportLow = (m.sport || "").toLowerCase();
+
+    // If matches Boost text, give huge bonus so it tops Schema & List
+    if (boostList.some(k => leagueLow.includes(k) || sportLow.includes(k))) {
+        score += 2000; 
+    }
             // Admin Priorities Score
             if (PRIORITIES[leagueName]) score += PRIORITIES[leagueName].score * 10;
             else if(PRIORITIES[m.sport || "General"]) score += PRIORITIES[m.sport || "General"].score; 
