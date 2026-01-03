@@ -191,6 +191,7 @@
         .live-dot { width: 8px; height: 8px; background: var(--brand-primary); border-radius: 50%; box-shadow: 0 0 10px var(--brand-primary); }
 
         /* MATCH ROW */
+        /* MATCH ROW: Exact copy from Master for consistency */
         .match-row { 
             display: grid; grid-template-columns: 45px 1fr 50px 75px; align-items: center; gap: 8px; 
             background: var(--match-row-bg); border: 1px solid var(--match-row-border); 
@@ -389,37 +390,53 @@
         window.addEventListener('DOMContentLoaded', () => {
             highlightActiveMenu();
             setTimeout(renderSocials, 3000);
+            // Inject League Logo if exists
+            if(IMAGE_MAP.leagues && IMAGE_MAP.leagues[PAGE_FILTER]) {
+                // Find the h2 title inside upcoming container
+                const titleEl = document.querySelector('#upcoming-container h2');
+                if(titleEl) {
+                    titleEl.innerHTML = `<img src="${IMAGE_MAP.leagues[PAGE_FILTER]}" style="width:28px;height:28px;object-fit:contain;margin-right:8px;"> ${titleEl.innerText.replace('📅','').trim()}`;
+                }
+            }
             loadMatches();
+            // Setup Mobile Menu Toggle
+            const ham = document.querySelector('.hamburger');
+            if(ham) ham.onclick = () => document.getElementById('mobileMenu').classList.toggle('active');
         });
 
         // ... (keep window scroll listener) ...
 
         function resolveLeagueData(match) {
-            const hSlug = slugify(match.home_team);
+            const hRaw = match.home_team || "";
+            const hSlug = slugify(hRaw);
             const aSlug = slugify(match.away_team);
 
-            // A. Auto-Fix: Priority Prefix Check
-            const homeUpper = (match.home_team || "").toUpperCase();
-            if (PRIORITIES && typeof PRIORITIES === 'object') {
-                for (const pKey of Object.keys(PRIORITIES)) {
-                    if (pKey.startsWith('_')) continue;
-                    const prefix = pKey.toUpperCase() + ":";
-                    if (homeUpper.startsWith(prefix)) {
-                        return { name: pKey, source: "Fix" };
-                    }
-                }
-            }
-
-            // B. Strict Map Check
+            // 1. Strict Map Check (Both Teams must match the league)
             if (TEAM_TO_LEAGUE && TEAM_TO_LEAGUE[hSlug] && TEAM_TO_LEAGUE[aSlug] && TEAM_TO_LEAGUE[hSlug] === TEAM_TO_LEAGUE[aSlug]) {
                 return { name: TEAM_TO_LEAGUE[hSlug], source: "Map" };
             }
-            if (TEAM_TO_LEAGUE && TEAM_TO_LEAGUE[hSlug]) return { name: TEAM_TO_LEAGUE[hSlug], source: "MapHome" };
-            
-            // C. API Fallback
+            // 2. Map Fallback (Home Team only)
+            if (TEAM_TO_LEAGUE && TEAM_TO_LEAGUE[hSlug]) {
+                 return { name: TEAM_TO_LEAGUE[hSlug], source: "MapHome" };
+            }
+
+            // 3. Prefix Rule (The (:) logic)
+            // If home team is like "NFL: Patriots", use "NFL"
+            if (hRaw.includes(':')) {
+                const parts = hRaw.split(':');
+                const candidate = parts[0].trim();
+                // Basic validation to ensure it's a league/sport name
+                if (candidate.length > 1 && candidate.length < 25) {
+                    return { name: candidate, source: "Split" };
+                }
+            }
+
+            // 4. API Fallback with Name Correction
             let apiName = (match.league || match.sport || "Other").trim();
             const lowerApi = apiName.toLowerCase().replace(/\s/g, '');
+            // Fix "ICEHOCKEY" -> "Ice Hockey"
             if(NAME_FIXES[lowerApi]) apiName = NAME_FIXES[lowerApi];
+            
             return { name: apiName, source: "API" };
         }
 
@@ -639,27 +656,96 @@
         }
 
         function generateDynamicSchema(liveList, upcomingList) {
+            const now = Date.now();
+            const existing = document.getElementById('dynamic-schema-script');
+            if (existing) existing.remove();
+            
+            // Limit to top 20 events for SEO performance
             const allItems = [...liveList, ...upcomingList].slice(0, 20);
             if (allItems.length === 0) return;
+
             const mainImage = (document.querySelector('meta[property="og:image"]') || {}).content || `${SITE_DOMAIN}/assets/logo.png`;
+            
+            // LOGIC: Define Individual Sports (Person) vs Team Sports
+            const INDIVIDUAL_SPORTS = ['ufc', 'mma', 'boxing', 'tennis', 'golf', 'f1', 'motorsport', 'fighting', 'wwe', 'aew'];
+
             const listItems = allItems.map((m, index) => {
                 const isLive = m.is_live;
+                
+                // 1. Detect Type (Person vs SportsTeam)
+                const leagueLower = (m.finalLeague || "").toLowerCase();
+                const isIndividual = INDIVIDUAL_SPORTS.some(s => leagueLower.includes(s));
+                const entityType = isIndividual ? "Person" : "SportsTeam";
+
+                // 2. Detect Single vs Double (Check TBA)
+                const isDouble = (m.displayAway && m.displayAway !== 'TBA');
+
+                // 3. Detect Logos (Rule: Only use if BOTH are present)
+                let hLogo = null, aLogo = null;
+                if (IMAGE_MAP.teams) {
+                    const hL = IMAGE_MAP.teams[m.displayHome];
+                    const aL = IMAGE_MAP.teams[m.displayAway];
+                    // Only apply if both exist and are valid URLs
+                    if (hL && aL) {
+                        hLogo = hL.startsWith('http') ? hL : SITE_DOMAIN + (hL.startsWith('/')?'':'/') + hL;
+                        aLogo = aL.startsWith('http') ? aL : SITE_DOMAIN + (aL.startsWith('/')?'':'/') + aL;
+                    }
+                }
+
+                // 4. Construct Entities
+                const homeEntity = { "@type": entityType, "name": m.displayHome };
+                if (hLogo) homeEntity.image = hLogo;
+
+                const eventName = isDouble ? `${m.displayHome} vs ${m.displayAway}` : m.displayHome;
+
+                // 5. Build Event Schema
                 const schemaItem = {
-                    "@type": "SportsEvent", "startDate": new Date(m.startTimeUnix).toISOString(),
+                    "@type": "SportsEvent",
+                    "startDate": new Date(m.startTimeUnix).toISOString(),
                     "eventStatus": isLive ? "https://schema.org/EventLive" : "https://schema.org/EventScheduled",
                     "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
-                    "url": `${SITE_DOMAIN}/watch/?info=${m.id}`, "image": [ mainImage ],
+                    "url": `${SITE_DOMAIN}/watch/?info=${m.id}`,
+                    "image": [ mainImage ], // Main event image (fallback to site logo)
+                    "name": eventName,
+                    "description": `Watch ${eventName} live stream. ${m.finalLeague}.`,
                     "organizer": { "@id": `${SITE_DOMAIN}/#organization` },
-                    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": isLive ? "https://schema.org/InStock" : "https://schema.org/PreOrder", "url": `${SITE_DOMAIN}/watch/?info=${m.id}` },
-                    "name": `${m.displayHome} vs ${m.displayAway}`,
-                    "description": `Watch ${m.displayHome} vs ${m.displayAway} live. ${m.finalLeague} stream.`
+                    "offers": { 
+                        "@type": "Offer", 
+                        "price": "0", 
+                        "priceCurrency": "USD", 
+                        "availability": isLive ? "https://schema.org/InStock" : "https://schema.org/PreOrder", 
+                        "url": `${SITE_DOMAIN}/watch/?info=${m.id}` 
+                    },
+                    "homeTeam": homeEntity
                 };
-                schemaItem.homeTeam = { "@type": "SportsTeam", "name": m.displayHome };
-                schemaItem.awayTeam = { "@type": "SportsTeam", "name": m.displayAway };
+
+                // Add Away Team only if Double Match
+                if (isDouble) {
+                    const awayEntity = { "@type": entityType, "name": m.displayAway };
+                    if (aLogo) awayEntity.image = aLogo;
+                    schemaItem.awayTeam = awayEntity;
+                }
+
+                // Add Sport specification
+                if (m.finalLeague) {
+                    schemaItem.sport = m.finalLeague;
+                }
+
                 return { "@type": "ListItem", "position": index + 1, "item": schemaItem };
             });
-            const schema = { "@context": "https://schema.org", "@type": "ItemList", "@id": `${window.location.href}#events`, "name": `Upcoming ${PAGE_FILTER} Schedule`, "itemListElement": listItems };
-            const script = document.createElement('script'); script.type = 'application/ld+json'; script.text = JSON.stringify(schema); document.head.appendChild(script);
+
+            const schema = { 
+                "@context": "https://schema.org", 
+                "@type": "ItemList", 
+                "@id": `${window.location.href}#events`, 
+                "itemListElement": listItems 
+            };
+            
+            const script = document.createElement('script'); 
+            script.id = 'dynamic-schema-script'; 
+            script.type = 'application/ld+json'; 
+            script.textContent = JSON.stringify(schema); 
+            document.head.appendChild(script);
         }
     </script>
 </body>
