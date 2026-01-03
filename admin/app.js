@@ -349,7 +349,7 @@ function populateUI() {
     setVal('socialTwitter', soc.counts?.twitter || 0);
     setVal('socialExcluded', soc.excluded_pages || "");
 
-    injectMissingThemeUI(); // Inject new controls before rendering
+    //injectMissingThemeUI(); // Inject new controls before rendering
     renderThemeSettings(); 
     renderPriorities();
     renderMenus();
