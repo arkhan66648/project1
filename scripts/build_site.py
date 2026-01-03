@@ -109,7 +109,12 @@ def build_menu_html(menu_items, section):
 # ==========================================
 def render_page(template, config, page_data, theme_override=None):
     s = config.get('site_settings', {})
-    t = theme_override if theme_override else config.get('theme', {})
+    # MERGE LOGIC: Use Base Theme as default, then overwrite with League Theme
+    base_theme = config.get('theme', {}).copy()
+    if theme_override:
+        base_theme.update(theme_override)
+    t = base_theme
+    
     m = config.get('menus', {})
     
     html = template
@@ -369,6 +374,25 @@ def render_page(template, config, page_data, theme_override=None):
     if page_schemas.get('faq'):
         valid_faqs = [{"@type": "Question", "name": i.get('q'), "acceptedAnswer": {"@type": "Answer", "text": i.get('a')}} for i in page_schemas.get('faq_list', []) if i.get('q') and i.get('a')]
         if valid_faqs: schemas.append({"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": valid_faqs})
+            # FIX: Entity Stacking Schema for League Pages
+    if page_data.get('layout') == 'league':
+        # 1. Breadcrumb
+        schemas.append({
+            "@context": "https://schema.org", "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": f"https://{domain}/"},
+                {"@type": "ListItem", "position": 2, "name": page_data.get('title'), "item": page_data.get('canonical_url')}
+            ]
+        })
+        # 2. CollectionPage (The Entity Page)
+        schemas.append({
+            "@context": "https://schema.org", "@type": "CollectionPage",
+            "@id": f"{page_data.get('canonical_url')}#webpage",
+            "url": page_data.get('canonical_url'),
+            "name": page_data.get('title'),
+            "isPartOf": {"@id": website_id},
+            "about": {"@type": "SportsEvent", "name": f"{page_data.get('title')}"}
+        })
 
     html = html.replace('{{SCHEMA_BLOCK}}', f'<script type="application/ld+json">{json.dumps({"@context": "https://schema.org", "@graph": schemas}, indent=2)}</script>' if schemas else '')
     html = html.replace('{{LOGO_PRELOAD}}', f'<link rel="preload" as="image" href="{s.get("logo_url")}" fetchpriority="high">' if s.get('logo_url') else '')
@@ -474,7 +498,7 @@ def build_site():
             # Page Data
             page_data = {
                 'title': page_h1, 
-                'meta_title': f"{page_h1} - Free {parent_sport} Streams",
+                'meta_title': page_h1,
                 'meta_desc': page_intro,
                 'meta_keywords': f"{name} stream, watch {name}, {name} live, {parent_sport} streams",
                 'canonical_url': f"https://{domain}/{slug}/",
