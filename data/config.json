@@ -603,7 +603,7 @@
     "show_more_btn_bg": "#151515",
     "show_more_btn_text": "#cccccc",
     "show_more_btn_radius": "",
-    "social_desktop_top": "100",
+    "social_desktop_top": "-400",
     "social_desktop_left": "",
     "social_desktop_scale": "",
     "back_to_top_bg": "#d00000",
