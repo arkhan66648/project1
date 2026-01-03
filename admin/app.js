@@ -169,7 +169,23 @@ const THEME_FIELDS = {
     'sec_border_leagues_color': 'themeLeaguesBorderColor',
     'sec_border_grouped_width': 'themeGroupedBorderWidth',
     'sec_border_grouped_color': 'themeGroupedBorderColor',
-    // ...
+     // New: League Page Upcoming Border
+    'sec_border_league_upcoming_width': 'themeLeagueUpcomingBorderWidth',
+    'sec_border_league_upcoming_color': 'themeLeagueUpcomingBorderColor',
+
+    // New: Article Styling
+    'article_bg': 'themeArticleBg',
+    'article_text': 'themeArticleText',
+    'article_line_height': 'themeArticleLineHeight',
+    'article_bullet_color': 'themeArticleBullet',
+    'article_link_color': 'themeArticleLink',
+    
+    'article_h2_color': 'themeArticleH2Color',
+    'article_h2_border_width': 'themeArticleH2BorderWidth',
+    'article_h2_border_color': 'themeArticleH2BorderColor',
+    
+    'article_h3_color': 'themeArticleH3Color',
+    'article_h4_color': 'themeArticleH4Color',
 
     // 5. Match Rows
     'match_row_bg': 'themeMatchRowBg',
