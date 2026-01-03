@@ -35,6 +35,11 @@
             --brand-dark: {{THEME_BRAND_DARK}};
             --status-green: {{THEME_STATUS_GREEN}};
             --accent-gold: {{THEME_ACCENT_GOLD}};
+        --social-telegram-color: {{THEME_SOCIAL_TELEGRAM_COLOR}};
+            --social-whatsapp-color: {{THEME_SOCIAL_WHATSAPP_COLOR}};
+            --social-reddit-color: {{THEME_SOCIAL_REDDIT_COLOR}};
+            --social-twitter-color: {{THEME_SOCIAL_TWITTER_COLOR}};
+            --social-btn-hover-shadow-color: {{THEME_SOCIAL_BTN_HOVER_SHADOW_COLOR}};
             --bg-body: {{THEME_BG_BODY}};
             --bg-panel: {{THEME_BG_PANEL}};
             --text-main: {{THEME_TEXT_MAIN}};
@@ -48,6 +53,18 @@
             --header-max-width: {{THEME_HEADER_MAX_WIDTH}};
             --border-radius-base: {{THEME_BORDER_RADIUS_BASE}}; 
             --button-border-radius: {{THEME_BUTTON_BORDER_RADIUS}};
+        /* HIGHLIGHTED MENU ITEM */
+        .nav-links a.highlighted { color: {{THEME_HEADER_HIGHLIGHT_COLOR}} !important; border-bottom-color: {{THEME_HEADER_HIGHLIGHT_COLOR}} !important; }
+        .nav-links a.highlighted:hover { color: {{THEME_HEADER_HIGHLIGHT_HOVER}} !important; border-bottom-color: {{THEME_HEADER_HIGHLIGHT_HOVER}} !important; }
+
+        /* HERO PILLS (Missing on League Page) */
+        .cat-scroll { display: {{HERO_MENU_DISPLAY}}; gap: 10px; overflow-x: auto; padding: 10px 5px; justify-content: {{THEME_HERO_ALIGN_ITEMS}}; scrollbar-width: none; width: 100%; margin: 15px 0 0 0; }
+        .cat-scroll::-webkit-scrollbar { display: none; }
+        .cat-pill { background: var(--bg-panel); border: 1px solid var(--border); padding: 8px 18px; border-radius: 50px; font-weight: 700; font-size: 0.8rem; white-space: nowrap; color: var(--text-muted); }
+        .cat-pill:hover { border-color: var(--brand-primary); color: white; background: var(--brand-primary); }
+
+        /* COPY BUTTON ICON FIX */
+        .btn-copy-link svg { width: 12px; height: 12px; fill: currentColor; }
         /* SKELETON LOADERS */
         .skeleton { 
             background: var(--bg-panel); 
@@ -295,6 +312,7 @@
             <div class="sys-status"><div class="live-dot"></div> {{THEME_TEXT_SYS_STATUS}}</div>
             <h1>{{H1_TITLE}}</h1>
             <p class="entity-intro">{{HERO_TEXT}}</p> 
+            <div class="cat-scroll">{{HERO_PILLS}}</div>
         </div>
     </div>
 
@@ -320,10 +338,9 @@
         <div id="upcoming-container">
             <div class="sec-head">
                 <h2 class="sec-title">
-                    <!-- Added ID here -->
-                    <span id="upcoming-logo-container" style="font-size:1.2rem; display:inline-flex; align-items:center;">📅</span> 
-                    {{TEXT_UPCOMING_TITLE}}
-                </h2>
+    <span id="upcoming-logo-container" style="font-size:1.2rem; display:inline-flex; align-items:center;">📅</span> 
+    {{TEXT_UPCOMING_TITLE}}
+</h2>
             </div>
             <!-- FIXED: Added style to ensure visibility and prevent collapse -->
             <div id="schedule-list" style="min-height:100px; display:block;">
@@ -391,35 +408,35 @@
         window.addEventListener('DOMContentLoaded', () => {
             highlightActiveMenu();
             setTimeout(renderSocials, 3000);
-            // Inject League Logo (Upcoming Section Only)
+            
+            // 1. INJECT LEAGUE LOGO (Smart Lookup)
             if (IMAGE_MAP.leagues) {
-                // Try to find image by exact name OR slug
                 const slug = (PAGE_FILTER || "").toLowerCase().replace(/[^a-z0-9]/g, '');
-                let imgUrl = IMAGE_MAP.leagues[PAGE_FILTER]; // Try Exact Match
-                
-                // If no exact match, try to find by slug logic
-                if (!imgUrl) {
+                let imgUrl = IMAGE_MAP.leagues[PAGE_FILTER]; // Exact
+                if (!imgUrl) { // Fuzzy
                     for (let key in IMAGE_MAP.leagues) {
-                        if (key.toLowerCase().replace(/[^a-z0-9]/g, '') === slug) {
-                            imgUrl = IMAGE_MAP.leagues[key];
-                            break;
-                        }
+                        if (key.toLowerCase().replace(/[^a-z0-9]/g, '') === slug) { imgUrl = IMAGE_MAP.leagues[key]; break; }
                     }
                 }
-
-                // If image found, replace the emoji span
                 if (imgUrl) {
                     const iconSpan = document.getElementById('upcoming-logo-container');
                     if (iconSpan) {
                         iconSpan.innerHTML = `<img src="${imgUrl}" alt="${PAGE_FILTER}" style="width:28px; height:28px; object-fit:contain; margin-right:6px;">`;
-                        iconSpan.style.fontSize = ''; // Reset font size to let image size take over
                     }
                 }
             }
+            
             loadMatches();
-            // Setup Mobile Menu Toggle
+            
+            // 2. MOBILE MENU & BACK TO TOP
             const ham = document.querySelector('.hamburger');
             if(ham) ham.onclick = () => document.getElementById('mobileMenu').classList.toggle('active');
+            
+            window.addEventListener('scroll', () => {
+                const btn = document.getElementById('backToTop');
+                if(window.scrollY > 300) btn.classList.add('show');
+                else btn.classList.remove('show');
+            });
         });
 
         // ... (keep window scroll listener) ...
@@ -570,6 +587,7 @@
                 timeCol = `<span class="time-main">${ft.time}</span><span class="time-sub">${ft.date}</span>`; 
             }
 
+            // LOGO LOGIC
             const getLogo = (name) => {
                 if (IMAGE_MAP.teams && IMAGE_MAP.teams[name]) {
                     const p = IMAGE_MAP.teams[name];
@@ -598,9 +616,19 @@
                  metaHtml = `<div style="display:flex; flex-direction:column; align-items:flex-end;"><span style="font-size:0.55rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:2px;">Starts in</span><span class="meta-top" style="color:var(--accent-gold); font-size:0.75rem;">${m.status_text}</span></div>`;
             }
 
+            // SMART TAG LOGIC (Unified with Master)
+            let tagText = m.finalLeague;
+            const filterLower = (PAGE_FILTER || "").toLowerCase();
+            const matchLeagueLower = m.finalLeague.toLowerCase();
+            // If match league matches current page filter, show Sport instead
+            if (matchLeagueLower === filterLower || matchLeagueLower.includes(filterLower)) {
+                tagText = m.sport || "General";
+            }
+
             let actionHtml = '';
             const link = `${SITE_DOMAIN}/watch/?info=${m.id}`;
-            const copyBtn = `<button class="btn-copy-link" onclick="copyText('${link}')" style="background:none;border:none;color:var(--match-row-btn-copy-link-color, #64748b);font-size:0.65rem;font-weight:700;cursor:pointer;margin-top:5px;display:flex;align-items:center;gap:4px;justify-content:center;">Link</button>`;
+            // FIXED: Added SVG Icon to Copy Button
+            const copyBtn = `<button class="btn-copy-link" onclick="copyText('${link}')" style="background:none;border:none;color:var(--match-row-btn-copy-link-color, #64748b);font-size:0.65rem;font-weight:700;cursor:pointer;margin-top:5px;display:flex;align-items:center;gap:4px;justify-content:center;"><svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
 
             if (m.is_live) {
                 actionHtml = `<button onclick="window.location.href='${link}'" class="btn-watch">{{TEXT_WATCH_BTN}} <span class="hd-badge">{{TEXT_HD_BADGE}}</span></button>`;
@@ -610,7 +638,7 @@
                 else actionHtml = `<button onclick="setNotify(this)" class="btn-notify" style="background:var(--match-row-btn-notify-bg, transparent);border:1px solid var(--match-row-btn-notify-border, #333);color:var(--match-row-btn-notify-text, #999);padding:4px 8px;border-radius:4px;font-size:0.65rem;width:100%;font-weight:700;">🔔 Notify</button>` + copyBtn;
             }
             
-            div.innerHTML = `<div class="col-time">${timeCol}</div><div class="teams-wrapper"><div class="league-tag">${m.finalLeague.toUpperCase()}</div>${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${actionHtml}</div>`;
+            div.innerHTML = `<div class="col-time">${timeCol}</div><div class="teams-wrapper"><div class="league-tag">${tagText.toUpperCase()}</div>${teamsHtml}</div><div class="col-meta">${metaHtml}</div><div class="col-action">${actionHtml}</div>`;
             return div;
         }
 
@@ -667,7 +695,7 @@
             ['telegram', 'whatsapp', 'reddit', 'twitter', 'copy'].forEach(p => {
                 const count = SHARE_CONFIG.counts[p] ? ((n)=>(n>=1000?(n/1000).toFixed(1)+'k':n))(SHARE_CONFIG.counts[p]) : '';
                 const onclick = p === 'copy' ? `copyText('${SITE_DOMAIN}')` : `window.open('${makeUrl(p)}', '_blank')`;
-                html += `<div class="social-btn ${p}" onclick="${onclick}">${icons[p]}<span class="s-count">${count}</span></div>`;
+                html += `<div class="social-btn ${p}" onclick="${onclick}" style="color:var(--social-${p}-color);">${icons[p]}<span class="s-count">${count}</span></div>`;
             });
             if(document.getElementById('socialSidebar')) document.getElementById('socialSidebar').innerHTML = html;
             if(document.getElementById('mobileFooter')) document.getElementById('mobileFooter').innerHTML = html;
