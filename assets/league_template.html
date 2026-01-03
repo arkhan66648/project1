@@ -141,6 +141,16 @@
             --mobile-footer-border-top: {{THEME_MOBILE_FOOTER_BORDER_TOP}};
             --mobile-footer-shadow: {{THEME_MOBILE_FOOTER_SHADOW}};
             --mobile-footer-height: {{THEME_MOBILE_FOOTER_HEIGHT}}; /* e.g. 60px */
+        /* ARTICLE STYLING */
+            --article-bg: {{THEME_ARTICLE_BG}};
+            --article-text: {{THEME_ARTICLE_TEXT}};
+            --article-line-height: {{THEME_ARTICLE_LINE_HEIGHT}};
+            --article-bullet: {{THEME_ARTICLE_BULLET_COLOR}};
+            --article-link: {{THEME_ARTICLE_LINK_COLOR}};
+            --article-h2-color: {{THEME_ARTICLE_H2_COLOR}};
+            --article-h2-border: {{THEME_ARTICLE_H2_BORDER_WIDTH}}px solid {{THEME_ARTICLE_H2_BORDER_COLOR}};
+            --article-h3-color: {{THEME_ARTICLE_H3_COLOR}};
+            --article-h4-color: {{THEME_ARTICLE_H4_COLOR}};
             
             --copy-toast-bg: {{THEME_COPY_TOAST_BG}};
             --copy-toast-text: {{THEME_COPY_TOAST_TEXT}};
@@ -439,8 +449,9 @@
         #live-section .sec-head, #live-content-wrapper .sec-head { 
             border-bottom: {{THEME_SEC_BORDER_LIVE}}; 
         }
-        #top-upcoming-container .sec-head { 
-            border-bottom: {{THEME_SEC_BORDER_UPCOMING}}; 
+        /* In assets/league_template.html */
+        #upcoming-container .sec-head { 
+            border-bottom: {{THEME_SEC_BORDER_LEAGUE_UPCOMING}}; 
         }
         #wildcard-container .sec-head { 
             border-bottom: {{THEME_SEC_BORDER_WILDCARD}}; 
@@ -455,7 +466,23 @@
     content-visibility: auto; /* Magic performance fix for Mobile */
     contain-intrinsic-size: 1000px; /* Prevents scrollbar jumping */
 }
-        
+        /* ARTICLE CSS */
+        .seo-article { 
+            background: var(--article-bg); 
+            color: var(--article-text); 
+            line-height: var(--article-line-height); 
+            padding: 20px; 
+            border-radius: var(--border-radius-base); 
+            margin-top: 40px; 
+        }
+        .seo-article h2 { color: var(--article-h2-color); border-bottom: var(--article-h2-border); padding-bottom: 10px; margin-top: 30px; font-size: 1.5rem; }
+        .seo-article h3 { color: var(--article-h3-color); font-size: 1.25rem; margin-top: 25px; }
+        .seo-article h4 { color: var(--article-h4-color); font-size: 1.1rem; margin-top: 20px; }
+        .seo-article p { margin-bottom: 15px; }
+        .seo-article a { color: var(--article-link); text-decoration: underline; }
+        .seo-article ul, .seo-article ol { margin-left: 20px; margin-bottom: 15px; }
+        .seo-article li { margin-bottom: 5px; }
+        .seo-article li::marker { color: var(--article-bullet); }
         .container { max-width: var(--container-max-width); margin: 0 auto; padding: 20px 15px; min-height: 60vh; }
         .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 40px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
         .sec-title { font-size: 1.2rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; text-transform: uppercase; margin: 0; font-family: var(--font-family-headings); }
