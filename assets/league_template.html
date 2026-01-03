@@ -927,16 +927,17 @@
 
             // SMART TAG LOGIC (Unified with Master)
             let tagText = m.finalLeague;
+            
             if (!m.is_live) {
                 const filterLower = (PAGE_FILTER || "").toLowerCase();
                 const matchLeagueLower = m.finalLeague.toLowerCase();
-            // If match league matches current page filter, show Sport instead
-            if (matchLeagueLower === filterLower || matchLeagueLower.includes(filterLower)) {
-                let rawSport = (m.sport || "General").trim();
-        let sportKey = rawSport.toLowerCase().replace(/\s/g, '');
-        tagText = NAME_FIXES[sportKey] ? NAME_FIXES[sportKey] : rawSport;
-            }
-            }
+                // If match league matches current page filter, show Sport instead
+                if (matchLeagueLower === filterLower || matchLeagueLower.includes(filterLower)) {
+                    let rawSport = (m.sport || "General").trim();
+                    let sportKey = rawSport.toLowerCase().replace(/\s/g, '');
+                    tagText = NAME_FIXES[sportKey] ? NAME_FIXES[sportKey] : rawSport;
+                }
+            } // <--- THIS WAS MISSING!
 
             let actionHtml = '';
             const link = `${SITE_DOMAIN}/watch/?info=${m.id}`;
