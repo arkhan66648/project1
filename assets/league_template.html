@@ -45,7 +45,10 @@
             --text-main: {{THEME_TEXT_MAIN}};
             --text-muted: {{THEME_TEXT_MUTED}};
             --border: {{THEME_BORDER_COLOR}};
-            
+            --back-to-top-size: {{THEME_BACK_TO_TOP_SIZE}};
+            --social-desktop-top: {{THEME_SOCIAL_DESKTOP_TOP}};
+            --social-desktop-left: {{THEME_SOCIAL_DESKTOP_LEFT}};
+            --social-desktop-scale: {{THEME_SOCIAL_DESKTOP_SCALE}};
             --font-family-base: {{THEME_FONT_FAMILY_BASE}};
             --font-family-headings: {{THEME_FONT_FAMILY_HEADINGS}};
             --base-font-size: {{THEME_BASE_FONT_SIZE}};
@@ -53,31 +56,7 @@
             --header-max-width: {{THEME_HEADER_MAX_WIDTH}};
             --border-radius-base: {{THEME_BORDER_RADIUS_BASE}}; 
             --button-border-radius: {{THEME_BUTTON_BORDER_RADIUS}};
-        /* HIGHLIGHTED MENU ITEM */
-        .nav-links a.highlighted { color: {{THEME_HEADER_HIGHLIGHT_COLOR}} !important; border-bottom-color: {{THEME_HEADER_HIGHLIGHT_COLOR}} !important; }
-        .nav-links a.highlighted:hover { color: {{THEME_HEADER_HIGHLIGHT_HOVER}} !important; border-bottom-color: {{THEME_HEADER_HIGHLIGHT_HOVER}} !important; }
-
-        /* HERO PILLS (Missing on League Page) */
-        .cat-scroll { display: {{HERO_MENU_DISPLAY}}; gap: 10px; overflow-x: auto; padding: 10px 5px; justify-content: {{THEME_HERO_ALIGN_ITEMS}}; scrollbar-width: none; width: 100%; margin: 15px 0 0 0; }
-        .cat-scroll::-webkit-scrollbar { display: none; }
-        .cat-pill { background: var(--bg-panel); border: 1px solid var(--border); padding: 8px 18px; border-radius: 50px; font-weight: 700; font-size: 0.8rem; white-space: nowrap; color: var(--text-muted); }
-        .cat-pill:hover { border-color: var(--brand-primary); color: white; background: var(--brand-primary); }
-
-        /* COPY BUTTON ICON FIX */
-        .btn-copy-link svg { width: 12px; height: 12px; fill: currentColor; }
-        /* SKELETON LOADERS */
-        .skeleton { 
-            background: var(--bg-panel); 
-            border-radius: var(--border-radius-base); 
-            animation: shimmer 1.5s infinite linear; 
-            background: linear-gradient(to right, var(--bg-panel) 4%, var(--border) 25%, var(--bg-panel) 36%); 
-            background-size: 1000px 100%; 
-        }
-        .skeleton-header { display: flex; justify-content: space-between; align-items: flex-end; margin: 40px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid var(--border); height: 38px; }
-        .sk-title { height: 22px; width: 140px; }
-        .skeleton-box { height: var(--row-h-mob); width: 100%; margin-bottom: 8px; border-radius: var(--border-radius-base); border: 1px solid var(--border); }
-        @media (min-width: 768px) { .skeleton-box { height: var(--row-h-desk); } }
-        @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
+        
             
             /* HEADER */
             --header-bg: {{THEME_HEADER_BG}};
@@ -156,6 +135,31 @@
             --row-h-mob: 76px;
             --row-h-desk: 96px;
         }
+        /* HIGHLIGHTED MENU ITEM */
+        .nav-links a.highlighted { color: {{THEME_HEADER_HIGHLIGHT_COLOR}} !important; border-bottom-color: {{THEME_HEADER_HIGHLIGHT_COLOR}} !important; }
+        .nav-links a.highlighted:hover { color: {{THEME_HEADER_HIGHLIGHT_HOVER}} !important; border-bottom-color: {{THEME_HEADER_HIGHLIGHT_HOVER}} !important; }
+
+        /* HERO PILLS (Missing on League Page) */
+        .cat-scroll { display: {{HERO_MENU_DISPLAY}}; gap: 10px; overflow-x: auto; padding: 10px 5px; justify-content: {{THEME_HERO_ALIGN_ITEMS}}; scrollbar-width: none; width: 100%; margin: 15px 0 0 0; }
+        .cat-scroll::-webkit-scrollbar { display: none; }
+        .cat-pill { background: var(--bg-panel); border: 1px solid var(--border); padding: 8px 18px; border-radius: 50px; font-weight: 700; font-size: 0.8rem; white-space: nowrap; color: var(--text-muted); }
+        .cat-pill:hover { border-color: var(--brand-primary); color: white; background: var(--brand-primary); }
+
+        /* COPY BUTTON ICON FIX */
+        .btn-copy-link svg { width: 12px; height: 12px; fill: currentColor; }
+        /* SKELETON LOADERS */
+        .skeleton { 
+            background: var(--bg-panel); 
+            border-radius: var(--border-radius-base); 
+            animation: shimmer 1.5s infinite linear; 
+            background: linear-gradient(to right, var(--bg-panel) 4%, var(--border) 25%, var(--bg-panel) 36%); 
+            background-size: 1000px 100%; 
+        }
+        .skeleton-header { display: flex; justify-content: space-between; align-items: flex-end; margin: 40px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid var(--border); height: 38px; }
+        .sk-title { height: 22px; width: 140px; }
+        .skeleton-box { height: var(--row-h-mob); width: 100%; margin-bottom: 8px; border-radius: var(--border-radius-base); border: 1px solid var(--border); }
+        @media (min-width: 768px) { .skeleton-box { height: var(--row-h-desk); } }
+        @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; font-family: var(--font-family-base); background: var(--bg-body); color: var(--text-main); font-size: var(--base-font-size); padding-bottom: 80px; }
