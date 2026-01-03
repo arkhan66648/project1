@@ -320,7 +320,8 @@
         <div id="upcoming-container">
             <div class="sec-head">
                 <h2 class="sec-title">
-                    <span style="font-size:1.2rem;">📅</span> 
+                    <!-- Added ID here -->
+                    <span id="upcoming-logo-container" style="font-size:1.2rem; display:inline-flex; align-items:center;">📅</span> 
                     {{TEXT_UPCOMING_TITLE}}
                 </h2>
             </div>
@@ -390,12 +391,29 @@
         window.addEventListener('DOMContentLoaded', () => {
             highlightActiveMenu();
             setTimeout(renderSocials, 3000);
-            // Inject League Logo if exists
-            if(IMAGE_MAP.leagues && IMAGE_MAP.leagues[PAGE_FILTER]) {
-                // Find the h2 title inside upcoming container
-                const titleEl = document.querySelector('#upcoming-container h2');
-                if(titleEl) {
-                    titleEl.innerHTML = `<img src="${IMAGE_MAP.leagues[PAGE_FILTER]}" style="width:28px;height:28px;object-fit:contain;margin-right:8px;"> ${titleEl.innerText.replace('📅','').trim()}`;
+            // Inject League Logo (Upcoming Section Only)
+            if (IMAGE_MAP.leagues) {
+                // Try to find image by exact name OR slug
+                const slug = (PAGE_FILTER || "").toLowerCase().replace(/[^a-z0-9]/g, '');
+                let imgUrl = IMAGE_MAP.leagues[PAGE_FILTER]; // Try Exact Match
+                
+                // If no exact match, try to find by slug logic
+                if (!imgUrl) {
+                    for (let key in IMAGE_MAP.leagues) {
+                        if (key.toLowerCase().replace(/[^a-z0-9]/g, '') === slug) {
+                            imgUrl = IMAGE_MAP.leagues[key];
+                            break;
+                        }
+                    }
+                }
+
+                // If image found, replace the emoji span
+                if (imgUrl) {
+                    const iconSpan = document.getElementById('upcoming-logo-container');
+                    if (iconSpan) {
+                        iconSpan.innerHTML = `<img src="${imgUrl}" alt="${PAGE_FILTER}" style="width:28px; height:28px; object-fit:contain; margin-right:6px;">`;
+                        iconSpan.style.fontSize = ''; // Reset font size to let image size take over
+                    }
                 }
             }
             loadMatches();
