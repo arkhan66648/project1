@@ -110,6 +110,9 @@
             --league-card-hover-bg: #347ba8;
             --league-card-hover-text: #222020;
             --league-card-hover-border: 3px solid #ad0b0b;
+        --static-h1-color: #f1f5f9;
+            --static-h1-border: 1px solid #334155;
+         --sys-status-display: inline-flex;
 
             /* HEADER */
             --header-bg: #050505;
@@ -231,8 +234,10 @@
             --back-to-top-shadow: 0 4px 10px rgba(208,0,0,0.4);
             --back-to-top-radius: 50%; /* New */
             --back-to-top-size: 40px; /* New */
+        --sys-status-radius: 20px;
             
             --sys-status-dot-color: #22c55e;
+        --sys-status-dot-size: 8px;
             --sys-status-bg: rgba(34, 197, 94, 0.1);
             --sys-status-border: 1px solid rgba(34, 197, 94, 0.2);
             --sys-status-text: #22c55e;
@@ -505,10 +510,22 @@
         
         /* Elements inside Hero */
         .sys-status { 
-            display: inline-flex; align-items: center; gap: 8px; 
-            background: var(--sys-status-bg); border: 1px solid var(--sys-status-border); 
-            padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; 
-            font-size: 0.75rem; font-weight: 700; color: var(--sys-status-text); 
+            display: var(--sys-status-display); /* Toggle Visibility */
+            align-items: center; gap: 8px; 
+            background: var(--sys-status-bg); 
+            border: var(--sys-status-border); /* Use calculated border */
+            color: var(--sys-status-text); 
+            border-radius: var(--sys-status-radius); /* Use variable */
+            
+            padding: 5px 14px; margin-bottom: 15px; 
+            font-size: 0.75rem; font-weight: 700; 
+        }
+        .sys-status .dot, .sys-status .live-dot { 
+            width: var(--sys-status-dot-size); 
+            height: var(--sys-status-dot-size); 
+            background: var(--sys-status-dot-color); 
+            border-radius: 50%; 
+            box-shadow: 0 0 10px var(--sys-status-dot-color); 
         }
         
         h1 { margin: 0 0 20px 0; font-size: 1.8rem; line-height: 1.2; color: var(--hero-h1-color); font-weight: 800; font-family: var(--font-family-headings); }
