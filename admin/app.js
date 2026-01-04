@@ -90,6 +90,16 @@ const THEME_FIELDS = {
     'font_family_headings': 'themeFontHeadings',
     'border_radius_base': 'themeBorderRadius',
     'container_max_width': 'themeMaxWidth',
+    // FOOTER LEAGUE CARDS
+    'league_card_bg': 'themeLeagueCardBg',
+    'league_card_text': 'themeLeagueCardText',
+    'league_card_border_color': 'themeLeagueCardBorder',
+    'league_card_border_width': 'themeLeagueCardBorderWidth',
+    'league_card_radius': 'themeLeagueCardRadius',
+    
+    'league_card_hover_bg': 'themeLeagueCardHoverBg',
+    'league_card_hover_text': 'themeLeagueCardHoverText',
+    'league_card_hover_border_color': 'themeLeagueCardHoverBorder',
     
     // 2. Palette
     'brand_primary': 'themeBrandPrimary',
@@ -1142,9 +1152,14 @@ function applyThemeState(data) {
     if(window.toggleHeroBoxSettings) toggleHeroBoxSettings();
     
     // Refresh Sliders text
-    ['themeBorderRadius', 'themeMaxWidth', 'themeSectionLogoSize', 'themeBtnRadius', 'themeHeroPillRadius'].forEach(id => {
+    ['themeBorderRadius', 'themeMaxWidth', 'themeSectionLogoSize', 'themeBtnRadius', 'themeHeroPillRadius', 'themeLeagueCardBorderWidth', 'themeLeagueCardRadius'].forEach(id => {
          const el = document.getElementById(id);
-         const display = document.getElementById(id.replace('theme','val_').replace('BorderRadius','borderRadius').replace('MaxWidth','maxWidth').replace('SectionLogoSize','secLogo').replace('BtnRadius','btnRadius').replace('HeroPillRadius','pillRadius'));
+         // Ensure your mapping here matches the ID used in HTML (e.g. val_lcBorderW)
+         const displayId = id === 'themeLeagueCardBorderWidth' ? 'val_lcBorderW' : 
+                           id === 'themeLeagueCardRadius' ? 'val_lcRadius' :
+                           id.replace('theme','val_').replace('BorderRadius','borderRadius').replace('MaxWidth','maxWidth').replace('SectionLogoSize','secLogo').replace('BtnRadius','btnRadius').replace('HeroPillRadius','pillRadius');
+         
+         const display = document.getElementById(displayId);
          if(el && display) display.innerText = el.value + 'px';
     });
 }
