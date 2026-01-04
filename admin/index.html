@@ -136,6 +136,29 @@
                             <div><label>Scroll Thumb</label><input type="color" id="themeScrollThumb"></div>
                         </div>
                     </div>
+                    <div class="card">
+    <h3>🏆 Footer Leagues Card</h3>
+    <div class="color-grid">
+        <div><label>Card BG</label><input type="color" id="themeLeagueCardBg"></div>
+        <div><label>Text Color</label><input type="color" id="themeLeagueCardText"></div>
+        <div><label>Border Color</label><input type="color" id="themeLeagueCardBorder"></div>
+        <div><label>Hover BG</label><input type="color" id="themeLeagueCardHoverBg"></div>
+        <div><label>Hover Text</label><input type="color" id="themeLeagueCardHoverText"></div>
+        <div><label>Hover Border</label><input type="color" id="themeLeagueCardHoverBorder"></div>
+    </div>
+    
+    <div class="range-wrapper">
+        <label>Border Width: <span id="val_lcBorderW">1px</span></label>
+        <input type="range" id="themeLeagueCardBorderWidth" min="0" max="5" step="1" 
+               oninput="document.getElementById('val_lcBorderW').innerText=this.value+'px'">
+    </div>
+
+    <div class="range-wrapper">
+        <label>Border Radius: <span id="val_lcRadius">6px</span></label>
+        <input type="range" id="themeLeagueCardRadius" min="0" max="20" step="1" 
+               oninput="document.getElementById('val_lcRadius').innerText=this.value+'px'">
+    </div>
+</div>
 
                     <!-- Inside admin/index.html -> Theme Designer -> Header Card -->
 <div class="card">
