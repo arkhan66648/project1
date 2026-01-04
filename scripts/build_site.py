@@ -125,7 +125,15 @@ def render_page(template, config, page_data, theme_override=None):
         'bg_body': '#050505', 'bg_panel': '#1e293b', 'bg_glass': 'rgba(30, 41, 59, 0.7)',
         'text_main': '#f1f5f9', 'text_muted': '#94a3b8', 'border_color': '#334155', 'scrollbar_thumb_color': '#475569',
         'font_family_base': 'system-ui, -apple-system, sans-serif', 'font_family_headings': 'inherit',
-        'base_font_size': '14px', 'base_line_height': '1.5', 
+        'base_font_size': '14px', 'base_line_height': '1.5',
+        'league_card_bg': 'rgba(30, 41, 59, 0.5)',
+        'league_card_text': '#f1f5f9',
+        'league_card_border_width': '1', 
+        'league_card_border_color': '#334155',
+        'league_card_radius': '6',
+        'league_card_hover_bg': '#1e293b',
+        'league_card_hover_text': '#ffffff',
+        'league_card_hover_border_color': '#D00000',
         'container_max_width': '1100px', 'border_radius_base': '6px', 'button_border_radius': '4px',
         'header_max_width': '1100px', 'hero_pill_radius': '50px', 'card_shadow': '0 4px 6px -1px rgba(0,0,0,0.1)',
         'header_bg': 'rgba(5, 5, 5, 0.8)', 'header_text_color': '#f1f5f9', 'header_link_active_color': '#D00000',
@@ -206,6 +214,11 @@ def render_page(template, config, page_data, theme_override=None):
     theme['sec_border_grouped'] = make_border(theme.get('sec_border_grouped_width'), theme.get('sec_border_grouped_color'))
     theme['article_h2_border'] = make_border(theme.get('article_h2_border_width'), theme.get('article_h2_border_color'))
     theme['sec_border_league_upcoming'] = make_border(theme.get('sec_border_league_upcoming_width'), theme.get('sec_border_league_upcoming_color'))
+    theme['league_card_border'] = make_border(theme.get('league_card_border_width'), theme.get('league_card_border_color'))
+    theme['league_card_hover_border'] = make_border(theme.get('league_card_border_width'), theme.get('league_card_hover_border_color'))
+    
+    # 2. ENSURE RADIUS HAS UNIT
+    theme['league_card_radius'] = ensure_unit(theme.get('league_card_radius'), 'px')
 
     for key, val in theme.items():
         html = html.replace(f"{{{{THEME_{key.upper()}}}}}", str(val))
