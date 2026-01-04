@@ -62,6 +62,15 @@
             --button-border-radius: 21px;
         --hero-pill-radius: 8px;
             --card-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        /* FOOTER LEAGUE CARDS */
+            --league-card-bg: rgba(30, 41, 59, 0.5);
+            --league-card-text: #f1f5f9;
+            --league-card-border: 1px solid #334155; /* This is now full string "1px solid #..." */
+            --league-card-radius: 6px;
+            
+            --league-card-hover-bg: #1e293b;
+            --league-card-hover-text: #ffffff;
+            --league-card-hover-border: 1px solid #D00000;
 
             /* HEADER */
             --header-bg: #050505;
@@ -575,9 +584,29 @@
         .show-more-btn:hover { border-color: var(--show-more-btn-hover-border); color: var(--show-more-btn-hover-text); background: var(--show-more-btn-hover-bg); }
         
         .leagues-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 15px; }
-        .league-card { background: rgba(30, 41, 59, 0.5); border: 1px solid 1px solid #334155; padding: 10px 15px; border-radius: var(--border-radius-base); display: flex; align-items: center; gap: 10px; transition: 0.2s; white-space: nowrap; overflow: hidden; }
-        .league-card:hover { border-color: 1px solid #D00000; background: #1e293b; transform: translateY(-2px); }
-        .league-card span { font-size: 0.8rem; font-weight: 700; color: #f1f5f9; overflow: hidden; text-overflow: ellipsis; }
+        
+        .league-card { 
+            background: var(--league-card-bg); 
+            border: var(--league-card-border); 
+            color: var(--league-card-text);
+            border-radius: var(--league-card-radius); 
+            
+            padding: 10px 15px; 
+            display: flex; align-items: center; gap: 10px; 
+            transition: 0.2s; white-space: nowrap; overflow: hidden; 
+        }
+        
+        .league-card:hover { 
+            border: var(--league-card-hover-border); 
+            background: var(--league-card-hover-bg); 
+            color: var(--league-card-hover-text);
+            transform: translateY(-2px); 
+        }
+        
+        .league-card span { 
+            font-size: 0.8rem; font-weight: 700; color: inherit; /* Inherit allows hover text change */
+            overflow: hidden; text-overflow: ellipsis; 
+        }
         .l-icon { font-size: 1.1rem; }
         
         footer { background: linear-gradient(180deg, var(--footer-bg-start) 0%, var(--footer-bg-end) 100%); border-top: var(--footer-border-top); padding: 60px 20px 30px 20px; margin-top: 60px; }
