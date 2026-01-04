@@ -1180,10 +1180,11 @@ function applyThemeState(data) {
     // Refresh Sliders text
     ['themeBorderRadius', 'themeMaxWidth', 'themeSectionLogoSize', 'themeBtnRadius', 'themeHeroPillRadius', 'themeLeagueCardBorderWidth', 'themeLeagueCardRadius', 'themeSysStatusDotSize'].forEach(id => {
          const el = document.getElementById(id);
-         // Ensure your mapping here matches the ID used in HTML (e.g. val_lcBorderW)
+         
+         // CORRECTED LOGIC: Single variable declaration
          const displayId = id === 'themeLeagueCardBorderWidth' ? 'val_lcBorderW' : 
                            id === 'themeLeagueCardRadius' ? 'val_lcRadius' :
-             const displayId = id === 'themeSysStatusDotSize' ? 'val_sysDot' :
+                           id === 'themeSysStatusDotSize' ? 'val_sysDot' :
                            id.replace('theme','val_').replace('BorderRadius','borderRadius').replace('MaxWidth','maxWidth').replace('SectionLogoSize','secLogo').replace('BtnRadius','btnRadius').replace('HeroPillRadius','pillRadius');
          
          const display = document.getElementById(displayId);
