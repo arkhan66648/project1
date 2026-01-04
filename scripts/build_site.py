@@ -11,6 +11,7 @@ IMAGE_MAP_PATH = 'assets/data/image_map.json'
 TEMPLATE_PATH = 'assets/master_template.html'
 WATCH_TEMPLATE_PATH = 'assets/watch_template.html'
 LEAGUE_TEMPLATE_PATH = 'assets/league_template.html'
+PAGE_TEMPLATE_PATH = 'assets/page_template.html'
 OUTPUT_DIR = '.' 
 
 # ==========================================
@@ -128,6 +129,7 @@ def render_page(template, config, page_data, theme_override=None):
         'base_font_size': '14px', 'base_line_height': '1.5',
         'league_card_bg': 'rgba(30, 41, 59, 0.5)',
         'league_card_text': '#f1f5f9',
+        'static_h1_color': '#f1f5f9',
         'league_card_border_width': '1', 
         'league_card_border_color': '#334155',
         'league_card_radius': '6',
@@ -435,16 +437,40 @@ def build_site():
     try:
         with open(TEMPLATE_PATH, 'r', encoding='utf-8') as f: master_template_content = f.read()
         with open(WATCH_TEMPLATE_PATH, 'r', encoding='utf-8') as f: watch_template_content = f.read()
+        
+        # ADD THIS: Load Page Template
+        page_template_content = master_template_content # Fallback
+        if os.path.exists(PAGE_TEMPLATE_PATH):
+            with open(PAGE_TEMPLATE_PATH, 'r', encoding='utf-8') as f: page_template_content = f.read()
+            
     except FileNotFoundError:
         print("❌ Template file not found")
         return
 
     print("📄 Building Pages...")
+    
+    # Get Theme Contexts
+    theme_page_conf = config.get('theme_page', {}) # Get Static Context
+    if not theme_page_conf: theme_page_conf = config.get('theme', {})
+
     for page in config.get('pages', []):
         slug = page.get('slug')
         if not slug: continue
         
-        final_html = render_page(watch_template_content if page.get('layout') == 'watch' else master_template_content, config, page)
+        layout = page.get('layout')
+        
+        # Determine Template & Theme Context
+        final_template = master_template_content
+        active_theme_override = None
+
+        if layout == 'watch':
+            final_template = watch_template_content
+        elif layout == 'page':
+            final_template = page_template_content
+            active_theme_override = theme_page_conf # Apply Static Context
+        
+        # Render
+        final_html = render_page(final_template, config, page, theme_override=active_theme_override)
         
         out_dir = os.path.join(OUTPUT_DIR, slug) if slug != 'home' else OUTPUT_DIR
         os.makedirs(out_dir, exist_ok=True)
