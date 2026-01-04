@@ -133,6 +133,16 @@ def render_page(template, config, page_data, theme_override=None):
         'league_card_border_width': '1', 
         'league_card_border_color': '#334155',
         'league_card_radius': '6',
+        'static_h1_border_width': '1', 
+        'static_h1_border_color': '#334155',
+        'sys_status_visible': True,
+        'sys_status_text_color': '#22c55e',
+        'sys_status_bg_color': 'rgba(34, 197, 94, 0.1)',
+        'sys_status_border_color': 'rgba(34, 197, 94, 0.2)',
+        'sys_status_border_width': '1',
+        'sys_status_radius': '20',
+        'sys_status_dot_color': '#22c55e',
+        'sys_status_dot_size': '8',
         'league_card_hover_bg': '#1e293b',
         'league_card_hover_text': '#ffffff',
         'league_card_hover_border_color': '#D00000',
@@ -218,6 +228,13 @@ def render_page(template, config, page_data, theme_override=None):
     theme['sec_border_league_upcoming'] = make_border(theme.get('sec_border_league_upcoming_width'), theme.get('sec_border_league_upcoming_color'))
     theme['league_card_border'] = make_border(theme.get('league_card_border_width'), theme.get('league_card_border_color'))
     theme['league_card_hover_border'] = make_border(theme.get('league_card_border_width'), theme.get('league_card_hover_border_color'))
+    theme['static_h1_border'] = make_border(theme.get('static_h1_border_width'), theme.get('static_h1_border_color'))
+    theme['sys_status_border'] = make_border(theme.get('sys_status_border_width'), theme.get('sys_status_border_color'))
+    theme['sys_status_radius'] = ensure_unit(theme.get('sys_status_radius'), 'px')
+    theme['sys_status_dot_size'] = ensure_unit(theme.get('sys_status_dot_size'), 'px')
+    is_visible = theme.get('sys_status_visible')
+    if is_visible is None: is_visible = True # Default True
+    theme['sys_status_display'] = 'inline-flex' if is_visible else 'none'
     
     # 2. ENSURE RADIUS HAS UNIT
     theme['league_card_radius'] = ensure_unit(theme.get('league_card_radius'), 'px')
