@@ -80,6 +80,7 @@
     <div class="btn-group">
         <button id="ctxBtn-home" class="ctx-btn active" onclick="switchThemeContext('home')">🏠 Homepage</button>
         <button id="ctxBtn-league" class="ctx-btn" onclick="switchThemeContext('league')">🏆 League Pages</button>
+        <button id="ctxBtn-page" class="ctx-btn" onclick="switchThemeContext('page')">📄 Static Pages</button>
     </div>
     <p class="desc" id="ctxDesc" style="margin-top:10px;">Editing global styles for the <strong>Homepage</strong>.</p>
 </div>
@@ -106,6 +107,9 @@
                             <option value="Georgia, serif">Elegant Serif</option>
                             <option value="'Courier New', monospace">Code/Tech</option>
                         </select>
+                        <!-- Inside Base & Typography Card, after Heading Font select -->
+<label>Static H1 Color (Page Layout)</label>
+<input type="color" id="themeStaticH1Color">
                         <div class="range-wrapper">
                             <label>Global Radius: <span id="val_borderRadius">6px</span></label>
                             <input type="range" id="themeBorderRadius" min="0" max="20" step="1" oninput="document.getElementById('val_borderRadius').innerText=this.value+'px'">
