@@ -91,6 +91,19 @@ const THEME_FIELDS = {
     'border_radius_base': 'themeBorderRadius',
     'container_max_width': 'themeMaxWidth',
     'static_h1_color': 'themeStaticH1Color',
+    // ... existing fields ...
+    'static_h1_border_width': 'themeStaticH1BorderWidth',
+    'static_h1_border_color': 'themeStaticH1BorderColor',
+
+    'sys_status_visible': 'themeSysStatusVisible', // Checkbox
+    
+    'sys_status_text_color': 'themeSysStatusText',
+    'sys_status_bg_color': 'themeSysStatusBg',
+    'sys_status_border_color': 'themeSysStatusBorderColor',
+    'sys_status_border_width': 'themeSysStatusBorderWidth',
+    'sys_status_radius': 'themeSysStatusRadius',
+    'sys_status_dot_color': 'themeSysStatusDotColor',
+    'sys_status_dot_size': 'themeSysStatusDotSize',
     // FOOTER LEAGUE CARDS
     'league_card_bg': 'themeLeagueCardBg',
     'league_card_text': 'themeLeagueCardText',
@@ -1165,11 +1178,12 @@ function applyThemeState(data) {
     if(window.toggleHeroBoxSettings) toggleHeroBoxSettings();
     
     // Refresh Sliders text
-    ['themeBorderRadius', 'themeMaxWidth', 'themeSectionLogoSize', 'themeBtnRadius', 'themeHeroPillRadius', 'themeLeagueCardBorderWidth', 'themeLeagueCardRadius'].forEach(id => {
+    ['themeBorderRadius', 'themeMaxWidth', 'themeSectionLogoSize', 'themeBtnRadius', 'themeHeroPillRadius', 'themeLeagueCardBorderWidth', 'themeLeagueCardRadius', 'themeSysStatusDotSize'].forEach(id => {
          const el = document.getElementById(id);
          // Ensure your mapping here matches the ID used in HTML (e.g. val_lcBorderW)
          const displayId = id === 'themeLeagueCardBorderWidth' ? 'val_lcBorderW' : 
                            id === 'themeLeagueCardRadius' ? 'val_lcRadius' :
+             const displayId = id === 'themeSysStatusDotSize' ? 'val_sysDot' :
                            id.replace('theme','val_').replace('BorderRadius','borderRadius').replace('MaxWidth','maxWidth').replace('SectionLogoSize','secLogo').replace('BtnRadius','btnRadius').replace('HeroPillRadius','pillRadius');
          
          const display = document.getElementById(displayId);
