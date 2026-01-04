@@ -90,6 +90,7 @@ const THEME_FIELDS = {
     'font_family_headings': 'themeFontHeadings',
     'border_radius_base': 'themeBorderRadius',
     'container_max_width': 'themeMaxWidth',
+    'static_h1_color': 'themeStaticH1Color',
     // FOOTER LEAGUE CARDS
     'league_card_bg': 'themeLeagueCardBg',
     'league_card_text': 'themeLeagueCardText',
@@ -347,6 +348,7 @@ async function verifyAndLoad(token) {
         if(!configData.sport_priorities.UK) configData.sport_priorities.UK = { _HIDE_OTHERS: false, _BOOST: "" };
         if(!configData.social_sharing) configData.social_sharing = DEMO_CONFIG.social_sharing;
         if(!configData.theme) configData.theme = {};
+        if(!configData.theme_page) configData.theme_page = {};
 
         populateUI();
         startPolling();
@@ -1096,6 +1098,7 @@ function getVal(id) { return document.getElementById(id)?.value || ""; }
 // ==========================================
 // NEW: THEME CONTEXT SWITCHER LOGIC
 // ==========================================
+// Replace the existing switchThemeContext function with this updated version:
 window.switchThemeContext = (mode) => {
     // 1. Save current UI values to the OLD context memory
     captureThemeState(currentThemeContext);
@@ -1107,25 +1110,35 @@ window.switchThemeContext = (mode) => {
     document.querySelectorAll('.ctx-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(`ctxBtn-${mode}`).classList.add('active');
     
-    const desc = mode === 'home' 
-        ? "Editing global styles for the <strong>Homepage</strong>."
-        : "Editing styles for <strong>Inner League Pages</strong> (e.g. /nba-streams/).";
+    let desc = "";
+    if(mode === 'home') desc = "Editing global styles for the <strong>Homepage</strong>.";
+    else if(mode === 'league') desc = "Editing styles for <strong>Inner League Pages</strong> (e.g. /nba-streams/).";
+    else if(mode === 'page') desc = "Editing styles for <strong>Static Pages</strong> (About, Contact, etc). Hero section is hidden here.";
+    
     document.getElementById('ctxDesc').innerHTML = desc;
 
     // 4. Load NEW context values into UI
-    // If switching to league for first time, copy home theme as base
-    const targetData = (mode === 'home') ? configData.theme : (configData.theme_league || {});
-    const dataToLoad = (mode === 'league' && Object.keys(targetData).length === 0) ? configData.theme : targetData;
+    // Logic: If 'page' data is empty, fallback to 'home' data
+    let targetData;
+    if (mode === 'home') targetData = configData.theme;
+    else if (mode === 'league') targetData = configData.theme_league || {};
+    else if (mode === 'page') targetData = configData.theme_page || {};
 
-    applyThemeState(dataToLoad);
+    // Auto-fill if empty
+    if (Object.keys(targetData).length === 0) targetData = configData.theme;
+
+    applyThemeState(targetData);
 };
 
 function captureThemeState(mode) {
-    // Ensure objects exist
     if(!configData.theme) configData.theme = {};
     if(!configData.theme_league) configData.theme_league = {};
+    // ADD THIS:
+    if(!configData.theme_page) configData.theme_page = {};
 
-    const target = (mode === 'home') ? configData.theme : configData.theme_league;
+    const target = (mode === 'home') ? configData.theme : 
+                   (mode === 'league') ? configData.theme_league : 
+                   configData.theme_page; // Handle 'page' mode
     
     for (const [jsonKey, htmlId] of Object.entries(THEME_FIELDS)) {
         const el = document.getElementById(htmlId);
