@@ -71,6 +71,9 @@
             --league-card-hover-bg: {{THEME_LEAGUE_CARD_HOVER_BG}};
             --league-card-hover-text: {{THEME_LEAGUE_CARD_HOVER_TEXT}};
             --league-card-hover-border: {{THEME_LEAGUE_CARD_HOVER_BORDER}};
+        --static-h1-color: {{THEME_STATIC_H1_COLOR}};
+            --static-h1-border: {{THEME_STATIC_H1_BORDER}};
+         --sys-status-display: {{THEME_SYS_STATUS_DISPLAY}};
 
             /* HEADER */
             --header-bg: {{THEME_HEADER_BG}};
@@ -192,11 +195,13 @@
             --back-to-top-shadow: {{THEME_BACK_TO_TOP_SHADOW}};
             --back-to-top-radius: {{THEME_BACK_TO_TOP_RADIUS}}; /* New */
             --back-to-top-size: {{THEME_BACK_TO_TOP_SIZE}}; /* New */
+        --sys-status-radius: {{THEME_SYS_STATUS_RADIUS}};
             
             --sys-status-dot-color: {{THEME_SYS_STATUS_DOT_COLOR}};
-            --sys-status-bg: {{THEME_SYS_STATUS_BG}};
+        --sys-status-dot-size: {{THEME_SYS_STATUS_DOT_SIZE}};
+            --sys-status-bg: {{THEME_SYS_STATUS_BG_COLOR}};
             --sys-status-border: {{THEME_SYS_STATUS_BORDER}};
-            --sys-status-text: {{THEME_SYS_STATUS_TEXT}};
+            --sys-status-text: {{THEME_SYS_STATUS_TEXT_COLOR}};
             
             --section-logo-size: {{THEME_SECTION_LOGO_SIZE}}; /* New for CLS */
             
@@ -466,10 +471,22 @@
         
         /* Elements inside Hero */
         .sys-status { 
-            display: inline-flex; align-items: center; gap: 8px; 
-            background: var(--sys-status-bg); border: 1px solid var(--sys-status-border); 
-            padding: 5px 14px; border-radius: 20px; margin-bottom: 15px; 
-            font-size: 0.75rem; font-weight: 700; color: var(--sys-status-text); 
+            display: var(--sys-status-display); /* Toggle Visibility */
+            align-items: center; gap: 8px; 
+            background: var(--sys-status-bg); 
+            border: var(--sys-status-border); /* Use calculated border */
+            color: var(--sys-status-text); 
+            border-radius: var(--sys-status-radius); /* Use variable */
+            
+            padding: 5px 14px; margin-bottom: 15px; 
+            font-size: 0.75rem; font-weight: 700; 
+        }
+        .sys-status .dot, .sys-status .live-dot { 
+            width: var(--sys-status-dot-size); 
+            height: var(--sys-status-dot-size); 
+            background: var(--sys-status-dot-color); 
+            border-radius: 50%; 
+            box-shadow: 0 0 10px var(--sys-status-dot-color); 
         }
         
         h1 { margin: 0 0 20px 0; font-size: 1.8rem; line-height: 1.2; color: var(--hero-h1-color); font-weight: 800; font-family: var(--font-family-headings); }
