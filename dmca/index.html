@@ -586,10 +586,12 @@
         .leagues-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 15px; }
         
         .league-card { 
-            background: var(--league-card-bg); 
-            border: var(--league-card-border); 
-            color: var(--league-card-text);
-            border-radius: var(--league-card-radius); 
+            background: rgba(30, 41, 59, 0.5); 
+            /* REMOVED "1px solid" because the variable already contains it */
+            border: 1px solid #334155; 
+            color: #f1f5f9;
+            /* Use the new radius variable */
+            border-radius: 6px; 
             
             padding: 10px 15px; 
             display: flex; align-items: center; gap: 10px; 
@@ -597,9 +599,10 @@
         }
         
         .league-card:hover { 
-            border: var(--league-card-hover-border); 
-            background: var(--league-card-hover-bg); 
-            color: var(--league-card-hover-text);
+            /* Use "border" instead of "border-color" to handle width/style changes */
+            border: 1px solid #D00000; 
+            background: #1e293b; 
+            color: #ffffff;
             transform: translateY(-2px); 
         }
         
