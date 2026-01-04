@@ -110,6 +110,12 @@
                         <!-- Inside Base & Typography Card, after Heading Font select -->
 <label>Static H1 Color (Page Layout)</label>
 <input type="color" id="themeStaticH1Color">
+                        <!-- Inside Base & Typography Card -->
+<label>Static H1 Border Bottom</label>
+<div class="input-group">
+    <input type="number" id="themeStaticH1BorderWidth" placeholder="Width (px)" value="1">
+    <input type="color" id="themeStaticH1BorderColor">
+</div>
                         <div class="range-wrapper">
                             <label>Global Radius: <span id="val_borderRadius">6px</span></label>
                             <input type="range" id="themeBorderRadius" min="0" max="20" step="1" oninput="document.getElementById('val_borderRadius').innerText=this.value+'px'">
@@ -413,6 +419,9 @@
                                 <input type="text" id="themeTextTopUpcoming" placeholder="e.g. Top Matches">
                             </div>
                             <div><label>Status Text</label><input type="text" id="themeTextSysStatus" placeholder="System Status: Online"></div>
+                            <div class="checkbox-group" style="margin: 10px 0;">
+    <label><input type="checkbox" id="themeSysStatusVisible"> Show System Status Pill</label>
+</div>
                             <div><label>Live Title</label><input type="text" id="themeTextLiveTitle" placeholder="Trending Live"></div>
                             <div><label>Show More</label><input type="text" id="themeTextShowMore" placeholder="Show More"></div>
                             <div><label>Watch Btn</label><input type="text" id="themeTextWatch" placeholder="WATCH"></div>
@@ -555,6 +564,33 @@
                             <div><label>Hover BG</label><input type="color" id="themeMatchRowHoverBg"></div>
                             <div><label>Hover Border</label><input type="color" id="themeMatchRowHoverBorder"></div>
                         </div>
+                        <!-- Inside Floating & Extras Card (or a new card) -->
+<hr style="border-top:1px solid #444; margin: 15px 0;">
+<h4 style="margin:0 0 10px 0; font-size:0.8rem; color:#aaa;">System Status Pill Style</h4>
+
+<div class="color-grid">
+    <div><label>Text Color</label><input type="color" id="themeSysStatusText"></div>
+    <div><label>Background</label><input type="color" id="themeSysStatusBg"></div>
+    <div><label>Border Color</label><input type="color" id="themeSysStatusBorderColor"></div>
+    <div><label>Dot Color</label><input type="color" id="themeSysStatusDotColor"></div>
+</div>
+
+<div class="grid-2" style="gap:10px; margin-top:10px;">
+    <div>
+        <label>Border Width</label>
+        <input type="number" id="themeSysStatusBorderWidth" placeholder="px">
+    </div>
+    <div>
+        <label>Radius</label>
+        <input type="number" id="themeSysStatusRadius" placeholder="px">
+    </div>
+</div>
+
+<div class="range-wrapper">
+    <label>Dot Size: <span id="val_sysDot">8px</span></label>
+    <input type="range" id="themeSysStatusDotSize" min="4" max="15" step="1" 
+           oninput="document.getElementById('val_sysDot').innerText=this.value+'px'">
+</div>
                     </div>
                 </div> <!-- Closing the grid-3 div -->
             </section>
