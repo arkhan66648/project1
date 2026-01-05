@@ -1133,14 +1133,19 @@ window.switchThemeContext = (mode) => {
     
     document.getElementById('ctxDesc').innerHTML = desc;
 
+    // === NEW LOGIC: Toggle Static Page Controls ===
+    const staticControls = document.getElementById('staticPageControls');
+    if (staticControls) {
+        staticControls.style.display = (mode === 'page') ? 'block' : 'none';
+    }
+    // ==============================================
+
     // 4. Load NEW context values into UI
-    // Logic: If 'page' data is empty, fallback to 'home' data
     let targetData;
     if (mode === 'home') targetData = configData.theme;
     else if (mode === 'league') targetData = configData.theme_league || {};
     else if (mode === 'page') targetData = configData.theme_page || {};
 
-    // Auto-fill if empty
     if (Object.keys(targetData).length === 0) targetData = configData.theme;
 
     applyThemeState(targetData);
