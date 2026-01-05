@@ -231,7 +231,13 @@ const THEME_FIELDS = {
     'footer_desc_color': 'themeFooterText',
     'footer_link_color': 'themeFooterLink',
     'footer_text_align_desktop': 'themeFooterAlign',
-    'footer_grid_columns_desktop': 'themeFooterGrid',
+    
+    // NEW LAYOUT FIELDS
+    'footer_columns': 'themeFooterCols',
+    'footer_show_disclaimer': 'themeFooterShowDisclaimer', // Checkbox
+    'footer_slot_1': 'themeFooterSlot1',
+    'footer_slot_2': 'themeFooterSlot2',
+    'footer_slot_3': 'themeFooterSlot3',
 
     // --- NEW EXTENDED FIELDS ---
     // Wildcard
@@ -549,6 +555,7 @@ function renderThemeSettings() {
     toggleHeroInputs();
     toggleHeaderInputs();
     toggleHeroBoxSettings();
+    toggleFooterSlots();
 }
 window.toggleHeroBoxSettings = () => {
     const mode = document.getElementById('themeHeroLayoutMode').value;
@@ -588,6 +595,11 @@ window.toggleHeaderInputs = () => {
     // Show Icon Position only if Centered
     const iconGroup = document.getElementById('headerIconPosGroup');
     if(iconGroup) iconGroup.style.display = (layout === 'center') ? 'block' : 'none';
+};
+window.toggleFooterSlots = () => {
+    const cols = document.getElementById('themeFooterCols').value;
+    const slot3 = document.getElementById('footerSlot3Group');
+    if(slot3) slot3.style.display = (cols === '3') ? 'block' : 'none';
 };
 // ==========================================
 // 1. FIXED THEME PRESETS
