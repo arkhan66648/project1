@@ -482,6 +482,23 @@ def render_page(template, config, page_data, theme_override=None):
         schemas.append({"@context": "https://schema.org", "@type": "Organization", "@id": org_id, "name": site_name, "url": f"https://{domain}/", "logo": {"@type": "ImageObject", "url": og_image, "width": 512, "height": 512}})
     if page_schemas.get('website'):
         schemas.append({"@context": "https://schema.org", "@type": "WebSite", "@id": website_id, "url": f"https://{domain}/", "name": site_name, "publisher": {"@id": org_id}})
+        if page_schemas.get('about'):
+        schemas.append({
+            "@context": "https://schema.org",
+            "@type": "AboutPage",
+            "@id": f"{canon}#webpage",
+            "url": canon,
+            "name": page_data.get('title'),
+            "description": page_data.get('meta_desc'),
+            "isPartOf": {"@id": website_id},
+            # STACKING MAGIC: Explicitly link this page to the Organization Entity
+            "about": {"@id": org_id}, 
+            "mainEntity": {"@id": org_id},
+            "primaryImageOfPage": {
+                "@type": "ImageObject",
+                "url": og_image
+            }
+        })
     if page_data.get('slug') == 'home':
         schemas.append({"@context": "https://schema.org", "@type": "CollectionPage", "@id": f"https://{domain}/#webpage", "url": f"https://{domain}/", "name": page_data.get('meta_title'), "description": page_data.get('meta_desc'), "isPartOf": {"@id": website_id}, "about": {"@id": org_id}, "mainEntity": {"@id": f"https://{domain}/#matchlist"}})
     if page_schemas.get('faq'):
