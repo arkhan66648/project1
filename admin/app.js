@@ -384,6 +384,8 @@ function populateUI() {
     setVal('titleP1', s.title_part_1);
     setVal('titleP2', s.title_part_2);
     setVal('siteDomain', s.domain);
+    setVal('paramLive', s.param_live || 'stream');
+    setVal('paramInfo', s.param_info || 'info');
     setVal('logoUrl', s.logo_url);
     setVal('faviconUrl', s.favicon_url);
     setVal('footerCopyright', s.footer_copyright);
@@ -1043,7 +1045,9 @@ document.getElementById('saveBtn').onclick = async () => {
         api_url: getVal('apiUrl'), title_part_1: getVal('titleP1'), title_part_2: getVal('titleP2'),
         domain: getVal('siteDomain'), logo_url: getVal('logoUrl'), favicon_url: getVal('faviconUrl'),
         footer_copyright: getVal('footerCopyright'), footer_disclaimer: getVal('footerDisclaimer'),
-        target_country: c
+        target_country: c,
+        param_live: getVal('paramLive') || 'stream',
+        param_info: getVal('paramInfo') || 'info'
     };
     configData.social_sharing = {
         counts: { telegram: parseInt(getVal('socialTelegram'))||0, whatsapp: parseInt(getVal('socialWhatsapp'))||0, reddit: parseInt(getVal('socialReddit'))||0, twitter: parseInt(getVal('socialTwitter'))||0 },
