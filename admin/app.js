@@ -905,6 +905,7 @@ window.editPage = (id) => {
     document.getElementById('pageEditorView').style.display = 'block';
     document.getElementById('editorPageTitleDisplay').innerText = `Editing: ${p.title}`;
     setVal('pageTitle', p.title);
+    setVal('pageH1Align', p.h1_align || 'left');
     setVal('pageSlug', p.slug);
     setVal('pageLayout', p.layout || 'page');
     setVal('pageMetaTitle', p.meta_title);
@@ -952,6 +953,7 @@ function saveCurrentFaqState() {
 window.saveEditorContentToMemory = () => {
     if(!currentEditingPageId) return;
     const p = configData.pages.find(x => x.id === currentEditingPageId);
+    p.h1_align = getVal('pageH1Align');
     p.title = getVal('pageTitle'); p.slug = getVal('pageSlug'); p.layout = getVal('pageLayout');
     p.meta_title = getVal('pageMetaTitle'); p.meta_desc = getVal('pageMetaDesc'); p.meta_keywords = getVal('pageMetaKeywords'); p.canonical_url = getVal('pageCanonical');
     p.content = tinymce.get('pageContentEditor').getContent();
