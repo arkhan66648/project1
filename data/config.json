@@ -687,7 +687,7 @@
     "font_family_headings": "'Courier New', monospace",
     "border_radius_base": "0",
     "container_max_width": "950",
-    "static_h1_color": "#eeeded",
+    "static_h1_color": "#fc1d1d",
     "static_h1_border_width": "3",
     "static_h1_border_color": "#0d34f8",
     "sys_status_visible": true,
