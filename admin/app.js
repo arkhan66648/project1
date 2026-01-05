@@ -97,6 +97,8 @@ const THEME_FIELDS = {
     'static_h1_border_color': 'themeStaticH1BorderColor',
 
     'sys_status_visible': 'themeSysStatusVisible', // Checkbox
+    'sys_status_bg_opacity': 'themeSysStatusBgOpacity',
+    'sys_status_bg_transparent': 'themeSysStatusBgTransparent',
     
     'sys_status_text_color': 'themeSysStatusText',
     'sys_status_bg_color': 'themeSysStatusBg',
@@ -1202,6 +1204,9 @@ function applyThemeState(data) {
     if(window.toggleHeroInputs) toggleHeroInputs();
     if(window.toggleHeaderInputs) toggleHeaderInputs();
     if(window.toggleHeroBoxSettings) toggleHeroBoxSettings();
+    if(document.getElementById('themeSysStatusBgOpacity')) {
+    document.getElementById('val_sysBgOp').innerText = document.getElementById('themeSysStatusBgOpacity').value || '0.1';
+}
     
     // Refresh Sliders text
     ['themeBorderRadius', 'themeMaxWidth', 'themeSectionLogoSize', 'themeBtnRadius', 'themeHeroPillRadius', 'themeLeagueCardBorderWidth', 'themeLeagueCardRadius', 'themeSysStatusDotSize'].forEach(id => {
