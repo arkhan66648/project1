@@ -91,6 +91,7 @@ const THEME_FIELDS = {
     'border_radius_base': 'themeBorderRadius',
     'container_max_width': 'themeMaxWidth',
     'static_h1_color': 'themeStaticH1Color',
+    'static_h1_align': 'pageH1Align',
     // ... existing fields ...
     'static_h1_border_width': 'themeStaticH1BorderWidth',
     'static_h1_border_color': 'themeStaticH1BorderColor',
