@@ -482,7 +482,7 @@ def render_page(template, config, page_data, theme_override=None):
         schemas.append({"@context": "https://schema.org", "@type": "Organization", "@id": org_id, "name": site_name, "url": f"https://{domain}/", "logo": {"@type": "ImageObject", "url": og_image, "width": 512, "height": 512}})
     if page_schemas.get('website'):
         schemas.append({"@context": "https://schema.org", "@type": "WebSite", "@id": website_id, "url": f"https://{domain}/", "name": site_name, "publisher": {"@id": org_id}})
-        if page_schemas.get('about'):
+    if page_schemas.get('about'):
         # Add indentation here vvv
         schemas.append({
             "@context": "https://schema.org",
