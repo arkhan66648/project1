@@ -108,6 +108,64 @@ def build_menu_html(menu_items, section):
 # ==========================================
 # 3. PAGE RENDERER
 # ==========================================
+def build_footer_grid(config):
+    t = config.get('theme', {})
+    s = config.get('site_settings', {})
+    m = config.get('menus', {})
+    
+    cols = str(t.get('footer_columns', '2'))
+    show_disclaimer = t.get('footer_show_disclaimer', True)
+    
+    # 1. Define Content Blocks
+    # Block: Brand
+    brand_html = f"""
+    <div class="f-brand">
+        {config.get('_generated_logo_html', '')} 
+    </div>
+    """
+    
+    # Block: Disclaimer
+    disc_text = s.get('footer_disclaimer', '')
+    disc_html = f'<div class="f-desc">{disc_text}</div>' if show_disclaimer else ''
+    
+    # Block: Brand + Disclaimer (Combined)
+    brand_disc_html = f"""
+    <div class="f-brand">
+        {config.get('_generated_logo_html', '')}
+        {disc_html}
+    </div>
+    """
+    
+    # Block: Menu
+    links_html = f"""
+    <div>
+        <div class="f-head">Quick Links</div>
+        <div class="f-links">{build_menu_html(m.get('footer_static', []), 'footer_static')}</div>
+    </div>
+    """
+    
+    # 2. Get Slot Selections
+    slot1_type = t.get('footer_slot_1', 'brand_disclaimer')
+    slot2_type = t.get('footer_slot_2', 'menu')
+    slot3_type = t.get('footer_slot_3', 'empty')
+    
+    # 3. Helper to pick content
+    def get_content(type_key):
+        if type_key == 'brand': return brand_html
+        if type_key == 'disclaimer': return disc_html
+        if type_key == 'brand_disclaimer': return brand_disc_html
+        if type_key == 'menu': return links_html
+        return '<div></div>'
+
+    # 4. Construct Grid HTML
+    html = f'<div class="footer-grid cols-{cols}">'
+    html += get_content(slot1_type)
+    html += get_content(slot2_type)
+    if cols == '3':
+        html += get_content(slot3_type)
+    html += '</div>'
+    
+    return html
 def render_page(template, config, page_data, theme_override=None):
     s = config.get('site_settings', {})
     # MERGE LOGIC: Use Base Theme as default, then overwrite with League Theme
@@ -164,6 +222,7 @@ def render_page(template, config, page_data, theme_override=None):
         'hero_main_border_pos': 'themeHeroMainBorderPos', 'hero_main_border_width': 'themeHeroMainBorderWidth',
         'hero_main_border_color': 'themeHeroMainBorderColor', 'hero_box_border_width': '1', 'hero_box_border_color': '#334155',
         'hero_border_bottom_box': False,
+        'footer_columns': '2',
         'sec_border_live_width': '1', 'sec_border_live_color': '#334155',
         'sec_border_upcoming_width': '1', 'sec_border_upcoming_color': '#334155',
         'sec_border_wildcard_width': '1', 'sec_border_wildcard_color': '#334155',
@@ -242,6 +301,8 @@ def render_page(template, config, page_data, theme_override=None):
 
     for key, val in theme.items():
         html = html.replace(f"{{{{THEME_{key.upper()}}}}}", str(val))
+        grid_cols = str(theme.get('footer_columns', '2'))
+    html = html.replace('{{THEME_FOOTER_COLS}}', f'repeat({grid_cols}, 1fr)')
 
     # --- LAYOUT/HERO LOGIC ---
     h_layout = theme.get('header_layout', 'standard')
@@ -334,13 +395,13 @@ def render_page(template, config, page_data, theme_override=None):
     html = html.replace('{{OG_MIME}}', og_mime)
     logo_html = f'<div class="logo-text">{p1}<span>{p2}</span></div>'
     if s.get('logo_url'): logo_html = f'<img src="{s.get("logo_url")}" class="logo-img" alt="{site_name} Logo" fetchpriority="high"> {logo_html}'
+        config['_generated_logo_html'] = logo_html
     html = html.replace('{{LOGO_HTML}}', logo_html)
     html = html.replace('{{DOMAIN}}', domain)
     html = html.replace('{{FAVICON}}', s.get('favicon_url', ''))
 
     html = html.replace('{{HEADER_MENU}}', build_menu_html(m.get('header', []), 'header'))
     html = html.replace('{{HERO_PILLS}}', build_menu_html(m.get('hero', []), 'hero'))
-    html = html.replace('{{FOOTER_STATIC}}', build_menu_html(m.get('footer_static', []), 'footer_static'))
     
     auto_footer_leagues = []
     priorities = config.get('sport_priorities', {}).get(country, {})
@@ -350,7 +411,14 @@ def render_page(template, config, page_data, theme_override=None):
     html = html.replace('{{FOOTER_LEAGUES}}', build_menu_html(auto_footer_leagues, 'footer_leagues'))
 
     html = html.replace('{{FOOTER_COPYRIGHT}}', s.get('footer_copyright', f"&copy; 2025 {domain}"))
-    html = html.replace('{{FOOTER_DISCLAIMER}}', s.get('footer_disclaimer', ''))
+temp_config = config.copy()
+if theme_override:
+    temp_config['theme'] = config.get('theme', {}).copy()
+    temp_config['theme'].update(theme_override)
+
+# 2. Build the Grid
+footer_grid_html = build_footer_grid(temp_config)
+html = html.replace('{{FOOTER_GRID_CONTENT}}', footer_grid_html)
 
     layout = page_data.get('layout', 'page')
     if layout == 'watch':
