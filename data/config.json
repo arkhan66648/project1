@@ -693,7 +693,7 @@
     "footer_columns": "2",
     "footer_show_disclaimer": true,
     "footer_slot_1": "menu",
-    "footer_slot_2": "brand",
+    "footer_slot_2": "brand_disclaimer",
     "footer_slot_3": ""
   },
   "articles": {
