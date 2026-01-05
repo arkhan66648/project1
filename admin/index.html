@@ -382,24 +382,79 @@
                     </div>
 
                     <div class="card">
-                        <h3>🔻 Footer</h3>
-                        <div class="color-grid">
-                            <div><label>BG Start</label><input type="color" id="themeFooterBgStart"></div>
-                            <div><label>BG End</label><input type="color" id="themeFooterBgEnd"></div>
-                            <div><label>Text</label><input type="color" id="themeFooterText"></div>
-                            <div><label>Links</label><input type="color" id="themeFooterLink"></div>
-                        </div>
-                        <label>Text Align</label>
-                        <select id="themeFooterAlign">
-                            <option value="left">Left</option>
-                            <option value="center">Center</option>
-                        </select>
-                        <label>Grid Columns</label>
-                        <select id="themeFooterGrid">
-                            <option value="1fr 1fr">Equal (2 Cols)</option>
-                            <option value="2fr 1fr">Wide Brand (2 Cols)</option>
-                        </select>
-                    </div>
+    <h3>🔻 Footer Layout & Content</h3>
+    
+    <!-- 1. Grid Configuration -->
+    <div class="grid-2" style="gap:10px; border-bottom:1px solid #333; padding-bottom:15px; margin-bottom:15px;">
+        <div>
+            <label>Columns</label>
+            <select id="themeFooterCols" onchange="toggleFooterSlots()">
+                <option value="2">2 Columns</option>
+                <option value="3">3 Columns</option>
+            </select>
+        </div>
+        <div>
+            <label>Disclaimer</label>
+            <div class="checkbox-group" style="margin-top:10px;">
+                <label><input type="checkbox" id="themeFooterShowDisclaimer"> Show Disclaimer Text</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Slot Shuffling -->
+    <label style="color:#facc15;">⏹️ Column Slots (Left to Right)</label>
+    <div class="grid-3" style="gap:10px; margin-bottom:15px;">
+        <div>
+            <label>Slot 1</label>
+            <select id="themeFooterSlot1">
+                <option value="brand">Logo & Title</option>
+                <option value="disclaimer">Disclaimer Text</option>
+                <option value="brand_disclaimer">Logo + Disclaimer</option>
+                <option value="menu">Quick Links</option>
+                <option value="empty">Empty</option>
+            </select>
+        </div>
+        <div>
+            <label>Slot 2</label>
+            <select id="themeFooterSlot2">
+                <option value="menu">Quick Links</option>
+                <option value="brand">Logo & Title</option>
+                <option value="disclaimer">Disclaimer Text</option>
+                <option value="brand_disclaimer">Logo + Disclaimer</option>
+                <option value="empty">Empty</option>
+            </select>
+        </div>
+        <div id="footerSlot3Group" style="display:none;">
+            <label>Slot 3</label>
+            <select id="themeFooterSlot3">
+                <option value="disclaimer">Disclaimer Text</option>
+                <option value="brand">Logo & Title</option>
+                <option value="menu">Quick Links</option>
+                <option value="empty">Empty</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 3. Styling -->
+    <h4 style="margin:15px 0 5px 0; font-size:0.8rem; color:#aaa;">Colors & Align</h4>
+    <div class="color-grid">
+        <div><label>BG Start</label><input type="color" id="themeFooterBgStart"></div>
+        <div><label>BG End</label><input type="color" id="themeFooterBgEnd"></div>
+        <div><label>Text</label><input type="color" id="themeFooterText"></div>
+        <div><label>Links</label><input type="color" id="themeFooterLink"></div>
+    </div>
+    
+    <div class="grid-2" style="margin-top:10px;">
+        <div>
+            <label>Text Align</label>
+            <select id="themeFooterAlign">
+                <option value="left">Left</option>
+                <option value="center">Center</option>
+                <option value="right">Right</option>
+            </select>
+        </div>
+    </div>
+</div>
                 </div>
 
                 <!-- ROW 3: ADVANCED CUSTOMIZATION (NEW) -->
