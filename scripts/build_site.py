@@ -50,6 +50,17 @@ LEAGUE_PARENT_MAP = {
     "Golf": "Golf", "PGA Tour": "Golf", "LIV Golf": "Golf",
     "Darts": "Darts", "Snooker": "Snooker"
 }
+def hex_to_rgba(hex_code, opacity):
+    if not hex_code or not hex_code.startswith('#'): return hex_code
+    hex_code = hex_code.lstrip('#')
+    try:
+        if len(hex_code) == 3: hex_code = ''.join([c*2 for c in hex_code])
+        r = int(hex_code[0:2], 16)
+        g = int(hex_code[2:4], 16)
+        b = int(hex_code[4:6], 16)
+        return f"rgba({r}, {g}, {b}, {opacity})"
+    except:
+        return hex_code
 
 # ==========================================
 # 2. UTILS
@@ -290,6 +301,16 @@ def render_page(template, config, page_data, theme_override=None):
     theme['league_card_hover_border'] = make_border(theme.get('league_card_border_width'), theme.get('league_card_hover_border_color'))
     theme['static_h1_border'] = make_border(theme.get('static_h1_border_width'), theme.get('static_h1_border_color'))
     theme['sys_status_border'] = make_border(theme.get('sys_status_border_width'), theme.get('sys_status_border_color'))
+     # === NEW CODE ADDED HERE ===
+    s_bg_hex = theme.get('sys_status_bg_color', '#22c55e') 
+    s_bg_op = theme.get('sys_status_bg_opacity', '0.1')
+    s_bg_trans = theme.get('sys_status_bg_transparent', False)
+
+    if s_bg_trans is True or str(s_bg_trans).lower() == 'true':
+        theme['sys_status_bg_color'] = 'transparent'
+    else:
+        theme['sys_status_bg_color'] = hex_to_rgba(s_bg_hex, s_bg_op)
+    # ===========================
     theme['sys_status_radius'] = ensure_unit(theme.get('sys_status_radius'), 'px')
     theme['sys_status_dot_size'] = ensure_unit(theme.get('sys_status_dot_size'), 'px')
     is_visible = theme.get('sys_status_visible')
