@@ -588,18 +588,22 @@ def build_site():
     theme_page_conf = config.get('theme_page', {}) # Get Static Context
     if not theme_page_conf: theme_page_conf = config.get('theme', {})
 
+    # NEW: Load Watch Theme Config
+    theme_watch_conf = config.get('theme_watch', {})
+    if not theme_watch_conf: theme_watch_conf = config.get('theme', {})
+
     for page in config.get('pages', []):
         slug = page.get('slug')
         if not slug: continue
         
         layout = page.get('layout')
         
-        # Determine Template & Theme Context
         final_template = master_template_content
         active_theme_override = None
 
         if layout == 'watch':
             final_template = watch_template_content
+            active_theme_override = theme_watch_conf # APPLY WATCH CONTEXT
         elif layout == 'page':
             final_template = page_template_content
             active_theme_override = theme_page_conf # Apply Static Context
