@@ -1150,6 +1150,7 @@ window.switchThemeContext = (mode) => {
     if(mode === 'home') desc = "Editing global styles for the <strong>Homepage</strong>.";
     else if(mode === 'league') desc = "Editing styles for <strong>Inner League Pages</strong> (e.g. /nba-streams/).";
     else if(mode === 'page') desc = "Editing styles for <strong>Static Pages</strong> (About, Contact, etc). Hero section is hidden here.";
+    else if(mode === 'watch') desc = "Editing styles for the <strong>Live Watch Page</strong> (Player & Info Gatekeeper).";
     
     document.getElementById('ctxDesc').innerHTML = desc;
 
@@ -1165,6 +1166,7 @@ window.switchThemeContext = (mode) => {
     if (mode === 'home') targetData = configData.theme;
     else if (mode === 'league') targetData = configData.theme_league || {};
     else if (mode === 'page') targetData = configData.theme_page || {};
+    else if (mode === 'watch') targetData = configData.theme_watch || {};
 
     if (Object.keys(targetData).length === 0) targetData = configData.theme;
 
@@ -1176,10 +1178,12 @@ function captureThemeState(mode) {
     if(!configData.theme_league) configData.theme_league = {};
     // ADD THIS:
     if(!configData.theme_page) configData.theme_page = {};
+    if(!configData.theme_watch) configData.theme_watch = {};
 
     const target = (mode === 'home') ? configData.theme : 
                    (mode === 'league') ? configData.theme_league : 
-                   configData.theme_page; // Handle 'page' mode
+                   (mode === 'page') ? configData.theme_page : 
+                   configData.theme_watch; // Handle 'page' mode
     
     for (const [jsonKey, htmlId] of Object.entries(THEME_FIELDS)) {
         const el = document.getElementById(htmlId);
