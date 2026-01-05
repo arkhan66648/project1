@@ -130,6 +130,7 @@ def render_page(template, config, page_data, theme_override=None):
         'league_card_bg': 'rgba(30, 41, 59, 0.5)',
         'league_card_text': '#f1f5f9',
         'static_h1_color': '#f1f5f9',
+        'static_h1_align': 'left',
         'league_card_border_width': '1', 
         'league_card_border_color': '#334155',
         'league_card_radius': '6',
@@ -360,7 +361,8 @@ def render_page(template, config, page_data, theme_override=None):
         html = html.replace('{{META_TITLE}}', page_data.get('meta_title') or f"{site_name} - {page_data.get('title')}")
         html = html.replace('{{META_DESC}}', page_data.get('meta_desc', ''))
         html = html.replace('{{H1_TITLE}}', page_data.get('title', ''))
-        html = html.replace('{{H1_ALIGN}}', page_data.get('h1_align', 'left'))
+        default_align = theme.get('static_h1_align', 'left') 
+        html = html.replace('{{H1_ALIGN}}', page_data.get('h1_align') or default_align)
         html = html.replace('{{HERO_TEXT}}', page_data.get('hero_text') or page_data.get('meta_desc', ''))
         canon = page_data.get('canonical_url', '') or (f"https://{domain}/{page_data.get('slug')}/" if page_data.get('slug') != 'home' else f"https://{domain}/")
         html = html.replace('{{CANONICAL_URL}}', canon)
