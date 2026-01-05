@@ -8,7 +8,9 @@
     "favicon_url": "/assets/Untitled%20design%20(46)-min.png",
     "footer_copyright": "Copyright",
     "footer_disclaimer": "Hello world",
-    "target_country": "US"
+    "target_country": "US",
+    "param_live": "streams",
+    "param_info": "livestream"
   },
   "theme": {
     "font_family_base": "system-ui, -apple-system, sans-serif",
@@ -148,19 +150,21 @@
     "static_h1_border_width": "1",
     "static_h1_border_color": "#000000",
     "sys_status_visible": false,
-    "sys_status_text_color": "#000000",
-    "sys_status_bg_color": "#000000",
-    "sys_status_border_color": "#000000",
+    "sys_status_text_color": "#039900",
+    "sys_status_bg_color": "#4ffa05",
+    "sys_status_border_color": "#01fe12",
     "sys_status_border_width": "",
     "sys_status_radius": "",
-    "sys_status_dot_color": "#000000",
+    "sys_status_dot_color": "#00c73c",
     "sys_status_dot_size": "10",
     "static_h1_align": "left",
     "footer_columns": "3",
     "footer_show_disclaimer": false,
     "footer_slot_1": "brand",
     "footer_slot_2": "disclaimer",
-    "footer_slot_3": "menu"
+    "footer_slot_3": "menu",
+    "sys_status_bg_opacity": "0.15",
+    "sys_status_bg_transparent": false
   },
   "sport_priorities": {
     "US": {
