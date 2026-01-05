@@ -108,19 +108,25 @@
                             <option value="'Courier New', monospace">Code/Tech</option>
                         </select>
                         <!-- Inside Base & Typography Card, after Heading Font select -->
-<label>Static H1 Color (Page Layout)</label>
-<input type="color" id="themeStaticH1Color">
-                        <label>H1 Alignment</label>
-<select id="pageH1Align">
-    <option value="left">Left (Default)</option>
-    <option value="center">Center</option>
-    <option value="right">Right</option>
-</select>
-                        <!-- Inside Base & Typography Card -->
-<label>Static H1 Border Bottom</label>
-<div class="input-group">
-    <input type="number" id="themeStaticH1BorderWidth" placeholder="Width (px)" value="1">
-    <input type="color" id="themeStaticH1BorderColor">
+<!-- START: Wrapper for Static Page Controls -->
+<div id="staticPageControls" style="display:none; background:rgba(255,255,255,0.05); padding:10px; margin:10px 0; border-radius:6px; border-left: 3px solid #8b5cf6;">
+    <h4 style="margin:0 0 10px 0; font-size:0.8rem; color:#d8b4fe;">📄 Static Page Title Settings</h4>
+    
+    <label>Static H1 Alignment</label>
+    <select id="pageH1Align">
+        <option value="left">Left (Default)</option>
+        <option value="center">Center</option>
+        <option value="right">Right</option>
+    </select>
+
+    <label>Static H1 Color</label>
+    <input type="color" id="themeStaticH1Color">
+
+    <label>Static H1 Border Bottom</label>
+    <div class="input-group">
+        <input type="number" id="themeStaticH1BorderWidth" placeholder="Width (px)" value="1">
+        <input type="color" id="themeStaticH1BorderColor">
+    </div>
 </div>
                         <div class="range-wrapper">
                             <label>Global Radius: <span id="val_borderRadius">6px</span></label>
