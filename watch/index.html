@@ -152,6 +152,8 @@
         const TARGET_COUNTRY = "US";
         const SITE_DOMAIN = "https://streameast.guru";
         const SITE_TITLE = "StreamEast";
+        const PARAM_LIVE = "stream"; 
+        const PARAM_INFO = "info";
         const SHARE_CONFIG = {"excluded": ["dmca", "contact", "about", "privacy"], "counts": {"telegram": 12000, "whatsapp": 14400, "reddit": 60077, "twitter": 5544}};
         window.MATCH_DATA = {}; 
 
@@ -173,26 +175,25 @@
         // 1. ROUTING LOGIC (Query Params)
         // ============================================
         function getMatchContext() {
-            const params = new URLSearchParams(window.location.search);
-            
-            // A. Direct Stream (?stream=slug) - From Homepage Live Button
-            const streamSlug = params.get('stream');
-            if (streamSlug) {
-                return { mode: 'stream', id: extractId(streamSlug), slug: streamSlug };
-            }
+    const params = new URLSearchParams(window.location.search);
+    
+    // 1. Check for Configured Live Param (e.g. ?stream=...)
+    const streamSlug = params.get(PARAM_LIVE);
+    if (streamSlug) {
+        return { mode: 'stream', id: extractId(streamSlug), slug: streamSlug };
+    }
 
-            // B. Safe Info Page (?v=slug) - From Google Schema or Upcoming Button
-            const infoSlug = params.get('v');
-            if (infoSlug) {
-                return { mode: 'info', id: extractId(infoSlug), slug: infoSlug };
-            }
+    // 2. Check for Configured Info Param (e.g. ?info=...)
+    const infoSlug = params.get(PARAM_INFO);
+    if (infoSlug) {
+        return { mode: 'info', id: extractId(infoSlug), slug: infoSlug };
+    }
 
-            // C. Legacy Params (Backwards compatibility)
-            if (params.get('id')) return { mode: 'stream', id: params.get('id'), slug: null };
-            if (params.get('match')) return { mode: 'info', id: params.get('match'), slug: null };
-
-            return null;
-        }
+    // (Optional) Keep 'id' as fallback for legacy links
+    if (params.get('id')) return { mode: 'stream', id: params.get('id'), slug: null };
+    
+    return null;
+}
 
         function extractId(slug) {
             if (!slug) return null;
@@ -238,7 +239,7 @@
 
             if (match) {
                 // IMPORTANT: We tell Google the authoritative URL is ?v=slug (Safe Page)
-                canonicalUrl = `${SITE_DOMAIN}/watch/?v=${match.slug}`;
+                canonicalUrl = `${SITE_DOMAIN}/watch/?${PARAM_INFO}=${match.slug}`;
             }
 
             const canonicalTag = document.createElement('link');
@@ -384,7 +385,7 @@
 
             if(matchId && window.MATCH_DATA[matchId]) {
                 // Even if user is watching stream, sharing button gives the Safe Link
-                shareUrl = `${SITE_DOMAIN}/watch/?v=${window.MATCH_DATA[matchId].slug}`;
+                shareUrl = `${SITE_DOMAIN}/watch/?${PARAM_INFO}=${window.MATCH_DATA[matchId].slug}`;
             }
 
             const encodedUrl = encodeURIComponent(shareUrl);
