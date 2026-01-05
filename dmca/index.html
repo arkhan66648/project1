@@ -23,7 +23,55 @@
     <link rel="preload" as="image" href="/assets/test-logo.webp" fetchpriority="high">
     
     <!-- SCHEMA -->
-    
+    <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://streameast.guru/#organization",
+      "name": "StreamEast",
+      "url": "https://streameast.guru/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://streameast.guru/assets/test-logo.webp",
+        "width": 512,
+        "height": 512
+      }
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": "https://streameast.guru/#website",
+      "url": "https://streameast.guru/",
+      "name": "StreamEast",
+      "publisher": {
+        "@id": "https://streameast.guru/#organization"
+      }
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "AboutPage",
+      "@id": "https://streameast.guru/dmca/#webpage",
+      "url": "https://streameast.guru/dmca/",
+      "name": "DMCA Policy",
+      "description": "sdssdfs",
+      "isPartOf": {
+        "@id": "https://streameast.guru/#website"
+      },
+      "about": {
+        "@id": "https://streameast.guru/#organization"
+      },
+      "mainEntity": {
+        "@id": "https://streameast.guru/#organization"
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://streameast.guru/assets/test-logo.webp"
+      }
+    }
+  ]
+}</script>
     
     <style>html { scroll-behavior: smooth; }</style>
 
@@ -184,7 +232,7 @@
     font-size: 2.2rem;
     margin-bottom: 30px;
     border-bottom: var(--static-h1-border); /* <--- Fixed to use dynamic variable */
-    text-align: right;               /* <--- Pre-adding for Feature #5 */
+    text-align: left;               /* <--- Pre-adding for Feature #5 */
     padding-bottom: 20px;
         }
 
