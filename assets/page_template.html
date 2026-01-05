@@ -54,6 +54,7 @@
             --logo-text-p1-color: {{THEME_LOGO_P1_COLOR}};
             --logo-text-p2-color: {{THEME_LOGO_P2_COLOR}};
             --logo-image-size: {{THEME_LOGO_IMAGE_SIZE}};
+        --sec-border-leagues: {{THEME_SEC_BORDER_LEAGUES}};
 
             /* STATIC PAGE SPECIFIC */
             --static-h1-color: {{THEME_STATIC_H1_COLOR}};
@@ -177,11 +178,12 @@
         
         .static-h1 {
             color: var(--static-h1-color);
-            font-family: var(--font-family-headings);
-            font-size: 2.2rem;
-            margin-bottom: 30px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 20px;
+    font-family: var(--font-family-headings);
+    font-size: 2.2rem;
+    margin-bottom: 30px;
+    border-bottom: var(--static-h1-border); /* <--- Fixed to use dynamic variable */
+    text-align: {{H1_ALIGN}};               /* <--- Pre-adding for Feature #5 */
+    padding-bottom: 20px;
         }
 
         .seo-article { 
@@ -200,7 +202,7 @@
         .seo-article li::marker { color: var(--article-bullet); }
 
         /* FOOTER LEAGUES */
-        .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 40px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+        .sec-head { display: flex; justify-content: space-between; align-items: flex-end; margin: 40px 0 12px 0; padding-bottom: 8px; border-bottom: var(--sec-border-leagues); }
         .sec-title { font-size: 1.2rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; text-transform: uppercase; margin: 0; font-family: var(--font-family-headings); }
         .leagues-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 15px; }
         .league-card { background: var(--league-card-bg); border: var(--league-card-border); color: var(--league-card-text); border-radius: var(--league-card-radius); padding: 10px 15px; display: flex; align-items: center; gap: 10px; transition: 0.2s; white-space: nowrap; overflow: hidden; }
@@ -213,16 +215,38 @@
         .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: var(--container-max-width); margin: 0 auto; }
         @media(min-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr 1fr; } }
         .f-brand h2 { margin: 0 0 15px 0; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: -1px; }
-        .f-desc { color: var(--footer-desc-color); font-size: 0.85rem; line-height: 1.6; max-width: 400px; }
+        .f-desc { color: var(--footer-desc-color); 
+    font-size: 0.85rem; 
+    line-height: 1.6; 
+    max-width: 400px; 
+    margin: 15px 0 0 0; }
         .f-links { display: flex; flex-direction: column; gap: 12px; }
         .f-link { color: var(--footer-link-color); font-size: 0.9rem; font-weight: 500; transition: 0.2s; }
         .f-link:hover { color: var(--footer-link-hover-color); transform: translateX(5px); }
         .copyright { margin-top: 50px; border-top: 1px solid var(--border); padding-top: 25px; text-align: center; font-size: 0.75rem; color: var(--footer-copyright-color); }
         .f-head { color: var(--footer-heading-color); margin-bottom: 15px; text-transform: uppercase; font-size: 0.9rem; font-weight: 700; }
 
-        .back-to-top { position: fixed; bottom: 30px; right: 20px; background: var(--back-to-top-bg); width: var(--back-to-top-size); height: var(--back-to-top-size); border-radius: var(--back-to-top-radius); display: flex; align-items: center; justify-content: center; color: var(--back-to-top-icon-color); cursor: pointer; opacity: 0; visibility: hidden; transition: 0.3s; z-index: 90; box-shadow: var(--back-to-top-shadow); }
-        .back-to-top.show { opacity: 1; visibility: visible; }
-        .back-to-top svg { width: 24px; height: 24px; fill: var(--back-to-top-icon-color); }
+        .back-to-top { 
+    position: fixed; 
+    bottom: 30px; /* Matched to Master Desktop default */
+    right: 20px; 
+    background: var(--back-to-top-bg); 
+    width: var(--back-to-top-size); 
+    height: var(--back-to-top-size); 
+    border-radius: var(--back-to-top-radius); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: var(--back-to-top-icon-color); 
+    cursor: pointer; 
+    opacity: 0; 
+    visibility: hidden; 
+    transition: 0.3s; 
+    z-index: 90; 
+    box-shadow: var(--back-to-top-shadow); 
+}
+.back-to-top.show { opacity: 1; visibility: visible; }
+.back-to-top svg { width: 24px; height: 24px; fill: var(--back-to-top-icon-color); }
     </style>
 </head>
 <body>
