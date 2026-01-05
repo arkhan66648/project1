@@ -395,7 +395,7 @@ def render_page(template, config, page_data, theme_override=None):
     html = html.replace('{{OG_MIME}}', og_mime)
     logo_html = f'<div class="logo-text">{p1}<span>{p2}</span></div>'
     if s.get('logo_url'): logo_html = f'<img src="{s.get("logo_url")}" class="logo-img" alt="{site_name} Logo" fetchpriority="high"> {logo_html}'
-        config['_generated_logo_html'] = logo_html
+    config['_generated_logo_html'] = logo_html      # <--- FIX: Remove spaces to align with 'if'
     html = html.replace('{{LOGO_HTML}}', logo_html)
     html = html.replace('{{DOMAIN}}', domain)
     html = html.replace('{{FAVICON}}', s.get('favicon_url', ''))
@@ -411,14 +411,17 @@ def render_page(template, config, page_data, theme_override=None):
     html = html.replace('{{FOOTER_LEAGUES}}', build_menu_html(auto_footer_leagues, 'footer_leagues'))
 
     html = html.replace('{{FOOTER_COPYRIGHT}}', s.get('footer_copyright', f"&copy; 2025 {domain}"))
-temp_config = config.copy()
-if theme_override:
-    temp_config['theme'] = config.get('theme', {}).copy()
-    temp_config['theme'].update(theme_override)
+    
+    # <--- FIX: Add indentation to this whole block
+    temp_config = config.copy()
+    if theme_override:
+        temp_config['theme'] = config.get('theme', {}).copy()
+        temp_config['theme'].update(theme_override)
 
-# 2. Build the Grid
-footer_grid_html = build_footer_grid(temp_config)
-html = html.replace('{{FOOTER_GRID_CONTENT}}', footer_grid_html)
+    # 2. Build the Grid
+    footer_grid_html = build_footer_grid(temp_config)
+    html = html.replace('{{FOOTER_GRID_CONTENT}}', footer_grid_html)
+    # <--- End of fix
 
     layout = page_data.get('layout', 'page')
     if layout == 'watch':
