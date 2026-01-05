@@ -155,7 +155,12 @@
     "sys_status_radius": "",
     "sys_status_dot_color": "#000000",
     "sys_status_dot_size": "10",
-    "static_h1_align": "left"
+    "static_h1_align": "left",
+    "footer_columns": "3",
+    "footer_show_disclaimer": true,
+    "footer_slot_1": "brand",
+    "footer_slot_2": "disclaimer",
+    "footer_slot_3": "menu"
   },
   "sport_priorities": {
     "US": {
