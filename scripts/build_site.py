@@ -360,6 +360,7 @@ def render_page(template, config, page_data, theme_override=None):
         html = html.replace('{{META_TITLE}}', page_data.get('meta_title') or f"{site_name} - {page_data.get('title')}")
         html = html.replace('{{META_DESC}}', page_data.get('meta_desc', ''))
         html = html.replace('{{H1_TITLE}}', page_data.get('title', ''))
+        html = html.replace('{{H1_ALIGN}}', page_data.get('h1_align', 'left'))
         html = html.replace('{{HERO_TEXT}}', page_data.get('hero_text') or page_data.get('meta_desc', ''))
         canon = page_data.get('canonical_url', '') or (f"https://{domain}/{page_data.get('slug')}/" if page_data.get('slug') != 'home' else f"https://{domain}/")
         html = html.replace('{{CANONICAL_URL}}', canon)
