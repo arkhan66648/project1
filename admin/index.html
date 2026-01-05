@@ -651,6 +651,16 @@
     <div><label>Border Color</label><input type="color" id="themeSysStatusBorderColor"></div>
     <div><label>Dot Color</label><input type="color" id="themeSysStatusDotColor"></div>
 </div>
+ <div class="grid-2" style="margin-top:10px; align-items:center;">
+    <div class="range-wrapper" style="margin-top:0;">
+        <label>BG Opacity: <span id="val_sysBgOp">0.1</span></label>
+        <input type="range" id="themeSysStatusBgOpacity" min="0" max="1" step="0.05" 
+               oninput="document.getElementById('val_sysBgOp').innerText=this.value">
+    </div>
+    <div class="checkbox-group">
+        <label><input type="checkbox" id="themeSysStatusBgTransparent"> Force Transparent</label>
+    </div>
+</div>                       
 
 <div class="grid-2" style="gap:10px; margin-top:10px;">
     <div>
