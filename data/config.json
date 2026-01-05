@@ -816,7 +816,7 @@
     "footer_bg_end": "#050505",
     "footer_desc_color": "#64748b",
     "footer_link_color": "#94a3b8",
-    "footer_text_align_desktop": "left",
+    "footer_text_align_desktop": "right",
     "footer_grid_columns_desktop": "2fr 1fr",
     "wildcard_category": "",
     "text_live_section_title": "Air On Now",
@@ -847,6 +847,11 @@
     "back_to_top_radius": "",
     "back_to_top_size": "",
     "display_hero": "block",
-    "static_h1_align": "right"
+    "static_h1_align": "right",
+    "footer_columns": "3",
+    "footer_show_disclaimer": true,
+    "footer_slot_1": "brand_disclaimer",
+    "footer_slot_2": "disclaimer",
+    "footer_slot_3": "menu"
   }
 }
