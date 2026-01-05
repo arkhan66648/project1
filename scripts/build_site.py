@@ -483,6 +483,7 @@ def render_page(template, config, page_data, theme_override=None):
     if page_schemas.get('website'):
         schemas.append({"@context": "https://schema.org", "@type": "WebSite", "@id": website_id, "url": f"https://{domain}/", "name": site_name, "publisher": {"@id": org_id}})
         if page_schemas.get('about'):
+        # Add indentation here vvv
         schemas.append({
             "@context": "https://schema.org",
             "@type": "AboutPage",
