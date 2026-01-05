@@ -398,6 +398,11 @@ def render_page(template, config, page_data, theme_override=None):
     config['_generated_logo_html'] = logo_html      # <--- FIX: Remove spaces to align with 'if'
     html = html.replace('{{LOGO_HTML}}', logo_html)
     html = html.replace('{{DOMAIN}}', domain)
+    p_live = s.get('param_live', 'stream')
+    p_info = s.get('param_info', 'info')
+    
+    html = html.replace('{{PARAM_LIVE}}', p_live)
+    html = html.replace('{{PARAM_INFO}}', p_info)
     html = html.replace('{{FAVICON}}', s.get('favicon_url', ''))
 
     html = html.replace('{{HEADER_MENU}}', build_menu_html(m.get('header', []), 'header'))
