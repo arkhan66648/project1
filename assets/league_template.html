@@ -795,6 +795,8 @@
     <script>
         const API_URL = "{{API_URL}}";
         const TARGET_COUNTRY = "{{TARGET_COUNTRY}}"; 
+        const PARAM_LIVE = "{{PARAM_LIVE}}"; 
+        const PARAM_INFO = "{{PARAM_INFO}}";
         const SITE_DOMAIN = "https://{{DOMAIN}}";
         
         // CRITICAL FIX: Ensure this is treated as a string literal
@@ -1045,15 +1047,16 @@
             } // <--- THIS WAS MISSING!
 
             let actionHtml = '';
-            const link = `${SITE_DOMAIN}/watch/?info=${m.id}`;
+            const infoLink = `${SITE_DOMAIN}/watch/?${PARAM_INFO}=${m.id}`;
             // FIXED: Added SVG Icon to Copy Button
-            const copyBtn = `<button class="btn-copy-link" onclick="copyText('${link}')" style="background:none;border:none;color:var(--match-row-btn-copy-link-color, #64748b);font-size:0.65rem;font-weight:700;cursor:pointer;margin-top:5px;display:flex;align-items:center;gap:4px;justify-content:center;"><svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
+            const copyBtn = `<button class="btn-copy-link" onclick="copyText('${infoLink}')" style="background:none;border:none;color:var(--match-row-btn-copy-link-color, #64748b);font-size:0.65rem;font-weight:700;cursor:pointer;margin-top:5px;display:flex;align-items:center;gap:4px;justify-content:center;"><svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
 
             if (m.is_live) {
-                actionHtml = `<button onclick="window.location.href='${link}'" class="btn-watch">{{TEXT_WATCH_BTN}} <span class="hd-badge">{{TEXT_HD_BADGE}}</span></button>`;
+                const liveLink = `${SITE_DOMAIN}/watch/?${PARAM_LIVE}=${m.id}`;
+                actionHtml = `<button onclick="window.location.href='${liveLink}'" class="btn-watch">{{TEXT_WATCH_BTN}} <span class="hd-badge">{{TEXT_HD_BADGE}}</span></button>`;
             } else {
                 const start = m.startTimeUnix || Date.now();
-                if ((start - Date.now()) / 60000 <= 30) actionHtml = `<button onclick="window.location.href='${link}'" class="btn-watch">{{TEXT_WATCH_BTN}} <span class="hd-badge">{{TEXT_HD_BADGE}}</span></button>` + copyBtn;
+                if ((start - Date.now()) / 60000 <= 30) actionHtml = `<button onclick="window.location.href='${infoLink}'" class="btn-watch">{{TEXT_WATCH_BTN}} <span class="hd-badge">{{TEXT_HD_BADGE}}</span></button>` + copyBtn;
                 else actionHtml = `<button onclick="setNotify(this)" class="btn-notify" style="background:var(--match-row-btn-notify-bg, transparent);border:1px solid var(--match-row-btn-notify-border, #333);color:var(--match-row-btn-notify-text, #999);padding:4px 8px;border-radius:4px;font-size:0.65rem;width:100%;font-weight:700;">🔔 Notify</button>` + copyBtn;
             }
             
@@ -1177,12 +1180,13 @@
                 const eventName = isDouble ? `${m.displayHome} vs ${m.displayAway}` : m.displayHome;
 
                 // 5. Build Event Schema
+                const schemaUrl = `${SITE_DOMAIN}/watch/?${PARAM_INFO}=${m.id}`;
                 const schemaItem = {
                     "@type": "SportsEvent",
                     "startDate": new Date(m.startTimeUnix).toISOString(),
                     "eventStatus": isLive ? "https://schema.org/EventLive" : "https://schema.org/EventScheduled",
                     "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
-                    "url": `${SITE_DOMAIN}/watch/?info=${m.id}`,
+                    "url": schemaUrl,
                     "image": [ mainImage ], // Main event image (fallback to site logo)
                     "name": eventName,
                     "description": `Watch ${eventName} live stream. ${m.finalLeague}.`,
@@ -1192,7 +1196,7 @@
                         "price": "0", 
                         "priceCurrency": "USD", 
                         "availability": isLive ? "https://schema.org/InStock" : "https://schema.org/PreOrder", 
-                        "url": `${SITE_DOMAIN}/watch/?info=${m.id}` 
+                        "url": schemaUrl 
                     },
                     "homeTeam": homeEntity
                 };
