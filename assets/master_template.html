@@ -143,6 +143,7 @@
             --match-row-btn-copy-link-hover-color: {{THEME_MATCH_ROW_BTN_COPY_LINK_HOVER_COLOR}};
 
             /* FOOTER */
+        --footer-text-align: {{THEME_FOOTER_TEXT_ALIGN_DESKTOP}};
             --footer-bg-start: {{THEME_FOOTER_BG_START}};
             --footer-bg-end: {{THEME_FOOTER_BG_END}};
             --footer-border-top: {{THEME_FOOTER_BORDER_TOP}};
@@ -639,8 +640,10 @@
         .l-icon { font-size: 1.1rem; }
         
         footer { background: linear-gradient(180deg, var(--footer-bg-start) 0%, var(--footer-bg-end) 100%); border-top: var(--footer-border-top); padding: 60px 20px 30px 20px; margin-top: 60px; }
-        .footer-grid { display: grid; grid-template-columns: {{THEME_FOOTER_GRID_COLUMNS}}; gap: 40px; max-width: var(--container-max-width); margin: 0 auto; text-align: {{THEME_FOOTER_TEXT_ALIGN_MOBILE}}; }
-        @media(min-width: 768px) { .footer-grid { grid-template-columns: {{THEME_FOOTER_GRID_COLUMNS_DESKTOP}}; text-align: {{THEME_FOOTER_TEXT_ALIGN_DESKTOP}}; } .footer-grid div:last-child { text-align: {{THEME_FOOTER_LAST_COL_ALIGN_DESKTOP}}; } }
+        /* Default Mobile: 1 Column */
+        .footer-grid { display: grid; grid-template-columns: 1fr; gap: 40px; max-width: var(--container-max-width); margin: 0 auto; text-align: var(--footer-text-align); }
+        /* Desktop: Dynamic Columns (2 or 3) */
+        @media(min-width: 768px) { .footer-grid { grid-template-columns: {{THEME_FOOTER_COLS}}; } }
         .f-brand h2 { margin: 0 0 15px 0; font-style: italic; text-transform: uppercase; color: {{THEME_FOOTER_BRAND_COLOR}}; letter-spacing: -1px; }
         .f-desc { color: var(--footer-desc-color); font-size: 0.85rem; line-height: 1.6; max-width: 400px; margin: 0 auto; }
         @media(min-width: 768px) { .f-desc { margin: 0; } }
@@ -740,16 +743,9 @@
     </main>
 
     <footer class="{{FOOTER_CLASSES}}">
-        <div class="footer-grid">
-            <div class="f-brand">
-                {{LOGO_HTML}}
-                <div class="f-desc">{{FOOTER_DISCLAIMER}}</div>
-            </div>
-            <div>
-                <div class="f-head">Quick Links</div>
-                <div class="f-links">{{FOOTER_STATIC}}</div>
-            </div>
-        </div>
+        <!-- Dynamic Grid injected by Python based on Admin slots -->
+        {{FOOTER_GRID_CONTENT}}
+        
         <div class="copyright">{{FOOTER_COPYRIGHT}}</div>
     </footer>
 
