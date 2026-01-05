@@ -812,7 +812,9 @@
         // 1. CONFIGURATION & STATE
         // ==========================================
         const API_URL = "{{API_URL}}";
-        const TARGET_COUNTRY = "{{TARGET_COUNTRY}}"; 
+        const TARGET_COUNTRY = "{{TARGET_COUNTRY}}";
+        const PARAM_LIVE = "{{PARAM_LIVE}}";
+        const PARAM_INFO = "{{PARAM_INFO}}";
         const PRIORITIES = {{JS_PRIORITIES}}; 
         const SITE_DOMAIN = "https://{{DOMAIN}}";
         
@@ -1308,11 +1310,12 @@
             }
 
             let actionHtml = '';
-            const copyBtn = `<button class="btn-copy-link" onclick="copyText('${SITE_DOMAIN}/watch/?info=${m.id}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
+            const copyBtn = `<button class="btn-copy-link" onclick="copyText('${SITE_DOMAIN}/watch/?${PARAM_INFO}=${m.id}')"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Link</button>`;
 
             if (m.is_live) {
-                actionHtml = `<button onclick="openMatch('${m.id}', 'live')" class="btn-watch" title="Watch ${m.displayHome}">{{TEXT_WATCH_BTN}} <span class="hd-badge">{{TEXT_HD_BADGE}}</span></button>`;
-            } else {
+                const liveLink = `${SITE_DOMAIN}/watch/?${PARAM_LIVE}=${m.id}`;
+                actionHtml = `<button onclick="window.location.href='${liveLink}'" class="btn-watch" title="Watch ${m.displayHome}">{{TEXT_WATCH_BTN}} <span class="hd-badge">{{TEXT_HD_BADGE}}</span></button>`;
+} else {
                 const start = m.startTimeUnix || Date.now();
                 if ((start - Date.now()) / 60000 <= 30) actionHtml = `<button onclick="openMatch('${m.id}', 'info')" class="btn-watch">{{TEXT_WATCH_BTN}} <span class="hd-badge">{{TEXT_HD_BADGE}}</span></button>` + copyBtn;
                 else actionHtml = `<button onclick="setNotify(this)" class="btn-notify">🔔 Notify</button>` + copyBtn;
@@ -1339,7 +1342,11 @@
         }
         function escapeHtml(text) { if (!text) return text; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
         function normalizeKey(str) { return str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : ""; }
-        function openMatch(matchId, type) { window.location.href = `${SITE_DOMAIN}/watch/?info=${matchId}`; }
+        function openMatch(matchId, type) { 
+    // Uses 'stream' param for live, 'info' param for upcoming/30min
+    const param = (type === 'live') ? PARAM_LIVE : PARAM_INFO;
+    window.location.href = `${SITE_DOMAIN}/watch/?${param}=${matchId}`; 
+}
         function copyText(text) { navigator.clipboard.writeText(text); const t = document.createElement('div'); t.className = 'copy-toast'; t.innerText = 'Link copied ✓'; document.body.appendChild(t); setTimeout(() => t.remove(), 1600); }
         function highlightActiveMenu() { const path = window.location.pathname; document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(link => { if(link.getAttribute('href') === path) link.classList.add('active'); }); }
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
@@ -1411,12 +1418,13 @@
                 const eventName = isDouble ? `${m.displayHome} vs ${m.displayAway}` : m.displayHome;
 
                 // 5. Build Event Schema
+                const schemaUrl = `${SITE_DOMAIN}/watch/?${PARAM_INFO}=${m.id}`;
                 const schemaItem = {
                     "@type": "SportsEvent",
                     "startDate": new Date(m.startTimeUnix).toISOString(),
                     "eventStatus": isLive ? "https://schema.org/EventLive" : "https://schema.org/EventScheduled",
                     "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
-                    "url": `${SITE_DOMAIN}/watch/?info=${m.id}`,
+                    "url": schemaUrl,
                     "image": [ mainImage ], // Main event image (fallback to site logo)
                     "name": eventName,
                     "description": `Watch ${eventName} live stream. ${m.finalLeague}.`,
@@ -1426,7 +1434,7 @@
                         "price": "0", 
                         "priceCurrency": "USD", 
                         "availability": isLive ? "https://schema.org/InStock" : "https://schema.org/PreOrder", 
-                        "url": `${SITE_DOMAIN}/watch/?info=${m.id}` 
+                        "url": schemaUrl 
                     },
                     "homeTeam": homeEntity
                 };
