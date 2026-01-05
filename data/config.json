@@ -154,7 +154,8 @@
     "sys_status_border_width": "",
     "sys_status_radius": "",
     "sys_status_dot_color": "#000000",
-    "sys_status_dot_size": "10"
+    "sys_status_dot_size": "10",
+    "static_h1_align": "left"
   },
   "sport_priorities": {
     "US": {
@@ -823,6 +824,7 @@
     "back_to_top_icon_color": "#ffffff",
     "back_to_top_radius": "",
     "back_to_top_size": "",
-    "display_hero": "block"
+    "display_hero": "block",
+    "static_h1_align": "right"
   }
 }
