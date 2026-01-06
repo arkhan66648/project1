@@ -236,6 +236,93 @@
         .back-to-top { position: fixed; bottom: 30px; right: 20px; background: var(--back-to-top-bg); width: var(--back-to-top-size); height: var(--back-to-top-size); border-radius: var(--back-to-top-radius); display: flex; align-items: center; justify-content: center; color: var(--back-to-top-icon-color); cursor: pointer; opacity: 0; visibility: hidden; transition: 0.3s; z-index: 90; box-shadow: var(--back-to-top-shadow); }
         .back-to-top.show { opacity: 1; visibility: visible; }
         .back-to-top svg { width: 24px; height: 24px; fill: currentColor; }
+        /* --- 3-COLUMN LAYOUT STYLES --- */
+        
+        /* 1. Override Container for Watch Page to fit 3 columns */
+        .watch-container {
+            max-width: 1600px !important; /* Wider than standard 1100px */
+            width: 98%;
+            display: grid;
+            grid-template-columns: 300px 1fr 340px; /* Fixed Left | Flexible Middle | Fixed Right */
+            gap: 20px;
+            align-items: start;
+        }
+
+        /* 2. Sidebars Common Styles */
+        .layout-sidebar {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 80px; /* Header (60px) + Gap (20px) */
+            height: calc(100vh - 100px); /* Fill viewport height minus header/padding */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Left Sidebar (Ad Specific) */
+        .sidebar-left {
+            width: 300px;
+            align-items: center; /* Center ad horizontally */
+            height: auto; /* Allow auto height for ad */
+            min-height: 250px;
+        }
+
+        .ad-box {
+            width: 300px;
+            height: 250px;
+            background: #000; /* Placeholder BG */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius-base);
+        }
+
+        /* Right Sidebar (Chat Specific) */
+        .sidebar-right {
+            width: 340px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius-base);
+            overflow: hidden;
+        }
+        
+        /* Chat Header/Body Placeholders */
+        .chat-header {
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid var(--border);
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .chat-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+
+        /* Middle Column */
+        .layout-main {
+            min-width: 0; /* Prevents flex/grid overflow issues */
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1300px) {
+            /* Hide Left Ad on medium screens */
+            .watch-container { grid-template-columns: 1fr 340px; }
+            .sidebar-left { display: none; }
+        }
+        @media (max-width: 1000px) {
+            /* Stack everything on mobile/tablet */
+            .watch-container { display: flex; flex-direction: column; }
+            .sidebar-right { 
+                position: relative; top: 0; width: 100%; height: 500px; margin-top: 20px; 
+            }
+            .layout-sidebar { height: auto; }
+        }
     </style>
 </head>
 <body>
@@ -251,69 +338,85 @@
     </header>
     <div class="mobile-menu" id="mobileMenu">{{HEADER_MENU}}</div>
 
-    <main class="container">
+    <!-- Update class to use new specific styles -->
+    <main class="container watch-container">
         
-        <!-- STATE 1: LOADING -->
-        <div id="loadingView" class="loading-box">Finding Match...</div>
-
-        <!-- STATE 2: EMPTY ROOT (No Params) -->
-        <div id="emptyView" style="display:none; text-align:center; padding-top:50px;">
-            <h2 style="color:var(--text-muted)">Select a match to watch</h2>
-            <a href="/" class="srv-btn" style="display:inline-flex; margin-top:10px;">Go Home</a>
-        </div>
-
-        <!-- STATE 3: ERROR -->
-        <div id="errorView" class="error-box" style="display:none;"></div>
-
-        <!-- STATE 4: STREAM VIEW (Live Player) -->
-        <div id="streamView" style="display:none;">
-            <div class="match-header" style="text-align:left; border:none; margin-bottom:15px;">
-                <h1 id="stream-h1" style="font-size:1.2rem; display:flex; align-items:center; gap:10px;">Loading...</h1>
+        <!-- 1. LEFT SIDEBAR (Sticky Ad) -->
+        <aside class="layout-sidebar sidebar-left">
+            <div class="ad-box">
+                <!-- 300x250 Ad Code Goes Here -->
+                <span>Advertisement (300x250)</span>
             </div>
+        </aside>
+
+        <!-- 2. CENTER CONTENT (Match & Info) -->
+        <div class="layout-main">
             
-            <div class="player-container">
-                <iframe id="mainPlayer" class="player-frame" src="" allowfullscreen scrolling="no" allow="encrypted-media"></iframe>
+            <!-- Views (Existing Logic) -->
+            <div id="loadingView" class="loading-box">Finding Match...</div>
+
+            <div id="emptyView" style="display:none; text-align:center; padding-top:50px;">
+                <h2 style="color:var(--text-muted)">Select a match to watch</h2>
+                <a href="/" class="srv-btn" style="display:inline-flex; margin-top:10px;">Go Home</a>
             </div>
 
-            <div class="server-list" id="serverContainer"></div>
-            
-            <!-- Safe Links for Live View (Redirects to Info View) -->
-            <div style="margin-top:20px; text-align:center;">
-                <button id="gotoInfoBtn" class="srv-btn" style="margin:0 auto;">View Match Details & Info</button>
-            </div>
-        </div>
+            <div id="errorView" class="error-box" style="display:none;"></div>
 
-        <!-- STATE 5: INFO VIEW (SEO/Table) -->
-        <div id="infoView" style="display:none;">
-            <div class="info-card">
-                <div class="match-header">
-                    <div class="sub" id="info-league">League</div>
-                    <h1 id="info-h1">Team A vs Team B</h1>
-                    <div style="color:var(--text-muted); font-size:0.9rem; margin-top:5px;" id="info-time">--:--</div>
+            <div id="streamView" style="display:none;">
+                <div class="match-header" style="text-align:left; border:none; margin-bottom:15px;">
+                    <h1 id="stream-h1" style="font-size:1.2rem; display:flex; align-items:center; gap:10px;">Loading...</h1>
+                </div>
+                
+                <div class="player-container">
+                    <iframe id="mainPlayer" class="player-frame" src="" allowfullscreen scrolling="no" allow="encrypted-media"></iframe>
                 </div>
 
-                <table class="info-table">
-                    <tr><td>Status</td><td id="tbl-status">Upcoming</td></tr>
-                    <tr><td>Competition</td><td id="tbl-league">--</td></tr>
-                    <tr><td>Home Team</td><td id="tbl-home">--</td></tr>
-                    <tr><td>Away Team</td><td id="tbl-away">--</td></tr>
-                    <tr><td>Date</td><td id="tbl-date">--</td></tr>
-                    <tr><td>Time</td><td id="tbl-time">--</td></tr>
-                </table>
-
-                <button id="startWatchBtn" class="big-watch-btn">📺 Watch Live Stream</button>
+                <div class="server-list" id="serverContainer"></div>
+                
+                <div style="margin-top:20px; text-align:center;">
+                    <button id="gotoInfoBtn" class="srv-btn" style="margin:0 auto;">View Match Details & Info</button>
+                </div>
             </div>
 
-            <!-- Dynamic SEO Article -->
-            <div id="seo-article-container" class="seo-article"></div>
+            <div id="infoView" style="display:none;">
+                <div class="info-card">
+                    <div class="match-header">
+                        <div class="sub" id="info-league">League</div>
+                        <h1 id="info-h1">Team A vs Team B</h1>
+                        <div style="color:var(--text-muted); font-size:0.9rem; margin-top:5px;" id="info-time">--:--</div>
+                    </div>
+
+                    <table class="info-table">
+                        <tr><td>Status</td><td id="tbl-status">Upcoming</td></tr>
+                        <tr><td>Competition</td><td id="tbl-league">--</td></tr>
+                        <tr><td>Home Team</td><td id="tbl-home">--</td></tr>
+                        <tr><td>Away Team</td><td id="tbl-away">--</td></tr>
+                        <tr><td>Date</td><td id="tbl-date">--</td></tr>
+                        <tr><td>Time</td><td id="tbl-time">--</td></tr>
+                    </table>
+
+                    <button id="startWatchBtn" class="big-watch-btn">📺 Watch Live Stream</button>
+                </div>
+
+                <div id="seo-article-container" class="seo-article"></div>
+            </div>
+
+            <div id="footer-leagues-section" class="section-box" style="margin-top:50px;">
+                <div class="sec-head" style="border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:15px;">
+                    <h2 style="font-size:1.1rem; color:#fff; margin:0;">🏆 Popular Leagues</h2>
+                </div>
+                <div class="leagues-grid">{{FOOTER_LEAGUES}}</div>
+            </div>
         </div>
 
-        <div id="footer-leagues-section" class="section-box" style="margin-top:50px;">
-            <div class="sec-head" style="border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:15px;">
-                <h2 style="font-size:1.1rem; color:#fff; margin:0;">🏆 Popular Leagues</h2>
+        <!-- 3. RIGHT SIDEBAR (Sticky Chat) -->
+        <aside class="layout-sidebar sidebar-right">
+            <div class="chat-header">Live Chat</div>
+            <div class="chat-body" id="chatContainer">
+                <!-- Chat Embed Code will go here later -->
+                <span>Loading Chat...</span>
             </div>
-            <div class="leagues-grid">{{FOOTER_LEAGUES}}</div>
-        </div>
+        </aside>
 
     </main>
 
