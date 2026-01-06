@@ -223,11 +223,9 @@
         const SITE_NAME = "{{SITE_NAME}}";
         const SITE_DOMAIN = "https://{{DOMAIN}}";
         
-        // Params from Admin
-        const PARAM_LIVE = "{{PARAM_LIVE}}"; // e.g. 'streams'
-        const PARAM_INFO = "{{PARAM_INFO}}"; // e.g. 'livestream'
+        const PARAM_LIVE = "{{PARAM_LIVE}}"; 
+        const PARAM_INFO = "{{PARAM_INFO}}"; 
         
-        // SERVER-SIDE INJECTED MAPS
         const TEAM_TO_LEAGUE = {{JS_LEAGUE_MAP}}; 
         const IMAGE_MAP = {{JS_IMAGE_MAP}};
         
@@ -245,67 +243,58 @@
         window.addEventListener('DOMContentLoaded', initWatch);
 
         async function initWatch() {
-            // A. Get URL Parameters
             const params = new URLSearchParams(window.location.search);
             const liveSlug = params.get(PARAM_LIVE);
             const infoSlug = params.get(PARAM_INFO);
             
-            // Determine active slug and mode
-            let activeSlug = null;
-            let mode = null; // 'live' or 'info'
+            let activeSlug = liveSlug || infoSlug;
+            let mode = liveSlug ? 'live' : (infoSlug ? 'info' : null);
 
-            if (liveSlug) {
-                activeSlug = liveSlug;
-                mode = 'live';
-            } else if (infoSlug) {
-                activeSlug = infoSlug;
-                mode = 'info';
-            } else {
+            if (!activeSlug) {
                 showEmpty();
                 return;
             }
 
-            // B. Extract the Hash ID (The unique last part)
-            // Example: "team-a-vs-team-b-221e62..." -> "221e62..."
+            // EXTRACT HASH (Robust Method)
+            // Backend generates: "team-a-vs-team-b-{md5_hash}"
+            // MD5 hex is 32 chars. Let's grab the last 32 chars.
+            // If the slug is shorter than 32 chars, it's invalid.
+            let targetHash = "";
             const parts = activeSlug.split('-');
-            const targetHash = parts[parts.length - 1];
+            const lastPart = parts[parts.length - 1];
 
-            if (!targetHash || targetHash.length < 5) {
-                console.error("Invalid ID format");
-                showEmpty();
-                return;
+            // MD5 is hex, so it should look like a hash. 
+            // Your backend hash seems to be 32 chars (MD5).
+            if (lastPart.length === 32) {
+                targetHash = lastPart;
+            } else {
+                // Fallback: Use the whole slug if we can't detect a clean hash
+                targetHash = activeSlug;
             }
 
-            // C. Fetch Data
             try {
                 const res = await fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`);
                 const data = await res.json();
                 
-                // --- FIX: ROBUST MATCHING LOGIC ---
-                // We check if the JSON 'id' ends with our targetHash.
+                // --- FIX: ROBUST MATCHING ---
                 const match = data.matches.find(m => {
-                    // Check 1: Exact Full Match (Perfect case)
+                    // 1. Perfect Match (Full Slug)
                     if (m.id === activeSlug) return true;
-                    // Check 2: ID ends with the Hash (Robust case)
-                    if (m.id.endsWith(targetHash)) return true;
+                    // 2. Hash Match (Ends with the extracted hash)
+                    if (targetHash.length === 32 && m.id.endsWith(targetHash)) return true;
                     return false;
                 });
 
                 if (!match) {
-                    console.warn("Match hash not found in API:", targetHash);
+                    console.warn("Match not found for:", activeSlug);
                     showEmpty();
                     return;
                 }
 
-                // D. Smart Name Processing
                 processMatchData(match);
 
-                // E. Route to View
-                if (mode === 'live') {
-                    renderPlayerMode(match);
-                } else {
-                    renderInfoMode(match);
-                }
+                if (mode === 'live') renderPlayerMode(match);
+                else renderInfoMode(match);
 
             } catch (e) {
                 console.error("API Error", e);
@@ -314,9 +303,10 @@
         }
 
         // ==========================================
-        // 3. SMART NAMING & CLEANING
+        // 3. DATA PROCESSING
         // ==========================================
         function processMatchData(m) {
+            // ... (Same as before) ...
             const hSlug = slugify(m.home_team);
             const aSlug = slugify(m.away_team);
             
@@ -371,7 +361,6 @@
         
         function renderPlayerMode(m) {
             document.getElementById('player-view').style.display = 'block';
-            
             document.querySelector('meta[name="robots"]').setAttribute('content', 'noindex, nofollow');
             document.title = `Live: ${m.cleanHome} vs ${m.cleanAway}`; 
 
@@ -379,7 +368,10 @@
 
             const grid = document.getElementById('server-grid');
             
+            // --- UPDATED STREAM LOGIC ---
+            // Backend provides 'stream_channels' with { name, url }
             if (m.stream_channels && m.stream_channels.length > 0) {
+                // Auto-load first
                 loadChannel(m.stream_channels[0].url);
                 
                 m.stream_channels.forEach((ch, idx) => {
@@ -439,9 +431,7 @@
 
             const actArea = document.getElementById('info-action-area');
             if (m.is_live) {
-                // Link to Player Mode using current Match ID logic
-                // We reconstruct the slug for the link, or just use the ID if your routes support it
-                // Using m.id directly ensures we match the backend format exactly for the next click
+                // Link to Player Mode using the full ID from the backend match object
                 const link = `${SITE_DOMAIN}/watch/?${PARAM_LIVE}=${m.id}`;
                 actArea.innerHTML = `<a href="${link}" class="btn-main">▶ Watch Live Stream</a>`;
             } else {
@@ -459,10 +449,7 @@
             injectSchema(m);
         }
 
-        // ==========================================
-        // 5. HELPER FUNCTIONS
-        // ==========================================
-        
+        // ... (Keep helper functions: getLogoUrl, getLeagueLogo, formatMatchTime, injectSchema, showEmpty, toggleMenu) ...
         function getLogoUrl(name, apiObj) {
             if (IMAGE_MAP && IMAGE_MAP.teams && IMAGE_MAP.teams[name]) {
                 const u = IMAGE_MAP.teams[name];
