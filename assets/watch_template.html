@@ -227,7 +227,7 @@
         const PARAM_LIVE = "{{PARAM_LIVE}}"; // e.g. 'streams'
         const PARAM_INFO = "{{PARAM_INFO}}"; // e.g. 'livestream'
         
-        // SERVER-SIDE INJECTED MAPS (From Build Script)
+        // SERVER-SIDE INJECTED MAPS
         const TEAM_TO_LEAGUE = {{JS_LEAGUE_MAP}}; 
         const IMAGE_MAP = {{JS_IMAGE_MAP}};
         
@@ -245,8 +245,7 @@
         window.addEventListener('DOMContentLoaded', initWatch);
 
         async function initWatch() {
-            // A. Extract ID from URL
-            // User requirement: ID is the last part after hyphen.
+            // A. Get URL Parameters
             const params = new URLSearchParams(window.location.search);
             const liveSlug = params.get(PARAM_LIVE);
             const infoSlug = params.get(PARAM_INFO);
@@ -266,30 +265,42 @@
                 return;
             }
 
-            // Extract ID: "team-a-vs-b-12345" -> "12345"
+            // B. Extract the Hash ID (The unique last part)
+            // Example: "team-a-vs-team-b-221e62..." -> "221e62..."
             const parts = activeSlug.split('-');
-            const matchId = parts.pop(); 
+            const targetHash = parts[parts.length - 1];
 
-            if (!matchId) {
+            if (!targetHash || targetHash.length < 5) {
+                console.error("Invalid ID format");
                 showEmpty();
                 return;
             }
 
-            // B. Fetch Data
+            // C. Fetch Data
             try {
                 const res = await fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`);
                 const data = await res.json();
-                const match = data.matches.find(m => m.id === matchId);
+                
+                // --- FIX: ROBUST MATCHING LOGIC ---
+                // We check if the JSON 'id' ends with our targetHash.
+                const match = data.matches.find(m => {
+                    // Check 1: Exact Full Match (Perfect case)
+                    if (m.id === activeSlug) return true;
+                    // Check 2: ID ends with the Hash (Robust case)
+                    if (m.id.endsWith(targetHash)) return true;
+                    return false;
+                });
 
                 if (!match) {
+                    console.warn("Match hash not found in API:", targetHash);
                     showEmpty();
                     return;
                 }
 
-                // C. Smart Name Processing (Ported from Master)
+                // D. Smart Name Processing
                 processMatchData(match);
 
-                // D. Route to View
+                // E. Route to View
                 if (mode === 'live') {
                     renderPlayerMode(match);
                 } else {
@@ -303,14 +314,13 @@
         }
 
         // ==========================================
-        // 3. SMART NAMING & CLEANING (The "Beautiful Technique")
+        // 3. SMART NAMING & CLEANING
         // ==========================================
         function processMatchData(m) {
-            // 1. Resolve League Name using Map & Logic
             const hSlug = slugify(m.home_team);
             const aSlug = slugify(m.away_team);
             
-            let resolvedLeague = m.league || m.sport; // Default
+            let resolvedLeague = m.league || m.sport;
             let src = "API";
 
             if (TEAM_TO_LEAGUE) {
@@ -321,7 +331,6 @@
                 }
             }
 
-            // Check Prefix (:)
             if (src === "API" && m.home_team.includes(':')) {
                 const parts = m.home_team.split(':');
                 if (parts[0].length > 1 && parts[0].length < 25) {
@@ -329,18 +338,13 @@
                 }
             }
             
-            // Clean League Name
             let cleanLeague = resolvedLeague.trim();
             const lKey = cleanLeague.toLowerCase().replace(/\s/g, '');
             if(NAME_FIXES[lKey]) cleanLeague = NAME_FIXES[lKey];
 
             m.finalLeague = cleanLeague;
-
-            // 2. Clean Team Names (Remove prefixes)
             m.cleanHome = getCleanTeamName(m.home_team, hSlug, cleanLeague);
             m.cleanAway = getCleanTeamName(m.away_team, aSlug, cleanLeague);
-            
-            // 3. Format Date
             m.fmtTime = formatMatchTime(m.startTimeUnix || new Date(m.timestamp).getTime());
         }
 
@@ -349,7 +353,6 @@
         function getCleanTeamName(rawName, slug, leagueName) {
             if(!rawName || rawName === 'TBA') return 'TBA';
             if(TEAM_TO_LEAGUE && TEAM_TO_LEAGUE[slug]) {
-                // Unslugify if mapped (usually cleaner)
                 return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
             }
             let clean = rawName;
@@ -366,26 +369,19 @@
         // 4. RENDERERS
         // ==========================================
         
-        // --- MODE A: LIVE PLAYER (NoIndex, Embeds) ---
         function renderPlayerMode(m) {
             document.getElementById('player-view').style.display = 'block';
             
-            // 1. NOINDEX (Safety)
             document.querySelector('meta[name="robots"]').setAttribute('content', 'noindex, nofollow');
-            document.title = `Live: ${m.cleanHome} vs ${m.cleanAway}`; // Simple title
+            document.title = `Live: ${m.cleanHome} vs ${m.cleanAway}`; 
 
-            // 2. H1 Update
             document.getElementById('live-h1').innerText = `${m.cleanHome} vs ${m.cleanAway} Live Stream`;
 
-            // 3. Stream Loading
-            const frame = document.getElementById('stream-frame');
             const grid = document.getElementById('server-grid');
             
             if (m.stream_channels && m.stream_channels.length > 0) {
-                // Load first channel
                 loadChannel(m.stream_channels[0].url);
                 
-                // Build Buttons
                 m.stream_channels.forEach((ch, idx) => {
                     const btn = document.createElement('button');
                     btn.className = idx === 0 ? 'srv-btn active' : 'srv-btn';
@@ -398,40 +394,38 @@
                     grid.appendChild(btn);
                 });
             } else {
-                frame.src = "about:blank"; // Or a placeholder
+                document.getElementById('stream-frame').style.display = 'none';
                 grid.innerHTML = '<div style="color:var(--text-muted)">No streams available yet.</div>';
             }
         }
 
         function loadChannel(url) {
-            document.getElementById('stream-frame').src = url;
+            const frame = document.getElementById('stream-frame');
+            frame.style.display = 'block';
+            frame.src = url;
         }
 
-        // --- MODE B: INFO PAGE (SEO Friendly, Logos, Schema) ---
         function renderInfoMode(m) {
             document.getElementById('info-view').style.display = 'block';
 
-            // 1. DYNAMIC SEO
             const title = `Watch ${m.cleanHome} vs ${m.cleanAway} Live Stream | ${m.finalLeague}`;
             const desc = `Watch ${m.cleanHome} vs ${m.cleanAway} live stream online. Get the latest schedule, scores, and ${m.finalLeague} updates here.`;
             
             document.title = title;
             document.querySelector('meta[name="description"]').setAttribute('content', desc);
-            // Default robots is already index,follow
+            document.querySelector('meta[property="og:title"]').setAttribute('content', title);
+            document.querySelector('meta[property="og:description"]').setAttribute('content', desc);
 
-            // 2. UPDATE DOM
             document.getElementById('t1-name').innerText = m.cleanHome;
             document.getElementById('t2-name').innerText = m.cleanAway;
             
             document.getElementById('t1-logo').src = getLogoUrl(m.cleanHome, m.home_team_image);
             document.getElementById('t2-logo').src = getLogoUrl(m.cleanAway, m.away_team_image);
             
-            // League Badge
             const lBadge = document.getElementById('info-league-badge');
             const lIconUrl = getLeagueLogo(m.finalLeague, m.league_image);
             lBadge.innerHTML = `<img src="${lIconUrl}" alt="${m.finalLeague}"><span>${m.finalLeague}</span>`;
 
-            // Meta
             document.getElementById('info-time').innerText = m.fmtTime;
             
             const statusEl = document.getElementById('info-status');
@@ -443,17 +437,17 @@
                 statusEl.className = "meta-val";
             }
 
-            // 3. ACTION BUTTON
             const actArea = document.getElementById('info-action-area');
             if (m.is_live) {
-                // Link to Player Mode
-                const link = `${SITE_DOMAIN}/watch/?${PARAM_LIVE}=${generateSlug(m)}`;
+                // Link to Player Mode using current Match ID logic
+                // We reconstruct the slug for the link, or just use the ID if your routes support it
+                // Using m.id directly ensures we match the backend format exactly for the next click
+                const link = `${SITE_DOMAIN}/watch/?${PARAM_LIVE}=${m.id}`;
                 actArea.innerHTML = `<a href="${link}" class="btn-main">▶ Watch Live Stream</a>`;
             } else {
                 actArea.innerHTML = `<button class="btn-main disabled">⏳ Stream Starts Soon</button>`;
             }
 
-            // 4. GENERATE ARTICLE (SEO Text)
             const art = document.getElementById('info-article');
             art.innerHTML = `
                 <h1 style="color:var(--text-main); margin-bottom:20px;">${title}</h1>
@@ -462,7 +456,6 @@
                 <p>We provide the best quality streams for free. Bookmark this page to watch the match without buffering.</p>
             `;
 
-            // 5. INJECT SCHEMA
             injectSchema(m);
         }
 
@@ -471,16 +464,13 @@
         // ==========================================
         
         function getLogoUrl(name, apiObj) {
-            // 1. Check Image Map (Best Quality)
             if (IMAGE_MAP && IMAGE_MAP.teams && IMAGE_MAP.teams[name]) {
                 const u = IMAGE_MAP.teams[name];
                 return u.startsWith('http') ? u : `${SITE_DOMAIN}${u.startsWith('/')?'':'/'}${u}`;
             }
-            // 2. Check API Object
             if (apiObj && (apiObj.streamed || apiObj.sofascore)) {
                 return apiObj.streamed || apiObj.sofascore;
             }
-            // 3. Fallback
             return "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzMzMyIgZD0iTTEyIDJDMiAyIDIgMTIgMiAxMnMyIDEwIDEwIDEwIDEwLTEwIDEwLTEwUzIyIDIgMTIgMnoiLz48L3N2Zz4=";
         }
 
@@ -501,12 +491,6 @@
                     hour12: true, timeZone
                 }).format(d) + (isUK ? ' GMT' : ' ET');
             } catch(e) { return "TBA"; }
-        }
-
-        function generateSlug(m) {
-            // Re-create the slug logic to link back
-            const raw = `${slugify(m.home_team)}-vs-${slugify(m.away_team)}-${m.id}`;
-            return raw;
         }
 
         function injectSchema(m) {
