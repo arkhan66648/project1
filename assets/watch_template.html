@@ -763,9 +763,16 @@
 
         // --- UTILS ---
         function showView(id) { 
-            document.querySelectorAll('main > div').forEach(d => {
-                if (d.id !== 'footer-leagues-section') d.style.display = 'none';
+            // 1. Define all possible view IDs to hide
+            const allViews = ['loadingView', 'emptyView', 'errorView', 'streamView', 'infoView'];
+            
+            // 2. Hide them all
+            allViews.forEach(viewId => {
+                const el = document.getElementById(viewId);
+                if (el) el.style.display = 'none';
             });
+
+            // 3. Show the requested one
             const v = document.getElementById(id + 'View');
             if(v) v.style.display = 'block'; 
         }
