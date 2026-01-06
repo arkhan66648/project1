@@ -8,12 +8,12 @@
     <meta name="description" content="{{META_DESC}}">
     
     <!-- OPEN GRAPH (Required for Info Mode SEO) -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="{{META_TITLE}}">
-    <meta property="og:description" content="{{META_DESC}}">
-    <meta property="og:image" content="{{OG_IMAGE}}">
-    <meta property="og:url" content="">
-    <meta property="og:site_name" content="{{SITE_NAME}}">
+    <meta property='og:type' content='website'>
+    <meta property='og:title' content='{{META_TITLE}}'>
+    <meta property='og:description' content='{{META_DESC}}'>
+    <meta property='og:image' content='{{OG_IMAGE}}'>
+    <meta property='og:url' content=''>
+    <meta property='og:site_name' content='{{SITE_NAME}}'>
     
     <!-- Robots -->
     <meta name="robots" content="index, follow"> 
@@ -374,31 +374,41 @@
         // ==========================================
         
         function renderPlayerMode(m) {
-            document.getElementById('player-view').style.display = 'block';
-            document.querySelector('meta[name="robots"]').setAttribute('content', 'noindex, nofollow');
-            document.title = `Live: ${m.cleanHome} vs ${m.cleanAway}`; 
-            document.getElementById('live-h1').innerText = `${m.cleanHome} vs ${m.cleanAway} Live Stream`;
+    const view = document.getElementById('player-view');
+    if(view) view.style.display = 'block';
 
-            const grid = document.getElementById('server-grid');
-            
-            if (m.stream_channels && m.stream_channels.length > 0) {
-                loadChannel(m.stream_channels[0].url);
-                m.stream_channels.forEach((ch, idx) => {
-                    const btn = document.createElement('button');
-                    btn.className = idx === 0 ? 'srv-btn active' : 'srv-btn';
-                    btn.innerText = ch.name || `Server ${idx+1}`;
-                    btn.onclick = () => {
-                        loadChannel(ch.url);
-                        document.querySelectorAll('.srv-btn').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                    };
-                    grid.appendChild(btn);
-                });
-            } else {
-                document.getElementById('stream-frame').style.display = 'none';
-                grid.innerHTML = '<div style="color:var(--text-muted)">No streams available yet.</div>';
-            }
-        }
+    // FIX: Safely update Robots
+    const robots = document.querySelector('meta[name="robots"]');
+    if(robots) {
+        robots.setAttribute('content', 'noindex, nofollow');
+    }
+
+    document.title = `Live: ${m.cleanHome} vs ${m.cleanAway}`; 
+    const h1 = document.getElementById('live-h1');
+    if(h1) h1.innerText = `${m.cleanHome} vs ${m.cleanAway} Live Stream`;
+
+    const grid = document.getElementById('server-grid');
+    if(!grid) return; // Safety check
+    
+    if (m.stream_channels && m.stream_channels.length > 0) {
+        loadChannel(m.stream_channels[0].url);
+        m.stream_channels.forEach((ch, idx) => {
+            const btn = document.createElement('button');
+            btn.className = idx === 0 ? 'srv-btn active' : 'srv-btn';
+            btn.innerText = ch.name || `Server ${idx+1}`;
+            btn.onclick = () => {
+                loadChannel(ch.url);
+                document.querySelectorAll('.srv-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            };
+            grid.appendChild(btn);
+        });
+    } else {
+        const frame = document.getElementById('stream-frame');
+        if(frame) frame.style.display = 'none';
+        grid.innerHTML = '<div style="color:var(--text-muted)">No streams available yet.</div>';
+    }
+}
 
         function loadChannel(url) {
             const frame = document.getElementById('stream-frame');
@@ -407,68 +417,87 @@
         }
 
         function renderInfoMode(m) {
-            document.getElementById('info-view').style.display = 'block';
+    const view = document.getElementById('info-view');
+    if(view) view.style.display = 'block';
 
-            const title = `Watch ${m.cleanHome} vs ${m.cleanAway} Live Stream | ${m.finalLeague}`;
-            const desc = `Watch ${m.cleanHome} vs ${m.cleanAway} live stream online. Get the latest schedule, scores, and ${m.finalLeague} updates here.`;
-            
-            document.title = title;
-            setMeta('description', desc);
-            setMeta('og:title', title, 'property');
-            setMeta('og:description', desc, 'property');
-            
-            safeText('t1-name', m.cleanHome);
-            safeText('t2-name', m.cleanAway);
-            safeSrc('t1-logo', getLogoUrl(m.cleanHome, m.home_team_image));
-            safeSrc('t2-logo', getLogoUrl(m.cleanAway, m.away_team_image));
-            safeText('info-time', m.fmtTime);
+    const title = `Watch ${m.cleanHome} vs ${m.cleanAway} Live Stream | ${m.finalLeague}`;
+    const desc = `Watch ${m.cleanHome} vs ${m.cleanAway} live stream online. Get the latest schedule, scores, and ${m.finalLeague} updates here.`;
+    
+    document.title = title;
+    
+    // Safely update Meta tags
+    setMeta('description', desc);
+    setMeta('og:title', title, 'property');
+    setMeta('og:description', desc, 'property');
+    
+    // Safely update Robots (Ensure this tag exists in <head> or this check skips it)
+    const robots = document.querySelector('meta[name="robots"]');
+    if(robots) robots.setAttribute('content', 'index, follow');
 
-            const lBadge = document.getElementById('info-league-badge');
-            const lIconUrl = getLeagueLogo(m.finalLeague, m.league_image);
-            if(lBadge) lBadge.innerHTML = `<img src="${lIconUrl}" alt="${m.finalLeague}"><span>${m.finalLeague}</span>`;
+    // Safe Text Updates
+    safeText('t1-name', m.cleanHome);
+    safeText('t2-name', m.cleanAway);
+    safeSrc('t1-logo', getLogoUrl(m.cleanHome, m.home_team_image));
+    safeSrc('t2-logo', getLogoUrl(m.cleanAway, m.away_team_image));
+    safeText('info-time', m.fmtTime);
 
-            const statusEl = document.getElementById('info-status');
-            if(statusEl) {
-                if(m.is_live) {
-                    statusEl.innerText = "LIVE NOW";
-                    statusEl.className = "meta-val live";
-                } else {
-                    statusEl.innerText = m.status_text || "Upcoming";
-                    statusEl.className = "meta-val";
-                }
-            }
+    // League Badge
+    const lBadge = document.getElementById('info-league-badge');
+    const lIconUrl = getLeagueLogo(m.finalLeague, m.league_image);
+    if(lBadge) lBadge.innerHTML = `<img src="${lIconUrl}" alt="${m.finalLeague}"><span>${m.finalLeague}</span>`;
 
-            const actArea = document.getElementById('info-action-area');
-            if(actArea) {
-                if (m.is_live) {
-                    // Use the exact ID from the API to generate the live link
-                    const link = `${SITE_DOMAIN}/watch/?${PARAM_LIVE}=${m.id}`;
-                    actArea.innerHTML = `<a href="${link}" class="btn-main">▶ Watch Live Stream</a>`;
-                } else {
-                    actArea.innerHTML = `<button class="btn-main disabled">⏳ Stream Starts Soon</button>`;
-                }
-            }
-
-            const art = document.getElementById('info-article');
-            if(art) {
-                art.innerHTML = `
-                    <h1 style="color:var(--text-main); margin-bottom:20px;">${title}</h1>
-                    <p>Looking for <strong>${m.cleanHome} vs ${m.cleanAway}</strong> live stream? You are in the right place. 
-                    This match is part of the <strong>${m.finalLeague}</strong> and starts at ${m.fmtTime}.</p>
-                    <p>We provide the best quality streams for free. Bookmark this page to watch the match without buffering.</p>
-                `;
-            }
-
-            injectSchema(m);
+    // Status
+    const statusEl = document.getElementById('info-status');
+    if(statusEl) {
+        if(m.is_live) {
+            statusEl.innerText = "LIVE NOW";
+            statusEl.className = "meta-val live";
+        } else {
+            statusEl.innerText = m.status_text || "Upcoming";
+            statusEl.className = "meta-val";
         }
+    }
+
+    // Action Button
+    const actArea = document.getElementById('info-action-area');
+    if(actArea) {
+        if (m.is_live) {
+            // Use ID for link
+            const link = `${SITE_DOMAIN}/watch/?${PARAM_LIVE}=${m.original_id || m.id}`;
+            actArea.innerHTML = `<a href="${link}" class="btn-main">▶ Watch Live Stream</a>`;
+        } else {
+            actArea.innerHTML = `<button class="btn-main disabled">⏳ Stream Starts Soon</button>`;
+        }
+    }
+
+    // SEO Article
+    const art = document.getElementById('info-article');
+    if(art) {
+        art.innerHTML = `
+            <h1 style="color:var(--text-main); margin-bottom:20px;">${title}</h1>
+            <p>Looking for <strong>${m.cleanHome} vs ${m.cleanAway}</strong> live stream? You are in the right place. 
+            This match is part of the <strong>${m.finalLeague}</strong> and starts at ${m.fmtTime}.</p>
+            <p>We provide the best quality streams for free. Bookmark this page to watch the match without buffering.</p>
+        `;
+    }
+
+    injectSchema(m);
+}
 
         // --- SAFE DOM HELPERS ---
-        function setMeta(name, content, attr='name') {
-            const el = document.querySelector(`meta[${attr}="${name}"]`);
-            if(el) el.setAttribute('content', content);
-        }
-        function safeText(id, txt) { const e = document.getElementById(id); if(e) e.innerText = txt; }
-        function safeSrc(id, src) { const e = document.getElementById(id); if(e) e.src = src; }
+        // --- SAFE DOM HELPERS ---
+function setMeta(name, content, attr='name') {
+    // Try to find the element
+    const el = document.querySelector(`meta[${attr}="${name}"]`);
+    
+    // Only set attribute if element exists
+    if (el) {
+        el.setAttribute('content', content);
+    } else {
+        // Optional: Log warning if tag is missing (helps debugging)
+        console.warn(`Meta tag missing: [${attr}="${name}"]`);
+    }
+}
 
         function getLogoUrl(name, apiObj) {
             if (IMAGE_MAP && IMAGE_MAP.teams && IMAGE_MAP.teams[name]) {
