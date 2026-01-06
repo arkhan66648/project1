@@ -1,323 +1,666 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- INITIAL META (Will be updated dynamically by JS) -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{SITE_NAME}} - Watch Live Sports</title>
+    <meta name="description" content="Watch live sports streams.">
+    <meta name="robots" content="index, follow"> <!-- Default to index, JS will flip to noindex for Stream view -->
+    
+    <link rel="icon" href="{{FAVICON}}">
+    <link rel="canonical" href="{{CANONICAL_URL}}">
+    {{LOGO_PRELOAD}}
+    
+    <style>html { scroll-behavior: smooth; }</style>
 
-<title>Watch Match</title>
-<meta name="description" content="Watch live sports online">
-<meta name="robots" content="index, follow">
+    <style>
+        :root {
+            /* --- INJECTED THEME VARIABLES --- */
+            --brand-primary: {{THEME_BRAND_PRIMARY}};
+            --brand-dark: {{THEME_BRAND_DARK}};
+            --bg-body: {{THEME_BG_BODY}};
+            --bg-panel: {{THEME_BG_PANEL}};
+            --text-main: {{THEME_TEXT_MAIN}};
+            --text-muted: {{THEME_TEXT_MUTED}};
+            --border: {{THEME_BORDER_COLOR}};
+            --accent-gold: {{THEME_ACCENT_GOLD}};
+            
+            --font-family-base: {{THEME_FONT_FAMILY_BASE}};
+            --font-family-headings: {{THEME_FONT_FAMILY_HEADINGS}};
+            --container-max-width: {{THEME_CONTAINER_MAX_WIDTH}};
+            --header-max-width: {{THEME_HEADER_MAX_WIDTH}};
+            --border-radius-base: {{THEME_BORDER_RADIUS_BASE}};
+            --button-border-radius: {{THEME_BUTTON_BORDER_RADIUS}};
+            
+            /* HEADER & FOOTER VARS */
+            --header-bg: {{THEME_HEADER_BG}};
+            --header-text-color: {{THEME_HEADER_TEXT_COLOR}};
+            --header-link-active-color: {{THEME_HEADER_LINK_ACTIVE_COLOR}};
+            --header-link-hover-color: {{THEME_HEADER_LINK_HOVER_COLOR}};
+            --header-highlight-color: {{THEME_HEADER_HIGHLIGHT_COLOR}};
+            --header-highlight-hover: {{THEME_HEADER_HIGHLIGHT_HOVER}};
+            --header-border-bottom: {{THEME_HEADER_BORDER_BOTTOM}};
+            --logo-text-p1-color: {{THEME_LOGO_P1_COLOR}};
+            --logo-text-p2-color: {{THEME_LOGO_P2_COLOR}};
+            --logo-image-size: {{THEME_LOGO_IMAGE_SIZE}};
 
-<link rel="icon" href="{{FAVICON}}">
+            --footer-bg-start: {{THEME_FOOTER_BG_START}};
+            --footer-bg-end: {{THEME_FOOTER_BG_END}};
+            --footer-border-top: {{THEME_FOOTER_BORDER_TOP}};
+            --footer-heading-color: {{THEME_FOOTER_HEADING_COLOR}};
+            --footer-link-color: {{THEME_FOOTER_LINK_COLOR}};
+            --footer-link-hover-color: {{THEME_FOOTER_LINK_HOVER_COLOR}};
+            --footer-link-hover-transform: {{THEME_FOOTER_LINK_HOVER_TRANSFORM}};
+            --footer-copyright-color: {{THEME_FOOTER_COPYRIGHT_COLOR}};
+            --footer-desc-color: {{THEME_FOOTER_DESC_COLOR}};
 
-<style>
-body {
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:#0f1115;
-    color:#fff;
-}
-.watch-wrapper {
-    max-width:1100px;
-    margin:100px auto;
-    padding:0 15px;
-}
-.hidden { display:none !important; }
+            /* SOCIAL VARS */
+            --social-sidebar-bg: {{THEME_SOCIAL_SIDEBAR_BG}};
+            --social-sidebar-border: {{THEME_SOCIAL_SIDEBAR_BORDER}};
+            --social-sidebar-shadow: {{THEME_SOCIAL_SIDEBAR_SHADOW}};
+            --social-btn-bg: {{THEME_SOCIAL_BTN_BG}};
+            --social-btn-border: {{THEME_SOCIAL_BTN_BORDER}};
+            --social-btn-color: {{THEME_SOCIAL_BTN_COLOR}};
+            --social-btn-hover-bg: {{THEME_SOCIAL_BTN_HOVER_BG}};
+            --social-btn-hover-border: {{THEME_SOCIAL_BTN_HOVER_BORDER}};
+            --social-btn-hover-transform: {{THEME_SOCIAL_BTN_HOVER_TRANSFORM}};
+            --social-count-color: {{THEME_SOCIAL_COUNT_COLOR}};
+            --social-desktop-top: {{THEME_SOCIAL_DESKTOP_TOP}};
+            --social-desktop-scale: {{THEME_SOCIAL_DESKTOP_SCALE}};
+            
+            --mobile-footer-bg: {{THEME_MOBILE_FOOTER_BG}};
+            --mobile-footer-border-top: {{THEME_MOBILE_FOOTER_BORDER_TOP}};
+            --mobile-footer-shadow: {{THEME_MOBILE_FOOTER_SHADOW}};
+            --mobile-footer-height: {{THEME_MOBILE_FOOTER_HEIGHT}};
+            --copy-toast-bg: {{THEME_COPY_TOAST_BG}};
+            --copy-toast-text: {{THEME_COPY_TOAST_TEXT}};
+            --copy-toast-border: {{THEME_COPY_TOAST_BORDER}};
 
-/* INFO VIEW */
-.match-card {
-    background:#1a1d24;
-    border-radius:10px;
-    padding:30px;
-    text-align:center;
-}
-.league-badge {
-    display:inline-flex;
-    gap:10px;
-    align-items:center;
-    margin-bottom:20px;
-    opacity:.8;
-}
-.league-badge img { height:20px; }
-.teams {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin:30px 0;
-}
-.team {
-    flex:1;
-}
-.team img {
-    height:80px;
-    margin-bottom:10px;
-}
-.vs {
-    font-size:28px;
-    opacity:.5;
-}
-.meta {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:20px;
-    margin:20px 0;
-}
-.meta span { opacity:.7; }
-.btn-main {
-    display:block;
-    margin-top:20px;
-    padding:15px;
-    background:#ff0055;
-    border-radius:6px;
-    font-weight:700;
-    text-decoration:none;
-    color:#fff;
-}
-.btn-disabled {
-    background:#333;
-    cursor:default;
-}
+            --back-to-top-bg: {{THEME_BACK_TO_TOP_BG}};
+            --back-to-top-icon-color: {{THEME_BACK_TO_TOP_ICON_COLOR}};
+            --back-to-top-shadow: {{THEME_BACK_TO_TOP_SHADOW}};
+            --back-to-top-radius: {{THEME_BACK_TO_TOP_RADIUS}};
+            --back-to-top-size: {{THEME_BACK_TO_TOP_SIZE}};
 
-/* PLAYER */
-.player {
-    background:black;
-    aspect-ratio:16/9;
-}
-.player iframe {
-    width:100%;
-    height:100%;
-}
-.servers {
-    margin-top:20px;
-}
-.servers button {
-    margin:5px;
-    padding:8px 15px;
-    background:#222;
-    color:#fff;
-    border:none;
-    border-radius:4px;
-    cursor:pointer;
-}
-.servers button.active {
-    background:#ff0055;
-}
-</style>
+            --league-card-bg: {{THEME_LEAGUE_CARD_BG}};
+            --league-card-border: {{THEME_LEAGUE_CARD_BORDER}};
+            --league-card-text: {{THEME_LEAGUE_CARD_TEXT}};
+            --league-card-radius: {{THEME_LEAGUE_CARD_RADIUS}};
+            --league-card-hover-bg: {{THEME_LEAGUE_CARD_HOVER_BG}};
+            --league-card-hover-border: {{THEME_LEAGUE_CARD_HOVER_BORDER}};
+            --league-card-hover-text: {{THEME_LEAGUE_CARD_HOVER_TEXT}};
+            
+            /* ARTICLE */
+            --article-bg: {{THEME_ARTICLE_BG}};
+            --article-text: {{THEME_ARTICLE_TEXT}};
+            --article-line-height: {{THEME_ARTICLE_LINE_HEIGHT}};
+            --article-bullet: {{THEME_ARTICLE_BULLET_COLOR}};
+            --article-link: {{THEME_ARTICLE_LINK_COLOR}};
+            --article-h2-color: {{THEME_ARTICLE_H2_COLOR}};
+            --article-h2-border: {{THEME_ARTICLE_H2_BORDER}};
+            
+            /* SHOW MORE BUTTON (Used for Info Btn) */
+            --show-more-btn-bg: {{THEME_SHOW_MORE_BTN_BG}};
+            --show-more-btn-border: {{THEME_SHOW_MORE_BTN_BORDER}};
+            --show-more-btn-text: {{THEME_SHOW_MORE_BTN_TEXT}};
+            --show-more-btn-radius: {{THEME_SHOW_MORE_BTN_RADIUS}};
+            --show-more-btn-hover-bg: {{THEME_SHOW_MORE_BTN_HOVER_BG}};
+        }
+
+        /* --- RESET & BASE --- */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; font-family: var(--font-family-base); background: var(--bg-body); color: var(--text-main); font-size: 14px; overflow-x: hidden; padding-bottom: 80px; }
+        a { text-decoration: none; color: inherit; transition: 0.2s; }
+        button { cursor: pointer; border: none; font-family: inherit; }
+        
+        body::-webkit-scrollbar { width: 8px; }
+        body::-webkit-scrollbar-track { background: var(--bg-body); }
+        body::-webkit-scrollbar-thumb { background: {{THEME_SCROLLBAR_THUMB_COLOR}}; border-radius: 4px; }
+
+        /* --- HEADER & FOOTER STYLES (Copied for consistency) --- */
+        header { background: var(--header-bg); backdrop-filter: blur(10px); border-bottom: var(--header-border-bottom); height: 60px; width: 100%; position: relative; z-index: 100; }
+        @media (min-width: 900px) { header { position: fixed; top: 0; } body { padding-top: 60px; } }
+        .header-container { max-width: var(--header-max-width); margin: 0 auto; height: 100%; padding: 0 15px; display: flex; align-items: center; justify-content: space-between; position: relative; }
+        
+        .logo-link { display: flex; align-items: center; gap: 10px; }
+        .logo-img { height: var(--logo-image-size); width: var(--logo-image-size); border-radius: var(--border-radius-base); object-fit: cover; }
+        .logo-text { font-size: 1.4rem; font-weight: 900; font-style: italic; letter-spacing: -1px; text-transform: uppercase; line-height: 1; color: var(--logo-text-p1-color); }
+        .logo-text span { color: var(--logo-text-p2-color); }
+
+        .nav-links { display: none; gap: 20px; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: var(--header-text-color); height: 100%; }
+        .nav-links a { display: flex; align-items: center; height: 100%; border-bottom: 2px solid transparent; transition: all 0.2s ease; }
+        .nav-links a:hover { color: var(--header-link-hover-color); }
+        .nav-links a.highlighted { color: var(--header-highlight-color) !important; border-bottom-color: var(--header-highlight-color) !important; }
+        .nav-links a.highlighted:hover { color: var(--header-highlight-hover) !important; border-bottom-color: var(--header-highlight-hover) !important; }
+        
+        .hamburger { display: block; font-size: 1.4rem; color: var(--header-text-color); background: none; }
+        @media (min-width: 900px) { .nav-links { display: flex; } .hamburger { display: none; } }
+        .mobile-menu { position: absolute; top: 60px; left: 0; width: 100%; background: var(--bg-panel); border-bottom: var(--header-border-bottom); display: none; flex-direction: column; z-index: 99; }
+        .mobile-menu.active { display: flex; }
+        .mobile-menu a { padding: 15px 20px; border-bottom: 1px solid var(--border); font-weight: 600; color: var(--text-muted); }
+
+        footer { background: linear-gradient(180deg, var(--footer-bg-start) 0%, var(--footer-bg-end) 100%); border-top: var(--footer-border-top); padding: 60px 20px 30px 20px; margin-top: 60px; }
+        .footer-grid { width: 100%; max-width: var(--container-max-width); margin: 0 auto; display: flex; flex-direction: column; gap: 40px; text-align: center; }
+        @media(min-width: 768px) { 
+            .footer-grid.cols-2 { display: flex; flex-direction: row; justify-content: space-between; text-align: left; flex-wrap: wrap; }
+            .footer-grid.cols-2 > div:nth-child(2) { text-align: right; }
+            .footer-grid.cols-2 > div:nth-child(3) { width: 100%; text-align: center; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+            .footer-grid.cols-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; text-align: left; }
+            .footer-grid.cols-3 > div:nth-child(2) { text-align: center; }
+            .footer-grid.cols-3 > div:nth-child(3) { text-align: right; }
+        }
+        .f-brand h2 { margin: 0 0 15px 0; font-style: italic; text-transform: uppercase; color: #fff; letter-spacing: -1px; }
+        .f-links { display: flex; flex-direction: column; gap: 12px; }
+        .f-link { color: var(--footer-link-color); font-size: 0.9rem; font-weight: 500; }
+        .f-link:hover { color: var(--footer-link-hover-color); transform: var(--footer-link-hover-transform); }
+        .copyright { margin-top: 50px; border-top: 1px solid var(--border); padding-top: 25px; text-align: center; font-size: 0.75rem; color: var(--footer-copyright-color); }
+        .f-head { color: var(--footer-heading-color); margin-bottom: 15px; text-transform: uppercase; font-size: 0.9rem; font-weight: 700; }
+
+        /* --- WATCH PAGE SPECIFIC --- */
+        .container { max-width: var(--container-max-width); margin: 0 auto; padding: 20px 15px; min-height: 60vh; }
+        
+        .loading-box { text-align: center; padding: 50px; color: var(--text-muted); font-size: 1.1rem; }
+        .error-box { text-align: center; padding: 40px; border: 1px solid var(--border); background: rgba(239,68,68,0.1); color: #fca5a5; border-radius: var(--border-radius-base); margin-top: 20px; }
+
+        /* PLAYER (Stream Mode) */
+        .player-container { background: #000; border-radius: var(--border-radius-base); overflow: hidden; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; padding-top: 56.25%; /* 16:9 Aspect Ratio */ }
+        .player-frame { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        
+        .server-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; justify-content: center; }
+        .srv-btn { 
+            background: var(--bg-panel); border: 1px solid var(--border); color: var(--text-muted); 
+            padding: 10px 15px; border-radius: var(--button-border-radius); font-weight: 600; font-size: 0.9rem; 
+            transition: 0.2s; display: flex; align-items: center; gap: 6px;
+        }
+        .srv-btn:hover { border-color: var(--brand-primary); color: #fff; background: rgba(255,255,255,0.05); }
+        .srv-btn.active { background: var(--brand-primary); border-color: var(--brand-primary); color: #fff; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
+
+        /* INFO TABLE (Info Mode) */
+        .info-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--border-radius-base); padding: 20px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .match-header { text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+        .match-header h1 { margin: 0 0 10px 0; font-size: 1.5rem; color: #fff; font-family: var(--font-family-headings); }
+        .match-header .sub { color: var(--accent-gold); font-weight: 700; font-size: 0.9rem; text-transform: uppercase; }
+
+        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .info-table td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.95rem; }
+        .info-table td:first-child { color: var(--text-muted); font-weight: 600; width: 40%; }
+        .info-table td:last-child { color: var(--text-main); font-weight: 500; text-align: right; }
+        .info-table tr:last-child td { border-bottom: none; }
+
+        .big-watch-btn { 
+            display: block; width: 100%; text-align: center; background: var(--brand-primary); color: #fff; 
+            padding: 15px; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; 
+            border-radius: var(--button-border-radius); transition: 0.2s; margin-top: 20px; 
+            box-shadow: 0 4px 15px rgba(208,0,0,0.4); 
+        }
+        .big-watch-btn:hover { background: var(--brand-dark); transform: translateY(-2px); }
+
+        /* ARTICLE SECTION (Info Mode) */
+        .seo-article { background: var(--article-bg); color: var(--article-text); line-height: var(--article-line-height); padding: 20px; border-radius: var(--border-radius-base); margin-top: 40px; }
+        .seo-article h2 { color: var(--article-h2-color); border-bottom: var(--article-h2-border); padding-bottom: 10px; margin-top: 30px; font-size: 1.5rem; }
+        .seo-article p { margin-bottom: 15px; }
+
+        /* LOGO & LEAGUE CARDS (Reused) */
+        .logo-box { width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background: #fff; margin-right: 5px; }
+        .t-img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; }
+        
+        /* FOOTER LEAGUES */
+        .leagues-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 15px; }
+        .league-card { background: var(--league-card-bg); border: var(--league-card-border); color: var(--league-card-text); border-radius: var(--league-card-radius); padding: 10px 15px; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .league-card:hover { border: var(--league-card-hover-border); background: var(--league-card-hover-bg); color: var(--league-card-hover-text); transform: translateY(-2px); }
+        .l-icon { font-size: 1.1rem; }
+
+        /* SOCIAL SIDEBAR */
+        .social-sidebar { position: fixed; left: 0; top: var(--social-desktop-top); transform: translateY(-50%) scale(var(--social-desktop-scale)); z-index: 90; display: flex; flex-direction: column; gap: 8px; background: var(--social-sidebar-bg); border: 1px solid var(--social-sidebar-border); border-left: none; padding: 12px 8px; border-radius: 0 var(--border-radius-base) var(--border-radius-base) 0; box-shadow: var(--social-sidebar-shadow); backdrop-filter: blur(5px); }
+        .social-btn { width: 44px; padding: 6px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--social-btn-color); background: var(--social-btn-bg); border: 1px solid var(--social-btn-border); border-radius: var(--border-radius-base); transition: 0.2s; cursor: pointer; }
+        .social-btn:hover { background: var(--social-btn-hover-bg); border-color: var(--social-btn-hover-border); transform: var(--social-btn-hover-transform); }
+        .s-count { font-size: 0.65rem; font-weight: 700; color: var(--social-count-color); }
+        .social-btn svg { width: 20px; height: 20px; fill: currentColor; }
+        .social-btn.telegram { color: #0088cc; } .social-btn.whatsapp { color: #25D366; } .social-btn.reddit { color: #FF4500; } .social-btn.twitter { color: #1DA1F2; }
+        @media (max-width: 1024px) { .social-sidebar { display: none; } }
+
+        .mobile-sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--mobile-footer-bg); backdrop-filter: blur(10px); border-top: var(--mobile-footer-border-top); padding: 0 5px; display: none; justify-content: space-between; align-items: center; z-index: 900; height: var(--mobile-footer-height); box-shadow: var(--mobile-footer-shadow); }
+        .mobile-sticky-footer .social-btn { border: none; flex: 1; height: 100%; background: transparent; transform: none !important; }
+        @media (max-width: 1024px) { .mobile-sticky-footer { display: flex; } }
+
+        .copy-toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: var(--copy-toast-bg); border: 1px solid var(--copy-toast-border); color: var(--copy-toast-text); padding: 8px 14px; font-size: 0.75rem; border-radius: var(--border-radius-base); z-index: 9999; opacity: 0; animation: fadeToast 1.6s ease forwards; }
+        @keyframes fadeToast { 0% { opacity: 0; transform: translate(-50%, 10px); } 20% { opacity: 1; transform: translate(-50%, 0); } 80% { opacity: 1; } 100% { opacity: 0; } }
+
+        .back-to-top { position: fixed; bottom: 30px; right: 20px; background: var(--back-to-top-bg); width: var(--back-to-top-size); height: var(--back-to-top-size); border-radius: var(--back-to-top-radius); display: flex; align-items: center; justify-content: center; color: var(--back-to-top-icon-color); cursor: pointer; opacity: 0; visibility: hidden; transition: 0.3s; z-index: 90; box-shadow: var(--back-to-top-shadow); }
+        .back-to-top.show { opacity: 1; visibility: visible; }
+        .back-to-top svg { width: 24px; height: 24px; fill: currentColor; }
+    </style>
 </head>
-
 <body>
 
-<div class="watch-wrapper">
+    <div id="socialSidebar" class="social-sidebar"></div>
 
-<!-- EMPTY -->
-<div id="empty-view" class="hidden">
-    <h2>Match not found</h2>
-</div>
-
-<!-- INFO -->
-<div id="info-view" class="hidden">
-    <div class="match-card">
-        <div class="league-badge">
-            <img id="league-logo">
-            <strong id="league-name"></strong>
+    <header class="{{HEADER_CLASSES}}">
+        <div class="header-container">
+            <a href="/" class="logo-link">{{LOGO_HTML}}</a>
+            <nav class="nav-links" id="desktopNav">{{HEADER_MENU}}</nav>
+            <button class="hamburger" onclick="toggleMenu()">☰</button>
         </div>
+    </header>
+    <div class="mobile-menu" id="mobileMenu">{{HEADER_MENU}}</div>
 
-        <div class="teams">
-            <div class="team">
-                <img id="home-logo">
-                <div id="home-name"></div>
-            </div>
-            <div class="vs">VS</div>
-            <div class="team">
-                <img id="away-logo">
-                <div id="away-name"></div>
-            </div>
-        </div>
-
-        <div class="meta">
-            <div>
-                <span>Status</span>
-                <div id="match-status"></div>
-            </div>
-            <div>
-                <span>Time</span>
-                <div id="match-time"></div>
-            </div>
-        </div>
-
-        <div id="info-action"></div>
-    </div>
-
-    <div id="info-article" style="margin-top:40px;opacity:.7"></div>
-</div>
-
-<!-- LIVE -->
-<div id="live-view" class="hidden">
-    <div class="player">
-        <iframe id="player-frame" allowfullscreen></iframe>
-    </div>
-
-    <div class="servers" id="server-list"></div>
-    <h1 id="live-title" style="margin-top:20px"></h1>
-</div>
-
-</div>
-
-<script>
-const API_URL = "{{API_URL}}";
-const PARAM_INFO = "{{PARAM_INFO}}" || "info";
-const PARAM_LIVE = "{{PARAM_LIVE}}" || "live";
-
-/* INIT */
-(async function () {
-    const params = new URLSearchParams(location.search);
-    const hash = params.get(PARAM_INFO) || params.get(PARAM_LIVE);
-    const mode = params.has(PARAM_LIVE) ? "live" : "info";
-
-    if (!hash) return showEmpty();
-
-    try {
-        const res = await fetch(API_URL);
-        const data = await res.json();
+    <main class="container">
         
-        // Debug: Check what the API actually returned
-        console.log("API Data:", data);
+        <!-- STATE 1: LOADING -->
+        <div id="loadingView" class="loading-box">Finding Match...</div>
 
-        // Find match (adjust logic if your API structure differs)
-        const match = data.matches.find(m => extractHash(m.id) === hash);
+        <!-- STATE 2: EMPTY ROOT (No Params) -->
+        <div id="emptyView" style="display:none; text-align:center; padding-top:50px;">
+            <h2 style="color:var(--text-muted)">Select a match to watch</h2>
+            <a href="/" class="srv-btn" style="display:inline-flex; margin-top:10px;">Go Home</a>
+        </div>
 
-        if (!match) {
-            console.error("Match not found for hash:", hash);
-            return showEmpty();
-        }
+        <!-- STATE 3: ERROR -->
+        <div id="errorView" class="error-box" style="display:none;"></div>
 
-        render(match, mode);
-    } catch (e) {
-        console.error("Error loading data:", e);
-    }
-})();
+        <!-- STATE 4: STREAM VIEW (Live Player) -->
+        <div id="streamView" style="display:none;">
+            <div class="match-header" style="text-align:left; border:none; margin-bottom:15px;">
+                <h1 id="stream-h1" style="font-size:1.2rem; display:flex; align-items:center; gap:10px;">Loading...</h1>
+            </div>
+            
+            <div class="player-container">
+                <iframe id="mainPlayer" class="player-frame" src="" allowfullscreen scrolling="no" allow="encrypted-media"></iframe>
+            </div>
 
-/* CORE */
-function render(m, mode) {
-    normalize(m);
-    
-    // Debug: Check how data looks after normalization
-    console.log("Normalized Match Data:", m);
+            <div class="server-list" id="serverContainer"></div>
+            
+            <!-- Safe Links for Live View (Redirects to Info View) -->
+            <div style="margin-top:20px; text-align:center;">
+                <button id="gotoInfoBtn" class="srv-btn" style="margin:0 auto;">View Match Details & Info</button>
+            </div>
+        </div>
 
-    if (mode === "info") renderInfo(m);
-    else renderLive(m);
-}
+        <!-- STATE 5: INFO VIEW (SEO/Table) -->
+        <div id="infoView" style="display:none;">
+            <div class="info-card">
+                <div class="match-header">
+                    <div class="sub" id="info-league">League</div>
+                    <h1 id="info-h1">Team A vs Team B</h1>
+                    <div style="color:var(--text-muted); font-size:0.9rem; margin-top:5px;" id="info-time">--:--</div>
+                </div>
 
-/* INFO */
-function renderInfo(m) {
-    document.getElementById("info-view").classList.remove("hidden");
-    document.title = `Watch ${m.home} vs ${m.away}`;
+                <table class="info-table">
+                    <tr><td>Status</td><td id="tbl-status">Upcoming</td></tr>
+                    <tr><td>Competition</td><td id="tbl-league">--</td></tr>
+                    <tr><td>Home Team</td><td id="tbl-home">--</td></tr>
+                    <tr><td>Away Team</td><td id="tbl-away">--</td></tr>
+                    <tr><td>Date</td><td id="tbl-date">--</td></tr>
+                    <tr><td>Time</td><td id="tbl-time">--</td></tr>
+                </table>
 
-    set("league-name", m.league);
-    set("home-name", m.home);
-    set("away-name", m.away);
-    set("match-time", m.time);
-    set("match-status", m.is_live ? "LIVE NOW" : "Upcoming");
+                <button id="startWatchBtn" class="big-watch-btn">📺 Watch Live Stream</button>
+            </div>
 
-    // Handle images safely
-    if(m.home_logo) document.getElementById("home-logo").src = m.home_logo;
-    if(m.away_logo) document.getElementById("away-logo").src = m.away_logo;
-    if(m.league_logo) document.getElementById("league-logo").src = m.league_logo;
+            <!-- Dynamic SEO Article -->
+            <div id="seo-article-container" class="seo-article"></div>
+        </div>
 
-    const act = document.getElementById("info-action");
-    if (m.is_live) {
-        act.innerHTML = `<a class="btn-main" href="?${PARAM_LIVE}=${extractHash(m.id)}">▶ Watch Live</a>`;
-    } else {
-        act.innerHTML = `<div class="btn-main btn-disabled">Starts Soon</div>`;
-    }
+        <div id="footer-leagues-section" class="section-box" style="margin-top:50px;">
+            <div class="sec-head" style="border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:15px;">
+                <h2 style="font-size:1.1rem; color:#fff; margin:0;">🏆 Popular Leagues</h2>
+            </div>
+            <div class="leagues-grid">{{FOOTER_LEAGUES}}</div>
+        </div>
 
-    document.getElementById("info-article").innerHTML =
-        `<h1>${m.home} vs ${m.away}</h1>
-         <p>Watch ${m.home} vs ${m.away} live online in ${m.league}.</p>`;
-}
+    </main>
 
-/* LIVE */
-function renderLive(m) {
-    document.getElementById("live-view").classList.remove("hidden");
+    <footer class="{{FOOTER_CLASSES}}">
+        {{FOOTER_GRID_CONTENT}}
+        <div class="copyright">{{FOOTER_COPYRIGHT}}</div>
+    </footer>
 
-    document.title = `${m.home} vs ${m.away} Live`;
-    document.getElementById("live-title").textContent = `${m.home} vs ${m.away} Live Stream`;
+    <div id="mobileFooter" class="mobile-sticky-footer"></div>
 
-    // Check if streams exist
-    if (!m.streams || !m.streams.length) {
-        console.warn("No streams found for this match.");
-        document.getElementById("server-list").innerHTML = "<p>No streams available yet.</p>";
-        return;
-    }
+    <button id="backToTop" class="back-to-top" onclick="window.scrollTo(0,0)">
+        <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+    </button>
 
-    // Load first stream
-    loadStream(m.streams[0].url);
+    <script>
+        // ==========================================
+        // 1. CONFIGURATION & MAPS
+        // ==========================================
+        const API_URL = "{{API_URL}}";
+        const PARAM_LIVE = "{{PARAM_LIVE}}"; // e.g. 'stream'
+        const PARAM_INFO = "{{PARAM_INFO}}"; // e.g. 'info'
+        const TARGET_COUNTRY = "{{TARGET_COUNTRY}}";
+        const SITE_NAME = "{{SITE_NAME}}";
+        const DOMAIN = "{{DOMAIN}}";
+        
+        // Maps injected by Build Script
+        const LEAGUE_MAP = {{JS_LEAGUE_MAP}}; 
+        const IMAGE_MAP = {{JS_IMAGE_MAP}};
 
-    const list = document.getElementById("server-list");
-    list.innerHTML = ""; // Clear previous buttons
-    
-    m.streams.forEach((s,i)=>{
-        const b = document.createElement("button");
-        b.textContent = s.name || `Server ${i+1}`;
-        if(i===0) b.classList.add("active");
-        b.onclick = ()=>{
-            loadStream(s.url);
-            document.querySelectorAll(".servers button").forEach(x=>x.classList.remove("active"));
-            b.classList.add("active");
+        const SHARE_CONFIG = { counts: { telegram: 1240, whatsapp: 850, reddit: 340, twitter: 510 } };
+        
+        // --- NAME FIXES (Copied from Master) ---
+        const NAME_FIXES = {
+            "icehockey": "Ice Hockey", "fieldhockey": "Field Hockey",
+            "tabletennis": "Table Tennis", "americanfootball": "American Football",
+            "australianfootball": "AFL", "basketball": "Basketball",
+            "football": "Football", "soccer": "Soccer", "baseball": "Baseball",
+            "fighting": "Fighting", "mma": "MMA", "boxing": "Boxing",
+            "motorsport": "Motorsport", "golf": "Golf"
         };
-        list.appendChild(b);
-    });
-}
 
-/* HELPERS */
-function extractHash(id) {
-    // Ensure id is a string before splitting
-    return String(id).split("-").pop();
-}
+        // ==========================================
+        // 2. CORE LOGIC
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', init);
 
-function normalize(m) {
-    // 1. SAFE ASSIGNMENT (Check multiple possible keys from API)
-    m.home = m.home_team || m.home || "Home Team";
-    m.away = m.away_team || m.away || "Away Team";
-    m.league = m.league || m.competition_name || "Match";
-    
-    // 2. FIX TIMESTAMP (Seconds vs Milliseconds)
-    let ts = m.timestamp || m.startTimeUnix || m.start_time;
-    if (ts) {
-        // If timestamp is in seconds (e.g., 1700000000), convert to ms
-        if (typeof ts === 'number' && ts < 10000000000) {
-            ts = ts * 1000;
+        async function init() {
+            renderSocials(); // Initial render
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const streamIdFull = urlParams.get(PARAM_LIVE);
+            const infoIdFull = urlParams.get(PARAM_INFO);
+
+            // 1. Root Check
+            if (!streamIdFull && !infoIdFull) {
+                showView('empty');
+                return;
+            }
+
+            // 2. Hash Extraction
+            const rawId = streamIdFull || infoIdFull;
+            const targetHash = extractHash(rawId);
+
+            if (!targetHash) {
+                showError("Invalid Match ID format.");
+                return;
+            }
+
+            // 3. Fetch & Match
+            try {
+                const res = await fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`);
+                if (!res.ok) throw new Error("API Error");
+                const data = await res.json();
+                
+                // Match Logic: Hash to Hash
+                const match = data.matches.find(m => extractHash(m.id) === targetHash);
+
+                if (!match) {
+                    showError("Match not found or ended.");
+                    return;
+                }
+
+                // 4. Normalize Data
+                const normData = normalizeMatchData(match);
+
+                // 5. Render based on Mode
+                if (streamIdFull) {
+                    renderStreamMode(normData, rawId); // Pass rawId to allow switching back to Info
+                } else {
+                    renderInfoMode(normData);
+                }
+
+                // 6. Update Social Links (Always Info Link)
+                updateSocialLinks(infoIdFull || streamIdFull);
+
+            } catch (e) {
+                console.error(e);
+                showError("Unable to load match data.");
+            }
         }
-        m.time = new Date(ts).toLocaleString();
-    } else {
-        m.time = "TBD";
-    }
 
-    // 3. FIX STREAMS (Map to standard array)
-    m.streams = m.stream_channels || m.streams || m.sources || [];
+        // ==========================================
+        // 3. RENDERERS
+        // ==========================================
+        
+        function renderInfoMode(m) {
+            showView('info');
+            
+            // A. Set SEO Tags (Index)
+            document.title = `Watch ${m.home} vs ${m.away} Live Stream - ${m.league} | ${SITE_NAME}`;
+            setMeta('robots', 'index, follow');
+            setMeta('description', `Watch ${m.home} vs ${m.away} live stream online. ${m.league} match schedule, time, and preview.`);
 
-    // 4. FIX IMAGES (Correct the typo 'sofascrore' -> 'sofascore')
-    // We check deeper keys safely using optional chaining (?.)
-    m.home_logo = m.home_team_image?.sofascore || m.home_logo || m.home_team_logo || "";
-    m.away_logo = m.away_team_image?.sofascore || m.away_logo || m.away_team_logo || "";
-    m.league_logo = m.league_image?.sofascore || m.league_logo || "";
-    
-    // 5. STATUS
-    // If API doesn't have is_live, infer it from streams existence or status string
-    if (typeof m.is_live === 'undefined') {
-        m.is_live = (m.streams.length > 0); 
-    }
-}
+            // B. Populate Data
+            setText('info-league', m.league);
+            setText('info-h1', `${m.home} vs ${m.away}`);
+            setText('info-time', m.dateTimeStr);
+            
+            setText('tbl-status', m.isLive ? "LIVE NOW" : "Upcoming");
+            setText('tbl-league', m.league);
+            setText('tbl-home', m.home);
+            setText('tbl-away', m.away);
+            setText('tbl-date', m.dateOnly);
+            setText('tbl-time', m.timeOnly);
 
-function set(id,val){ 
-    const el = document.getElementById(id);
-    if(el) el.textContent = val; 
-}
-function loadStream(u){ 
-    document.getElementById("player-frame").src = u; 
-}
-function showEmpty(){ 
-    document.getElementById("empty-view").classList.remove("hidden"); 
-}
-</script>
+            // C. Button Logic
+            const btn = document.getElementById('startWatchBtn');
+            btn.onclick = () => window.location.href = `?${PARAM_LIVE}=${m.originalId}`; // Use original ID from API
+
+            // D. Generate Dynamic Article
+            generateArticle(m);
+            
+            // E. Schema
+            generateSchema(m);
+        }
+
+        function renderStreamMode(m, currentUrlId) {
+            showView('stream');
+            
+            // A. Set SEO Tags (NoIndex)
+            document.title = `Live: ${m.home} vs ${m.away}`;
+            setMeta('robots', 'noindex, nofollow');
+            
+            // B. UI Elements
+            const h1 = document.getElementById('stream-h1');
+            const sportIcon = getSportIcon(m.sport);
+            h1.innerHTML = `<span style="color:var(--brand-primary)">${sportIcon}</span> ${m.home} <span style="font-size:0.8em; color:var(--text-muted)">vs</span> ${m.away}`;
+            
+            // C. Player & Channels
+            const player = document.getElementById('mainPlayer');
+            const serverBox = document.getElementById('serverContainer');
+            serverBox.innerHTML = '';
+
+            if (m.channels && m.channels.length > 0) {
+                // Load first channel
+                player.src = m.channels[0].url;
+
+                // Build Buttons
+                m.channels.forEach((ch, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = idx === 0 ? 'srv-btn active' : 'srv-btn';
+                    btn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14zM8 15c0-1.66 1.34-3 3-3 .35 0 .69.07 1 .18V6h5v2h-3v7.03A3.003 3.003 0 0 1 11 18a3 3 0 0 1-3-3z"/></svg> ${ch.name}`;
+                    btn.onclick = () => {
+                        document.querySelectorAll('.srv-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        player.src = ch.url;
+                    };
+                    serverBox.appendChild(btn);
+                });
+            } else {
+                serverBox.innerHTML = '<div style="color:#fca5a5">No streams available at the moment.</div>';
+            }
+
+            // D. Back to Info Link
+            document.getElementById('gotoInfoBtn').onclick = () => window.location.href = `?${PARAM_INFO}=${currentUrlId}`;
+        }
+
+        // ==========================================
+        // 4. DATA HELPER FUNCTIONS
+        // ==========================================
+        
+        function extractHash(str) {
+            if(!str) return null;
+            const parts = str.split('-');
+            return parts[parts.length - 1];
+        }
+
+        function normalizeMatchData(m) {
+            // Re-use logic from master template
+            const homeSlug = slugify(m.home_team);
+            const awaySlug = slugify(m.away_team);
+            
+            // Resolve League
+            let leagueName = "Unknown League";
+            // 1. Map Check
+            if (LEAGUE_MAP && LEAGUE_MAP[homeSlug]) leagueName = LEAGUE_MAP[homeSlug];
+            // 2. Prefix Check
+            else if (m.home_team.includes(':')) leagueName = m.home_team.split(':')[0].trim();
+            // 3. Fallback
+            else {
+                let raw = (m.league || m.sport || "Other").trim();
+                let k = raw.toLowerCase().replace(/\s/g, '');
+                leagueName = NAME_FIXES[k] || raw;
+            }
+
+            // Clean Names
+            const cleanHome = getCleanTeamName(m.home_team, homeSlug, leagueName);
+            const cleanAway = getCleanTeamName(m.away_team, awaySlug, leagueName);
+            
+            // Time Formatting
+            const timeObj = formatTime(m.startTimeUnix);
+
+            return {
+                originalId: m.id,
+                home: cleanHome,
+                away: cleanAway,
+                league: leagueName,
+                sport: m.sport || "General",
+                isLive: m.is_live,
+                timestamp: m.startTimeUnix,
+                dateTimeStr: `${timeObj.date} at ${timeObj.time}`,
+                dateOnly: timeObj.date,
+                timeOnly: timeObj.time,
+                channels: m.stream_channels || []
+            };
+        }
+
+        function getCleanTeamName(raw, slug, leagueName) {
+            if (!raw || raw === "TBA") return "TBA";
+            if (LEAGUE_MAP && LEAGUE_MAP[slug]) return unslugify(slug); // Map is source of truth
+            
+            let clean = raw;
+            if (leagueName) {
+                try {
+                    const safe = leagueName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    clean = clean.replace(new RegExp(`^${safe}:\\s*`, 'i'), '');
+                } catch(e){}
+            }
+            return clean.replace(/^(NHL|NBA|NFL|MLB|UFC):\s*/i, '').trim();
+        }
+
+        function generateArticle(m) {
+            const container = document.getElementById('seo-article-container');
+            // Entity Stacking Article Generation
+            const art = `
+                <h2>Watch ${m.home} vs ${m.away} Live Stream</h2>
+                <p>Sports fans can watch <strong>${m.home}</strong> take on <strong>${m.away}</strong> in the <strong>${m.league}</strong> today. The match is scheduled for <strong>${m.dateTimeStr}</strong> and promises to be an exciting contest.</p>
+                <h3>Match Details</h3>
+                <ul>
+                    <li><strong>Teams:</strong> ${m.home} vs ${m.away}</li>
+                    <li><strong>Competition:</strong> ${m.league}</li>
+                    <li><strong>Date:</strong> ${m.dateOnly}</li>
+                    <li><strong>Time:</strong> ${m.timeOnly}</li>
+                    <li><strong>Venue:</strong> ${m.home} Stadium</li>
+                </ul>
+                <p>Don't miss a moment of the action. Catch the full coverage of ${m.home} vs ${m.away} live on <strong>${SITE_NAME}</strong>. We provide high-quality streams for ${m.league} events and other major sports.</p>
+            `;
+            container.innerHTML = art;
+        }
+
+        function generateSchema(m) {
+            const schema = {
+                "@context": "https://schema.org",
+                "@type": "SportsEvent",
+                "name": `${m.home} vs ${m.away}`,
+                "startDate": new Date(m.timestamp).toISOString(),
+                "description": `Watch ${m.home} vs ${m.away} live.`,
+                "sport": m.sport,
+                "competitor": [
+                    { "@type": "SportsTeam", "name": m.home },
+                    { "@type": "SportsTeam", "name": m.away }
+                ],
+                "organizer": { "@type": "Organization", "name": SITE_NAME, "url": `https://${DOMAIN}` },
+                "offers": { "@type": "Offer", "url": window.location.href, "availability": "https://schema.org/InStock", "price": "0" }
+            };
+            
+            const s = document.createElement('script');
+            s.type = 'application/ld+json';
+            s.text = JSON.stringify(schema);
+            document.head.appendChild(s);
+        }
+
+        function updateSocialLinks(idParam) {
+            // Force Social Links to share the INFO version for SEO
+            const infoUrl = `https://${DOMAIN}/watch/?${PARAM_INFO}=${idParam}`;
+            const u = encodeURIComponent(infoUrl);
+            
+            const makeUrl = (p) => {
+                if(p==='telegram') return `https://t.me/share/url?url=${u}`;
+                if(p==='whatsapp') return `https://api.whatsapp.com/send?text=${u}`;
+                if(p==='reddit') return `https://www.reddit.com/submit?url=${u}`;
+                if(p==='twitter') return `https://twitter.com/intent/tweet?url=${u}`;
+                return null;
+            };
+
+            const icons = { 
+                telegram: '<svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.47-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.28L19.84 4c.75-.28 1.4.52 1.16 1.76l-2.8 13.2c-.2.9-1.09.9-1.8.6l-5.45-4.06-2.6 2.5c-.3.3-.55.55-1.1.55l.45-3.6z"/></svg>', 
+                whatsapp: '<svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.33 4.97L2 22l5.25-1.38a9.86 9.86 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.51 2 12.04 2zm4.43-6.03c-.24-.12-1.41-.7-1.63-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.48-.4-.42-.54-.42h-.46c-.16 0-.42.06-.64.3C4.33 8.6 3.5 9.2 3.5 10.38c0 1.18.86 2.32.98 2.48.12.16 1.7 2.6 4.12 3.65.58.25 1.03.4 1.38.51.58.18 1.1.15 1.52.09.46-.07 1.41-.58 1.61-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg>', 
+                reddit: '<svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.22 14.11c-.13.26-.35.45-.6.54-.25.09-.52.1-.78.01-.8-.28-1.76-.43-2.77-.43s-1.97.15-2.77.43c-.26.09-.53.08-.78-.01-.25-.09-.47-.28-.6-.54-.15-.3-.19-.64-.11-.96.08-.32.28-.59.56-.75.9-.53 2.05-.83 3.28-.88l.66-3.11 2.16.46c.04-.2.15-.38.31-.51s.36-.2.55-.17c.2.03.38.15.51.31.13.16.2.36.17.55l-2.16-.46-.66 3.11c1.23.05 2.38.35 3.28.88.28.16.48.43.56.75.08.32.04.66-.11.96zM12 11.25c-.97 0-1.75.78-1.75 1.75s.78 1.75 1.75 1.75 1.75-.78 1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75zm-3.25-2.5c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25zm6.5 0c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25z"/></svg>', 
+                twitter: '<svg viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>', 
+                copy: '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>' 
+            };
+            
+            let html = '';
+            ['telegram', 'whatsapp', 'reddit', 'twitter', 'copy'].forEach(p => {
+                const count = SHARE_CONFIG.counts[p] ? ((n)=>(n>=1000?(n/1000).toFixed(1)+'k':n))(SHARE_CONFIG.counts[p]) : '';
+                const onclick = p === 'copy' ? `copyText('${infoUrl}')` : `window.open('${makeUrl(p)}', '_blank')`;
+                html += `<div class="social-btn ${p}" onclick="${onclick}">${icons[p]}<span class="s-count">${count}</span></div>`;
+            });
+            
+            if(document.getElementById('socialSidebar')) document.getElementById('socialSidebar').innerHTML = html;
+            if(document.getElementById('mobileFooter')) document.getElementById('mobileFooter').innerHTML = html;
+        }
+
+        // --- UTILS ---
+        function renderSocials() { /* Placeholder - called later with ID */ }
+        function showView(id) { 
+            document.querySelectorAll('main > div').forEach(d => {
+                // Keep footer leagues visible
+                if (d.id !== 'footer-leagues-section') d.style.display = 'none';
+            });
+            document.getElementById(id + 'View').style.display = 'block'; 
+        }
+        function showError(msg) { 
+            showView('error'); 
+            document.getElementById('errorView').innerText = msg; 
+        }
+        function setMeta(name, content) {
+            let meta = document.querySelector(`meta[name="${name}"]`);
+            if(!meta) { meta = document.createElement('meta'); meta.name = name; document.head.appendChild(meta); }
+            meta.content = content;
+        }
+        function setText(id, txt) { 
+            const el = document.getElementById(id); 
+            if(el) el.innerText = txt || '--'; 
+        }
+        function slugify(text) { return (text || "").toString().toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/^-+|-+$/g, ''); }
+        function unslugify(slug) { return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '); }
+        function formatTime(unix) {
+            if(!unix) return { time: "--:--", date: "--" };
+            const isUK = (typeof TARGET_COUNTRY !== 'undefined' && TARGET_COUNTRY === 'UK');
+            const timeZone = isUK ? 'Europe/London' : 'America/New_York';
+            const suffix = isUK ? ' GMT' : ' ET';
+            try {
+                const d = new Date(unix);
+                const t = new Intl.DateTimeFormat('en-US', {hour: 'numeric', minute: '2-digit', hour12: true, timeZone}).format(d);
+                const dt = new Intl.DateTimeFormat('en-US', {month: 'short', day: 'numeric', timeZone}).format(d);
+                return { time: t + suffix, date: dt };
+            } catch (e) { return { time: "--:--", date: "--" }; }
+        }
+        function getSportIcon(n) { n=(n||"").toLowerCase(); if(n.includes('soccer')||n.includes('premier')) return '⚽'; if(n.includes('basket')||n.includes('nba')) return '🏀'; if(n.includes('football')||n.includes('nfl')) return '🏈'; if(n.includes('baseball')||n.includes('mlb')) return '⚾'; if(n.includes('fight')||n.includes('ufc')||n.includes('box')||n.includes('mma')) return '🥊'; if(n.includes('motor')||n.includes('f1')) return '🏎️'; return '🏆'; }
+        function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
+        function copyText(text) { navigator.clipboard.writeText(text); const t = document.createElement('div'); t.className = 'copy-toast'; t.innerText = 'Link copied ✓'; document.body.appendChild(t); setTimeout(() => t.remove(), 1600); }
+    </script>
+</body>
 </html>
