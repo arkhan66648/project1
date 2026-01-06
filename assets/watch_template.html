@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- INITIAL META: Kept Neutral/Empty to force Search Engines to wait for JS injection -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -323,6 +324,50 @@
             }
             .layout-sidebar { height: auto; }
         }
+        /* --- CHAT WIDGET STYLES --- */
+        .chat-wrapper {
+            display: flex; flex-direction: column; height: 500px; /* Fixed height for sticky sidebar */
+            position: relative; background: var(--bg-panel);
+        }
+        .chat-messages {
+            flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px;
+            scroll-behavior: smooth;
+        }
+        /* Scrollbar for chat */
+        .chat-messages::-webkit-scrollbar { width: 5px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+        .chat-msg { font-size: 0.85rem; line-height: 1.4; word-wrap: break-word; }
+        .chat-msg strong { color: var(--brand-primary); font-weight: 700; margin-right: 5px; }
+        .chat-msg span { color: var(--text-main); }
+        .chat-msg.system { color: var(--text-muted); font-style: italic; font-size: 0.75rem; text-align: center; }
+
+        .chat-controls {
+            padding: 10px; border-top: 1px solid var(--border); display: flex; gap: 5px;
+            background: rgba(0,0,0,0.2);
+        }
+        #chatInput {
+            flex: 1; background: #000; border: 1px solid var(--border); color: #fff;
+            padding: 8px; border-radius: 4px; font-size: 0.85rem; outline: none;
+        }
+        #chatInput:focus { border-color: var(--brand-primary); }
+        #chatSendBtn {
+            background: var(--brand-primary); color: #fff; width: 36px; border-radius: 4px;
+            font-size: 1rem; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Overlay for "Join Chat" (Saves Quota) */
+        .chat-overlay {
+            position: absolute; inset: 0; background: rgba(15, 23, 42, 0.95);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 10; padding: 20px; text-align: center; backdrop-filter: blur(2px);
+        }
+        .chat-overlay h3 { margin: 0 0 10px 0; color: #fff; font-size: 1.1rem; }
+        .chat-overlay p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px; }
+        #usernameInput {
+            width: 100%; padding: 10px; margin-bottom: 10px; background: #000;
+            border: 1px solid var(--border); color: #fff; border-radius: 4px; text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -409,12 +454,31 @@
             </div>
         </div>
 
-        <!-- 3. RIGHT SIDEBAR (Sticky Chat) -->
         <aside class="layout-sidebar sidebar-right">
-            <div class="chat-header">Live Chat</div>
-            <div class="chat-body" id="chatContainer">
-                <!-- Chat Embed Code will go here later -->
-                <span>Loading Chat...</span>
+            <div class="chat-header">
+                Live Chat <span id="liveCount" style="font-size:0.75rem; color:var(--brand-primary); margin-left:5px;">● Offline</span>
+            </div>
+            
+            <div class="chat-wrapper">
+                <!-- Messages Area -->
+                <div id="chatMessages" class="chat-messages">
+                    <div class="chat-msg system">Welcome to the live chat!</div>
+                </div>
+
+                <!-- Input Area (Hidden until joined) -->
+                <div id="chatControls" class="chat-controls" style="display:none;">
+                    <input type="text" id="chatInput" placeholder="Message..." maxlength="200">
+                    <button id="chatSendBtn" onclick="sendMessage()">➤</button>
+                </div>
+
+                <!-- Gatekeeper Overlay -->
+                <div id="chatOverlay" class="chat-overlay">
+                    <h3>Join Conversation</h3>
+                    <p>Enter a nickname to chat with others watching this match.</p>
+                    <input type="text" id="usernameInput" placeholder="Display Name" maxlength="15">
+                    <button id="joinChatBtn" class="srv-btn active" onclick="joinChat()">Join Room</button>
+                    <small style="color:#ef4444; margin-top:10px; display:none;" id="chatError"></small>
+                </div>
             </div>
         </aside>
 
@@ -810,6 +874,161 @@
         function getSportIcon(n) { n=(n||"").toLowerCase(); if(n.includes('soccer')||n.includes('premier')) return '⚽'; if(n.includes('basket')||n.includes('nba')) return '🏀'; if(n.includes('football')||n.includes('nfl')) return '🏈'; if(n.includes('baseball')||n.includes('mlb')) return '⚾'; if(n.includes('fight')||n.includes('ufc')||n.includes('box')||n.includes('mma')) return '🥊'; if(n.includes('motor')||n.includes('f1')) return '🏎️'; return '🏆'; }
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
         function copyText(text) { navigator.clipboard.writeText(text); const t = document.createElement('div'); t.className = 'copy-toast'; t.innerText = 'Link copied ✓'; document.body.appendChild(t); setTimeout(() => t.remove(), 1600); }
+        // ==========================================
+        // 5. SUPABASE CHAT LOGIC
+        // ==========================================
+        const SUPA_URL = "https://dyqrcabbnwpumsgoylao.supabase.co"; // Your Project URL
+        const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5cXJjYWJibndwdW1zZ295bGFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTYzMDksImV4cCI6MjA4MzI3MjMwOX0.W1zMjTuQ3ZatD6J2XLIb0rKWJGlMLuN-jrXU7mITMvg"; // REPLACE THIS VIA ADMIN/PYTHON
+        
+        let supabase = null;
+        let chatChannel = null;
+        let currentUser = localStorage.getItem('chat_username') || "";
+        let currentHash = null;
+
+        // Auto-fill username if exists
+        if(currentUser && document.getElementById('usernameInput')) {
+            document.getElementById('usernameInput').value = currentUser;
+        }
+
+        async function joinChat() {
+            const userField = document.getElementById('usernameInput');
+            const nick = userField.value.trim();
+            const errBox = document.getElementById('chatError');
+            const btn = document.getElementById('joinChatBtn');
+
+            if (nick.length < 2) {
+                errBox.innerText = "Name too short!";
+                errBox.style.display = 'block';
+                return;
+            }
+
+            // 1. Save User
+            currentUser = nick;
+            localStorage.setItem('chat_username', currentUser);
+            
+            // 2. UI Loading State
+            btn.innerText = "Connecting...";
+            btn.disabled = true;
+            errBox.style.display = 'none';
+
+            // 3. Extract Hash ID for Room
+            const urlParams = new URLSearchParams(window.location.search);
+            const rawId = urlParams.get(PARAM_LIVE) || urlParams.get(PARAM_INFO);
+            currentHash = extractHash(rawId);
+
+            if (!currentHash) {
+                errBox.innerText = "Error: No Match ID found.";
+                return;
+            }
+
+            // 4. Initialize Supabase
+            try {
+                if (!supabase) {
+                    supabase = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+                }
+
+                // 5. Load Recent History
+                const { data, error } = await supabase
+                    .from('messages')
+                    .select('*')
+                    .eq('match_id', currentHash)
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+
+                if (!error && data) {
+                    // Render history (reverse because we fetched desc)
+                    data.reverse().forEach(msg => appendMessage(msg.username, msg.content, false));
+                }
+
+                // 6. Subscribe to Realtime
+                setupRealtimeListener();
+
+                // 7. Update UI to "Joined"
+                document.getElementById('chatOverlay').style.display = 'none';
+                document.getElementById('chatControls').style.display = 'flex';
+                document.getElementById('liveCount').innerText = "● Live";
+                scrollToBottom();
+
+            } catch (e) {
+                console.error("Chat Error:", e);
+                errBox.innerText = "Connection Failed. Room might be full.";
+                errBox.style.display = 'block';
+                btn.innerText = "Retry Join";
+                btn.disabled = false;
+            }
+        }
+
+        function setupRealtimeListener() {
+            // Subscribe specifically to this match's hash
+            chatChannel = supabase.channel(`room:${currentHash}`)
+                .on(
+                    'postgres_changes', 
+                    { event: 'INSERT', schema: 'public', table: 'messages', filter: `match_id=eq.${currentHash}` }, 
+                    (payload) => {
+                        appendMessage(payload.new.username, payload.new.content, true);
+                    }
+                )
+                .subscribe((status) => {
+                    if (status === 'SUBSCRIBED') {
+                        console.log("Joined Chat Room:", currentHash);
+                    }
+                    if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+                        document.getElementById('liveCount').innerText = "● Disconnected";
+                    }
+                });
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text || !currentHash) return;
+
+            // Optimistic UI update (optional, but Supabase is fast enough usually)
+            input.value = '';
+
+            // Send to DB
+            const { error } = await supabase
+                .from('messages')
+                .insert({ 
+                    match_id: currentHash, 
+                    username: currentUser, 
+                    content: text 
+                });
+
+            if (error) {
+                console.error("Send failed:", error);
+                alert("Failed to send. You might be muted or disconnected.");
+            }
+        }
+
+        function appendMessage(user, text, animate) {
+            const box = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = 'chat-msg';
+            
+            // Sanitize (Basic prevention)
+            const safeUser = user.replace(/</g, "&lt;");
+            const safeText = text.replace(/</g, "&lt;");
+            
+            // Highlight own messages (Optional CSS tweak needed for 'me' class)
+            const isMe = user === currentUser;
+            const color = isMe ? 'var(--brand-primary)' : 'var(--text-muted)';
+            
+            div.innerHTML = `<strong style="color:${color}">${safeUser}:</strong> <span>${safeText}</span>`;
+            
+            box.appendChild(div);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            const box = document.getElementById('chatMessages');
+            box.scrollTop = box.scrollHeight;
+        }
+
+        // Enter key to send
+        document.getElementById('chatInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') sendMessage();
+        });
     </script>
 </body>
 </html>
