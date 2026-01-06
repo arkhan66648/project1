@@ -222,7 +222,7 @@
         <div class="copyright">{{FOOTER_COPYRIGHT}}</div>
     </footer>
 
-    <script>
+   <script>
         // ==========================================
         // 1. CONFIGURATION
         // ==========================================
@@ -252,32 +252,38 @@
 
         async function initWatch() {
             const params = new URLSearchParams(window.location.search);
-            const liveSlug = params.get(PARAM_LIVE);
-            const infoSlug = params.get(PARAM_INFO);
+            
+            // Get Params with Fallback to 'id' (Legacy/Safety)
+            const liveSlug = params.get(PARAM_LIVE) || params.get('streams');
+            const infoSlug = params.get(PARAM_INFO) || params.get('livestream') || params.get('id');
             
             let activeSlug = liveSlug || infoSlug;
             let mode = liveSlug ? 'live' : (infoSlug ? 'info' : null);
+
+            // 1. Sanitize Slug (Remove trailing slash, spaces)
+            if (activeSlug) activeSlug = activeSlug.replace(/\/$/, '').trim();
 
             if (!activeSlug) {
                 showEmpty();
                 return;
             }
 
-            // ROBUST HASH EXTRACTION
-            // If activeSlug is "team-a-vs-team-b-HASH", split gets the hash.
-            // If activeSlug is just "HASH", split gets "HASH".
+            // 2. Robust Hash Extraction
+            // Takes the last segment after '-'
             const parts = activeSlug.split('-');
-            const targetHash = parts[parts.length - 1];
+            const targetHash = parts.length > 0 ? parts[parts.length - 1] : activeSlug;
 
             try {
                 const res = await fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`);
                 const data = await res.json();
                 
-                // --- FIX: CHECK BOTH FULL SLUG AND HASH SUFFIX ---
+                // 3. Match Finding Logic (Relaxed)
                 const match = data.matches.find(m => {
+                    // A. Exact Match
                     if (m.id === activeSlug) return true;
-                    // Ensure robust checking against 32-char MD5 hashes
-                    if (targetHash.length === 32 && m.id.endsWith(targetHash)) return true;
+                    // B. Hash Match (Ends with the extracted hash)
+                    // We removed the strict length === 32 check to prevent issues with trailing chars
+                    if (targetHash.length >= 5 && m.id.endsWith(targetHash)) return true;
                     return false;
                 });
 
@@ -398,7 +404,6 @@
             setMeta('og:title', title, 'property');
             setMeta('og:description', desc, 'property');
             
-            // Safer update of elements
             safeText('t1-name', m.cleanHome);
             safeText('t2-name', m.cleanAway);
             safeSrc('t1-logo', getLogoUrl(m.cleanHome, m.home_team_image));
@@ -443,7 +448,7 @@
             injectSchema(m);
         }
 
-        // --- SAFE DOM HELPERS (Prevents Crashes) ---
+        // --- SAFE DOM HELPERS ---
         function setMeta(name, content, attr='name') {
             const el = document.querySelector(`meta[${attr}="${name}"]`);
             if(el) el.setAttribute('content', content);
