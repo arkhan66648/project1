@@ -216,7 +216,7 @@
         <div class="copyright">{{FOOTER_COPYRIGHT}}</div>
     </footer>
 
- <script>
+<script>
     // ==========================================
     // 1. CONFIGURATION
     // ==========================================
@@ -225,6 +225,7 @@
     const SITE_NAME = "{{SITE_NAME}}";
     const SITE_DOMAIN = "https://{{DOMAIN}}";
     
+    // Parameters from Admin Panel
     const PARAM_LIVE = "{{PARAM_LIVE}}"; 
     const PARAM_INFO = "{{PARAM_INFO}}"; 
     
@@ -275,7 +276,7 @@
             const data = await res.json();
             
             // ============================================================
-            // FIND MATCH LOGIC
+            // FIND MATCH LOGIC (Robust)
             // ============================================================
             const match = data.matches.find(m => {
                 const mId = (m.id || "").toLowerCase();
@@ -287,7 +288,7 @@
                 // 2. Short Hash Match (Original ID)
                 if (mOrigId === activeSlug) return true;
 
-                // 3. Fallback: URL ends with Hash
+                // 3. Fallback: URL ends with Hash (Handles slight slug changes)
                 if (mOrigId && activeSlug.endsWith(mOrigId)) return true;
 
                 return false;
@@ -421,6 +422,7 @@
         
         document.title = title;
         
+        // Safer Meta update (in case HTML is broken by quotes)
         setMeta('description', desc);
         setMeta('og:title', title, 'property');
         setMeta('og:description', desc, 'property');
@@ -428,7 +430,8 @@
         const robots = document.querySelector('meta[name="robots"]');
         if(robots) robots.setAttribute('content', 'index, follow');
 
-        // --- THIS WAS CAUSING THE ERROR: safeText/safeSrc were missing ---
+        // *** THIS IS WHERE IT WAS CRASHING ***
+        // These functions were missing from your previous code.
         safeText('t1-name', m.cleanHome);
         safeText('t2-name', m.cleanAway);
         safeSrc('t1-logo', getLogoUrl(m.cleanHome, m.home_team_image));
@@ -454,7 +457,6 @@
         if(actArea) {
             if (m.is_live) {
                 // Determine ID to use in link: Original Hash or Full Slug
-                // Using PARAM_LIVE to switch to live mode
                 const targetId = m.original_id || m.id;
                 const link = `${SITE_DOMAIN}/watch/?${PARAM_LIVE}=${targetId}`;
                 actArea.innerHTML = `<a href="${link}" class="btn-main">▶ Watch Live Stream</a>`;
@@ -477,27 +479,28 @@
     }
 
     // ==========================================
-    // 5. HELPER FUNCTIONS (Restored)
+    // 5. HELPER FUNCTIONS (NOW INCLUDED)
     // ==========================================
 
-    // *** RESTORED MISSING FUNCTIONS ***
+    // 1. Safe Text Setter
     function safeText(id, text) {
         const el = document.getElementById(id);
         if(el) el.innerText = text || '-';
     }
 
+    // 2. Safe Src Setter
     function safeSrc(id, src) {
         const el = document.getElementById(id);
         if(el) el.src = src;
     }
-    // **********************************
 
+    // 3. Safe Meta Setter (Prevents crash if tag is missing)
     function setMeta(name, content, attr='name') {
         const el = document.querySelector(`meta[${attr}="${name}"]`);
         if (el) {
             el.setAttribute('content', content);
         } else {
-            console.warn(`Meta tag missing: [${attr}="${name}"]`);
+            console.warn(`Meta tag missing or malformed: [${attr}="${name}"]`);
         }
     }
 
