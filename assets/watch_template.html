@@ -3,11 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Dynamic Title & Description (Will be injected via JS) -->
+    <!-- Dynamic Title & Description -->
     <title>{{META_TITLE}}</title>
     <meta name="description" content="{{META_DESC}}">
     
-    <!-- Default Robots: Index Info pages, NoIndex Player pages (JS will handle this) -->
+    <!-- OPEN GRAPH (Required for Info Mode SEO) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{META_TITLE}}">
+    <meta property="og:description" content="{{META_DESC}}">
+    <meta property="og:image" content="{{OG_IMAGE}}">
+    <meta property="og:url" content="">
+    <meta property="og:site_name" content="{{SITE_NAME}}">
+    
+    <!-- Robots -->
     <meta name="robots" content="index, follow"> 
     
     <link rel="icon" href="{{FAVICON}}">
@@ -255,38 +263,26 @@
                 return;
             }
 
-            // EXTRACT HASH (Robust Method)
-            // Backend generates: "team-a-vs-team-b-{md5_hash}"
-            // MD5 hex is 32 chars. Let's grab the last 32 chars.
-            // If the slug is shorter than 32 chars, it's invalid.
-            let targetHash = "";
+            // ROBUST HASH EXTRACTION
+            // If activeSlug is "team-a-vs-team-b-HASH", split gets the hash.
+            // If activeSlug is just "HASH", split gets "HASH".
             const parts = activeSlug.split('-');
-            const lastPart = parts[parts.length - 1];
-
-            // MD5 is hex, so it should look like a hash. 
-            // Your backend hash seems to be 32 chars (MD5).
-            if (lastPart.length === 32) {
-                targetHash = lastPart;
-            } else {
-                // Fallback: Use the whole slug if we can't detect a clean hash
-                targetHash = activeSlug;
-            }
+            const targetHash = parts[parts.length - 1];
 
             try {
                 const res = await fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`);
                 const data = await res.json();
                 
-                // --- FIX: ROBUST MATCHING ---
+                // --- FIX: CHECK BOTH FULL SLUG AND HASH SUFFIX ---
                 const match = data.matches.find(m => {
-                    // 1. Perfect Match (Full Slug)
                     if (m.id === activeSlug) return true;
-                    // 2. Hash Match (Ends with the extracted hash)
+                    // Ensure robust checking against 32-char MD5 hashes
                     if (targetHash.length === 32 && m.id.endsWith(targetHash)) return true;
                     return false;
                 });
 
                 if (!match) {
-                    console.warn("Match not found for:", activeSlug);
+                    console.warn("Match not found in API for:", activeSlug);
                     showEmpty();
                     return;
                 }
@@ -303,10 +299,9 @@
         }
 
         // ==========================================
-        // 3. DATA PROCESSING
+        // 3. PROCESSING
         // ==========================================
         function processMatchData(m) {
-            // ... (Same as before) ...
             const hSlug = slugify(m.home_team);
             const aSlug = slugify(m.away_team);
             
@@ -363,17 +358,12 @@
             document.getElementById('player-view').style.display = 'block';
             document.querySelector('meta[name="robots"]').setAttribute('content', 'noindex, nofollow');
             document.title = `Live: ${m.cleanHome} vs ${m.cleanAway}`; 
-
             document.getElementById('live-h1').innerText = `${m.cleanHome} vs ${m.cleanAway} Live Stream`;
 
             const grid = document.getElementById('server-grid');
             
-            // --- UPDATED STREAM LOGIC ---
-            // Backend provides 'stream_channels' with { name, url }
             if (m.stream_channels && m.stream_channels.length > 0) {
-                // Auto-load first
                 loadChannel(m.stream_channels[0].url);
-                
                 m.stream_channels.forEach((ch, idx) => {
                     const btn = document.createElement('button');
                     btn.className = idx === 0 ? 'srv-btn active' : 'srv-btn';
@@ -404,52 +394,63 @@
             const desc = `Watch ${m.cleanHome} vs ${m.cleanAway} live stream online. Get the latest schedule, scores, and ${m.finalLeague} updates here.`;
             
             document.title = title;
-            document.querySelector('meta[name="description"]').setAttribute('content', desc);
-            document.querySelector('meta[property="og:title"]').setAttribute('content', title);
-            document.querySelector('meta[property="og:description"]').setAttribute('content', desc);
+            setMeta('description', desc);
+            setMeta('og:title', title, 'property');
+            setMeta('og:description', desc, 'property');
+            
+            // Safer update of elements
+            safeText('t1-name', m.cleanHome);
+            safeText('t2-name', m.cleanAway);
+            safeSrc('t1-logo', getLogoUrl(m.cleanHome, m.home_team_image));
+            safeSrc('t2-logo', getLogoUrl(m.cleanAway, m.away_team_image));
+            safeText('info-time', m.fmtTime);
 
-            document.getElementById('t1-name').innerText = m.cleanHome;
-            document.getElementById('t2-name').innerText = m.cleanAway;
-            
-            document.getElementById('t1-logo').src = getLogoUrl(m.cleanHome, m.home_team_image);
-            document.getElementById('t2-logo').src = getLogoUrl(m.cleanAway, m.away_team_image);
-            
             const lBadge = document.getElementById('info-league-badge');
             const lIconUrl = getLeagueLogo(m.finalLeague, m.league_image);
-            lBadge.innerHTML = `<img src="${lIconUrl}" alt="${m.finalLeague}"><span>${m.finalLeague}</span>`;
+            if(lBadge) lBadge.innerHTML = `<img src="${lIconUrl}" alt="${m.finalLeague}"><span>${m.finalLeague}</span>`;
 
-            document.getElementById('info-time').innerText = m.fmtTime;
-            
             const statusEl = document.getElementById('info-status');
-            if(m.is_live) {
-                statusEl.innerText = "LIVE NOW";
-                statusEl.className = "meta-val live";
-            } else {
-                statusEl.innerText = m.status_text || "Upcoming";
-                statusEl.className = "meta-val";
+            if(statusEl) {
+                if(m.is_live) {
+                    statusEl.innerText = "LIVE NOW";
+                    statusEl.className = "meta-val live";
+                } else {
+                    statusEl.innerText = m.status_text || "Upcoming";
+                    statusEl.className = "meta-val";
+                }
             }
 
             const actArea = document.getElementById('info-action-area');
-            if (m.is_live) {
-                // Link to Player Mode using the full ID from the backend match object
-                const link = `${SITE_DOMAIN}/watch/?${PARAM_LIVE}=${m.id}`;
-                actArea.innerHTML = `<a href="${link}" class="btn-main">▶ Watch Live Stream</a>`;
-            } else {
-                actArea.innerHTML = `<button class="btn-main disabled">⏳ Stream Starts Soon</button>`;
+            if(actArea) {
+                if (m.is_live) {
+                    const link = `${SITE_DOMAIN}/watch/?${PARAM_LIVE}=${m.id}`;
+                    actArea.innerHTML = `<a href="${link}" class="btn-main">▶ Watch Live Stream</a>`;
+                } else {
+                    actArea.innerHTML = `<button class="btn-main disabled">⏳ Stream Starts Soon</button>`;
+                }
             }
 
             const art = document.getElementById('info-article');
-            art.innerHTML = `
-                <h1 style="color:var(--text-main); margin-bottom:20px;">${title}</h1>
-                <p>Looking for <strong>${m.cleanHome} vs ${m.cleanAway}</strong> live stream? You are in the right place. 
-                This match is part of the <strong>${m.finalLeague}</strong> and starts at ${m.fmtTime}.</p>
-                <p>We provide the best quality streams for free. Bookmark this page to watch the match without buffering.</p>
-            `;
+            if(art) {
+                art.innerHTML = `
+                    <h1 style="color:var(--text-main); margin-bottom:20px;">${title}</h1>
+                    <p>Looking for <strong>${m.cleanHome} vs ${m.cleanAway}</strong> live stream? You are in the right place. 
+                    This match is part of the <strong>${m.finalLeague}</strong> and starts at ${m.fmtTime}.</p>
+                    <p>We provide the best quality streams for free. Bookmark this page to watch the match without buffering.</p>
+                `;
+            }
 
             injectSchema(m);
         }
 
-        // ... (Keep helper functions: getLogoUrl, getLeagueLogo, formatMatchTime, injectSchema, showEmpty, toggleMenu) ...
+        // --- SAFE DOM HELPERS (Prevents Crashes) ---
+        function setMeta(name, content, attr='name') {
+            const el = document.querySelector(`meta[${attr}="${name}"]`);
+            if(el) el.setAttribute('content', content);
+        }
+        function safeText(id, txt) { const e = document.getElementById(id); if(e) e.innerText = txt; }
+        function safeSrc(id, src) { const e = document.getElementById(id); if(e) e.src = src; }
+
         function getLogoUrl(name, apiObj) {
             if (IMAGE_MAP && IMAGE_MAP.teams && IMAGE_MAP.teams[name]) {
                 const u = IMAGE_MAP.teams[name];
