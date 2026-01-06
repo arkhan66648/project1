@@ -171,27 +171,38 @@ const PARAM_LIVE = "{{PARAM_LIVE}}" || "live";
 /* INIT */
 (async function () {
     const params = new URLSearchParams(location.search);
-    const hash =
-        params.get(PARAM_INFO) ||
-        params.get(PARAM_LIVE);
-
+    const hash = params.get(PARAM_INFO) || params.get(PARAM_LIVE);
     const mode = params.has(PARAM_LIVE) ? "live" : "info";
 
     if (!hash) return showEmpty();
 
-    const res = await fetch(API_URL);
-    const data = await res.json();
+    try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        
+        // Debug: Check what the API actually returned
+        console.log("API Data:", data);
 
-    const match = data.matches.find(m => extractHash(m.id) === hash);
+        // Find match (adjust logic if your API structure differs)
+        const match = data.matches.find(m => extractHash(m.id) === hash);
 
-    if (!match) return showEmpty();
+        if (!match) {
+            console.error("Match not found for hash:", hash);
+            return showEmpty();
+        }
 
-    render(match, mode);
+        render(match, mode);
+    } catch (e) {
+        console.error("Error loading data:", e);
+    }
 })();
 
 /* CORE */
 function render(m, mode) {
     normalize(m);
+    
+    // Debug: Check how data looks after normalization
+    console.log("Normalized Match Data:", m);
 
     if (mode === "info") renderInfo(m);
     else renderLive(m);
@@ -200,7 +211,6 @@ function render(m, mode) {
 /* INFO */
 function renderInfo(m) {
     document.getElementById("info-view").classList.remove("hidden");
-
     document.title = `Watch ${m.home} vs ${m.away}`;
 
     set("league-name", m.league);
@@ -209,9 +219,10 @@ function renderInfo(m) {
     set("match-time", m.time);
     set("match-status", m.is_live ? "LIVE NOW" : "Upcoming");
 
-    document.getElementById("home-logo").src = m.home_logo;
-    document.getElementById("away-logo").src = m.away_logo;
-    document.getElementById("league-logo").src = m.league_logo;
+    // Handle images safely
+    if(m.home_logo) document.getElementById("home-logo").src = m.home_logo;
+    if(m.away_logo) document.getElementById("away-logo").src = m.away_logo;
+    if(m.league_logo) document.getElementById("league-logo").src = m.league_logo;
 
     const act = document.getElementById("info-action");
     if (m.is_live) {
@@ -222,7 +233,7 @@ function renderInfo(m) {
 
     document.getElementById("info-article").innerHTML =
         `<h1>${m.home} vs ${m.away}</h1>
-         <p>Watch ${m.home} vs ${m.away} live online.</p>`;
+         <p>Watch ${m.home} vs ${m.away} live online in ${m.league}.</p>`;
 }
 
 /* LIVE */
@@ -230,14 +241,21 @@ function renderLive(m) {
     document.getElementById("live-view").classList.remove("hidden");
 
     document.title = `${m.home} vs ${m.away} Live`;
-    document.getElementById("live-title").textContent =
-        `${m.home} vs ${m.away} Live Stream`;
+    document.getElementById("live-title").textContent = `${m.home} vs ${m.away} Live Stream`;
 
-    if (!m.streams.length) return;
+    // Check if streams exist
+    if (!m.streams || !m.streams.length) {
+        console.warn("No streams found for this match.");
+        document.getElementById("server-list").innerHTML = "<p>No streams available yet.</p>";
+        return;
+    }
 
+    // Load first stream
     loadStream(m.streams[0].url);
 
     const list = document.getElementById("server-list");
+    list.innerHTML = ""; // Clear previous buttons
+    
     m.streams.forEach((s,i)=>{
         const b = document.createElement("button");
         b.textContent = s.name || `Server ${i+1}`;
@@ -253,22 +271,53 @@ function renderLive(m) {
 
 /* HELPERS */
 function extractHash(id) {
-    return id.split("-").pop();
+    // Ensure id is a string before splitting
+    return String(id).split("-").pop();
 }
-function normalize(m) {
-    m.home = m.home_team;
-    m.away = m.away_team;
-    m.league = m.league || m.sport || "Match";
-    m.time = new Date(m.timestamp || m.startTimeUnix).toLocaleString();
-    m.streams = m.stream_channels || [];
-    m.home_logo = m.home_team_image?.sofascrore || "";
-    m.away_logo = m.away_team_image?.sofascrore || "";
-    m.league_logo = m.league_image?.sofascrore || "";
-}
-function set(id,val){ document.getElementById(id).textContent = val; }
-function loadStream(u){ document.getElementById("player-frame").src=u; }
-function showEmpty(){ document.getElementById("empty-view").classList.remove("hidden"); }
-</script>
 
-</body>
+function normalize(m) {
+    // 1. SAFE ASSIGNMENT (Check multiple possible keys from API)
+    m.home = m.home_team || m.home || "Home Team";
+    m.away = m.away_team || m.away || "Away Team";
+    m.league = m.league || m.competition_name || "Match";
+    
+    // 2. FIX TIMESTAMP (Seconds vs Milliseconds)
+    let ts = m.timestamp || m.startTimeUnix || m.start_time;
+    if (ts) {
+        // If timestamp is in seconds (e.g., 1700000000), convert to ms
+        if (typeof ts === 'number' && ts < 10000000000) {
+            ts = ts * 1000;
+        }
+        m.time = new Date(ts).toLocaleString();
+    } else {
+        m.time = "TBD";
+    }
+
+    // 3. FIX STREAMS (Map to standard array)
+    m.streams = m.stream_channels || m.streams || m.sources || [];
+
+    // 4. FIX IMAGES (Correct the typo 'sofascrore' -> 'sofascore')
+    // We check deeper keys safely using optional chaining (?.)
+    m.home_logo = m.home_team_image?.sofascore || m.home_logo || m.home_team_logo || "";
+    m.away_logo = m.away_team_image?.sofascore || m.away_logo || m.away_team_logo || "";
+    m.league_logo = m.league_image?.sofascore || m.league_logo || "";
+    
+    // 5. STATUS
+    // If API doesn't have is_live, infer it from streams existence or status string
+    if (typeof m.is_live === 'undefined') {
+        m.is_live = (m.streams.length > 0); 
+    }
+}
+
+function set(id,val){ 
+    const el = document.getElementById(id);
+    if(el) el.textContent = val; 
+}
+function loadStream(u){ 
+    document.getElementById("player-frame").src = u; 
+}
+function showEmpty(){ 
+    document.getElementById("empty-view").classList.remove("hidden"); 
+}
+</script>
 </html>
