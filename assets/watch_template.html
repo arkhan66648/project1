@@ -250,61 +250,72 @@
         // ==========================================
         window.addEventListener('DOMContentLoaded', initWatch);
 
-        async function initWatch() {
-    const params = new URLSearchParams(window.location.search);
-    
-    // Get the ID from URL (e.g., ?id=5f4dcc3b...)
-    // This handles ?id=, ?livestream=, ?streams=, or ?live=
-    const activeSlug = params.get(PARAM_LIVE) || 
-                       params.get('streams') || 
-                       params.get(PARAM_INFO) || 
-                       params.get('livestream') || 
-                       params.get('id');
-    
-    // Check mode based on which param was used (optional logic)
-    let mode = (params.get(PARAM_LIVE) || params.get('streams')) ? 'live' : 'info';
-
-    if (!activeSlug) {
-        showEmpty();
-        return;
-    }
-
-    try {
-        const res = await fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`);
-        const data = await res.json();
-        
-        // ============================================================
-        // THE FIX: Check 'original_id' OR 'id'
-        // ============================================================
-        const match = data.matches.find(m => {
-            const cleanSlug = activeSlug.trim().toLowerCase();
+       async function initWatch() {
+            const params = new URLSearchParams(window.location.search);
             
-            // 1. Check the Short ID (The Hash) - PRIORITY
-            if (m.original_id && m.original_id.toLowerCase() === cleanSlug) return true;
-
-            // 2. Check the Long SEO ID (fallback)
-            if (m.id && m.id.toLowerCase() === cleanSlug) return true;
+            // 1. Capture parameters
+            // Live Mode: ?streams=... or ?live=...
+            const liveSlug = params.get(PARAM_LIVE) || params.get('streams') || params.get('live');
+            // Info Mode: ?id=... or ?livestream=...
+            const infoSlug = params.get(PARAM_INFO) || params.get('livestream') || params.get('id');
             
-            return false;
-        });
+            let activeSlug = liveSlug || infoSlug;
+            // Determine mode: If liveSlug exists, it's 'live', otherwise 'info'
+            let mode = liveSlug ? 'live' : (infoSlug ? 'info' : null);
 
-        if (!match) {
-            console.warn("Match not found for ID:", activeSlug);
-            showEmpty();
-            return;
+            // Clean up slug (remove trailing slash)
+            if (activeSlug) {
+                activeSlug = activeSlug.replace(/\/$/, '').trim().toLowerCase();
+            }
+
+            if (!activeSlug) {
+                showEmpty();
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`);
+                const data = await res.json();
+                
+                // ============================================================
+                // FIX: SEARCH BY ID OR ORIGINAL_ID
+                // ============================================================
+                const match = data.matches.find(m => {
+                    const mId = (m.id || "").toLowerCase();
+                    const mOrigId = (m.original_id || "").toLowerCase();
+
+                    // 1. Check Exact Match (e.g. ?streams=team-vs-team-hash)
+                    if (mId === activeSlug) return true;
+
+                    // 2. Check Short Hash (e.g. ?id=hash)
+                    if (mOrigId === activeSlug) return true;
+
+                    // 3. Fallback: Check if URL ends with the hash
+                    if (mOrigId && activeSlug.endsWith(mOrigId)) return true;
+
+                    return false;
+                });
+
+                if (!match) {
+                    console.warn("Match not found:", activeSlug);
+                    showEmpty();
+                    return;
+                }
+
+                // 3. Process & Render
+                processMatchData(match);
+
+                if (mode === 'live') {
+                    renderPlayerMode(match);
+                } else {
+                    renderInfoMode(match);
+                }
+
+            } catch (e) {
+                console.error("API Error", e);
+                showEmpty();
+            }
         }
-
-        // 3. Process & Render
-        processMatchData(match);
-
-        if (mode === 'live') renderPlayerMode(match);
-        else renderInfoMode(match);
-
-    } catch (e) {
-        console.error("API Error", e);
-        showEmpty();
-    }
-}
 
         // ==========================================
         // 3. PROCESSING (Standard logic)
