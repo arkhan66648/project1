@@ -251,50 +251,60 @@
         window.addEventListener('DOMContentLoaded', initWatch);
 
         async function initWatch() {
-            const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(window.location.search);
+    
+    // Get the ID from URL (e.g., ?id=5f4dcc3b...)
+    // This handles ?id=, ?livestream=, ?streams=, or ?live=
+    const activeSlug = params.get(PARAM_LIVE) || 
+                       params.get('streams') || 
+                       params.get(PARAM_INFO) || 
+                       params.get('livestream') || 
+                       params.get('id');
+    
+    // Check mode based on which param was used (optional logic)
+    let mode = (params.get(PARAM_LIVE) || params.get('streams')) ? 'live' : 'info';
+
+    if (!activeSlug) {
+        showEmpty();
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`);
+        const data = await res.json();
+        
+        // ============================================================
+        // THE FIX: Check 'original_id' OR 'id'
+        // ============================================================
+        const match = data.matches.find(m => {
+            const cleanSlug = activeSlug.trim().toLowerCase();
             
-            // Get URL Parameter
-            const liveSlug = params.get(PARAM_LIVE) || params.get('streams');
-            const infoSlug = params.get(PARAM_INFO) || params.get('livestream') || params.get('id');
+            // 1. Check the Short ID (The Hash) - PRIORITY
+            if (m.original_id && m.original_id.toLowerCase() === cleanSlug) return true;
+
+            // 2. Check the Long SEO ID (fallback)
+            if (m.id && m.id.toLowerCase() === cleanSlug) return true;
             
-            let activeSlug = liveSlug || infoSlug;
-            let mode = liveSlug ? 'live' : (infoSlug ? 'info' : null);
+            return false;
+        });
 
-            // 1. Simple Cleanup: Remove trailing slash if present
-            if (activeSlug) {
-                activeSlug = activeSlug.replace(/\/$/, '').trim();
-            }
-
-            if (!activeSlug) {
-                showEmpty();
-                return;
-            }
-
-            try {
-                const res = await fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`);
-                const data = await res.json();
-                
-                // 2. SIMPLE MATCH FINDING
-                // We check if the API ID matches the URL Slug exactly (case-insensitive)
-                const match = data.matches.find(m => m.id.toLowerCase() === activeSlug.toLowerCase());
-
-                if (!match) {
-                    console.warn("Match not found:", activeSlug);
-                    showEmpty();
-                    return;
-                }
-
-                // 3. Process & Render
-                processMatchData(match);
-
-                if (mode === 'live') renderPlayerMode(match);
-                else renderInfoMode(match);
-
-            } catch (e) {
-                console.error("API Error", e);
-                showEmpty();
-            }
+        if (!match) {
+            console.warn("Match not found for ID:", activeSlug);
+            showEmpty();
+            return;
         }
+
+        // 3. Process & Render
+        processMatchData(match);
+
+        if (mode === 'live') renderPlayerMode(match);
+        else renderInfoMode(match);
+
+    } catch (e) {
+        console.error("API Error", e);
+        showEmpty();
+    }
+}
 
         // ==========================================
         // 3. PROCESSING (Standard logic)
