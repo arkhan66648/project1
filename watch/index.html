@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
-    <!-- INITIAL META (Will be updated dynamically by JS) -->
+    <!-- INITIAL META: Kept Neutral/Empty to force Search Engines to wait for JS injection -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamEast - Watch Live Sports</title>
-    <meta name="description" content="Watch live sports streams.">
-    <meta name="robots" content="index, follow"> <!-- Default to index, JS will flip to noindex for Stream view -->
+    
+    <!-- Generic Title (Will be overwritten by JS immediately) -->
+    <title>StreamEast</title>
+    
+    <!-- Empty Description (Prevents static indexing of generic terms) -->
+    <meta name="description" content="">
+    
+    <!-- Default Robot Tag (JS will switch this to 'noindex' for Stream view) -->
+    <meta name="robots" content="index, follow"> 
     
     <link rel="icon" href="/assets/Untitled%20design%20(46)-min.png">
     
@@ -316,7 +322,7 @@
     <div class="f-brand">
         <img src="/assets/test-logo.webp" class="logo-img" alt="StreamEast Logo" fetchpriority="high"> <div class="logo-text">Stream<span>East</span></div> 
     </div>
-    
+    <div class="f-desc">Hello world</div>
     <div>
         <div class="f-head">Quick Links</div>
         <div class="f-links"><a href="/dmca" class="f-link">DMCA</a><a href="/contact" class="f-link">Contact</a><a href="/terms" class="f-link">Terms & Conditions</a></div>
@@ -438,6 +444,7 @@
             document.title = `Watch ${m.home} vs ${m.away} Live Stream - ${m.league} | ${SITE_NAME}`;
             setMeta('robots', 'index, follow');
             setMeta('description', `Watch ${m.home} vs ${m.away} live stream online. ${m.league} match schedule, time, and preview.`);
+            setCanonical(`https://${DOMAIN}/watch/?${PARAM_INFO}=${m.originalId}`);
 
             // B. Populate Data
             setText('info-league', m.league);
@@ -472,6 +479,7 @@
             // A. Set SEO Tags (NoIndex)
             document.title = `Live: ${m.home} vs ${m.away}`;
             setMeta('robots', 'noindex, nofollow');
+            setCanonical(`https://${DOMAIN}/watch/?${PARAM_INFO}=${m.originalId}`);
             
             // B. UI Elements
             const h1 = document.getElementById('stream-h1');
@@ -674,6 +682,15 @@
         function setText(id, txt) { 
             const el = document.getElementById(id); 
             if(el) el.innerText = txt || '--'; 
+        }
+        function setCanonical(url) {
+            let link = document.querySelector('link[rel="canonical"]');
+            if (!link) {
+                link = document.createElement('link');
+                link.setAttribute('rel', 'canonical');
+                document.head.appendChild(link);
+            }
+            link.setAttribute('href', url);
         }
         function slugify(text) { return (text || "").toString().toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/^-+|-+$/g, ''); }
         function unslugify(slug) { return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '); }
