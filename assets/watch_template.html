@@ -217,222 +217,196 @@
     </footer>
 
 <script>
-    // ==========================================
-    // 1. CONFIGURATION
-    // ==========================================
-    const API_URL = "{{API_URL}}";
-    const TARGET_COUNTRY = "{{TARGET_COUNTRY}}";
-    const SITE_NAME = "{{SITE_NAME}}";
-    const SITE_DOMAIN = "https://{{DOMAIN}}";
-    
-    // Parameters from Admin Panel
-    const PARAM_LIVE = "{{PARAM_LIVE}}"; 
-    const PARAM_INFO = "{{PARAM_INFO}}"; 
-    
-    const TEAM_TO_LEAGUE = {{JS_LEAGUE_MAP}}; 
-    const IMAGE_MAP = {{JS_IMAGE_MAP}};
-    
-    const NAME_FIXES = {
-        "icehockey": "Ice Hockey", "fieldhockey": "Field Hockey",
-        "americanfootball": "American Football", "basketball": "Basketball",
-        "football": "Football", "soccer": "Soccer", "baseball": "Baseball",
-        "fighting": "Fighting", "mma": "MMA", "boxing": "Boxing",
-        "motorsport": "Motorsport", "golf": "Golf"
-    };
+/* =====================================================
+   CONFIG
+===================================================== */
+const API_URL = "{{API_URL}}";
+const TARGET_COUNTRY = "{{TARGET_COUNTRY}}";
+const SITE_DOMAIN = "https://{{DOMAIN}}";
 
-    // ==========================================
-    // 2. INIT
-    // ==========================================
-    window.addEventListener('DOMContentLoaded', initWatch);
+const PARAM_LIVE = "{{PARAM_LIVE}}" || "live";
+const PARAM_INFO = "{{PARAM_INFO}}" || "info";
 
-    async function initWatch() {
-        const params = new URLSearchParams(window.location.search);
+/* =====================================================
+   INIT
+===================================================== */
+document.addEventListener("DOMContentLoaded", initWatch);
 
-        const liveSlug = params.get(PARAM_LIVE);
-        const infoSlug = params.get(PARAM_INFO);
+async function initWatch() {
+    const params = new URLSearchParams(window.location.search);
 
-        const activeSlug = (liveSlug || infoSlug || "").trim().toLowerCase();
-        const mode = liveSlug ? "live" : (infoSlug ? "info" : null);
+    const liveHash = params.get(PARAM_LIVE);
+    const infoHash = params.get(PARAM_INFO);
 
-        if (!activeSlug || !mode) {
+    // Determine mode strictly from URL
+    let mode = null;
+    let hash = null;
+
+    if (liveHash) {
+        mode = "live";
+        hash = cleanHash(liveHash);
+    } else if (infoHash) {
+        mode = "info";
+        hash = cleanHash(infoHash);
+    }
+
+    if (!mode || !hash) {
+        showEmpty();
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`);
+        const data = await res.json();
+
+        if (!data || !Array.isArray(data.matches)) {
             showEmpty();
             return;
         }
 
-        try {
-            const res = await fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`);
-            const data = await res.json();
+        // 🔑 MATCH USING HASH ONLY
+        const match = data.matches.find(m => {
+            if (!m.id) return false;
+            const backendHash = extractHash(m.id);
+            return backendHash === hash;
+        });
 
-            const match = data.matches.find(m => {
-                return extractHash(m.id) === activeSlug;
-            });
-
-            if (!match) {
-                console.warn("Match not found:", activeSlug);
-                showEmpty();
-                return;
-            }
-
-            processMatchData(match);
-
-            if (mode === "live") {
-                renderPlayerMode(match);
-            } else {
-                renderInfoMode(match);
-            }
-
-        } catch (e) {
-            console.error("API Error", e);
+        if (!match) {
             showEmpty();
-        }
-    }
-
-    // ==========================================
-    // 3. CORE HELPERS
-    // ==========================================
-    function extractHash(id) {
-        if (!id) return "";
-        const parts = id.toLowerCase().split("-");
-        return parts[parts.length - 1];
-    }
-
-    function slugify(text) {
-        return (text || "").toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
-    }
-
-    // ==========================================
-    // 4. PROCESSING
-    // ==========================================
-    function processMatchData(m) {
-        const hSlug = slugify(m.home_team);
-        const aSlug = slugify(m.away_team);
-        
-        let resolvedLeague = m.league || m.sport;
-
-        if (TEAM_TO_LEAGUE) {
-            if (TEAM_TO_LEAGUE[hSlug] && TEAM_TO_LEAGUE[hSlug] === TEAM_TO_LEAGUE[aSlug]) {
-                resolvedLeague = TEAM_TO_LEAGUE[hSlug];
-            }
+            return;
         }
 
-        let cleanLeague = resolvedLeague.trim();
-        const lKey = cleanLeague.toLowerCase().replace(/\s/g, '');
-        if (NAME_FIXES[lKey]) cleanLeague = NAME_FIXES[lKey];
+        // Process shared fields
+        normalizeMatch(match);
 
-        m.finalLeague = cleanLeague;
-        m.cleanHome = getCleanTeamName(m.home_team, hSlug, cleanLeague);
-        m.cleanAway = getCleanTeamName(m.away_team, aSlug, cleanLeague);
-        m.fmtTime = formatMatchTime(m.startTimeUnix || new Date(m.timestamp).getTime());
-        m.hashId = extractHash(m.id);
-    }
-
-    function getCleanTeamName(rawName, slug, leagueName) {
-        if (!rawName || rawName === "TBA") return "TBA";
-        if (TEAM_TO_LEAGUE && TEAM_TO_LEAGUE[slug]) {
-            return slug.split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(" ");
-        }
-        return rawName.replace(/^(NHL|NBA|NFL|MLB|UFC):\s*/i, "").trim();
-    }
-
-    // ==========================================
-    // 5. RENDERERS
-    // ==========================================
-    function renderPlayerMode(m) {
-        document.getElementById("player-view").style.display = "block";
-        document.querySelector('meta[name="robots"]').content = "noindex, nofollow";
-
-        document.title = `Live: ${m.cleanHome} vs ${m.cleanAway}`;
-        document.getElementById("live-h1").innerText =
-            `${m.cleanHome} vs ${m.cleanAway} Live Stream`;
-
-        const grid = document.getElementById("server-grid");
-
-        if (m.stream_channels && m.stream_channels.length) {
-            loadChannel(m.stream_channels[0].url);
-            m.stream_channels.forEach((ch, i) => {
-                const btn = document.createElement("button");
-                btn.className = "srv-btn" + (i === 0 ? " active" : "");
-                btn.innerText = ch.name || `Server ${i + 1}`;
-                btn.onclick = () => {
-                    loadChannel(ch.url);
-                    document.querySelectorAll(".srv-btn").forEach(b => b.classList.remove("active"));
-                    btn.classList.add("active");
-                };
-                grid.appendChild(btn);
-            });
+        // Render based on mode
+        if (mode === "live") {
+            renderLive(match);
         } else {
-            document.getElementById("stream-frame").style.display = "none";
-            grid.innerHTML = `<div style="color:var(--text-muted)">No streams available yet.</div>`;
+            renderInfo(match);
+        }
+
+    } catch (err) {
+        console.error("Watch page error:", err);
+        showEmpty();
+    }
+}
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+// Extract hash from "seo-slug-hash"
+function extractHash(fullId) {
+    const parts = fullId.split("-");
+    return parts[parts.length - 1].toLowerCase();
+}
+
+// Clean incoming hash
+function cleanHash(val) {
+    return val.replace(/[^a-f0-9]/gi, "").toLowerCase();
+}
+
+// Normalize match data once
+function normalizeMatch(m) {
+    m.cleanHome = m.home_team || "TBA";
+    m.cleanAway = m.away_team || "TBA";
+
+    const ts = m.startTimeUnix || m.timestamp;
+    m.fmtTime = ts ? new Date(ts).toLocaleString() : "TBA";
+}
+
+/* =====================================================
+   INFO MODE (NO STREAM DEPENDENCY)
+===================================================== */
+function renderInfo(m) {
+    document.getElementById("info-view").style.display = "block";
+
+    document.title = `Watch ${m.cleanHome} vs ${m.cleanAway} | Match Info`;
+
+    const robots = document.querySelector('meta[name="robots"]');
+    if (robots) robots.content = "index, follow";
+
+    setText("t1-name", m.cleanHome);
+    setText("t2-name", m.cleanAway);
+    setText("info-time", m.fmtTime);
+
+    const status = document.getElementById("info-status");
+    if (status) {
+        status.textContent = m.is_live ? "LIVE NOW" : "Upcoming";
+        status.className = m.is_live ? "meta-val live" : "meta-val";
+    }
+
+    const action = document.getElementById("info-action-area");
+    if (action) {
+        if (m.is_live) {
+            const hash = extractHash(m.id);
+            action.innerHTML = `
+                <a class="btn-main" href="${SITE_DOMAIN}/watch/?${PARAM_LIVE}=${hash}">
+                    ▶ Watch Live Stream
+                </a>`;
+        } else {
+            action.innerHTML = `<button class="btn-main disabled">⏳ Stream Starts Soon</button>`;
         }
     }
+}
 
-    function renderInfoMode(m) {
-        document.getElementById("info-view").style.display = "block";
-        document.querySelector('meta[name="robots"]').content = "index, follow";
+/* =====================================================
+   LIVE MODE (STREAM ONLY)
+===================================================== */
+function renderLive(m) {
+    document.getElementById("player-view").style.display = "block";
 
-        const title = `Watch ${m.cleanHome} vs ${m.cleanAway} Live Stream | ${m.finalLeague}`;
-        const desc = `Watch ${m.cleanHome} vs ${m.cleanAway} live stream online.`;
+    document.title = `${m.cleanHome} vs ${m.cleanAway} Live Stream`;
 
-        document.title = title;
-        setMeta("description", desc);
+    const robots = document.querySelector('meta[name="robots"]');
+    if (robots) robots.content = "noindex, nofollow";
 
-        safeText("t1-name", m.cleanHome);
-        safeText("t2-name", m.cleanAway);
-        safeSrc("t1-logo", getLogoUrl(m.cleanHome, m.home_team_image));
-        safeSrc("t2-logo", getLogoUrl(m.cleanAway, m.away_team_image));
-        safeText("info-time", m.fmtTime);
+    const h1 = document.getElementById("live-h1");
+    if (h1) h1.textContent = `${m.cleanHome} vs ${m.cleanAway} Live Stream`;
 
-        document.getElementById("info-league-badge").innerHTML =
-            `<img src="${getLeagueLogo(m.finalLeague, m.league_image)}"><span>${m.finalLeague}</span>`;
+    const grid = document.getElementById("server-grid");
+    const frame = document.getElementById("stream-frame");
 
-        const status = document.getElementById("info-status");
-        status.innerText = m.is_live ? "LIVE NOW" : (m.status_text || "Upcoming");
-        status.className = "meta-val" + (m.is_live ? " live" : "");
-
-        const action = document.getElementById("info-action-area");
-        action.innerHTML = m.is_live
-            ? `<a href="${SITE_DOMAIN}/watch/?${PARAM_LIVE}=${m.hashId}" class="btn-main">▶ Watch Live Stream</a>`
-            : `<button class="btn-main disabled">⏳ Stream Starts Soon</button>`;
-
-        injectSchema(m);
+    if (!m.stream_channels || !m.stream_channels.length) {
+        frame.style.display = "none";
+        grid.innerHTML = `<div style="color:var(--text-muted)">No streams available.</div>`;
+        return;
     }
 
-    // ==========================================
-    // 6. UTILITIES
-    // ==========================================
-    function loadChannel(url) {
-        const frame = document.getElementById("stream-frame");
-        frame.src = url;
-        frame.style.display = "block";
-    }
+    grid.innerHTML = "";
+    loadStream(m.stream_channels[0].url);
 
-    function safeText(id, text) {
-        const el = document.getElementById(id);
-        if (el) el.innerText = text || "-";
-    }
+    m.stream_channels.forEach((ch, i) => {
+        const btn = document.createElement("button");
+        btn.className = "srv-btn" + (i === 0 ? " active" : "");
+        btn.textContent = ch.name || `Server ${i + 1}`;
+        btn.onclick = () => {
+            loadStream(ch.url);
+            document.querySelectorAll(".srv-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+        };
+        grid.appendChild(btn);
+    });
+}
 
-    function safeSrc(id, src) {
-        const el = document.getElementById(id);
-        if (el) el.src = src;
-    }
+function loadStream(url) {
+    const frame = document.getElementById("stream-frame");
+    frame.src = url;
+    frame.style.display = "block";
+}
 
-    function setMeta(name, content) {
-        const el = document.querySelector(`meta[name="${name}"]`);
-        if (el) el.content = content;
-    }
+/* =====================================================
+   UI UTILS
+===================================================== */
+function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val || "-";
+}
 
-    function formatMatchTime(unix) {
-        if (!unix) return "-";
-        const tz = TARGET_COUNTRY === "UK" ? "Europe/London" : "America/New_York";
-        return new Intl.DateTimeFormat("en-US", {
-            month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
-            hour12: true, timeZone: tz
-        }).format(new Date(unix));
-    }
-
-    function showEmpty() {
-        document.getElementById("empty-view").style.display = "block";
-    }
+function showEmpty() {
+    document.getElementById("empty-view").style.display = "block";
+}
 </script>
 
 </body>
