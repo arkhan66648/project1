@@ -222,7 +222,7 @@
         <div class="copyright">{{FOOTER_COPYRIGHT}}</div>
     </footer>
 
-   <script>
+  <script>
         // ==========================================
         // 1. CONFIGURATION
         // ==========================================
@@ -253,15 +253,16 @@
         async function initWatch() {
             const params = new URLSearchParams(window.location.search);
             
-            // Get Params with Fallback to 'id' (Legacy/Safety)
             const liveSlug = params.get(PARAM_LIVE) || params.get('streams');
             const infoSlug = params.get(PARAM_INFO) || params.get('livestream') || params.get('id');
             
             let activeSlug = liveSlug || infoSlug;
             let mode = liveSlug ? 'live' : (infoSlug ? 'info' : null);
 
-            // 1. Sanitize Slug (Remove trailing slash, spaces)
-            if (activeSlug) activeSlug = activeSlug.replace(/\/$/, '').trim();
+            // 1. Sanitize Slug (Lower case, remove trailing slash/spaces)
+            if (activeSlug) {
+                activeSlug = activeSlug.replace(/\/$/, '').trim().toLowerCase();
+            }
 
             if (!activeSlug) {
                 showEmpty();
@@ -269,7 +270,6 @@
             }
 
             // 2. Robust Hash Extraction
-            // Takes the last segment after '-'
             const parts = activeSlug.split('-');
             const targetHash = parts.length > 0 ? parts[parts.length - 1] : activeSlug;
 
@@ -277,18 +277,22 @@
                 const res = await fetch(`${API_URL}?country=${TARGET_COUNTRY.toLowerCase()}`);
                 const data = await res.json();
                 
-                // 3. Match Finding Logic (Relaxed)
+                // 3. Match Finding Logic (Case Insensitive & Robust)
                 const match = data.matches.find(m => {
+                    const backendId = (m.id || "").toLowerCase();
+                    
                     // A. Exact Match
-                    if (m.id === activeSlug) return true;
+                    if (backendId === activeSlug) return true;
+                    
                     // B. Hash Match (Ends with the extracted hash)
-                    // We removed the strict length === 32 check to prevent issues with trailing chars
-                    if (targetHash.length >= 5 && m.id.endsWith(targetHash)) return true;
+                    // We ensure targetHash is significant (>= 5 chars) to avoid false positives with team names
+                    if (targetHash.length >= 5 && backendId.endsWith(targetHash)) return true;
+                    
                     return false;
                 });
 
                 if (!match) {
-                    console.warn("Match not found in API for:", activeSlug);
+                    console.warn("Match not found for slug:", activeSlug);
                     showEmpty();
                     return;
                 }
@@ -299,7 +303,7 @@
                 else renderInfoMode(match);
 
             } catch (e) {
-                console.error("API Error", e);
+                console.error("Watch Page Error", e);
                 showEmpty();
             }
         }
