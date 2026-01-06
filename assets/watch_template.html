@@ -435,6 +435,7 @@
             document.title = `Watch ${m.home} vs ${m.away} Live Stream - ${m.league} | ${SITE_NAME}`;
             setMeta('robots', 'index, follow');
             setMeta('description', `Watch ${m.home} vs ${m.away} live stream online. ${m.league} match schedule, time, and preview.`);
+            setCanonical(`https://${DOMAIN}/watch/?${PARAM_INFO}=${m.originalId}`);
 
             // B. Populate Data
             setText('info-league', m.league);
@@ -469,6 +470,7 @@
             // A. Set SEO Tags (NoIndex)
             document.title = `Live: ${m.home} vs ${m.away}`;
             setMeta('robots', 'noindex, nofollow');
+            setCanonical(`https://${DOMAIN}/watch/?${PARAM_INFO}=${m.originalId}`);
             
             // B. UI Elements
             const h1 = document.getElementById('stream-h1');
@@ -671,6 +673,15 @@
         function setText(id, txt) { 
             const el = document.getElementById(id); 
             if(el) el.innerText = txt || '--'; 
+        }
+        function setCanonical(url) {
+            let link = document.querySelector('link[rel="canonical"]');
+            if (!link) {
+                link = document.createElement('link');
+                link.setAttribute('rel', 'canonical');
+                document.head.appendChild(link);
+            }
+            link.setAttribute('href', url);
         }
         function slugify(text) { return (text || "").toString().toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/^-+|-+$/g, ''); }
         function unslugify(slug) { return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '); }
