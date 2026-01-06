@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- INITIAL META (Will be updated dynamically by JS) -->
+    <!-- INITIAL META: Kept Neutral/Empty to force Search Engines to wait for JS injection -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{SITE_NAME}} - Watch Live Sports</title>
-    <meta name="description" content="Watch live sports streams.">
-    <meta name="robots" content="index, follow"> <!-- Default to index, JS will flip to noindex for Stream view -->
+    
+    <!-- Generic Title (Will be overwritten by JS immediately) -->
+    <title>{{SITE_NAME}}</title>
+    
+    <!-- Empty Description (Prevents static indexing of generic terms) -->
+    <meta name="description" content="">
+    
+    <!-- Default Robot Tag (JS will switch this to 'noindex' for Stream view) -->
+    <meta name="robots" content="index, follow"> 
     
     <link rel="icon" href="{{FAVICON}}">
     <link rel="canonical" href="{{CANONICAL_URL}}">
