@@ -482,7 +482,7 @@
         <div class="f-head">Quick Links</div>
         <div class="f-links"><a href="/dmca" class="f-link">DMCA</a><a href="/contact" class="f-link">Contact</a><a href="/terms" class="f-link">Terms & Conditions</a></div>
     </div>
-    <div class="f-desc">Hello world</div>
+    <div></div>
     <div class="f-brand">
         <img src="/assets/test-logo.webp" class="logo-img" alt="StreamEast Logo" fetchpriority="high"> <div class="logo-text">Stream<span>East</span></div> 
     </div>
@@ -685,21 +685,30 @@
             // 2. Status Text Logic (Direct from Backend)
             const timerEl = document.getElementById('mhTimer');
             const countdownEl = document.getElementById('tbl-countdown');
+            // Get reference to the label cell (Left column of the "Starts In" row)
+            const statusLabelEl = countdownEl ? countdownEl.previousElementSibling : null;
 
             if (m.isLive) {
                 timerEl.classList.add('live');
                 timerEl.innerText = m.statusText || "LIVE"; 
-                if(countdownEl) {
-                    countdownEl.innerText = "Running " + (m.statusText || "");
+                
+                if(countdownEl && statusLabelEl) {
+                    // CHANGE LEFT LABEL
+                    statusLabelEl.innerText = "Playing";
+                    // RIGHT COLUMN: Just the time (e.g. "37'")
+                    countdownEl.innerText = m.statusText || "Live";
                     countdownEl.style.color = "#ef4444";
                 }
             } else {
                 timerEl.classList.remove('live');
-                // Use backend status text (e.g. "1h 8m") or fallback to date
+                // Header Timer
                 timerEl.innerText = m.statusText ? `Starts in ${m.statusText}` : m.dateOnly;
                 
-                if(countdownEl) {
-                    countdownEl.innerText = m.statusText ? `Starts in ${m.statusText}` : "Upcoming";
+                if(countdownEl && statusLabelEl) {
+                    // CHANGE LEFT LABEL
+                    statusLabelEl.innerText = "Starts In";
+                    // RIGHT COLUMN: Just the time (e.g. "1h 8m")
+                    countdownEl.innerText = m.statusText || "Upcoming";
                     countdownEl.style.color = "var(--accent-gold)";
                 }
             }
