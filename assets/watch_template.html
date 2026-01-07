@@ -251,10 +251,12 @@
 
         /* 2. Sidebars Common Styles */
         .layout-sidebar {
-            max-width: 900px; /* Standard width for root view */
-            margin: 0 auto;
-            padding: 20px 15px;
-            display: block;
+            position: -webkit-sticky;
+            position: sticky;
+            top: 80px; 
+            height: calc(100vh - 100px);
+            display: none; /* <--- HIDDEN BY DEFAULT */
+            flex-direction: column;
         }
         .watch-container.active-mode {
             max-width: 1600px !important; /* Wide layout */
