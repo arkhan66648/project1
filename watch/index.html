@@ -185,7 +185,7 @@
 
         /* INFO TABLE (Info Mode) */
         .info-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--border-radius-base); padding: 20px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .match-header { text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+        .match-header { text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
         .match-header h1 { margin: 0 0 10px 0; font-size: 1.5rem; color: #fff; font-family: var(--font-family-headings); }
         .match-header .sub { color: var(--accent-gold); font-weight: 700; font-size: 0.9rem; text-transform: uppercase; }
 
@@ -382,6 +382,61 @@
         /* Animation for dummy messages */
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .dummy-msg { animation: slideIn 0.3s ease forwards; }
+        /* --- SKELETON LOADERS --- */
+        .sk-box {
+            background: #1e293b;
+            border-radius: var(--border-radius-base);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            position: relative;
+        }
+        .sk-anim::after {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+        /* Specific Sizes for Layout Stability */
+        .sk-ad { width: 300px; height: 250px; }
+        .sk-chat { width: 100%; height: 500px; }
+        .sk-content { width: 100%; height: 450px; }
+
+        /* --- UPDATED INFO HEADER (Logos) --- */
+        
+        .mh-time { color: var(--accent-gold); font-size: 0.9rem; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .mh-title-row { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 10px 0; }
+        .mh-logo { width: 40px; height: 40px; object-fit: contain; }
+        .mh-vs { font-size: 1.6rem; font-weight: 800; color: #fff; font-family: var(--font-family-headings); margin: 0; line-height: 1.2; }
+        
+        .mh-league { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; }
+
+        /* --- BUTTONS & ACTIONS --- */
+        .action-row { display: flex; gap: 10px; margin-top: 20px; }
+        
+        .big-watch-btn { 
+            flex: 1; text-align: center; background: var(--brand-primary); color: #fff; 
+            padding: 15px; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; 
+            border-radius: var(--button-border-radius); transition: 0.2s; 
+            box-shadow: 0 4px 15px rgba(208,0,0,0.4); border: none;
+        }
+        .big-watch-btn:hover { background: var(--brand-dark); transform: translateY(-2px); }
+        
+        /* Disabled State */
+        .big-watch-btn.disabled {
+            background: var(--bg-panel); border: 1px solid var(--border); 
+            color: var(--text-muted); cursor: not-allowed; box-shadow: none;
+        }
+        .big-watch-btn.disabled:hover { transform: none; background: var(--bg-panel); }
+
+        .copy-link-btn {
+            width: 50px; display: flex; align-items: center; justify-content: center;
+            background: var(--bg-panel); border: 1px solid var(--border); 
+            color: var(--text-main); border-radius: var(--button-border-radius);
+            cursor: pointer; transition: 0.2s;
+        }
+        .copy-link-btn:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
     </style>
 <style>.hero, #live-section, #upcoming-container { display: none !important; }</style></head>
 <body>
@@ -398,22 +453,25 @@
     <div class="mobile-menu" id="mobileMenu"><a href="#">Schedule</a><a href="/#faqs">FAQs</a><a href="/#comeback" class="highlighted">How we comeback</a></div>
 
     <!-- Update class to use new specific styles -->
-    <main class="container watch-container">
+   <main class="container watch-container">
         
-        <!-- 1. LEFT SIDEBAR (Sticky Ad) -->
+        <!-- 1. LEFT SIDEBAR -->
         <aside class="layout-sidebar sidebar-left">
-            <div class="ad-box">
-                <!-- 300x250 Ad Code Goes Here -->
+            <!-- Skeleton -->
+            <div id="sk-left" class="sk-box sk-anim sk-ad"></div>
+            <!-- Real Content (Hidden Initially) -->
+            <div id="real-left" class="ad-box" style="display:none;">
                 <span>Advertisement (300x250)</span>
             </div>
         </aside>
 
-        <!-- 2. CENTER CONTENT (Match & Info) -->
+        <!-- 2. CENTER CONTENT -->
         <div class="layout-main">
             
-            <!-- Views (Existing Logic) -->
-            <div id="loadingView" class="loading-box">Finding Match...</div>
+            <!-- Skeleton -->
+            <div id="sk-middle" class="sk-box sk-anim sk-content" style="margin-bottom:20px;"></div>
 
+            <!-- Views -->
             <div id="emptyView" style="display:none; text-align:center; padding-top:50px;">
                 <h2 style="color:var(--text-muted)">Select a match to watch</h2>
                 <a href="/" class="srv-btn" style="display:inline-flex; margin-top:10px;">Go Home</a>
@@ -425,13 +483,10 @@
                 <div class="match-header" style="text-align:left; border:none; margin-bottom:15px;">
                     <h1 id="stream-h1" style="font-size:1.2rem; display:flex; align-items:center; gap:10px;">Loading...</h1>
                 </div>
-                
                 <div class="player-container">
                     <iframe id="mainPlayer" class="player-frame" src="" allowfullscreen scrolling="no" allow="encrypted-media"></iframe>
                 </div>
-
                 <div class="server-list" id="serverContainer"></div>
-                
                 <div style="margin-top:20px; text-align:center;">
                     <button id="gotoInfoBtn" class="srv-btn" style="margin:0 auto;">View Match Details & Info</button>
                 </div>
@@ -440,13 +495,18 @@
             <div id="infoView" style="display:none;">
                 <div class="info-card">
                     <div class="match-header">
-                        <div class="sub" id="info-league">League</div>
-                        <h1 id="info-h1">Team A vs Team B</h1>
-                        <div style="color:var(--text-muted); font-size:0.9rem; margin-top:5px;" id="info-time">--:--</div>
+                        <div class="mh-time" id="info-time">--:--</div>
+                        <div class="mh-title-row">
+                            <img id="logo-home" class="mh-logo" style="display:none">
+                            <h1 id="info-h1" class="mh-vs">Vs</h1>
+                            <img id="logo-away" class="mh-logo" style="display:none">
+                        </div>
+                        <div class="mh-league" id="info-league">League</div>
                     </div>
 
                     <table class="info-table">
                         <tr><td>Status</td><td id="tbl-status">Upcoming</td></tr>
+                        <tr><td>Starts In</td><td id="tbl-countdown" style="color:var(--accent-gold); font-weight:700;">--</td></tr>
                         <tr><td>Competition</td><td id="tbl-league">--</td></tr>
                         <tr><td>Home Team</td><td id="tbl-home">--</td></tr>
                         <tr><td>Away Team</td><td id="tbl-away">--</td></tr>
@@ -454,9 +514,13 @@
                         <tr><td>Time</td><td id="tbl-time">--</td></tr>
                     </table>
 
-                    <button id="startWatchBtn" class="big-watch-btn">📺 Watch Live Stream</button>
+                    <div class="action-row">
+                        <button id="startWatchBtn" class="big-watch-btn">📺 Watch Live Stream</button>
+                        <button id="copyPageBtn" class="copy-link-btn" title="Copy Link">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        </button>
+                    </div>
                 </div>
-
                 <div id="seo-article-container" class="seo-article"></div>
             </div>
 
@@ -468,30 +532,28 @@
             </div>
         </div>
 
+        <!-- 3. RIGHT SIDEBAR -->
         <aside class="layout-sidebar sidebar-right">
-            <div class="chat-header">
-                Live Chat <span id="liveCount" style="font-size:0.75rem; color:var(--brand-primary); margin-left:5px;">● Offline</span>
-            </div>
-            
-            <div class="chat-wrapper">
-                <!-- Messages Area -->
-                <div id="chatMessages" class="chat-messages">
-                    <div class="chat-msg system">Welcome to the live chat!</div>
+            <!-- Skeleton -->
+            <div id="sk-right" class="sk-box sk-anim sk-chat"></div>
+            <!-- Real Content (Hidden Initially) -->
+            <div id="real-right" style="display:none; height:100%; display:flex; flex-direction:column;">
+                <div class="chat-header">
+                    Live Chat <span id="liveCount" style="font-size:0.75rem; color:var(--brand-primary); display:flex; align-items:center; gap:4px;"><span style="display:block; width:6px; height:6px; background:var(--brand-primary); border-radius:50%; box-shadow:0 0 5px var(--brand-primary);"></span> Online</span>
                 </div>
-
-                <!-- Input Area (Hidden until joined) -->
-                <div id="chatControls" class="chat-controls" style="display:none;">
-                    <input type="text" id="chatInput" placeholder="Message..." maxlength="200">
-                    <button id="chatSendBtn" onclick="sendMessage()">➤</button>
-                </div>
-
-                <!-- Gatekeeper Overlay -->
-                <div id="chatOverlay" class="chat-overlay">
-                    <h3>Join Conversation</h3>
-                    <p>Enter a nickname to chat with others watching this match.</p>
-                    <input type="text" id="usernameInput" placeholder="Display Name" maxlength="15">
-                    <button id="joinChatBtn" class="srv-btn active" onclick="joinChat()">Join Room</button>
-                    <small style="color:#ef4444; margin-top:10px; display:none;" id="chatError"></small>
+                <div class="chat-wrapper">
+                    <div id="chatMessages" class="chat-messages"><div class="chat-msg system">Welcome to the live chat!</div></div>
+                    <div id="chatControls" class="chat-controls" style="display:none;">
+                        <input type="text" id="chatInput" placeholder="Message..." maxlength="200">
+                        <button id="chatSendBtn" onclick="sendMessage()">➤</button>
+                    </div>
+                    <div id="chatOverlay" class="chat-overlay">
+                        <h3>Join Conversation</h3>
+                        <p>Enter a nickname to chat with others watching this match.</p>
+                        <input type="text" id="usernameInput" placeholder="Display Name" maxlength="15">
+                        <button id="joinChatBtn" class="srv-btn active" onclick="joinChat()">Join Room</button>
+                        <small style="color:#ef4444; margin-top:10px; display:none;" id="chatError"></small>
+                    </div>
                 </div>
             </div>
         </aside>
@@ -504,7 +566,7 @@
         <div class="f-head">Quick Links</div>
         <div class="f-links"><a href="/dmca" class="f-link">DMCA</a><a href="/contact" class="f-link">Contact</a><a href="/terms" class="f-link">Terms & Conditions</a></div>
     </div>
-    <div></div>
+    <div class="f-desc">Hello world</div>
     <div class="f-brand">
         <img src="/assets/test-logo.webp" class="logo-img" alt="StreamEast Logo" fetchpriority="high"> <div class="logo-text">Stream<span>East</span></div> 
     </div>
@@ -777,27 +839,92 @@
         // ==========================================
         
         function renderInfoMode(m) {
-            showView('info');
-            document.title = `Watch ${m.home} vs ${m.away} Live Stream - ${m.league} | ${SITE_NAME}`;
-            setMeta('robots', 'index, follow');
-            setMeta('description', `Watch ${m.home} vs ${m.away} live stream online. ${m.league} match schedule.`);
-            setCanonical(`https://${DOMAIN}/watch/?${PARAM_INFO}=${m.originalId}`);
-
+            // 1. Data Population
             setText('info-league', m.league);
             setText('info-h1', `${m.home} vs ${m.away}`);
             setText('info-time', m.dateTimeStr);
-            setText('tbl-status', m.isLive ? "LIVE NOW" : "Upcoming");
+            
             setText('tbl-league', m.league);
             setText('tbl-home', m.home);
             setText('tbl-away', m.away);
             setText('tbl-date', m.dateOnly);
             setText('tbl-time', m.timeOnly);
 
-            const btn = document.getElementById('startWatchBtn');
-            if (btn) btn.onclick = () => window.location.href = `?${PARAM_LIVE}=${m.originalId}`;
+            // 2. Logo Logic (Only if BOTH exist)
+            const hLogo = IMAGE_MAP.teams && IMAGE_MAP.teams[m.homeSlug];
+            const aLogo = IMAGE_MAP.teams && IMAGE_MAP.teams[m.awaySlug];
+            const hImg = document.getElementById('logo-home');
+            const aImg = document.getElementById('logo-away');
 
+            if (hLogo && aLogo) {
+                hImg.src = hLogo.startsWith('http') ? hLogo : DOMAIN + hLogo;
+                aImg.src = aLogo.startsWith('http') ? aLogo : DOMAIN + aLogo;
+                hImg.style.display = 'block';
+                aImg.style.display = 'block';
+            } else {
+                hImg.style.display = 'none';
+                aImg.style.display = 'none';
+            }
+
+            // 3. Time & Button Logic
+            const now = Date.now();
+            const start = m.timestamp;
+            const diffMins = (start - now) / 60000;
+            const btn = document.getElementById('startWatchBtn');
+            const copyBtn = document.getElementById('copyPageBtn');
+            const statusEl = document.getElementById('tbl-status');
+            const countEl = document.getElementById('tbl-countdown');
+
+            // Copy Logic
+            copyBtn.onclick = () => copyText(window.location.href);
+
+            if (m.isLive) {
+                // LIVE
+                statusEl.innerText = "🔴 LIVE NOW";
+                statusEl.style.color = "#ef4444";
+                countEl.innerText = "Streaming";
+                
+                btn.className = "big-watch-btn";
+                btn.innerHTML = "📺 Watch Live Stream";
+                btn.onclick = () => window.location.href = `?${PARAM_LIVE}=${m.originalId}`;
+            } 
+            else if (diffMins <= 30) {
+                // STARTING SOON (<30m)
+                statusEl.innerText = "Starting Soon";
+                statusEl.style.color = "var(--accent-gold)";
+                countEl.innerText = `${Math.ceil(diffMins)} Minutes`;
+
+                btn.className = "big-watch-btn";
+                btn.innerHTML = "📺 Watch Live Stream";
+                btn.onclick = () => window.location.href = `?${PARAM_LIVE}=${m.originalId}`;
+            } 
+            else {
+                // UPCOMING (>30m)
+                statusEl.innerText = "Upcoming";
+                statusEl.style.color = "var(--text-main)";
+                
+                // Calc hours/mins
+                const hours = Math.floor(diffMins / 60);
+                const mins = Math.ceil(diffMins % 60);
+                countEl.innerText = `${hours}h ${mins}m`;
+
+                btn.className = "big-watch-btn disabled";
+                btn.innerHTML = "🔒 Stream Starts Soon";
+                btn.onclick = null;
+            }
+
+            // 4. SEO & Schema
+            document.title = `Watch ${m.home} vs ${m.away} Live Stream - ${m.league} | ${SITE_NAME}`;
+            setMeta('robots', 'index, follow');
+            setMeta('description', `Watch ${m.home} vs ${m.away} live stream online. ${m.league} match.`);
+            setCanonical(`https://${DOMAIN}/watch/?${PARAM_INFO}=${m.originalId}`);
+            
             generateArticle(m);
             generateSchema(m);
+
+            // 5. Reveal UI
+            showView('info');
+            revealContent(); // Hide Skeletons
         }
 
         function renderStreamMode(m, currentUrlId) {
@@ -849,7 +976,7 @@
             const cleanHome = getCleanTeamName(m.home_team, homeSlug, leagueName);
             const cleanAway = getCleanTeamName(m.away_team, awaySlug, leagueName);
             const timeObj = formatTime(m.timestamp || m.startTimeUnix);
-            return { originalId: m.id, home: cleanHome, away: cleanAway, league: leagueName, sport: m.sport || "General", isLive: m.is_live, timestamp: m.timestamp || m.startTimeUnix, dateTimeStr: `${timeObj.date} at ${timeObj.time}`, dateOnly: timeObj.date, timeOnly: timeObj.time, channels: m.stream_channels || [] };
+            return { originalId: m.id, home: cleanHome, away: cleanAway, homeSlug: homeSlug, awaySlug: awaySlug, league: leagueName, sport: m.sport || "General", isLive: m.is_live, timestamp: m.timestamp || m.startTimeUnix, dateTimeStr: `${timeObj.date} at ${timeObj.time}`, dateOnly: timeObj.date, timeOnly: timeObj.time, channels: m.stream_channels || [] };
         }
 
         function getCleanTeamName(raw, slug, leagueName) {
@@ -965,6 +1092,17 @@
         }
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
         function copyText(text) { navigator.clipboard.writeText(text); const t = document.createElement('div'); t.className = 'copy-toast'; t.innerText = 'Link copied ✓'; document.body.appendChild(t); setTimeout(() => t.remove(), 1600); }
+        function revealContent() {
+            // Hide Skeletons
+            document.getElementById('sk-left').style.display = 'none';
+            document.getElementById('sk-middle').style.display = 'none';
+            document.getElementById('sk-right').style.display = 'none';
+
+            // Show Real Content
+            document.getElementById('real-left').style.display = 'flex';
+            // Middle content is handled by showView
+            document.getElementById('real-right').style.display = 'flex'; // Use flex for chat layout
+        }
     </script>
 </body>
 </html>
