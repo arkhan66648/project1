@@ -192,9 +192,17 @@
             .layout-sidebar { height: auto; }
         }
 
-        /* --- SKELETONS (Visible by Default for CLS) --- */
-        .sk-box { background: #1e293b; border-radius: var(--border-radius-base); border: 1px solid var(--border); overflow: hidden; position: relative; display: block; } /* Visible by default */
-        .sk-anim::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: shimmer 1.5s infinite; }
+        /* --- SKELETONS --- */
+        .sk-box { 
+            background: #1e293b; border-radius: var(--border-radius-base); 
+            border: 1px solid var(--border); overflow: hidden; position: relative; 
+            display: block; /* Visible by default for Zero CLS */
+        }
+        .sk-anim::after { 
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); 
+            animation: shimmer 1.5s infinite; 
+        }
         @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
         
         .sk-header { width: 100%; height: 150px; margin-bottom: 20px; } 
@@ -202,8 +210,10 @@
         .sk-ad { width: 300px; height: 250px; flex-shrink: 0; }
         .sk-chat { width: 340px; height: 600px; }
         .sk-discord { width: 300px; height: 70px; flex-shrink: 0; }
-        .sk-article { width: 100%; height: 400px; margin-top: 20px; }
+        .sk-article { width: 100%; height: 400px; margin-top: 20px; } /* Fixed typo: idth -> width */
         .sk-info-full { width: 100%; height: 620px; margin-bottom: 20px; }
+        
+        /* Ensure hidden items are truly gone */
         .hidden-load { display: none !important; }
 
         /* --- INFO HEADER (3-Section Design) --- */
@@ -538,11 +548,17 @@
                 const streamParamVal = urlParams.get(PARAM_LIVE);
                 const infoParamVal = urlParams.get(PARAM_INFO);
                 
+                // --- FIX 1: Root Page Logic ---
                 if (!streamParamVal && !infoParamVal) {
                     showView('empty'); 
+                    // Manually hide all skeletons immediately
+                    document.querySelectorAll('.sk-box').forEach(el => el.style.display = 'none');
+                    // Remove grid layout to allow centering
+                    document.querySelector('.watch-container').classList.remove('active-mode');
                     return; 
                 }
 
+                // Default state: Skeletons Visible
                 startDummyChat(); 
                 updateSocialLinks(null);
 
@@ -604,6 +620,8 @@
             } catch (e) {
                 console.error("Init Error:", e);
                 showError("Unable to load match data.");
+                // Ensure skeletons hide on error
+                document.querySelectorAll('.sk-box').forEach(el => el.style.display = 'none');
             }
         }
 
@@ -788,15 +806,38 @@
         }
 
         function showView(id) { 
+            // Hide main containers
             ['loadingView', 'emptyView', 'errorView', 'streamView', 'infoView'].forEach(v => { 
                 const el = document.getElementById(v); 
-                if(el) { el.style.display = 'none'; el.classList.add('hidden-load'); }
+                if(el) { 
+                    el.classList.add('hidden-load'); 
+                    el.style.display = 'none'; // Force inline hide
+                }
             });
+
+            // Show target
             const v = document.getElementById(id + 'View'); 
-            if(v) { v.style.display = 'block'; v.classList.remove('hidden-load'); }
+            if(v) { 
+                v.classList.remove('hidden-load');
+                v.style.display = 'block'; // Force inline show
+            }
             
             const isContent = (id === 'stream' || id === 'info');
-            if (window.innerWidth <= 1300 && isContent) document.querySelector('.sidebar-left').classList.remove('active');
+            const mainContainer = document.querySelector('.watch-container');
+            
+            if (isContent) mainContainer.classList.add('active-mode');
+            else mainContainer.classList.remove('active-mode');
+            
+            // Layout sidebars
+            document.querySelectorAll('.layout-sidebar').forEach(sb => {
+                if (isContent) sb.classList.add('active');
+                else sb.classList.remove('active');
+            });
+            
+            // Mobile Sidebar Logic
+            if (window.innerWidth <= 1300 && isContent) {
+                document.querySelector('.sidebar-left').classList.remove('active');
+            }
         }
 
         function startDummyChat() {
