@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{SITE_NAME}}</title>
+    <title></title>
     <meta name="description" content="">
     <meta name="robots" content="index, follow"> 
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- OPTIMIZATION: Defer Supabase to unblock rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     <link rel="icon" href="{{FAVICON}}">
     <link rel="canonical" href="{{CANONICAL_URL}}">
     {{LOGO_PRELOAD}}
@@ -151,30 +152,24 @@
         .copyright { margin-top: 50px; border-top: 1px solid var(--border); padding-top: 25px; text-align: center; font-size: 0.75rem; color: var(--footer-copyright-color); }
         .f-head { color: var(--footer-heading-color); margin-bottom: 15px; text-transform: uppercase; font-size: 0.9rem; font-weight: 700; }
 
-        /* --- WATCH PAGE LAYOUT (Mobile Ordering Logic) --- */
+        /* --- WATCH PAGE LAYOUT (CLS Optimized) --- */
         .watch-container { max-width: 900px; margin: 0 auto; padding: 20px 15px; display: block; width: 100%; }
         
+        /* Default Active Mode for Zero CLS */
         .watch-container.active-mode {
             max-width: 1600px !important; width: 98%; display: grid; 
-            grid-template-columns: 300px 1fr 340px; gap: 15px; /* Reduced gap */
+            grid-template-columns: 300px 1fr 340px; gap: 15px; 
             align-items: start;
         }
 
         /* Elements */
         .mobile-top-ad { width: 100%; height: 90px; background: #000; margin-bottom: 20px; display: none; align-items: center; justify-content: center; color: #444; border: 1px solid var(--border); border-radius: var(--border-radius-base); }
-        .layout-sidebar { position: -webkit-sticky; position: sticky; top: 70px; /* Higher top */
-            height: calc(100vh - 80px); display: none; flex-direction: column; gap: 10px; }
+        .layout-sidebar { position: -webkit-sticky; position: sticky; top: 70px; height: calc(100vh - 80px); display: none; flex-direction: column; gap: 10px; }
         .layout-sidebar.active { display: flex; }
         .sidebar-left { width: 300px; }
-        .sidebar-right { width: 340px; background: var(--bg-panel); border: 1px solid var(--border); 
-            border-radius: var(--border-radius-base); overflow: hidden; 
-            height: 600px; /* Fixed height for chat to match skeleton */
-            min-height: 0; }
+        .sidebar-right { width: 340px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--border-radius-base); overflow: hidden; height: 600px; min-height: 0; }
         .layout-main { min-width: 0; }
-        .ad-box { width: 300px; height: 250px; background: #000; 
-            display: flex; align-items: center; justify-content: center; 
-            color: #666; font-size: 0.8rem; border: 1px solid var(--border); 
-            border-radius: var(--border-radius-base); flex-shrink: 0; }
+        .ad-box { width: 300px; height: 250px; background: #000; display: flex; align-items: center; justify-content: center; color: #666; font-size: 0.8rem; border: 1px solid var(--border); border-radius: var(--border-radius-base); flex-shrink: 0; }
 
         /* ARTICLE SECTION (Moved to grid layout to control mobile order) */
         .article-section-wrapper { display: none; } /* Default Hidden */
@@ -183,7 +178,7 @@
         /* MOBILE RESPONSIVENESS & ORDERING */
         @media (max-width: 1300px) { 
             .watch-container.active-mode { grid-template-columns: 1fr 340px; } 
-            .sidebar-left { display: none !important; } /* Hide left sidebar wrapper on tablet */
+            .sidebar-left { display: none !important; } 
         }
         
         @media (max-width: 1000px) { 
@@ -191,19 +186,15 @@
             .mobile-top-ad { display: flex; order: 1; }
             .layout-main { order: 2; width: 100%; }
             .sidebar-left { display: flex !important; order: 3; width: 100%; position: static; height: auto; }
-            .sidebar-left .ad-box { display: none; } /* Hide 300x250 ad on mobile */
+            .sidebar-left .ad-box { display: none; } 
             .sidebar-right { order: 4; width: 100%; height: 500px; position: static; margin-top: 0; }
             .article-section-wrapper.active { order: 5; margin-top: 30px; }
             .layout-sidebar { height: auto; }
         }
 
-        /* --- SKELETONS --- */
-        .sk-box { background: #1e293b; border-radius: var(--border-radius-base); 
-            border: 1px solid var(--border); overflow: hidden; position: relative; 
-            display: none; }
-        .sk-anim::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); 
-            animation: shimmer 1.5s infinite; }
+        /* --- SKELETONS (Visible by Default for CLS) --- */
+        .sk-box { background: #1e293b; border-radius: var(--border-radius-base); border: 1px solid var(--border); overflow: hidden; position: relative; display: block; } /* Visible by default */
+        .sk-anim::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
         
         .sk-header { width: 100%; height: 150px; margin-bottom: 20px; } 
@@ -211,7 +202,7 @@
         .sk-ad { width: 300px; height: 250px; flex-shrink: 0; }
         .sk-chat { width: 340px; height: 600px; }
         .sk-discord { width: 300px; height: 70px; flex-shrink: 0; }
-        .sk-article { idth: 100%; height: 400px; margin-top: 20px; }
+        .sk-article { width: 100%; height: 400px; margin-top: 20px; }
         .sk-info-full { width: 100%; height: 620px; margin-bottom: 20px; }
         .hidden-load { display: none !important; }
 
@@ -357,10 +348,11 @@
         <span>Advertisement (728x90)</span>
     </div>
 
-    <main class="container watch-container">
+    <!-- MAIN CONTAINER - Default Active Mode for Zero CLS -->
+    <main class="container watch-container active-mode">
         
         <!-- 1. LEFT SIDEBAR (Ad -> Discord -> Ad) -->
-        <aside class="layout-sidebar sidebar-left">
+        <aside class="layout-sidebar sidebar-left active">
             <!-- SK 1: Top Ad -->
             <div id="sk-left-ad1" class="sk-box sk-anim sk-ad"></div>
             <!-- REAL 1: Top Ad -->
@@ -373,7 +365,7 @@
             <!-- REAL 2: Discord -->
             <a id="real-left-disc" href="https://discord.gg/your-invite" target="_blank" class="discord-box hidden-load">
                 <div class="dc-left">
-                    <svg class="dc-icon" viewBox="0 0 24 24"><path d="M20.317 4.37... (keep existing path) ...z"/></svg>
+                    <svg class="dc-icon" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.419 0 1.334-.956 2.419-2.157 2.419zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.419 0 1.334-.946 2.419-2.157 2.419z"/></svg>
                     <div class="dc-text"><h4>Join Discord</h4><p>Community</p></div>
                 </div>
                 <div class="dc-btn">Join</div>
@@ -410,7 +402,6 @@
                     <iframe id="mainPlayer" class="player-frame" src="" allowfullscreen scrolling="no" allow="encrypted-media"></iframe>
                 </div>
                 <div class="stream-controls">
-                    <!-- ... keep existing stream controls ... -->
                     <div class="server-area">
                         <span class="server-label">Available Servers</span>
                         <div class="server-grid" id="serverContainer"></div>
@@ -425,7 +416,6 @@
             <!-- INFO VIEW (Initially Hidden) -->
             <div id="infoView" class="hidden-load">
                 <div class="info-card">
-                    <!-- ... keep existing info card content ... -->
                     <div class="mh-fixed-container" id="mhFixed">
                         <div class="mh-col mh-home" id="mhHomeCol"></div>
                         <div class="mh-col mh-center">
@@ -456,13 +446,12 @@
         </div>
 
         <!-- 3. RIGHT SIDEBAR -->
-        <aside class="layout-sidebar sidebar-right">
+        <aside class="layout-sidebar sidebar-right active">
             <!-- SK: Chat Window -->
             <div id="sk-chat" class="sk-box sk-anim sk-chat"></div>
             
             <!-- REAL: Chat -->
             <div id="real-chat" class="hidden-load" style="height:100%; display:flex; flex-direction:column;">
-                <!-- ... keep existing chat content ... -->
                 <div class="chat-header">
                     <span>Live Chat</span>
                     <span id="liveCount" style="font-size:0.75rem; color:var(--brand-primary); display:flex; align-items:center; gap:4px;"><span style="display:block; width:6px; height:6px; background:var(--brand-primary); border-radius:50%; box-shadow:0 0 5px var(--brand-primary);"></span> Online</span>
@@ -512,7 +501,7 @@
         <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
     </button>
 
-   <script>
+    <script>
         const API_URL = "{{API_URL}}";
         const PARAM_LIVE = "{{PARAM_LIVE}}"; 
         const PARAM_INFO = "{{PARAM_INFO}}";
@@ -537,7 +526,6 @@
         let currentHash = null;
         let currentUser = localStorage.getItem('chat_username') || "";
         let dummyInterval = null;
-        // timerInterval removed as we use backend status text now
 
         const DUMMY_NAMES = ["Alex", "John", "Sarah", "Mike", "Fan123", "GoalHunter", "SoccerMom", "Dave", "Chris", "Ultra", "Sporty", "Winner", "Speedy", "Legend", "Ghost"];
         const DUMMY_MSGS = ["Let's go!", "What a play!", "Score?", "Lagging a bit for anyone?", "Nice pass", "Who is winning?", "Ref is blind", "Goooal!", "Finally", "Lol", "Wow", "Defense is weak", "Stream is good", "Love this team", "Come on!", "Can't believe that"];
@@ -555,7 +543,6 @@
                     return; 
                 }
 
-                showSkeletons();
                 startDummyChat(); 
                 updateSocialLinks(null);
 
@@ -577,20 +564,15 @@
                 if (!match) { showError("Match not found or ended."); return; }
 
                 // --- DATA NORMALIZATION ---
-                
-                // 1. Timestamp Fix (Required for Date Format even if status is from text)
                 if (!match.startTimeUnix && match.timestamp) match.startTimeUnix = new Date(match.timestamp).getTime();
                 
-                // 2. League Resolution
                 const resolved = resolveLeagueData(match); 
                 const leagueName = resolved.name;
 
-                // 3. Sport Clean
                 let sportRaw = (match.sport || "General").trim();
                 let sportKey = sportRaw.toLowerCase().replace(/\s/g, '');
                 const cleanSport = NAME_FIXES[sportKey] ? NAME_FIXES[sportKey] : sportRaw;
 
-                // 4. Team Clean (Using Resolved League)
                 const homeSlug = slugify(match.home_team);
                 const awaySlug = slugify(match.away_team);
                 const cleanHome = getCleanTeamName(match.home_team, homeSlug, leagueName);
@@ -606,7 +588,7 @@
                     league: leagueName, 
                     sport: cleanSport, 
                     isLive: match.is_live, 
-                    statusText: match.status_text || "", // <-- ADDED THIS
+                    statusText: match.status_text || "",
                     timestamp: match.timestamp || match.startTimeUnix, 
                     dateTimeStr: `${timeObj.date} at ${timeObj.time}`, 
                     dateOnly: timeObj.date, 
@@ -626,29 +608,17 @@
         }
 
         // --- HOMEPAGE LOGIC PORTED VERBATIM ---
-
         function resolveLeagueData(match) {
             const hRaw = match.home_team || "";
             const hSlug = slugify(hRaw);
             const aSlug = slugify(match.away_team);
-
-            // 1. Strict Map Check
-            if (LEAGUE_MAP && LEAGUE_MAP[hSlug] && LEAGUE_MAP[aSlug] && LEAGUE_MAP[hSlug] === LEAGUE_MAP[aSlug]) {
-                return { name: LEAGUE_MAP[hSlug], source: "Map" };
-            }
-            // 2. Map Fallback
-            if (LEAGUE_MAP && LEAGUE_MAP[hSlug]) {
-                 return { name: LEAGUE_MAP[hSlug], source: "MapHome" };
-            }
-            // 3. Prefix Rule
+            if (LEAGUE_MAP && LEAGUE_MAP[hSlug] && LEAGUE_MAP[aSlug] && LEAGUE_MAP[hSlug] === LEAGUE_MAP[aSlug]) return { name: LEAGUE_MAP[hSlug], source: "Map" };
+            if (LEAGUE_MAP && LEAGUE_MAP[hSlug]) return { name: LEAGUE_MAP[hSlug], source: "MapHome" };
             if (hRaw.includes(':')) {
                 const parts = hRaw.split(':');
                 const candidate = parts[0].trim();
-                if (candidate.length > 1 && candidate.length < 25) {
-                    return { name: candidate, source: "Split" };
-                }
+                if (candidate.length > 1 && candidate.length < 25) return { name: candidate, source: "Split" };
             }
-            // 4. API Fallback with Fixes
             let apiName = (match.league || match.sport || "Other").trim();
             const lowerApi = apiName.toLowerCase().replace(/\s/g, '');
             if(NAME_FIXES[lowerApi]) apiName = NAME_FIXES[lowerApi];
@@ -657,40 +627,24 @@
 
         function getCleanTeamName(raw, slug, leagueName) {
             if (!raw || raw === "TBA") return "TBA";
-            // Map Reconstruction
             if (LEAGUE_MAP && LEAGUE_MAP[slug]) return unslugify(slug);
-            
             let clean = raw;
-            // Prefix Removal
-            if (leagueName) {
-                try {
-                    const safeLeague = leagueName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                    const regex = new RegExp(`^${safeLeague}:\\s*`, 'i');
-                    clean = clean.replace(regex, '');
-                } catch(e) {}
-            }
+            if (leagueName) { try { const safeLeague = leagueName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); const regex = new RegExp(`^${safeLeague}:\\s*`, 'i'); clean = clean.replace(regex, ''); } catch(e) {} }
             return clean.replace(/^(NHL|NBA|NFL|MLB|UFC):\s*/i, '').trim();
         }
 
         // --- CORE RENDERERS ---
-
         function renderInfoMode(m) {
-            // 1. Populate Fixed Header
             const hCol = document.getElementById('mhHomeCol');
             const aCol = document.getElementById('mhAwayCol');
-            
-            // LOGO STRATEGY: Use Clean Name (m.home/m.away)
             const hLogo = IMAGE_MAP.teams && IMAGE_MAP.teams[m.home];
             const aLogo = IMAGE_MAP.teams && IMAGE_MAP.teams[m.away];
-            
-            // Strict check: Only show if BOTH exist
             const showLogos = (hLogo && aLogo);
-
             const getImgUrl = (p) => p.startsWith('http') ? p : `https://${DOMAIN}${p.startsWith('/')?'':'/'}${p}`;
 
             if(showLogos) {
-                hCol.innerHTML = `<img src="${getImgUrl(hLogo)}" class="mh-team-logo" alt="${m.home}" fetchpriority="high"><div class="mh-team-name-sm">${m.home}</div>`;
-                aCol.innerHTML = `<img src="${getImgUrl(aLogo)}" class="mh-team-logo" alt="${m.away}" fetchpriority="high"><div class="mh-team-name-sm">${m.away}</div>`;
+                hCol.innerHTML = `<img src="${getImgUrl(hLogo)}" class="mh-team-logo" alt="${m.home}" width="60" height="60" fetchpriority="high"><div class="mh-team-name-sm">${m.home}</div>`;
+                aCol.innerHTML = `<img src="${getImgUrl(aLogo)}" class="mh-team-logo" alt="${m.away}" width="60" height="60" fetchpriority="high"><div class="mh-team-name-sm">${m.away}</div>`;
             } else {
                 hCol.innerHTML = `<div class="mh-team-name-lg">${m.home}</div>`;
                 aCol.innerHTML = `<div class="mh-team-name-lg">${m.away}</div>`;
@@ -698,38 +652,28 @@
 
             setText('mhLeague', m.league);
             
-            // 2. Status Text Logic (Direct from Backend)
             const timerEl = document.getElementById('mhTimer');
             const countdownEl = document.getElementById('tbl-countdown');
-            // Get reference to the label cell (Left column of the "Starts In" row)
             const statusLabelEl = countdownEl ? countdownEl.previousElementSibling : null;
 
             if (m.isLive) {
                 timerEl.classList.add('live');
                 timerEl.innerText = m.statusText || "LIVE"; 
-                
                 if(countdownEl && statusLabelEl) {
-                    // CHANGE LEFT LABEL
                     statusLabelEl.innerText = "Playing";
-                    // RIGHT COLUMN: Just the time (e.g. "37'")
                     countdownEl.innerText = m.statusText || "Live";
                     countdownEl.style.color = "#ef4444";
                 }
             } else {
                 timerEl.classList.remove('live');
-                // Header Timer
                 timerEl.innerText = m.statusText ? `Starts in ${m.statusText}` : m.dateOnly;
-                
                 if(countdownEl && statusLabelEl) {
-                    // CHANGE LEFT LABEL
                     statusLabelEl.innerText = "Starts In";
-                    // RIGHT COLUMN: Just the time (e.g. "1h 8m")
                     countdownEl.innerText = m.statusText || "Upcoming";
                     countdownEl.style.color = "var(--accent-gold)";
                 }
             }
 
-            // 3. Info Table
             setText('tbl-league', m.league);
             setText('tbl-sport', m.sport);
             setText('tbl-home', m.home);
@@ -737,30 +681,23 @@
             setText('tbl-date', m.dateOnly);
             setText('tbl-time', m.timeOnly);
 
-            // 4. Buttons
             const now = Date.now();
             const diffMins = (m.timestamp - now) / 60000;
             const btn = document.getElementById('startWatchBtn');
             const copyBtn = document.getElementById('copyPageBtn');
-            const statusEl = document.getElementById('tbl-status');
-
             copyBtn.onclick = () => copyText(window.location.href);
 
             if (m.isLive) {
-                statusEl.innerText = "🔴 LIVE NOW"; statusEl.style.color = "#ef4444";
                 btn.className = "big-watch-btn"; btn.innerHTML = "📺 Watch Live Stream";
                 btn.onclick = () => window.location.href = `?${PARAM_LIVE}=${m.originalId}`;
             } else if (diffMins <= 30) {
-                statusEl.innerText = "Starting Soon"; statusEl.style.color = "var(--accent-gold)";
                 btn.className = "big-watch-btn"; btn.innerHTML = "📺 Watch Live Stream";
                 btn.onclick = () => window.location.href = `?${PARAM_LIVE}=${m.originalId}`;
             } else {
-                statusEl.innerText = "Upcoming"; statusEl.style.color = "var(--text-main)";
                 btn.className = "big-watch-btn disabled"; btn.innerHTML = "🔒 Stream Starts Soon";
                 btn.onclick = null;
             }
 
-            // 5. SEO & Article
             document.title = `Watch ${m.home} vs ${m.away} Live Stream - ${m.league} | ${SITE_NAME}`;
             setMeta('robots', 'index, follow');
             setMeta('description', `Watch ${m.home} vs ${m.away} live stream online. ${m.league} match schedule.`);
@@ -768,10 +705,7 @@
 
             generateArticle(m);
             generateSchema(m);
-
-            showView('info');
             revealContent();
-            
             document.getElementById('articleWrapper').classList.add('active');
         }
 
@@ -790,10 +724,8 @@
 
             if (m.channels && m.channels.length > 0 && player) {
                 player.src = m.channels[0].url;
-                
                 const MAX_VISIBLE = 3;
                 const total = m.channels.length;
-                
                 m.channels.forEach((ch, idx) => {
                     const btn = document.createElement('button');
                     btn.className = idx === 0 ? 'srv-btn active' : 'srv-btn';
@@ -803,14 +735,9 @@
                         btn.classList.add('active');
                         player.src = ch.url;
                     };
-                    
-                    if(idx >= MAX_VISIBLE) {
-                        btn.style.display = 'none';
-                        btn.classList.add('hidden-srv');
-                    }
+                    if(idx >= MAX_VISIBLE) { btn.style.display = 'none'; btn.classList.add('hidden-srv'); }
                     serverBox.appendChild(btn);
                 });
-
                 if(total > MAX_VISIBLE) {
                     const toggle = document.getElementById('showMoreServers');
                     toggle.style.display = 'block';
@@ -821,17 +748,13 @@
                         toggle.innerText = isHidden ? 'Hide Servers ▲' : `Show ${total - MAX_VISIBLE} More Servers ▼`;
                     };
                 }
-            } else if (serverBox) {
-                serverBox.innerHTML = '<div style="color:#fca5a5">No streams available.</div>';
-            }
+            } else if (serverBox) { serverBox.innerHTML = '<div style="color:#fca5a5">No streams available.</div>'; }
 
             const backBtn = document.getElementById('gotoInfoBtn');
             if (backBtn) backBtn.onclick = () => window.location.href = `?${PARAM_INFO}=${currentUrlId}`;
-            
             revealContent();
         }
 
-        // --- HELPER UTILS ---
         function extractHash(str) { return str ? String(str).split('-').pop() : null; }
         function setMeta(n, c) { let m = document.querySelector(`meta[name="${n}"]`); if(!m) { m = document.createElement('meta'); m.setAttribute('name', n); document.head.appendChild(m); } m.setAttribute('content', c); }
         function setCanonical(u) { let l = document.querySelector('link[rel="canonical"]'); if(!l) { l = document.createElement('link'); l.setAttribute('rel', 'canonical'); document.head.appendChild(l); } l.setAttribute('href', u); }
@@ -852,76 +775,30 @@
             }
         }
 
-        function showSkeletons() {
-            const mainContainer = document.querySelector('.watch-container');
-            mainContainer.classList.add('active-mode'); 
-            
-            // Show all skeletons
-            ['sk-left-ad1', 'sk-left-disc', 'sk-left-ad2', 'sk-info-table', 'sk-chat', 'sk-article'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.style.display = 'block';
-            });
-
-            // Activate sidebars
-            document.querySelectorAll('.layout-sidebar').forEach(sb => sb.classList.add('active'));
-            
-            // Mobile: Hide left skeletons (ads are moved or hidden)
-            if(window.innerWidth <= 1300) {
-                document.querySelector('.sidebar-left').classList.remove('active');
-            }
-        }
-
         function revealContent() {
-            // Hide all skeletons
             ['sk-left-ad1', 'sk-left-disc', 'sk-left-ad2', 'sk-info-table', 'sk-chat', 'sk-article'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.style.display = 'none';
             });
-
-            // Show real content classes
             const realIds = ['real-left-ad1', 'real-left-disc', 'real-left-ad2', 'real-chat', 'seo-article-container'];
             realIds.forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.classList.remove('hidden-load');
             });
-            
-            // Show the specific view (Stream/Info) logic handles its own display
         }
 
         function showView(id) { 
-            // Hide main containers
             ['loadingView', 'emptyView', 'errorView', 'streamView', 'infoView'].forEach(v => { 
                 const el = document.getElementById(v); 
-                if(el) {
-                    el.style.display = 'none';
-                    el.classList.add('hidden-load'); // Ensure class logic is consistent
-                }
+                if(el) { el.style.display = 'none'; el.classList.add('hidden-load'); }
             });
-
-            // Show target
             const v = document.getElementById(id + 'View'); 
-            if(v) {
-                v.style.display = 'block';
-                v.classList.remove('hidden-load');
-            }
+            if(v) { v.style.display = 'block'; v.classList.remove('hidden-load'); }
             
             const isContent = (id === 'stream' || id === 'info');
-            const mainContainer = document.querySelector('.watch-container');
-            
-            if (isContent) mainContainer.classList.add('active-mode');
-            else mainContainer.classList.remove('active-mode');
-            
-            document.querySelectorAll('.layout-sidebar').forEach(sb => {
-                if (isContent) sb.classList.add('active');
-                else sb.classList.remove('active');
-            });
-            
-            if (window.innerWidth <= 1300 && isContent) {
-                document.querySelector('.sidebar-left').classList.remove('active');
-            }
+            if (window.innerWidth <= 1300 && isContent) document.querySelector('.sidebar-left').classList.remove('active');
         }
 
-        // --- SOCIALS & CHAT ---
         function startDummyChat() {
             const box = document.getElementById('chatMessages');
             box.classList.add('dummy-mode');
