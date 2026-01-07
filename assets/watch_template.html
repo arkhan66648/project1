@@ -743,26 +743,36 @@
                 copy: '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>' 
             };
             let html = '';
+            
+            // Loop through social platforms
             ['telegram', 'whatsapp', 'reddit', 'twitter', 'copy'].forEach(p => {
                 const count = SHARE_CONFIG.counts[p] ? ((n)=>(n>=1000?(n/1000).toFixed(1)+'k':n))(SHARE_CONFIG.counts[p]) : '';
                 const onclick = p === 'copy' ? `copyText('${shareUrl}')` : `window.open('${makeUrl(p)}', '_blank')`;
-                html += `<div class="social-btn ${p}" onclick="${onclick}">${icons[p]}<span class="s-count">${count}</span></div>`;
+                
+                // Use the icon from your existing object or fallback
+                const iconSvg = icons[p] || ''; 
+                
+                html += `<div class="social-btn ${p}" onclick="${onclick}">${iconSvg}<span class="s-count">${count}</span></div>`;
             });
+
+            // Inject into both Sidebar and Mobile Footer
             if(sidebar) sidebar.innerHTML = html;
             if(mobileFooter) mobileFooter.innerHTML = html;
         }
-        function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
-        function copyText(text) { navigator.clipboard.writeText(text); const t = document.createElement('div'); t.className = 'copy-toast'; t.innerText = 'Link copied ✓'; document.body.appendChild(t); setTimeout(() => t.remove(), 1600); }
-        function revealContent() {
-            // Hide Skeletons
-            document.getElementById('sk-left').style.display = 'none';
-            document.getElementById('sk-middle').style.display = 'none';
-            document.getElementById('sk-right').style.display = 'none';
 
-            // Show Real Content
-            document.getElementById('real-left').style.display = 'flex';
-            // Middle content is handled by showView
-            document.getElementById('real-right').style.display = 'flex'; // Use flex for chat layout
+        // --- GLOBAL UTILS ---
+        function toggleMenu() { 
+            const menu = document.getElementById('mobileMenu');
+            if(menu) menu.classList.toggle('active'); 
+        }
+
+        function copyText(text) { 
+            navigator.clipboard.writeText(text); 
+            const t = document.createElement('div'); 
+            t.className = 'copy-toast'; 
+            t.innerText = 'Link copied ✓'; 
+            document.body.appendChild(t); 
+            setTimeout(() => t.remove(), 1600); 
         }
     </script>
 </body>
