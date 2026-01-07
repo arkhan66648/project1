@@ -253,10 +253,14 @@
         .layout-sidebar {
             position: -webkit-sticky;
             position: sticky;
-            top: 80px; /* Header (60px) + Gap (20px) */
-            height: calc(100vh - 100px); /* Fill viewport height minus header/padding */
-            display: flex;
+            top: 80px; 
+            height: calc(100vh - 100px); 
+            display: none; /* <--- ADD THIS (Hidden by default) */
             flex-direction: column;
+        }
+        /* New class to show sidebars */
+        .layout-sidebar.active {
+            display: flex;
         }
 
         /* Left Sidebar (Ad Specific) */
@@ -872,10 +876,29 @@
         }
 
         function showView(id) { 
+            // 1. Hide all main content views
             ['loadingView', 'emptyView', 'errorView', 'streamView', 'infoView'].forEach(v => {
-                const el = document.getElementById(v); if(el) el.style.display = 'none';
+                const el = document.getElementById(v); 
+                if(el) el.style.display = 'none';
             });
-            const v = document.getElementById(id + 'View'); if(v) v.style.display = 'block'; 
+
+            // 2. Show the requested view
+            const v = document.getElementById(id + 'View'); 
+            if(v) v.style.display = 'block'; 
+
+            // 3. Toggle Sidebars (Ad & Chat)
+            // Only show sidebars if we are in 'stream' or 'info' mode
+            const showSidebars = (id === 'stream' || id === 'info');
+            document.querySelectorAll('.layout-sidebar').forEach(sb => {
+                if (showSidebars) sb.classList.add('active');
+                else sb.classList.remove('active');
+            });
+            
+            // 4. Specific Mobile Logic (Optional but good practice)
+            // On mobile, we might want to hide the Left Ad sidebar completely even if active
+            if (window.innerWidth <= 1300 && showSidebars) {
+                document.querySelector('.sidebar-left').classList.remove('active');
+            }
         }
         function showError(msg) { showView('error'); setText('errorView', msg); }
         function setText(id, txt) { const el = document.getElementById(id); if(el) el.innerText = txt || '--'; }
