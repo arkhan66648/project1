@@ -251,12 +251,18 @@
 
         /* 2. Sidebars Common Styles */
         .layout-sidebar {
-            position: -webkit-sticky;
-            position: sticky;
-            top: 80px; 
-            height: calc(100vh - 100px); 
-            display: none; /* <--- ADD THIS (Hidden by default) */
-            flex-direction: column;
+            max-width: 900px; /* Standard width for root view */
+            margin: 0 auto;
+            padding: 20px 15px;
+            display: block;
+        }
+        .watch-container.active-mode {
+            max-width: 1600px !important; /* Wide layout */
+            width: 98%;
+            display: grid;
+            grid-template-columns: 300px 1fr 340px; /* Left | Main | Right */
+            gap: 20px;
+            align-items: start;
         }
         /* New class to show sidebars */
         .layout-sidebar.active {
@@ -311,19 +317,11 @@
             min-width: 0; /* Prevents flex/grid overflow issues */
         }
 
-        /* Responsive Breakpoints */
         @media (max-width: 1300px) {
-            /* Hide Left Ad on medium screens */
-            .watch-container { grid-template-columns: 1fr 340px; }
-            .sidebar-left { display: none; }
+            .watch-container.active-mode { grid-template-columns: 1fr 340px; }
         }
         @media (max-width: 1000px) {
-            /* Stack everything on mobile/tablet */
-            .watch-container { display: flex; flex-direction: column; }
-            .sidebar-right { 
-                position: relative; top: 0; width: 100%; height: 500px; margin-top: 20px; 
-            }
-            .layout-sidebar { height: auto; }
+            .watch-container.active-mode { display: flex; flex-direction: column; }
         }
         /* --- CHAT WIDGET STYLES --- */
         .chat-wrapper {
@@ -503,7 +501,7 @@
         <div class="f-head">Quick Links</div>
         <div class="f-links"><a href="/dmca" class="f-link">DMCA</a><a href="/contact" class="f-link">Contact</a><a href="/terms" class="f-link">Terms & Conditions</a></div>
     </div>
-    <div></div>
+    <div class="f-desc">Hello world</div>
     <div class="f-brand">
         <img src="/assets/test-logo.webp" class="logo-img" alt="StreamEast Logo" fetchpriority="high"> <div class="logo-text">Stream<span>East</span></div> 
     </div>
