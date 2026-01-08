@@ -187,11 +187,14 @@
         /* Find this section in your <style> and replace/update it */
 @media (max-width: 1000px) { 
     .watch-container.active-mode { display: flex; flex-direction: column; } 
+    .sidebar-left .sk-ad {
+        display: none !important;
+    }
     
     /* FORCE ORDERS ALWAYS - Do not wait for classes */
     .mobile-top-ad { display: flex; order: 1; }
     .layout-main { order: 2; width: 100%; }
-    .sidebar-left { display: flex !important; order: 3; width: 100%; position: static; height: auto; }
+    .sidebar-left { display: flex !important; order: 3; width: 100%; position: static; height: auto; gap: 0;}
     .sidebar-right { order: 4; width: 100%; height: 500px !important; position: static; margin-top: 0; }
     
     /* FIX: Apply order: 5 to the WRAPPER immediately, not just when active */
@@ -321,7 +324,7 @@
         @media (max-width: 600px) { .stream-controls { flex-direction: column; } .info-btn-area { max-width: 100%; } }
 
         /* DISCORD WIDGET */
-        .discord-box { background: #5865F2; color: #fff; border-radius: var(--border-radius-base); padding: 10px; display: flex; align-items: center; justify-content: space-between; margin-top: 0; transition: 0.2s; text-decoration: none; border: 1px solid rgba(255,255,255,0.1); height: 70px;}
+        .discord-box { background: #5865F2; color: #fff; border-radius: var(--border-radius-base); padding: 10px; display: flex; align-items: center; justify-content: space-between; transition: 0.2s; text-decoration: none; border: 1px solid rgba(255,255,255,0.1); height: 70px; max-width: 300px; width: 100%; margin: 0 auto; box-sizing: border-box;}
         .discord-box:hover { background: #4752C4; transform: translateY(-2px); }
         .dc-left { display: flex; align-items: center; gap: 12px; }
         .dc-icon { width: 32px; height: 32px; fill: #fff; }
@@ -585,7 +588,7 @@
         <div class="f-head">Quick Links</div>
         <div class="f-links"><a href="/dmca" class="f-link">DMCA</a><a href="/contact" class="f-link">Contact</a><a href="/terms" class="f-link">Terms & Conditions</a></div>
     </div>
-    <div class="f-desc">Hello world</div>
+    <div></div>
     <div class="f-brand">
         <img src="/assets/test-logo.webp" class="logo-img" alt="StreamEast Logo" fetchpriority="high"> <div class="logo-text">Stream<span>East</span></div> 
     </div>
