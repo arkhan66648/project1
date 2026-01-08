@@ -906,19 +906,39 @@
         }
 
         function revealContent() {
-    // Hide Skeletons
-    ['sk-mobile-top-ad', 'sk-left-ad1', 'sk-left-disc', 'sk-left-ad2', 'sk-chat', 'sk-article'].forEach(id => {
+    const isMobile = window.innerWidth <= 1000;
+
+    // 1. Hide ALL Skeletons
+    const skels = ['sk-mobile-top-ad', 'sk-left-ad1', 'sk-left-disc', 'sk-left-ad2', 'sk-chat', 'sk-article'];
+    skels.forEach(id => {
         const el = document.getElementById(id);
         if(el) el.style.display = 'none';
     });
 
-    // Show Real Content
-    // Added 'real-mobile-top-ad' to this list
-    const realIds = ['real-mobile-top-ad', 'real-left-ad1', 'real-left-disc', 'real-left-ad2', 'real-chat', 'seo-article-container'];
-    realIds.forEach(id => {
+    // 2. Define Real Content IDs
+    // We separate Sidebar Ads from the rest
+    const alwaysShow = ['real-mobile-top-ad', 'real-left-disc', 'real-chat', 'seo-article-container'];
+    const sidebarAds = ['real-left-ad1', 'real-left-ad2'];
+
+    // 3. Show "Always Show" content
+    alwaysShow.forEach(id => {
         const el = document.getElementById(id);
         if(el) el.classList.remove('hidden-load');
     });
+
+    // 4. Show Sidebar Ads ONLY if Desktop
+    if (!isMobile) {
+        sidebarAds.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.classList.remove('hidden-load');
+        });
+    } else {
+        // Double safety: Ensure they stay hidden on mobile
+        sidebarAds.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.style.display = 'none'; 
+        });
+    }
 }
 
         function showView(id) { 
