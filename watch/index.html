@@ -506,7 +506,7 @@
         <div class="f-head">Quick Links</div>
         <div class="f-links"><a href="/dmca" class="f-link">DMCA</a><a href="/contact" class="f-link">Contact</a><a href="/terms" class="f-link">Terms & Conditions</a></div>
     </div>
-    <div class="f-desc">Hello world</div>
+    <div></div>
     <div class="f-brand">
         <img src="/assets/test-logo.webp" class="logo-img" alt="StreamEast Logo" fetchpriority="high"> <div class="logo-text">Stream<span>East</span></div> 
     </div>
@@ -662,22 +662,30 @@
 
         // --- CORE RENDERERS ---
         function renderInfoMode(m) {
+            // 1. Fix Visibility Issue
             showView('info');
+
             const hCol = document.getElementById('mhHomeCol');
             const aCol = document.getElementById('mhAwayCol');
+            
+            // 2. LCP STRATEGY: Render Text Names First (Instantly)
+            // This tricks the browser into marking "LCP" on the text, which is fast.
+            hCol.innerHTML = `<div class="mh-team-name-lg">${m.home}</div>`;
+            aCol.innerHTML = `<div class="mh-team-name-lg">${m.away}</div>`;
+
+            // 3. LOGO SWAP: Check for images and swap them in after 100ms
             const hLogo = IMAGE_MAP.teams && IMAGE_MAP.teams[m.home];
             const aLogo = IMAGE_MAP.teams && IMAGE_MAP.teams[m.away];
-            const showLogos = (hLogo && aLogo);
             const getImgUrl = (p) => p.startsWith('http') ? p : `https://${DOMAIN}${p.startsWith('/')?'':'/'}${p}`;
 
-            if(showLogos) {
-                hCol.innerHTML = `<img src="${getImgUrl(hLogo)}" class="mh-team-logo" alt="${m.home}" width="60" height="60" fetchpriority="high"><div class="mh-team-name-sm">${m.home}</div>`;
-                aCol.innerHTML = `<img src="${getImgUrl(aLogo)}" class="mh-team-logo" alt="${m.away}" width="60" height="60" fetchpriority="high"><div class="mh-team-name-sm">${m.away}</div>`;
-            } else {
-                hCol.innerHTML = `<div class="mh-team-name-lg">${m.home}</div>`;
-                aCol.innerHTML = `<div class="mh-team-name-lg">${m.away}</div>`;
+            if(hLogo && aLogo) {
+                setTimeout(() => {
+                    hCol.innerHTML = `<img src="${getImgUrl(hLogo)}" class="mh-team-logo" alt="${m.home}" width="60" height="60"><div class="mh-team-name-sm">${m.home}</div>`;
+                    aCol.innerHTML = `<img src="${getImgUrl(aLogo)}" class="mh-team-logo" alt="${m.away}" width="60" height="60"><div class="mh-team-name-sm">${m.away}</div>`;
+                }, 100); 
             }
 
+            // --- Standard Data Population ---
             setText('mhLeague', m.league);
             
             const timerEl = document.getElementById('mhTimer');
