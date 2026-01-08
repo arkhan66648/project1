@@ -229,41 +229,54 @@
         /* Updated Center Column Spacing */
         .mh-center { text-align: center; z-index: 2; gap: 8px; }
         
-        /* Team Columns - UPDATED SIZE FOR LCP FIX */
-        .mh-team-logo { width: 40px; 
-    height: 40px; 
-    object-fit: contain; 
-    margin-bottom: 8px; 
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+        /* Team Columns - UPDATED SIZE FOR LCP FIX: 50px */
+        .mh-team-logo { 
+            width: 50px; 
+            height: 50px; 
+            object-fit: contain; 
+            margin-bottom: 8px; 
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); 
+        }
         
-        /* INCREASED FONT SIZE FOR LCP FIX (Text Area > Logo Area) */
-        .mh-team-name-sm { font-size: 1.2rem; 
-    font-weight: 700; 
-    color: var(--text-main); 
-    text-align: center; 
-    line-height: 1.2; 
-    max-width: 100%; 
-    overflow: hidden; 
-    display: -webkit-box; 
-    -webkit-line-clamp: 2; 
-    -webkit-box-orient: vertical; }
+        /* INCREASED FONT SIZE FOR BALANCE */
+        .mh-team-name-sm { 
+            font-size: 1.15rem; 
+            font-weight: 700; 
+            color: var(--text-main); 
+            text-align: center; 
+            line-height: 1.2; 
+            max-width: 100%; 
+            overflow: hidden; 
+            display: -webkit-box; 
+            -webkit-line-clamp: 2; 
+            -webkit-box-orient: vertical; 
+        }
         
         /* Text Only Mode (No Logo) */
         .mh-team-name-lg { font-size: 1.1rem; font-weight: 800; color: #fff; text-align: center; text-transform: uppercase; font-family: var(--font-family-headings); }
-        @media (min-width: 768px) { .mh-team-name-lg { font-size: 1.4rem; } .mh-team-logo { width: 50px; height: 50px; }.mh-team-name-sm { font-size: 1.3rem;} .mh-vs { font-size: 3rem;} }
+        
+        @media (min-width: 768px) { 
+            .mh-team-name-lg { font-size: 1.4rem; } 
+            .mh-team-logo { width: 50px; height: 50px; } 
+            .mh-team-name-sm { font-size: 1.2rem; }
+            .mh-vs { font-size: 3rem; }
+        }
 
         /* Center Column */
         .mh-league { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1px; margin: 0; }
-        .mh-vs { font-size: 2.2rem;       /* Increased from 1.8rem */
-    font-weight: 900; 
-    color: rgba(255,255,255,0.1); 
-    margin: 0; 
-    line-height: 1; 
-    font-family: var(--font-family-headings);
-    
-    /* CRITICAL: This padding makes the element "larger" than the logo in the browser's eyes */
-    padding: 10px 25px;      
-    display: inline-block; }
+        
+        /* CSS AREA DOMINANCE FALLBACK: Increase VS size just in case */
+        .mh-vs { 
+            font-size: 2.2rem; 
+            font-weight: 900; 
+            color: rgba(255,255,255,0.1); 
+            margin: 0; 
+            line-height: 1; 
+            font-family: var(--font-family-headings);
+            padding: 10px 25px; 
+            display: inline-block; 
+        }
+        
         .mh-timer { font-size: 0.9rem; font-weight: 700; color: var(--text-muted); margin: 0; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); }
         .mh-timer.live { color: #ef4444; border-color: #ef4444; animation: pulse 2s infinite; }
         
@@ -362,20 +375,6 @@
         
         .error-box { text-align: center; padding: 40px; border: 1px solid var(--border); background: rgba(239,68,68,0.1); color: #fca5a5; border-radius: var(--border-radius-base); margin-top: 20px; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-        /* Placeholder to prevent CLS when image loads late */
-.logo-slot {
-    width: 35px; /* Mobile Size */
-    height: 35px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Restore 50px on Desktop */
-@media (min-width: 768px) {
-    .logo-slot { width: 50px; height: 50px; }
-}
     </style>
 </head>
 <body>
@@ -696,37 +695,53 @@
             const aLogo = IMAGE_MAP.teams && IMAGE_MAP.teams[m.away];
             const getImgUrl = (p) => p.startsWith('http') ? p : `https://${DOMAIN}${p.startsWith('/')?'':'/'}${p}`;
 
-            // PERMANENT FIX: Standard HTML + CSS Area Dominance
-            // We use standard <img> tags for perfect Entity Stacking SEO.
-            // The CSS (.mh-vs) ensures the text center is the LCP, not these images.
+            // LCP FIX: SITE LOGO PLACEHOLDER STRATEGY
+            // 1. We grab the Site Logo (which is preloaded in header).
+            // 2. We use it as the initial 'src' to get 0ms paint time.
+            // 3. We use standard 50px size as requested.
             
+            const headerImg = document.querySelector('.logo-img');
+            // Fallback to a transparent pixel if for some reason header logo isn't found
+            const placeholderSrc = headerImg ? headerImg.src : "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxIDEiPjwvc3ZnPg==";
+
             if(hLogo && aLogo) {
                 hCol.innerHTML = `
-                    <img src="${getImgUrl(hLogo)}" 
+                    <img src="${placeholderSrc}" 
+                         data-src="${getImgUrl(hLogo)}"
                          class="mh-team-logo" 
                          alt="${m.home}" 
-                         width="40" height="40"
-                         loading="eager" 
-                         decoding="async">
+                         width="50" height="50">
                     <div class="mh-team-name-sm">${m.home}</div>`;
                 
                 aCol.innerHTML = `
-                    <img src="${getImgUrl(aLogo)}" 
+                    <img src="${placeholderSrc}" 
+                         data-src="${getImgUrl(aLogo)}"
                          class="mh-team-logo" 
                          alt="${m.away}" 
-                         width="40" height="40"
-                         loading="eager" 
-                         decoding="async">
+                         width="50" height="50">
                     <div class="mh-team-name-sm">${m.away}</div>`;
+
+                // Swap to real logos immediately
+                requestAnimationFrame(() => {
+                    const images = document.querySelectorAll('.mh-team-logo[data-src]');
+                    images.forEach(img => {
+                        const realSrc = img.getAttribute('data-src');
+                        if(realSrc) {
+                            const loader = new Image();
+                            loader.onload = () => { img.src = realSrc; };
+                            loader.src = realSrc;
+                        }
+                    });
+                });
             } else {
+                // Fallback for text only
                 hCol.innerHTML = `<div class="mh-team-name-lg">${m.home}</div>`;
                 aCol.innerHTML = `<div class="mh-team-name-lg">${m.away}</div>`;
             }
 
-            // --- Rest of your function remains exactly the same ---
+            // --- Standard Data Population ---
             setText('mhLeague', m.league);
             const timerEl = document.getElementById('mhTimer');
-            // ... (keep the rest of your existing logic) ...
             const countdownEl = document.getElementById('tbl-countdown');
             const statusLabelEl = countdownEl ? countdownEl.previousElementSibling : null;
 
@@ -975,32 +990,7 @@
         document.getElementById('chatInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
         function copyText(text) { navigator.clipboard.writeText(text); const t = document.createElement('div'); t.className = 'copy-toast'; t.innerText = 'Link copied ✓'; document.body.appendChild(t); setTimeout(() => t.remove(), 1600); }
-        function generateSchema(m) { 
-            try { 
-                const getFullUrl = (p) => p ? (p.startsWith('http') ? p : `https://${DOMAIN}${p.startsWith('/')?'':'/'}${p}`) : '';
-                const hLogo = IMAGE_MAP.teams ? getFullUrl(IMAGE_MAP.teams[m.home]) : '';
-                const aLogo = IMAGE_MAP.teams ? getFullUrl(IMAGE_MAP.teams[m.away]) : '';
-
-                const s = { 
-                    "@context": "https://schema.org", 
-                    "@type": "SportsEvent", 
-                    "name": `${m.home} vs ${m.away}`, 
-                    "startDate": new Date(m.timestamp).toISOString(), 
-                    "description": `Watch ${m.home} vs ${m.away} live.`, 
-                    "sport": m.sport, 
-                    "competitor": [
-                        { "@type": "SportsTeam", "name": m.home, "image": hLogo },
-                        { "@type": "SportsTeam", "name": m.away, "image": aLogo }
-                    ], 
-                    "organizer": { "@type": "Organization", "name": SITE_NAME, "url": `https://${DOMAIN}` }, 
-                    "offers": { "@type": "Offer", "url": window.location.href, "availability": "https://schema.org/InStock", "price": "0" } 
-                }; 
-                const el = document.createElement('script'); 
-                el.type = 'application/ld+json'; 
-                el.textContent = JSON.stringify(s); 
-                document.head.appendChild(el); 
-            } catch (e) {} 
-        }
+        function generateSchema(m) { try { const s = { "@context": "https://schema.org", "@type": "SportsEvent", "name": `${m.home} vs ${m.away}`, "startDate": new Date(m.timestamp).toISOString(), "description": `Watch ${m.home} vs ${m.away} live.`, "sport": m.sport, "competitor": [{ "@type": "SportsTeam", "name": m.home }, { "@type": "SportsTeam", "name": m.away }], "organizer": { "@type": "Organization", "name": SITE_NAME, "url": `https://${DOMAIN}` }, "offers": { "@type": "Offer", "url": window.location.href, "availability": "https://schema.org/InStock", "price": "0" } }; const el = document.createElement('script'); el.type = 'application/ld+json'; el.textContent = JSON.stringify(s); document.head.appendChild(el); } catch (e) {} }
         function updateSocialLinks(idParam) {
             const sidebar = document.getElementById('socialSidebar');
             const mobileFooter = document.getElementById('mobileFooter');
@@ -1014,7 +1004,7 @@
                 if(p==='twitter') return `https://twitter.com/intent/tweet?url=${u}`;
                 return null;
             };
-            const icons = { telegram: '<svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.47-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.28L19.84 4c.75-.28 1.4.52 1.16 1.76l-2.8 13.2c-.2.9-1.09.9-1.8.6l-5.45-4.06-2.6 2.5c-.3.3-.55.55-1.1.55l.45-3.6z"/></svg>', whatsapp: '<svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.33 4.97L2 22l5.25-1.38a9.86 9.86 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.51 2 12.04 2zm4.43-6.03c-.24-.12-1.41-.7-1.63-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.48-.4-.42-.54-.42h-.46c-.16 0-.42.06-.64.3C4.33 8.6 3.5 9.2 3.5 10.38c0 1.18.86 2.32.98 2.48.12.16 1.7 2.6 4.12 3.65.58.25 1.03.4 1.38.51.58.18 1.1.15 1.52.09.46-.07 1.41-.58 1.61-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg>', reddit: '<svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.22 14.11c-.13.26-.35.45-.6.54-.25.09-.52.1-.78.01-.8-.28-1.76-.43-2.77-.43s-1.97.15-2.77.43c-.26.09-.53.08-.78-.01-.25-.09-.47-.28-.6-.54-.15-.3-.19-.64-.11-.96.08-.32.28-.59.56-.75.9-.53 2.05-.83 3.28-.88l.66-3.11 2.16.46c.04-.2.15-.38.31-.51s.36-.2.55-.17c.2.03.38.15.51.31.13.16.2.36.17.55l-2.16-.46-.66 3.11c1.23.05 2.38.35 3.28.88.28.16.48.43.56.75.08.32.04.66-.11.96zM12 11.25c-.97 0-1.75.78-1.75 1.75s.78 1.75 1.75 1.75 1.75-.78 1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75zm-3.25-2.5c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25z"/></svg>', twitter: '<svg viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>', copy: '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>' };
+            const icons = { telegram: '<svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.47-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.28L19.84 4c.75-.28 1.4.52 1.16 1.76l-2.8 13.2c-.2.9-1.09.9-1.8.6l-5.45-4.06-2.6 2.5c-.3.3-.55.55-1.1.55l.45-3.6z"/></svg>', whatsapp: '<svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.33 4.97L2 22l5.25-1.38a9.86 9.86 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.51 2 12.04 2zm4.43-6.03c-.24-.12-1.41-.7-1.63-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.48-.4-.42-.54-.42h-.46c-.16 0-.42.06-.64.3C4.33 8.6 3.5 9.2 3.5 10.38c0 1.18.86 2.32.98 2.48.12.16 1.7 2.6 4.12 3.65.58.25 1.03.4 1.38.51.58.18 1.1.15 1.52.09.46-.07 1.41-.58 1.61-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg>', reddit: '<svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.22 14.11c-.13.26-.35.45-.6.54-.25.09-.52.1-.78.01-.8-.28-1.76-.43-2.77-.43s-1.97.15-2.77.43c-.26.09-.53.08-.78-.01-.25-.09-.47-.28-.6-.54-.15-.3-.19-.64-.11-.96.08-.32.28-.59.56-.75.9-.53 2.05-.83 3.28-.88l.66-3.11 2.16.46c.04-.2.15-.38.31-.51s.36-.2.55-.17c.2.03.38.15.51.31.13.16.2.36.17.55l-2.16-.46-.66 3.11c1.23.05 2.38.35 3.28.88.28.16.48.43.56.75.08.32.04.66-.11.96zM12 11.25c-.97 0-1.75.78-1.75 1.75s.78 1.75 1.75 1.75 1.75-.78 1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75zm-3.25-2.5c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25 1.25-1.25-.56-1.25-1.25z"/></svg>', twitter: '<svg viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>', copy: '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>' };
             let html = '';
             ['telegram', 'whatsapp', 'reddit', 'twitter', 'copy'].forEach(p => {
                 const count = SHARE_CONFIG.counts[p] ? ((n)=>(n>=1000?(n/1000).toFixed(1)+'k':n))(SHARE_CONFIG.counts[p]) : '';
