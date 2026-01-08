@@ -218,7 +218,11 @@
         .mh-sk-full { width: 100%; height: 100%; border-radius: var(--border-radius-base); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); }
         
         /* MOBILE AD SKELETON */
-        .sk-mobile-ad { display: none; width: 100%; height: 90px; margin-bottom: 20px; }
+        .sk-mobile-ad { display: none; /* Hidden on Desktop */
+    width: 100%; 
+    height: 90px; 
+    margin-bottom: 20px; /* Matches .mobile-top-ad margin */
+    border-radius: var(--border-radius-base); }
         @media (max-width: 1000px) { .sk-mobile-ad { display: block; } }
 
         .sk-table-body { width: 100%; height: 350px; margin-top: 0; border-top: none; border-radius: 0 0 var(--border-radius-base) var(--border-radius-base); }
@@ -412,6 +416,8 @@
         </div>
     </header>
     <div class="mobile-menu" id="mobileMenu"><a href="#">Schedule</a><a href="/#faqs">FAQs</a><a href="/#comeback" class="highlighted">How we comeback</a></div>
+     <!-- MOBILE SPECIFIC TOP AD SKELETON (Only Visible on Mobile) -->
+        <div id="sk-mobile-top-ad" class="sk-box sk-anim sk-mobile-ad"></div>
 
     <!-- 728x90 Mobile Top Ad -->
     <div class="mobile-top-ad">
@@ -421,8 +427,7 @@
     <!-- MAIN CONTAINER - Default Active Mode for Zero CLS -->
     <main class="container watch-container active-mode">
         
-        <!-- MOBILE SPECIFIC TOP AD SKELETON (Only Visible on Mobile) -->
-        <div id="sk-mobile-top-ad" class="sk-box sk-anim sk-mobile-ad"></div>
+       
 
         <!-- 1. LEFT SIDEBAR (Ad -> Discord -> Ad) -->
         <aside class="layout-sidebar sidebar-left active">
@@ -582,7 +587,7 @@
         <div class="f-head">Quick Links</div>
         <div class="f-links"><a href="/dmca" class="f-link">DMCA</a><a href="/contact" class="f-link">Contact</a><a href="/terms" class="f-link">Terms & Conditions</a></div>
     </div>
-    <div></div>
+    <div class="f-desc">Hello world</div>
     <div class="f-brand">
         <img src="/assets/test-logo.webp" class="logo-img" alt="StreamEast Logo" fetchpriority="high"> <div class="logo-text">Stream<span>East</span></div> 
     </div>
@@ -908,17 +913,20 @@
         }
 
         function revealContent() {
-            // Note: We don't hide table skeleton here, we do it in renderInfoMode
-            ['sk-mobile-top-ad', 'sk-left-ad1', 'sk-left-disc', 'sk-left-ad2', 'sk-chat', 'sk-article'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.style.display = 'none';
-            });
-            const realIds = ['real-left-ad1', 'real-left-disc', 'real-left-ad2', 'real-chat', 'seo-article-container'];
-            realIds.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.classList.remove('hidden-load');
-            });
-        }
+    // Hide Skeletons
+    ['sk-mobile-top-ad', 'sk-left-ad1', 'sk-left-disc', 'sk-left-ad2', 'sk-chat', 'sk-article'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.style.display = 'none';
+    });
+
+    // Show Real Content
+    // Added 'real-mobile-top-ad' to this list
+    const realIds = ['real-mobile-top-ad', 'real-left-ad1', 'real-left-disc', 'real-left-ad2', 'real-chat', 'seo-article-container'];
+    realIds.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.classList.remove('hidden-load');
+    });
+}
 
         function showView(id) { 
             // Hide main containers
