@@ -172,8 +172,8 @@
         .ad-box { width: 300px; height: 250px; background: #000; display: flex; align-items: center; justify-content: center; color: #666; font-size: 0.8rem; border: 1px solid var(--border); border-radius: var(--border-radius-base); flex-shrink: 0; }
 
         /* ARTICLE SECTION (Moved to grid layout to control mobile order) */
-        .article-section-wrapper { display: none; } /* Default Hidden */
-        .article-section-wrapper.active { display: block; grid-column: 2; margin-top: 20px; }
+        .article-section-wrapper { display: block; width: 100%; } 
+.article-section-wrapper.active { grid-column: 2; margin-top: 20px; }
 
         /* MOBILE RESPONSIVENESS & ORDERING */
         @media (max-width: 1300px) { 
@@ -187,7 +187,7 @@
             .layout-main { order: 2; width: 100%; }
             .sidebar-left { display: flex !important; order: 3; width: 100%; position: static; height: auto; }
             /* Hide the desktop specific ad boxes if sidebar moves to bottom, or make them responsive */
-            .sidebar-left .ad-box { display: none; } 
+            .sidebar-left .ad-box, .sidebar-left .sk-ad { display: none !important; } 
             .sidebar-right { order: 4; width: 100%; height: 500px; position: static; margin-top: 0; }
             .article-section-wrapper.active { order: 5; margin-top: 30px; }
             .layout-sidebar { height: auto; }
@@ -271,7 +271,6 @@
             background-size: contain;
             background-repeat: no-repeat;
             /* Optional: Slight grey circle if site logo fails */
-            background-color: rgba(255,255,255,0.02); 
             border-radius: 50%;
         }
         
@@ -605,7 +604,7 @@
         <div class="f-head">Quick Links</div>
         <div class="f-links"><a href="/dmca" class="f-link">DMCA</a><a href="/contact" class="f-link">Contact</a><a href="/terms" class="f-link">Terms & Conditions</a></div>
     </div>
-    <div class="f-desc">Hello world</div>
+    <div></div>
     <div class="f-brand">
         <img src="/assets/test-logo.webp" class="logo-img" alt="StreamEast Logo" fetchpriority="high"> <div class="logo-text">Stream<span>East</span></div> 
     </div>
@@ -774,25 +773,29 @@
 
             // Update Left Column (Remove Skeleton -> Add Content)
             if(hLogo) {
-                hCol.innerHTML = `
-                    <div class="mh-team-name-sm">${m.home}</div>
-                    <div class="logo-wrapper" style="background-image: url('${bgUrl}')">
-                        <img src="${getImgUrl(hLogo)}" class="mh-team-logo" alt="${m.home}" width="28" height="28" loading="eager" onload="this.classList.add('loaded'); this.parentElement.style.backgroundImage='none'">
-                    </div>`;
-            } else {
-                hCol.innerHTML = `<div class="mh-team-name-lg">${m.home}</div>`;
-            }
+    hCol.innerHTML = `
+        <div class="mh-team-name-sm">${m.home}</div>
+        <!-- REMOVED: style="background-image..." -->
+        <div class="logo-wrapper">
+            <!-- REMOVED: this.parentElement.style.backgroundImage='none' inside onload -->
+            <img src="${getImgUrl(hLogo)}" class="mh-team-logo" alt="${m.home}" width="28" height="28" loading="eager" onload="this.classList.add('loaded')">
+        </div>`;
+} else {
+    hCol.innerHTML = `<div class="mh-team-name-lg">${m.home}</div>`;
+}
 
             // Update Right Column (Remove Skeleton -> Add Content)
             if(aLogo) {
-                aCol.innerHTML = `
-                    <div class="mh-team-name-sm">${m.away}</div>
-                    <div class="logo-wrapper" style="background-image: url('${bgUrl}')">
-                        <img src="${getImgUrl(aLogo)}" class="mh-team-logo" alt="${m.away}" width="28" height="28" loading="eager" onload="this.classList.add('loaded'); this.parentElement.style.backgroundImage='none'">
-                    </div>`;
-            } else {
-                aCol.innerHTML = `<div class="mh-team-name-lg">${m.away}</div>`;
-            }
+    aCol.innerHTML = `
+        <div class="mh-team-name-sm">${m.away}</div>
+        <!-- REMOVED: style="background-image..." -->
+        <div class="logo-wrapper">
+            <!-- REMOVED: this.parentElement.style.backgroundImage='none' inside onload -->
+            <img src="${getImgUrl(aLogo)}" class="mh-team-logo" alt="${m.away}" width="28" height="28" loading="eager" onload="this.classList.add('loaded')">
+        </div>`;
+} else {
+    aCol.innerHTML = `<div class="mh-team-name-lg">${m.away}</div>`;
+}
 
             // Update Center Column (Static Text -> Dynamic Text)
             setText('mhLeague', m.league);
