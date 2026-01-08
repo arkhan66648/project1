@@ -210,8 +210,11 @@
         .sk-ad { width: 300px; height: 250px; flex-shrink: 0; }
         .sk-chat { width: 340px; height: 600px; }
         .sk-discord { width: 300px; height: 70px; flex-shrink: 0; }
-        .sk-article { width: 100%; height: 400px; margin-top: 20px; } /* Fixed typo: idth -> width */
-        .sk-info-full { width: 100%; height: 620px; margin-bottom: 20px; }
+        .sk-article { width: 100%; height: 400px; margin-top: 20px; } 
+        
+        /* New Specific Skeletons for Header/Table */
+        .mh-sk-team { width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.05); }
+        .sk-table-body { width: 100%; height: 350px; margin-top: 0; border-top: none; border-radius: 0 0 var(--border-radius-base) var(--border-radius-base); }
         
         /* Ensure hidden items are truly gone */
         .hidden-load { display: none !important; }
@@ -246,8 +249,8 @@
             opacity: 1;
         }
         .logo-wrapper {
-            width: 18px; 
-            height: 18px;
+            width: 28px; 
+            height: 28px;
             /* UPDATED: Margin Top for "Text Above, Logo Below" */
             margin-top: 8px; 
             margin-bottom: 0;
@@ -282,25 +285,13 @@
             .mh-team-name-lg { font-size: 1.4rem; } 
             .mh-team-logo { width: 50px; height: 50px; } 
             .mh-team-name-sm { font-size: 1.3rem; }
-            .mh-vs { font-size: 3rem; }
+            .mh-vs { font-size: 2.2rem; margin: 0; line-height: 1; font-family: var(--font-family-headings); padding: 5px 25px; display: inline-block; font-weight: 900; color: rgba(255,255,255,0.1); }
             .logo-wrapper { width: 45px; height: 45px; }
         }
-        
+        .mh-vs { font-size: 1.5rem; font-weight: 900; color: #fff; margin: 0; line-height: 1.2; font-family: var(--font-family-headings); }
 
         /* Center Column */
         .mh-league { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1px; margin: 0; }
-        
-        /* CSS AREA DOMINANCE FALLBACK: Increase VS size just in case */
-        .mh-vs { 
-            font-size: 2.2rem; 
-            font-weight: 900; 
-            color: rgba(255,255,255,0.1); 
-            margin: 0; 
-            line-height: 1; 
-            font-family: var(--font-family-headings);
-            padding: 10px 25px; 
-            display: inline-block; 
-        }
         
         .mh-timer { font-size: 0.9rem; font-weight: 700; color: var(--text-muted); margin: 0; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); }
         .mh-timer.live { color: #ef4444; border-color: #ef4444; animation: pulse 2s infinite; }
@@ -454,9 +445,6 @@
         <!-- 2. CENTER CONTENT -->
         <div class="layout-main">
             
-            <!-- SK: Full Info Table (Header + Rows) -->
-            <div id="sk-info-table" class="sk-box sk-anim sk-info-full"></div>
-
             <!-- Views -->
             <div id="emptyView" style="display:none; text-align:center; padding-top:50px;">
                 <h2 style="color:var(--text-muted)">Select a match to watch</h2>
@@ -485,19 +473,34 @@
                 </div>
             </div>
 
-            <!-- INFO VIEW (Initially Hidden) -->
-            <div id="infoView" class="hidden-load">
+            <!-- INFO VIEW (VISIBLE FOR LCP) -->
+            <div id="infoView" class="">
                 <div class="info-card">
+                    <!-- HEADER SECTION (Always Visible with Dummy Content) -->
                     <div class="mh-fixed-container" id="mhFixed">
-                        <div class="mh-col mh-home" id="mhHomeCol"></div>
-                        <div class="mh-col mh-center">
-                            <div class="mh-league" id="mhLeague">LEAGUE</div>
-                            <h1 class="mh-vs">VS</h1>
-                            <div class="mh-timer" id="mhTimer">00:00</div>
+                        <!-- Left Column: Skeleton -->
+                        <div class="mh-col mh-home" id="mhHomeCol">
+                            <div class="sk-box mh-sk-team sk-anim"></div>
                         </div>
-                        <div class="mh-col mh-away" id="mhAwayCol"></div>
+                        
+                        <!-- Center Column: Static Text for LCP -->
+                        <div class="mh-col mh-center">
+                            <div class="mh-league" id="mhLeague">LIVE STREAM</div>
+                            <!-- STATIC H1 for LCP -->
+                            <h1 class="mh-vs" id="centerHeadline">{{SITE_NAME}} Live</h1>
+                            <div class="mh-timer" id="mhTimer">Loading...</div>
+                        </div>
+                        
+                        <!-- Right Column: Skeleton -->
+                        <div class="mh-col mh-away" id="mhAwayCol">
+                            <div class="sk-box mh-sk-team sk-anim"></div>
+                        </div>
                     </div>
-                    <table class="info-table">
+
+                    <!-- TABLE SECTION (Skeleton Body, Real Table Hidden) -->
+                    <div id="sk-info-table-body" class="sk-box sk-anim sk-table-body"></div>
+                    
+                    <table id="real-info-table" class="info-table hidden-load">
                         <tr><td>Status</td><td id="tbl-status">Upcoming</td></tr>
                         <tr><td>Starts In</td><td id="tbl-countdown" style="color:var(--accent-gold); font-weight:700;">--</td></tr>
                         <tr><td>Competition</td><td id="tbl-league">--</td></tr>
@@ -507,6 +510,7 @@
                         <tr><td>Date</td><td id="tbl-date">--</td></tr>
                         <tr><td>Time</td><td id="tbl-time">--</td></tr>
                     </table>
+
                     <div class="action-pad">
                         <div class="action-row">
                             <button id="startWatchBtn" class="big-watch-btn">📺 Watch Live Stream</button>
@@ -711,6 +715,8 @@
         }
 
         function renderInfoMode(m) {
+            // NOTE: showView('info') is still called to set layout classes,
+            // but HTML is already visible. We just update it now.
             showView('info');
 
             const hCol = document.getElementById('mhHomeCol');
@@ -721,44 +727,37 @@
             const getImgUrl = (p) => p.startsWith('http') ? p : `https://${DOMAIN}${p.startsWith('/')?'':'/'}${p}`;
 
             // --- LCP FIX: Background Placeholder + Opacity Fade ---
-            // 1. Get the preloaded Site Logo URL from the header to use as background
             const headerLogo = document.querySelector('.logo-img');
             const bgUrl = headerLogo ? headerLogo.src : '';
 
-            if(hLogo && aLogo) {
-                // We render a Wrapper with the Site Logo as Background.
-                // The <img> has opacity:0 initially.
-                // onload="this.classList.add('loaded')" triggers the fade-in.
-                // LCP OPTIMIZATION: Swapped order so TEXT is ABOVE image
-                
+            // Update Left Column (Remove Skeleton -> Add Content)
+            if(hLogo) {
                 hCol.innerHTML = `
                     <div class="mh-team-name-sm">${m.home}</div>
                     <div class="logo-wrapper" style="background-image: url('${bgUrl}')">
-                        <img src="${getImgUrl(hLogo)}" 
-                             class="mh-team-logo" 
-                             alt="${m.home}" 
-                             width="18" height="18"
-                             loading="eager"
-                             onload="this.classList.add('loaded'); this.parentElement.style.backgroundImage='none'">
-                    </div>`;
-                
-                aCol.innerHTML = `
-                    <div class="mh-team-name-sm">${m.away}</div>
-                    <div class="logo-wrapper" style="background-image: url('${bgUrl}')">
-                        <img src="${getImgUrl(aLogo)}" 
-                             class="mh-team-logo" 
-                             alt="${m.away}" 
-                             width="18" height="18"
-                             loading="eager"
-                             onload="this.classList.add('loaded'); this.parentElement.style.backgroundImage='none'">
+                        <img src="${getImgUrl(hLogo)}" class="mh-team-logo" alt="${m.home}" width="28" height="28" loading="eager" onload="this.classList.add('loaded'); this.parentElement.style.backgroundImage='none'">
                     </div>`;
             } else {
                 hCol.innerHTML = `<div class="mh-team-name-lg">${m.home}</div>`;
+            }
+
+            // Update Right Column (Remove Skeleton -> Add Content)
+            if(aLogo) {
+                aCol.innerHTML = `
+                    <div class="mh-team-name-sm">${m.away}</div>
+                    <div class="logo-wrapper" style="background-image: url('${bgUrl}')">
+                        <img src="${getImgUrl(aLogo)}" class="mh-team-logo" alt="${m.away}" width="28" height="28" loading="eager" onload="this.classList.add('loaded'); this.parentElement.style.backgroundImage='none'">
+                    </div>`;
+            } else {
                 aCol.innerHTML = `<div class="mh-team-name-lg">${m.away}</div>`;
             }
 
-            // --- Standard Data Population (No Changes) ---
+            // Update Center Column (Static Text -> Dynamic Text)
             setText('mhLeague', m.league);
+            const centerH1 = document.getElementById('centerHeadline');
+            if(centerH1) centerH1.innerText = "VS"; // Replace initial LCP text with VS
+
+            // Update Timer
             const timerEl = document.getElementById('mhTimer');
             const countdownEl = document.getElementById('tbl-countdown');
             const statusLabelEl = countdownEl ? countdownEl.previousElementSibling : null;
@@ -781,12 +780,19 @@
                 }
             }
 
+            // Update Table
             setText('tbl-league', m.league);
             setText('tbl-sport', m.sport);
             setText('tbl-home', m.home);
             setText('tbl-away', m.away);
             setText('tbl-date', m.dateOnly);
             setText('tbl-time', m.timeOnly);
+
+            // Swap Table Skeleton for Real Table
+            const skTable = document.getElementById('sk-info-table-body');
+            const realTable = document.getElementById('real-info-table');
+            if(skTable) skTable.style.display = 'none';
+            if(realTable) realTable.classList.remove('hidden-load');
 
             const now = Date.now();
             const diffMins = (m.timestamp - now) / 60000;
@@ -883,7 +889,8 @@
         }
 
         function revealContent() {
-            ['sk-left-ad1', 'sk-left-disc', 'sk-left-ad2', 'sk-info-table', 'sk-chat', 'sk-article'].forEach(id => {
+            // Note: We don't hide table skeleton here, we do it in renderInfoMode
+            ['sk-left-ad1', 'sk-left-disc', 'sk-left-ad2', 'sk-chat', 'sk-article'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.style.display = 'none';
             });
