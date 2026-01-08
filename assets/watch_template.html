@@ -8,7 +8,7 @@
     <meta name="robots" content="index, follow"> 
     
     <!-- OPTIMIZATION: Defer Supabase to unblock rendering -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    
     <link rel="icon" href="{{FAVICON}}">
     <link rel="canonical" href="{{CANONICAL_URL}}">
     {{LOGO_PRELOAD}}
@@ -184,22 +184,22 @@
             .sidebar-left { display: none !important; } 
         }
         
-        @media (max-width: 1000px) { 
-            .watch-container.active-mode { display: flex; flex-direction: column; } 
-            .mobile-top-ad { display: flex; order: 1; }
-            .layout-main { order: 2; width: 100%; }
-            .sidebar-left { display: flex !important; order: 3; width: 100%; position: static; height: auto; }
-            
-            /* Hide Sidebar Ads on Mobile, but Keep Discord Visible */
-            .sidebar-left .ad-box, .sidebar-left .sk-ad { display: none !important; } 
-            .sidebar-left .discord-box, .sidebar-left .sk-discord { display: flex; }
-            
-            /* CHAT WINDOW: Fixed Height for Mobile */
-            .sidebar-right { order: 4; width: 100%; height: 500px !important; position: static; margin-top: 0; }
-            
-            .article-section-wrapper.active { order: 5; margin-top: 30px; }
-            .layout-sidebar { height: auto; }
-        }
+        /* Find this section in your <style> and replace/update it */
+@media (max-width: 1000px) { 
+    .watch-container.active-mode { display: flex; flex-direction: column; } 
+    
+    /* FORCE ORDERS ALWAYS - Do not wait for classes */
+    .mobile-top-ad { display: flex; order: 1; }
+    .layout-main { order: 2; width: 100%; }
+    .sidebar-left { display: flex !important; order: 3; width: 100%; position: static; height: auto; }
+    .sidebar-right { order: 4; width: 100%; height: 500px !important; position: static; margin-top: 0; }
+    
+    /* FIX: Apply order: 5 to the WRAPPER immediately, not just when active */
+    .article-section-wrapper { order: 5; } 
+    .article-section-wrapper.active { margin-top: 30px; }
+    
+    .layout-sidebar { height: auto; }
+}
 
         /* --- SKELETONS --- */
         .sk-box { 
@@ -276,11 +276,11 @@
         @media (min-width: 768px) { 
             .mh-team-name-lg { font-size: 1.4rem; } 
             .mh-team-logo { width: 50px; height: 50px; } 
-            .mh-team-name-sm { font-size: 1.3rem; }
+            .mh-team-name-sm { font-size: 1.3rem; min-height: 1.2em;}
             .mh-vs { font-size: 2.2rem; margin: 0; line-height: 1; font-family: var(--font-family-headings); padding: 5px 25px; display: inline-block; font-weight: 900; color: rgba(255,255,255,0.1); }
             .logo-wrapper { width: 45px; height: 45px; }
         }
-        .mh-vs { font-size: 1.5rem; font-weight: 900; color: #fff; margin: 0; line-height: 1.2; font-family: var(--font-family-headings); }
+        .mh-vs { font-size: 2rem; min-height: 40px; display: block; font-weight: 900; color: #fff; margin: 0; line-height: 1.2; font-family: var(--font-family-headings); }
 
         .mh-league { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1px; margin: 0; }
         
@@ -500,7 +500,7 @@
                         <div class="mh-col mh-center">
                             <div class="mh-league" id="mhLeague">LIVE STREAM</div>
                             <!-- STATIC H1 for LCP -->
-                            <h1 class="mh-vs" id="centerHeadline">{{SITE_NAME}} Live</h1>
+                            <h1 class="mh-vs" id="centerHeadline">{{SITE_NAME}} Live Streams</h1>
                             <div class="mh-timer" id="mhTimer">Loading...</div>
                         </div>
                         
@@ -1061,5 +1061,6 @@
             if(mobileFooter) mobileFooter.innerHTML = html;
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 </body>
 </html>
