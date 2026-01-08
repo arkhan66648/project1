@@ -673,7 +673,7 @@
                 setTimeout(() => {
                     hCol.innerHTML = `<img src="${getImgUrl(hLogo)}" class="mh-team-logo" alt="${m.home}" width="60" height="60"><div class="mh-team-name-sm">${m.home}</div>`;
                     aCol.innerHTML = `<img src="${getImgUrl(aLogo)}" class="mh-team-logo" alt="${m.away}" width="60" height="60"><div class="mh-team-name-sm">${m.away}</div>`;
-                }, 100); 
+                }, 700); 
             }
 
             // --- Standard Data Population ---
@@ -743,7 +743,7 @@
             setCanonical(`https://${DOMAIN}/watch/?${PARAM_INFO}=${m.originalId}`);
 
             const h1 = document.getElementById('stream-h1');
-            if (h1) h1.innerHTML = `<span style="color:var(--brand-primary)">${getSportIcon(m.sport)}</span> ${m.home} <span style="font-size:0.8em; color:var(--text-muted)">vs</span> ${m.away}`;
+            if (h1) h1.innerHTML = `<span style="color:var(--brand-primary)">${getSportIcon(m.sport)}</span> ${m.home} <span style="font-size:0.8rem; color:var(--text-muted)">vs</span> ${m.away}`;
             
             const player = document.getElementById('mainPlayer');
             const serverBox = document.getElementById('serverContainer');
