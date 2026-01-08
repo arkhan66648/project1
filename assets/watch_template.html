@@ -232,45 +232,47 @@
         /* Team Columns - UPDATED SIZE FOR LCP FIX: 50px */
         .mh-team-logo { 
             width: 100%; 
-    height: 100%; 
-    object-fit: contain; 
-    
-    /* CRITICAL: Start invisible so browser picks Text as LCP */
-    opacity: 0; 
-    
-    /* Smooth fade-in when loaded */
-    transition: opacity 0.3s ease-in; 
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+            height: 100%; 
+            object-fit: contain; 
+            
+            /* CRITICAL: Start invisible so browser picks Text as LCP */
+            opacity: 0; 
+            
+            /* Smooth fade-in when loaded */
+            transition: opacity 0.3s ease-in; 
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
         }
         .mh-team-logo.loaded {
-    opacity: 1;
-}
+            opacity: 1;
+        }
         .logo-wrapper {
-    width: 50px; 
-    height: 50px;
-    margin-bottom: 8px;
-    position: relative;
-    /* Centers the background image */
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    /* Optional: Slight grey circle if site logo fails */
-    background-color: rgba(255,255,255,0.02); 
-    border-radius: 50%;
-}
+            width: 50px; 
+            height: 50px;
+            /* UPDATED: Margin Top for "Text Above, Logo Below" */
+            margin-top: 8px; 
+            margin-bottom: 0;
+            position: relative;
+            /* Centers the background image */
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+            /* Optional: Slight grey circle if site logo fails */
+            background-color: rgba(255,255,255,0.02); 
+            border-radius: 50%;
+        }
         
         /* INCREASED FONT SIZE FOR BALANCE */
         .mh-team-name-sm { 
             font-size: 1.2rem; 
-    font-weight: 700; 
-    color: var(--text-main); 
-    text-align: center; 
-    line-height: 1.2; 
-    max-width: 100%; 
-    overflow: hidden; 
-    display: -webkit-box; 
-    -webkit-line-clamp: 2; 
-    -webkit-box-orient: vertical;  
+            font-weight: 700; 
+            color: var(--text-main); 
+            text-align: center; 
+            line-height: 1.2; 
+            max-width: 100%; 
+            overflow: hidden; 
+            display: -webkit-box; 
+            -webkit-line-clamp: 2; 
+            -webkit-box-orient: vertical;  
         }
         
         /* Text Only Mode (No Logo) */
@@ -718,7 +720,6 @@
             const getImgUrl = (p) => p.startsWith('http') ? p : `https://${DOMAIN}${p.startsWith('/')?'':'/'}${p}`;
 
             // --- LCP FIX: Background Placeholder + Opacity Fade ---
-            
             // 1. Get the preloaded Site Logo URL from the header to use as background
             const headerLogo = document.querySelector('.logo-img');
             const bgUrl = headerLogo ? headerLogo.src : '';
@@ -727,29 +728,29 @@
                 // We render a Wrapper with the Site Logo as Background.
                 // The <img> has opacity:0 initially.
                 // onload="this.classList.add('loaded')" triggers the fade-in.
-                // Result: Browser ignores image for LCP -> Picks Text -> Fast Score.
+                // LCP OPTIMIZATION: Swapped order so TEXT is ABOVE image
                 
                 hCol.innerHTML = `
+                    <div class="mh-team-name-sm">${m.home}</div>
                     <div class="logo-wrapper" style="background-image: url('${bgUrl}')">
                         <img src="${getImgUrl(hLogo)}" 
                              class="mh-team-logo" 
                              alt="${m.home}" 
                              width="50" height="50"
                              loading="eager"
-                             onload="this.classList.add('loaded')">
-                    </div>
-                    <div class="mh-team-name-sm">${m.home}</div>`;
+                             onload="this.classList.add('loaded'); this.parentElement.style.backgroundImage='none'">
+                    </div>`;
                 
                 aCol.innerHTML = `
+                    <div class="mh-team-name-sm">${m.away}</div>
                     <div class="logo-wrapper" style="background-image: url('${bgUrl}')">
                         <img src="${getImgUrl(aLogo)}" 
                              class="mh-team-logo" 
                              alt="${m.away}" 
                              width="50" height="50"
                              loading="eager"
-                             onload="this.classList.add('loaded')">
-                    </div>
-                    <div class="mh-team-name-sm">${m.away}</div>`;
+                             onload="this.classList.add('loaded'); this.parentElement.style.backgroundImage='none'">
+                    </div>`;
             } else {
                 hCol.innerHTML = `<div class="mh-team-name-lg">${m.home}</div>`;
                 aCol.innerHTML = `<div class="mh-team-name-lg">${m.away}</div>`;
