@@ -307,7 +307,8 @@ def render_page(template, config, page_data, theme_override=None):
         if k in ['border_radius_base', 'container_max_width', 'base_font_size', 'logo_image_size', 'button_border_radius', 
                  'show_more_btn_radius', 'back_to_top_size', 'header_max_width', 'section_logo_size', 'hero_pill_radius', 'hero_box_width', 'hero_box_border_width', 'hero_main_border_width']:
             if val: val = ensure_unit(val, 'px')
-        theme[k] = val if val else v
+        # Fix: Allow False (boolean) to override True (default), but treat empty strings as missing
+        theme[k] = val if val is not None and val != "" else v
 
     def make_border(w, c): return f"{ensure_unit(w, 'px')} solid {c}"
     theme['sec_border_live'] = make_border(theme.get('sec_border_live_width'), theme.get('sec_border_live_color'))
