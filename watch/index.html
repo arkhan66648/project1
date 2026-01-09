@@ -707,7 +707,7 @@
         const W_CONFIG = {
             sidebar_swap: true, 
             ad1: true,             
-            ad2: true,             
+            ad2: false,             
             discord: true,     
             discord_order: "top", 
             text_join: "Join Room",
@@ -840,9 +840,10 @@
             // 3. Discord Order
             const discEl = document.getElementById('real-left-disc');
             const skDisc = document.getElementById('sk-left-disc');
-            let order = 2; 
-            if(W_CONFIG.discord_order === 'top') order = 0;
-            if(W_CONFIG.discord_order === 'bottom') order = 4;
+            let order = 0; // Default to Middle (Natural DOM order)
+            
+            if(W_CONFIG.discord_order === 'top') order = -1;
+            if(W_CONFIG.discord_order === 'bottom') order = 5;
             if(discEl) discEl.style.order = order;
             if(skDisc) skDisc.style.order = order;
 
