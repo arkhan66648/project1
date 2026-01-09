@@ -155,7 +155,6 @@
         /* --- WATCH PAGE LAYOUT (CLS Optimized) --- */
         .watch-container { max-width: 900px; margin: 0 auto; padding: 20px 15px; display: block; width: 100%; }
         
-        /* Default Active Mode for Zero CLS */
         .watch-container.active-mode {
             max-width: 1600px !important; width: 98%; display: grid; 
             grid-template-columns: 300px 1fr 340px; gap: 15px; 
@@ -168,41 +167,30 @@
         .layout-sidebar.active { display: flex; }
         .sidebar-left { width: 300px; }
         
-        /* CHAT WINDOW: Fixed Height for Desktop */
         .sidebar-right { width: 340px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--border-radius-base); overflow: hidden; height: 600px; min-height: 0; }
         
         .layout-main { min-width: 0; }
         .ad-box { width: 300px; height: 250px; background: #000; display: flex; align-items: center; justify-content: center; color: #666; font-size: 0.8rem; border: 1px solid var(--border); border-radius: var(--border-radius-base); flex-shrink: 0; }
 
-        /* ARTICLE SECTION */
-        .article-section-wrapper { display: block; width: 100%; } /* Block default for instant skeleton */
+        .article-section-wrapper { display: block; width: 100%; } 
         .article-section-wrapper.active { grid-column: 2; margin-top: 20px; }
 
-        /* MOBILE RESPONSIVENESS & ORDERING */
         @media (max-width: 1300px) { 
             .watch-container.active-mode { grid-template-columns: 1fr 340px; } 
             .sidebar-left { display: none !important; } 
         }
         
-        /* Find this section in your <style> and replace/update it */
-@media (max-width: 1000px) { 
-    .watch-container.active-mode { display: flex; flex-direction: column; } 
-    .sidebar-left .sk-ad {
-        display: none !important;
-    }
-    
-    /* FORCE ORDERS ALWAYS - Do not wait for classes */
-    .mobile-top-ad { display: flex; order: 1; }
-    .layout-main { order: 2; width: 100%; }
-    .sidebar-left { display: flex !important; order: 3; width: 100%; position: static; height: auto; gap: 0;}
-    .sidebar-right { order: 4; width: 100%; height: 500px !important; position: static; margin-top: 0; }
-    
-    /* FIX: Apply order: 5 to the WRAPPER immediately, not just when active */
-    .article-section-wrapper { order: 5; } 
-    .article-section-wrapper.active { margin-top: 30px; }
-    
-    .layout-sidebar { height: auto; }
-}
+        @media (max-width: 1000px) { 
+            .watch-container.active-mode { display: flex; flex-direction: column; } 
+            .sidebar-left .sk-ad { display: none !important; }
+            .mobile-top-ad { display: flex; order: 1; }
+            .layout-main { order: 2; width: 100%; }
+            .sidebar-left { display: flex !important; order: 3; width: 100%; position: static; height: auto; gap: 0;}
+            .sidebar-right { order: 4; width: 100%; height: 500px !important; position: static; margin-top: 0; }
+            .article-section-wrapper { order: 5; } 
+            .article-section-wrapper.active { margin-top: 30px; }
+            .layout-sidebar { height: auto; }
+        }
 
         /* --- SKELETONS --- */
         .sk-box { 
@@ -217,29 +205,20 @@
         }
         @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
         
-        /* Updated Skeletons */
         .sk-header { width: 100%; height: 150px; margin-bottom: 20px; } 
         .sk-content { width: 100%; height: 470px; }
         .sk-ad { width: 100%; max-width: 300px; height: 250px; flex-shrink: 0; margin: 0 auto; } 
-        /* CHAT SKELETON: Matches Parent Height */
         .sk-chat { width: 100%; height: 100%; } 
         .sk-discord { width: 100%; max-width: 300px; height: 70px; flex-shrink: 0; margin: 0 auto; }
         .sk-article { width: 100%; height: 400px; margin-top: 20px; } 
-        
-        /* HEADER SKELETON (Full Column Fill) */
         .mh-sk-full { width: 100%; height: 100%; border-radius: var(--border-radius-base); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); }
-        
-        /* MOBILE AD SKELETON */
         .sk-mobile-ad { display: none; width: 100%; height: 90px; margin-bottom: 20px; border-radius: var(--border-radius-base); }
         @media (max-width: 1000px) { .sk-mobile-ad { display: block; } }
 
-        /* TABLE SKELETON: Fixed Height Mismatch */
         .sk-table-body { width: 100%; height: 400px; margin-top: 0; border-top: none; border-radius: 0 0 var(--border-radius-base) var(--border-radius-base); }
-        
-        /* Ensure hidden items are truly gone */
         .hidden-load { display: none !important; }
 
-        /* --- INFO HEADER (3-Section Design) --- */
+        /* --- INFO HEADER --- */
         .info-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--border-radius-base); padding: 0; margin-top: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden; }
         
         .mh-fixed-container {
@@ -247,9 +226,29 @@
             height: 150px; border-bottom: 1px solid var(--border);
             background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0) 100%);
         }
-        /* INFO COLUMNS: Height 100% for Skeleton Fill */
+
+        /* SINGLE TEAM MODE HEADER STYLES */
+        .mh-fixed-container.single-mode {
+            grid-template-columns: 1fr; /* One full column */
+        }
+        .mh-fixed-container.single-mode .mh-home,
+        .mh-fixed-container.single-mode .mh-away {
+            display: none !important; /* Hide side columns */
+        }
+        .mh-fixed-container.single-mode .mh-center {
+            padding-top: 15px;
+            justify-content: flex-start;
+        }
+        .single-logo-wrapper {
+            width: 45px; height: 45px; margin: 5px auto 5px auto;
+            border-radius: 50%;
+        }
+        .single-logo-img {
+            width: 100%; height: 100%; object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+        }
+
         .mh-col { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; position: relative; height: 100%; width: 100%; }
-        
         .mh-center { text-align: center; z-index: 2; gap: 8px; }
         
         .mh-team-logo { 
@@ -259,13 +258,7 @@
         }
         .mh-team-logo.loaded { opacity: 1; }
         
-        .logo-wrapper {
-            width: 28px; height: 28px;
-            margin-top: 8px; margin-bottom: 0;
-            position: relative;
-            background-position: center; background-size: contain; background-repeat: no-repeat;
-            border-radius: 50%;
-        }
+        .logo-wrapper { width: 28px; height: 28px; margin-top: 8px; position: relative; border-radius: 50%; }
         
         .mh-team-name-sm { 
             font-size: 1.2rem; font-weight: 700; color: var(--text-main); 
@@ -504,6 +497,7 @@
                             <div class="mh-league" id="mhLeague">LIVE STREAM</div>
                             <!-- STATIC H1 for LCP -->
                             <h1 class="mh-vs" id="centerHeadline">{{SITE_NAME}} Live Streams</h1>
+                            <div id="singleLogoContainer" style="display:none;"></div>
                             <div class="mh-timer" id="mhTimer">Loading...</div>
                         </div>
                         
@@ -521,8 +515,11 @@
                         <tr><td>Starts In</td><td id="tbl-countdown" style="color:var(--accent-gold); font-weight:700;">--</td></tr>
                         <tr><td>Competition</td><td id="tbl-league">--</td></tr>
                         <tr><td>Sport</td><td id="tbl-sport">--</td></tr>
-                        <tr><td>Home Team</td><td id="tbl-home">--</td></tr>
-                        <tr><td>Away Team</td><td id="tbl-away">--</td></tr>
+                        <!-- Standard Rows -->
+                        <tr id="tr-home"><td>Home Team</td><td id="tbl-home">--</td></tr>
+                        <tr id="tr-away"><td>Away Team</td><td id="tbl-away">--</td></tr>
+                        <!-- Single Event Row -->
+                        <tr id="tr-single" style="display:none;"><td>Match</td><td id="tbl-event">--</td></tr>
                         <tr><td>Date</td><td id="tbl-date">--</td></tr>
                         <tr><td>Time</td><td id="tbl-time">--</td></tr>
                     </table>
@@ -671,9 +668,16 @@
 
                 const homeSlug = slugify(match.home_team);
                 const awaySlug = slugify(match.away_team);
+                
+                // Clean team names and strip league prefix if found
                 const cleanHome = getCleanTeamName(match.home_team, homeSlug, leagueName);
                 const cleanAway = getCleanTeamName(match.away_team, awaySlug, leagueName);
                 
+                // --- SINGLE ENTITY / TBA DETECTION ---
+                const lowerAway = (cleanAway || "").toLowerCase().trim();
+                const singleKeywords = ["tba", "null", "nill", "undefined", ""];
+                const isSingleEvent = singleKeywords.includes(lowerAway);
+
                 const timeObj = formatTime(match.timestamp || match.startTimeUnix);
 
                 const normData = { 
@@ -689,7 +693,8 @@
                     dateTimeStr: `${timeObj.date} at ${timeObj.time}`, 
                     dateOnly: timeObj.date, 
                     timeOnly: timeObj.time, 
-                    channels: match.stream_channels || [] 
+                    channels: match.stream_channels || [],
+                    isSingleEvent: isSingleEvent
                 };
                 
                 if (isStreamMode) renderStreamMode(normData, activeId);
@@ -704,80 +709,135 @@
             }
         }
 
-        // --- HOMEPAGE LOGIC PORTED VERBATIM ---
+        // --- UPDATED LEAGUE DETECTION LOGIC ---
         function resolveLeagueData(match) {
             const hRaw = match.home_team || "";
             const hSlug = slugify(hRaw);
             const aSlug = slugify(match.away_team);
-            if (LEAGUE_MAP && LEAGUE_MAP[hSlug] && LEAGUE_MAP[aSlug] && LEAGUE_MAP[hSlug] === LEAGUE_MAP[aSlug]) return { name: LEAGUE_MAP[hSlug], source: "Map" };
-            if (LEAGUE_MAP && LEAGUE_MAP[hSlug]) return { name: LEAGUE_MAP[hSlug], source: "MapHome" };
+            
+            // 1. Strict Map Check: BOTH teams must match and belong to same league
+            if (LEAGUE_MAP && LEAGUE_MAP[hSlug] && LEAGUE_MAP[aSlug] && LEAGUE_MAP[hSlug] === LEAGUE_MAP[aSlug]) {
+                return { name: LEAGUE_MAP[hSlug], source: "Map" };
+            }
+
+            // 2. Colon Split Check on Home Team
             if (hRaw.includes(':')) {
                 const parts = hRaw.split(':');
                 const candidate = parts[0].trim();
                 if (candidate.length > 1 && candidate.length < 25) return { name: candidate, source: "Split" };
             }
+            
+            // 3. Fallback to API (NEVER use just one team from Map)
             let apiName = (match.league || match.sport || "Other").trim();
             const lowerApi = apiName.toLowerCase().replace(/\s/g, '');
             if(NAME_FIXES[lowerApi]) apiName = NAME_FIXES[lowerApi];
             return { name: apiName, source: "API" };
         }
 
+        // --- UPDATED TEAM NAME CLEANER ---
         function getCleanTeamName(raw, slug, leagueName) {
             if (!raw || raw === "TBA") return "TBA";
+            // If strictly mapped, use the unslugified name (pretty version)
             if (LEAGUE_MAP && LEAGUE_MAP[slug]) return unslugify(slug);
+            
             let clean = raw;
-            if (leagueName) { try { const safeLeague = leagueName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); const regex = new RegExp(`^${safeLeague}:\\s*`, 'i'); clean = clean.replace(regex, ''); } catch(e) {} }
+            // Remove "LeagueName: " prefix if detected
+            if (leagueName) { 
+                try { 
+                    const safeLeague = leagueName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); 
+                    const regex = new RegExp(`^${safeLeague}:\\s*`, 'i'); 
+                    clean = clean.replace(regex, ''); 
+                } catch(e) {} 
+            }
+            // Standard cleanup
             return clean.replace(/^(NHL|NBA|NFL|MLB|UFC):\s*/i, '').trim();
         }
 
         function renderInfoMode(m) {
-            // NOTE: showView('info') is still called to set layout classes,
-            // but HTML is already visible. We just update it now.
             showView('info');
 
             const hCol = document.getElementById('mhHomeCol');
             const aCol = document.getElementById('mhAwayCol');
-            
+            const centerH1 = document.getElementById('centerHeadline');
+            const mhContainer = document.getElementById('mhFixed');
+            const singleLogoCont = document.getElementById('singleLogoContainer');
+
             const hLogo = IMAGE_MAP.teams && IMAGE_MAP.teams[m.home];
             const aLogo = IMAGE_MAP.teams && IMAGE_MAP.teams[m.away];
             const getImgUrl = (p) => p.startsWith('http') ? p : `https://${DOMAIN}${p.startsWith('/')?'':'/'}${p}`;
 
-            // --- LCP FIX: Background Placeholder + Opacity Fade ---
-            const headerLogo = document.querySelector('.logo-img');
-            const bgUrl = headerLogo ? headerLogo.src : '';
+            // --- SINGLE EVENT MODE UI ---
+            if (m.isSingleEvent) {
+                // Apply Single Mode Class
+                mhContainer.classList.add('single-mode');
+                
+                // Hide side columns is handled by CSS, but strictly clear them
+                hCol.innerHTML = '';
+                aCol.innerHTML = '';
 
-            // Update Left Column (Remove Skeleton -> Add Content)
-            if(hLogo) {
-    hCol.innerHTML = `
-        <div class="mh-team-name-sm">${m.home}</div>
-        <!-- REMOVED: style="background-image..." -->
-        <div class="logo-wrapper">
-            <!-- REMOVED: this.parentElement.style.backgroundImage='none' inside onload -->
-            <img src="${getImgUrl(hLogo)}" class="mh-team-logo" alt="${m.home}" width="28" height="28" loading="eager" onload="this.classList.add('loaded')">
-        </div>`;
-} else {
-    hCol.innerHTML = `<div class="mh-team-name-lg">${m.home}</div>`;
-}
+                // Set H1 to Event Name
+                centerH1.innerText = m.home;
+                centerH1.style.fontSize = "1.5rem"; // Adjustment for single title
 
-            // Update Right Column (Remove Skeleton -> Add Content)
-            if(aLogo) {
-    aCol.innerHTML = `
-        <div class="mh-team-name-sm">${m.away}</div>
-        <!-- REMOVED: style="background-image..." -->
-        <div class="logo-wrapper">
-            <!-- REMOVED: this.parentElement.style.backgroundImage='none' inside onload -->
-            <img src="${getImgUrl(aLogo)}" class="mh-team-logo" alt="${m.away}" width="28" height="28" loading="eager" onload="this.classList.add('loaded')">
-        </div>`;
-} else {
-    aCol.innerHTML = `<div class="mh-team-name-lg">${m.away}</div>`;
-}
+                // Handle Single Logo (Below Name)
+                if (hLogo) {
+                    singleLogoCont.style.display = 'block';
+                    singleLogoCont.innerHTML = `<div class="single-logo-wrapper"><img src="${getImgUrl(hLogo)}" class="single-logo-img" alt="${m.home}"></div>`;
+                }
 
-            // Update Center Column (Static Text -> Dynamic Text)
+                // Table Rows
+                document.getElementById('tr-home').style.display = 'none';
+                document.getElementById('tr-away').style.display = 'none';
+                const sRow = document.getElementById('tr-single');
+                if(sRow) {
+                    sRow.style.display = 'table-row';
+                    document.getElementById('tbl-event').innerText = m.home;
+                }
+                
+                // SEO Updates for Single
+                document.title = `Watch ${m.home} Live Stream - ${m.league} | ${SITE_NAME}`;
+                setMeta('description', `Watch ${m.home} live stream online. ${m.league} event schedule.`);
+
+            } else {
+                // --- STANDARD MODE UI ---
+                mhContainer.classList.remove('single-mode');
+                singleLogoCont.style.display = 'none';
+
+                // Home Col
+                if(hLogo) {
+                    hCol.innerHTML = `<div class="mh-team-name-sm">${m.home}</div><div class="logo-wrapper"><img src="${getImgUrl(hLogo)}" class="mh-team-logo" alt="${m.home}" width="28" height="28" loading="eager" onload="this.classList.add('loaded')"></div>`;
+                } else {
+                    hCol.innerHTML = `<div class="mh-team-name-lg">${m.home}</div>`;
+                }
+                // Away Col
+                if(aLogo) {
+                    aCol.innerHTML = `<div class="mh-team-name-sm">${m.away}</div><div class="logo-wrapper"><img src="${getImgUrl(aLogo)}" class="mh-team-logo" alt="${m.away}" width="28" height="28" loading="eager" onload="this.classList.add('loaded')"></div>`;
+                } else {
+                    aCol.innerHTML = `<div class="mh-team-name-lg">${m.away}</div>`;
+                }
+                // Center H1
+                centerH1.innerText = "VS";
+                
+                // Table Rows
+                document.getElementById('tr-home').style.display = 'table-row';
+                document.getElementById('tr-away').style.display = 'table-row';
+                const sRow = document.getElementById('tr-single');
+                if(sRow) sRow.style.display = 'none';
+                setText('tbl-home', m.home);
+                setText('tbl-away', m.away);
+
+                // SEO Updates for VS
+                document.title = `Watch ${m.home} vs ${m.away} Live Stream - ${m.league} | ${SITE_NAME}`;
+                setMeta('description', `Watch ${m.home} vs ${m.away} live stream online. ${m.league} match schedule.`);
+            }
+
+            // Common Updates
             setText('mhLeague', m.league);
-            const centerH1 = document.getElementById('centerHeadline');
-            if(centerH1) centerH1.innerText = "VS"; // Replace initial LCP text with VS
+            setText('tbl-league', m.league);
+            setText('tbl-sport', m.sport);
+            setText('tbl-date', m.dateOnly);
+            setText('tbl-time', m.timeOnly);
 
-            // Update Timer
             const timerEl = document.getElementById('mhTimer');
             const countdownEl = document.getElementById('tbl-countdown');
             const statusLabelEl = countdownEl ? countdownEl.previousElementSibling : null;
@@ -800,15 +860,7 @@
                 }
             }
 
-            // Update Table
-            setText('tbl-league', m.league);
-            setText('tbl-sport', m.sport);
-            setText('tbl-home', m.home);
-            setText('tbl-away', m.away);
-            setText('tbl-date', m.dateOnly);
-            setText('tbl-time', m.timeOnly);
-
-            // Swap Table Skeleton for Real Table
+            // Swap Table Skeleton
             const skTable = document.getElementById('sk-info-table-body');
             const realTable = document.getElementById('real-info-table');
             if(skTable) skTable.style.display = 'none';
@@ -820,10 +872,7 @@
             const copyBtn = document.getElementById('copyPageBtn');
             copyBtn.onclick = () => copyText(window.location.href);
 
-            if (m.isLive) {
-                btn.className = "big-watch-btn"; btn.innerHTML = "📺 Watch Live Stream";
-                btn.onclick = () => window.location.href = `?${PARAM_LIVE}=${m.originalId}`;
-            } else if (diffMins <= 30) {
+            if (m.isLive || diffMins <= 30) {
                 btn.className = "big-watch-btn"; btn.innerHTML = "📺 Watch Live Stream";
                 btn.onclick = () => window.location.href = `?${PARAM_LIVE}=${m.originalId}`;
             } else {
@@ -831,9 +880,7 @@
                 btn.onclick = null;
             }
 
-            document.title = `Watch ${m.home} vs ${m.away} Live Stream - ${m.league} | ${SITE_NAME}`;
             setMeta('robots', 'index, follow');
-            setMeta('description', `Watch ${m.home} vs ${m.away} live stream online. ${m.league} match schedule.`);
             setCanonical(`https://${DOMAIN}/watch/?${PARAM_INFO}=${m.originalId}`);
 
             generateArticle(m);
@@ -844,13 +891,22 @@
 
         function renderStreamMode(m, currentUrlId) {
             showView('stream');
-            document.title = `Live: ${m.home} vs ${m.away}`;
+            
+            // Correct H1 for Stream Mode based on Single/VS
+            const h1 = document.getElementById('stream-h1');
+            if (h1) {
+                if(m.isSingleEvent) {
+                    h1.innerHTML = `<span style="color:var(--brand-primary)">${getSportIcon(m.sport)}</span> ${m.home}`;
+                    document.title = `Live: ${m.home}`;
+                } else {
+                    h1.innerHTML = `<span style="color:var(--brand-primary)">${getSportIcon(m.sport)}</span> ${m.home} <span style="font-size:0.8rem; color:var(--text-muted)">vs</span> ${m.away}`;
+                    document.title = `Live: ${m.home} vs ${m.away}`;
+                }
+            }
+            
             setMeta('robots', 'noindex, nofollow');
             setCanonical(`https://${DOMAIN}/watch/?${PARAM_INFO}=${m.originalId}`);
 
-            const h1 = document.getElementById('stream-h1');
-            if (h1) h1.innerHTML = `<span style="color:var(--brand-primary)">${getSportIcon(m.sport)}</span> ${m.home} <span style="font-size:0.8rem; color:var(--text-muted)">vs</span> ${m.away}`;
-            
             const player = document.getElementById('mainPlayer');
             const serverBox = document.getElementById('serverContainer');
             if(serverBox) serverBox.innerHTML = '';
@@ -904,76 +960,50 @@
             if(c) {
                 c.style.display = 'block';
                 if(sk) sk.style.display = 'none';
-                c.innerHTML = `<h2>Watch ${m.home} vs ${m.away} Live Stream</h2><p>Watch <strong>${m.home}</strong> vs <strong>${m.away}</strong> in <strong>${m.league}</strong>. Starts at <strong>${m.dateTimeStr}</strong>.</p><h3>Match Details</h3><ul><li><strong>Teams:</strong> ${m.home} vs ${m.away}</li><li><strong>League:</strong> ${m.league}</li><li><strong>Time:</strong> ${m.timeOnly}</li></ul><p>Watch full coverage on <strong>${SITE_NAME}</strong>. We provide high quality streams for ${m.sport} events.</p>`; 
+                let content = '';
+                if(m.isSingleEvent) {
+                    content = `<h2>Watch ${m.home} Live Stream</h2><p>Watch <strong>${m.home}</strong> live in <strong>${m.league}</strong>. Event starts at <strong>${m.dateTimeStr}</strong>.</p><h3>Event Details</h3><ul><li><strong>Event:</strong> ${m.home}</li><li><strong>League:</strong> ${m.league}</li><li><strong>Time:</strong> ${m.timeOnly}</li></ul><p>Watch full coverage on <strong>${SITE_NAME}</strong>. We provide high quality streams for ${m.sport} events.</p>`;
+                } else {
+                    content = `<h2>Watch ${m.home} vs ${m.away} Live Stream</h2><p>Watch <strong>${m.home}</strong> vs <strong>${m.away}</strong> in <strong>${m.league}</strong>. Starts at <strong>${m.dateTimeStr}</strong>.</p><h3>Match Details</h3><ul><li><strong>Teams:</strong> ${m.home} vs ${m.away}</li><li><strong>League:</strong> ${m.league}</li><li><strong>Time:</strong> ${m.timeOnly}</li></ul><p>Watch full coverage on <strong>${SITE_NAME}</strong>. We provide high quality streams for ${m.sport} events.</p>`;
+                }
+                c.innerHTML = content;
             }
         }
 
         function revealContent() {
-    const isMobile = window.innerWidth <= 1000;
+            const isMobile = window.innerWidth <= 1000;
+            const skels = ['sk-mobile-top-ad', 'sk-left-ad1', 'sk-left-disc', 'sk-left-ad2', 'sk-chat', 'sk-article'];
+            skels.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; });
 
-    // 1. Hide ALL Skeletons
-    const skels = ['sk-mobile-top-ad', 'sk-left-ad1', 'sk-left-disc', 'sk-left-ad2', 'sk-chat', 'sk-article'];
-    skels.forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.style.display = 'none';
-    });
+            const alwaysShow = ['real-mobile-top-ad', 'real-left-disc', 'real-chat', 'seo-article-container'];
+            const sidebarAds = ['real-left-ad1', 'real-left-ad2'];
 
-    // 2. Define Real Content IDs
-    // We separate Sidebar Ads from the rest
-    const alwaysShow = ['real-mobile-top-ad', 'real-left-disc', 'real-chat', 'seo-article-container'];
-    const sidebarAds = ['real-left-ad1', 'real-left-ad2'];
+            alwaysShow.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('hidden-load'); });
 
-    // 3. Show "Always Show" content
-    alwaysShow.forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.classList.remove('hidden-load');
-    });
-
-    // 4. Show Sidebar Ads ONLY if Desktop
-    if (!isMobile) {
-        sidebarAds.forEach(id => {
-            const el = document.getElementById(id);
-            if(el) el.classList.remove('hidden-load');
-        });
-    } else {
-        // Double safety: Ensure they stay hidden on mobile
-        sidebarAds.forEach(id => {
-            const el = document.getElementById(id);
-            if(el) el.style.display = 'none'; 
-        });
-    }
-}
+            if (!isMobile) {
+                sidebarAds.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('hidden-load'); });
+            } else {
+                sidebarAds.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; });
+            }
+        }
 
         function showView(id) { 
-            // Hide main containers
             ['loadingView', 'emptyView', 'errorView', 'streamView', 'infoView'].forEach(v => { 
                 const el = document.getElementById(v); 
-                if(el) { 
-                    el.classList.add('hidden-load'); 
-                    el.style.display = 'none'; // Force inline hide
-                }
+                if(el) { el.classList.add('hidden-load'); el.style.display = 'none'; }
             });
-
-            // Show target
             const v = document.getElementById(id + 'View'); 
-            if(v) { 
-                v.classList.remove('hidden-load');
-                v.style.display = 'block'; // Force inline show
-            }
+            if(v) { v.classList.remove('hidden-load'); v.style.display = 'block'; }
             
             const isContent = (id === 'stream' || id === 'info');
             const mainContainer = document.querySelector('.watch-container');
-            
             if (isContent) mainContainer.classList.add('active-mode');
             else mainContainer.classList.remove('active-mode');
             
-            // Layout sidebars
             document.querySelectorAll('.layout-sidebar').forEach(sb => {
                 if (isContent) sb.classList.add('active');
                 else sb.classList.remove('active');
             });
-            
-            // Mobile Sidebar Logic
             if (window.innerWidth <= 1300 && isContent) {
                 document.querySelector('.sidebar-left').classList.remove('active');
             }
@@ -1058,7 +1088,14 @@
         document.getElementById('chatInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
         function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('active'); }
         function copyText(text) { navigator.clipboard.writeText(text); const t = document.createElement('div'); t.className = 'copy-toast'; t.innerText = 'Link copied ✓'; document.body.appendChild(t); setTimeout(() => t.remove(), 1600); }
-        function generateSchema(m) { try { const s = { "@context": "https://schema.org", "@type": "SportsEvent", "name": `${m.home} vs ${m.away}`, "startDate": new Date(m.timestamp).toISOString(), "description": `Watch ${m.home} vs ${m.away} live.`, "sport": m.sport, "competitor": [{ "@type": "SportsTeam", "name": m.home }, { "@type": "SportsTeam", "name": m.away }], "organizer": { "@type": "Organization", "name": SITE_NAME, "url": `https://${DOMAIN}` }, "offers": { "@type": "Offer", "url": window.location.href, "availability": "https://schema.org/InStock", "price": "0" } }; const el = document.createElement('script'); el.type = 'application/ld+json'; el.textContent = JSON.stringify(s); document.head.appendChild(el); } catch (e) {} }
+        function generateSchema(m) { 
+            try { 
+                const s = { "@context": "https://schema.org", "@type": "SportsEvent", "name": m.isSingleEvent ? m.home : `${m.home} vs ${m.away}`, "startDate": new Date(m.timestamp).toISOString(), "description": `Watch ${m.home} live.`, "sport": m.sport, "organizer": { "@type": "Organization", "name": SITE_NAME, "url": `https://${DOMAIN}` }, "offers": { "@type": "Offer", "url": window.location.href, "availability": "https://schema.org/InStock", "price": "0" } }; 
+                if(!m.isSingleEvent) { s.competitor = [{ "@type": "SportsTeam", "name": m.home }, { "@type": "SportsTeam", "name": m.away }]; }
+                else { s.competitor = [{ "@type": "SportsTeam", "name": m.home }]; }
+                const el = document.createElement('script'); el.type = 'application/ld+json'; el.textContent = JSON.stringify(s); document.head.appendChild(el); 
+            } catch (e) {} 
+        }
         function updateSocialLinks(idParam) {
             const sidebar = document.getElementById('socialSidebar');
             const mobileFooter = document.getElementById('mobileFooter');
@@ -1072,7 +1109,7 @@
                 if(p==='twitter') return `https://twitter.com/intent/tweet?url=${u}`;
                 return null;
             };
-            const icons = { telegram: '<svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.47-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.28L19.84 4c.75-.28 1.4.52 1.16 1.76l-2.8 13.2c-.2.9-1.09.9-1.8.6l-5.45-4.06-2.6 2.5c-.3.3-.55.55-1.1.55l.45-3.6z"/></svg>', whatsapp: '<svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.33 4.97L2 22l5.25-1.38a9.86 9.86 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.51 2 12.04 2zm4.43-6.03c-.24-.12-1.41-.7-1.63-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.48-.4-.42-.54-.42h-.46c-.16 0-.42.06-.64.3C4.33 8.6 3.5 9.2 3.5 10.38c0 1.18.86 2.32.98 2.48.12.16 1.7 2.6 4.12 3.65.58.25 1.03.4 1.38.51.58.18 1.1.15 1.52.09.46-.07 1.41-.58 1.61-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg>', reddit: '<svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.22 14.11c-.13.26-.35.45-.6.54-.25.09-.52.1-.78.01-.8-.28-1.76-.43-2.77-.43s-1.97.15-2.77.43c-.26.09-.53.08-.78-.01-.25-.09-.47-.28-.6-.54-.15-.3-.19-.64-.11-.96.08-.32.28-.59.56-.75.9-.53 2.05-.83 3.28-.88l.66-3.11 2.16.46c.04-.2.15-.38.31-.51s.36-.2.55-.17c.2.03.38.15.51.31.13.16.2.36.17.55l-2.16-.46-.66 3.11c1.23.05 2.38.35 3.28.88.28.16.48.43.56.75.08.32.04.66-.11.96zM12 11.25c-.97 0-1.75.78-1.75 1.75s.78 1.75 1.75 1.75 1.75-.78 1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75zm-3.25-2.5c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25 1.25-1.25-.56-1.25-1.25z"/></svg>', twitter: '<svg viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>', copy: '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>' };
+            const icons = { telegram: '<svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.47-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.28L19.84 4c.75-.28 1.4.52 1.16 1.76l-2.8 13.2c-.2.9-1.09.9-1.8.6l-5.45-4.06-2.6 2.5c-.3.3-.55.55-1.1.55l.45-3.6z"/></svg>', whatsapp: '<svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.33 4.97L2 22l5.25-1.38a9.86 9.86 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.51 2 12.04 2zm4.43-6.03c-.24-.12-1.41-.7-1.63-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.48-.4-.42-.54-.42h-.46c-.16 0-.42.06-.64.3C4.33 8.6 3.5 9.2 3.5 10.38c0 1.18.86 2.32.98 2.48.12.16 1.7 2.6 4.12 3.65.58.25 1.03.4 1.38.51.58.18 1.1.15 1.52.09.46-.07 1.41-.58 1.61-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg>', reddit: '<svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.22 14.11c-.13.26-.35.45-.6.54-.25.09-.52.1-.78.01-.8-.28-1.76-.43-2.77-.43s-1.97.15-2.77.43c-.26.09-.53.08-.78-.01-.25-.09-.47-.28-.6-.54-.15-.3-.19-.64-.11-.96.08-.32.28-.59.56-.75.9-.53 2.05-.83 3.28-.88l.66-3.11 2.16.46c.04-.2.15-.38.31-.51s.36-.2.55-.17c.2.03.38.15.51.31.13.16.2.36.17.55l-2.16-.46-.66 3.11c1.23.05 2.38.35 3.28.88.28.16.48.43.56.75.08.32.04.66-.11.96zM12 11.25c-.97 0-1.75.78-1.75 1.75s.78 1.75 1.75 1.75 1.75-.78 1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75zm-3.25-2.5c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25 1.25-1.25-.56-1.25-1.25z"/></svg>', twitter: '<svg viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>', copy: '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>' };
             let html = '';
             ['telegram', 'whatsapp', 'reddit', 'twitter', 'copy'].forEach(p => {
                 const count = SHARE_CONFIG.counts[p] ? ((n)=>(n>=1000?(n/1000).toFixed(1)+'k':n))(SHARE_CONFIG.counts[p]) : '';
