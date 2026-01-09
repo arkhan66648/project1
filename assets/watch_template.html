@@ -206,11 +206,15 @@
         .article-section-wrapper.active { grid-column: 2; margin-top: 20px; }
 
         /* SIDEBAR TOGGLE LOGIC */
+        .watch-container.swap-sidebars {
+            grid-template-columns: 340px 1fr 300px;
+        }
         .watch-container.swap-sidebars .sidebar-left { order: 3; }
         .watch-container.swap-sidebars .layout-main { order: 2; }
         .watch-container.swap-sidebars .sidebar-right { order: 1; }
 
         /* VISIBILITY UTILITIES */
+        /* Fixed typo in selectors and forced display none */
         .hide-ad1 #sk-left-ad1, .hide-ad1 #real-left-ad1 { display: none !important; }
         .hide-ad2 #sk-left-ad2, .hide-ad2 #real-left-ad2 { display: none !important; }
         .hide-discord #sk-left-disc, .hide-discord #real-left-disc { display: none !important; }
@@ -428,7 +432,7 @@
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
         
         #footer-leagues-section { display: block; }
-        .stream-mode #footer-leagues-section { display: none; }
+        .stream-mode #footer-leagues-section { display: block !important; margin-top: 30px; }
         
         #stream-h1 { font-family: var(--font-family-headings); }
     </style>
@@ -786,16 +790,17 @@
             
             // 1. Sidebar Swap
             if (W_CONFIG.sidebar_swap) cont.classList.add('swap-sidebars');
+            else cont.classList.remove('swap-sidebars');
             
             // 2. Visibility
             if (!W_CONFIG.ad1) leftBar.classList.add('hide-ad1');
             if (!W_CONFIG.ad2) leftBar.classList.add('hide-ad2');
             if (!W_CONFIG.discord) leftBar.classList.add('hide-discord');
             
-            // 3. Discord Order (Flex order)
+            // 3. Discord Order
             const discEl = document.getElementById('real-left-disc');
             const skDisc = document.getElementById('sk-left-disc');
-            let order = 2;
+            let order = 2; // Middle
             if(W_CONFIG.discord_order === 'top') order = 0;
             if(W_CONFIG.discord_order === 'bottom') order = 4;
             if(discEl) discEl.style.order = order;
@@ -813,8 +818,9 @@
             if(dcTitle && W_CONFIG.text_discord_title) dcTitle.innerText = W_CONFIG.text_discord_title;
             if(dcBtn && W_CONFIG.text_discord_btn) dcBtn.innerText = W_CONFIG.text_discord_btn;
             
+            // Fix: Use innerHTML to preserve the Icon/SVG
             const infoBtn = document.getElementById('gotoInfoBtn');
-            if(infoBtn && W_CONFIG.text_info_btn) infoBtn.innerText = W_CONFIG.text_info_btn;
+            if(infoBtn && W_CONFIG.text_info_btn) infoBtn.innerHTML = `ℹ ${W_CONFIG.text_info_btn}`;
         }
 
         // --- UPDATED LEAGUE DETECTION LOGIC ---
@@ -1007,10 +1013,21 @@
             showView('stream');
             document.querySelector('.watch-container').classList.add('stream-mode');
             
-            // Hide Ads for Stream Mode, but keep Discord
-            document.querySelector('.sidebar-left').classList.add('hide-ad1', 'hide-ad2');
+            // 1. Force Article Wrapper into Grid Column 2 (Fixes positioning issue)
+            const artWrapper = document.getElementById('articleWrapper');
+            if(artWrapper) artWrapper.classList.add('active');
+
+            // 2. Hide Article Content, Show Footer Leagues
+            const artCont = document.getElementById('seo-article-container');
+            const footLeagues = document.getElementById('footer-leagues-section');
+            if(artCont) artCont.style.display = 'none';
+            if(footLeagues) footLeagues.style.display = 'block';
+
+            // 3. Hide Ads in Left Sidebar for Stream Mode (Keep Discord)
+            const leftBar = document.querySelector('.sidebar-left');
+            if(leftBar) leftBar.classList.add('hide-ad1', 'hide-ad2');
             
-            // Correct H1 for Stream Mode based on Single/VS
+            // Correct H1 for Stream Mode
             const h1 = document.getElementById('stream-h1');
             if (h1) {
                 if(m.isSingleEvent) {
