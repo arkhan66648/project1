@@ -640,9 +640,10 @@ def build_site():
             final_template = final_template.replace('{{SUPABASE_KEY}}', w_conf.get('supabase_key', ''))
             final_template = final_template.replace('{{WATCH_ARTICLE}}', w_conf.get('article', ''))
             
-            # Override SEO for Info Mode base page (handled dynamically via JS mostly, but good for fallback)
-            page_data['meta_title'] = w_conf.get('meta_title', 'Watch Live Sports')
-            page_data['meta_desc'] = w_conf.get('meta_desc', 'Live streaming coverage.')
+            # Override SEO for Info Mode base page
+            # FIX: Use 'page' variable instead of 'page_data'
+            page['meta_title'] = w_conf.get('meta_title', 'Watch Live Sports')
+            page['meta_desc'] = w_conf.get('meta_desc', 'Live streaming coverage.')
         # ... rest of loop
         elif layout == 'page':
             final_template = page_template_content
