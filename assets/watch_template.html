@@ -684,6 +684,10 @@
             text_watch_dis: "{{THEME_WATCH_BTN_DISABLED_LABEL}}",
             text_info_btn: "{{THEME_WATCH_INFO_BTN_LABEL}}"
         };
+        const W_SEO = {
+            title_tpl: "{{JS_WATCH_TITLE_TPL}}",
+            desc_tpl: "{{JS_WATCH_DESC_TPL}}"
+        };
 
         let chatClient = null;
         let currentHash = null;
@@ -910,8 +914,11 @@
                 }
                 
                 // SEO Updates for Single
-                document.title = `Watch ${m.home} Live Stream - ${m.league} | ${SITE_NAME}`;
-                setMeta('description', `Watch ${m.home} live stream online. ${m.league} event schedule.`);
+                const seoTitle = applyShortcodes(W_SEO.title_tpl, m);
+                const seoDesc = applyShortcodes(W_SEO.desc_tpl, m);
+            
+            document.title = seoTitle;
+            setMeta('description', seoDesc);
 
             } else {
                 // --- STANDARD MODE UI ---
@@ -1086,6 +1093,18 @@
         function setText(id, txt) { const el = document.getElementById(id); if(el) el.innerText = txt || '--'; }
         function slugify(t) { return (t||"").toString().toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/^-+|-+$/g, ''); }
         function unslugify(s) { return s.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '); }
+        function applyShortcodes(template, m) {
+            if (!template) return "";
+            return template
+                .replace(/{{HOME}}/g, m.home)
+                .replace(/{{AWAY}}/g, m.away)
+                .replace(/{{LEAGUE}}/g, m.league)
+                .replace(/{{SPORT}}/g, m.sport)
+                .replace(/{{TIME}}/g, m.timeOnly)
+                .replace(/{{DATE}}/g, m.dateOnly)
+                .replace(/{{SITE_NAME}}/g, SITE_NAME)
+                .replace(/{{VS}}/g, m.isSingleEvent ? m.home : `${m.home} vs ${m.away}`);
+        }
         function formatTime(u) { if(!u) return { time: "--:--", date: "--" }; const isUK = (typeof TARGET_COUNTRY!=='undefined' && TARGET_COUNTRY==='UK'); try { const d = new Date(u); return { time: new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:isUK?'Europe/London':'America/New_York'}).format(d) + (isUK?' GMT':' ET'), date: new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',timeZone:isUK?'Europe/London':'America/New_York'}).format(d) }; } catch(e) { return { time:"--:--", date:"--" }; } }
         function getSportIcon(n) { n=(n||"").toLowerCase(); if(n.includes('soccer')||n.includes('premier')) return '⚽'; if(n.includes('basket')) return '🏀'; if(n.includes('football')) return '🏈'; if(n.includes('baseball')) return '⚾'; if(n.includes('fight')||n.includes('ufc')||n.includes('box')) return '🥊'; if(n.includes('motor')||n.includes('f1')) return '🏎️'; return '🏆'; }
         
@@ -1096,16 +1115,23 @@
                 c.style.display = 'block';
                 if(sk) sk.style.display = 'none';
                 
-                // Append dynamic content to static Watch Article
-                let content = c.innerHTML; // Start with Configured Article
+                // 1. Get the Raw HTML from the Admin Panel (injected statically by Python)
+                // We use a data attribute if available, or just innerHTML
+                let rawHTML = c.innerHTML;
                 
-                let dynamicContent = "";
+                // 2. Apply Shortcodes to the Content
+                let processedHTML = applyShortcodes(rawHTML, m);
+                
+                // 3. Append dynamic details list if desired (Optional, keep if you want the list)
+                let dynamicDetails = "";
                 if(m.isSingleEvent) {
-                    dynamicContent = `<h3>Event Details</h3><ul><li><strong>Event:</strong> ${m.home}</li><li><strong>League:</strong> ${m.league}</li><li><strong>Time:</strong> ${m.timeOnly}</li></ul>`;
+                    dynamicDetails = `<h3>Event Details</h3><ul><li><strong>Event:</strong> ${m.home}</li><li><strong>League:</strong> ${m.league}</li><li><strong>Time:</strong> ${m.timeOnly}</li></ul>`;
                 } else {
-                    dynamicContent = `<h3>Match Details</h3><ul><li><strong>Teams:</strong> ${m.home} vs ${m.away}</li><li><strong>League:</strong> ${m.league}</li><li><strong>Time:</strong> ${m.timeOnly}</li></ul>`;
+                    dynamicDetails = `<h3>Match Details</h3><ul><li><strong>Teams:</strong> ${m.home} vs ${m.away}</li><li><strong>League:</strong> ${m.league}</li><li><strong>Time:</strong> ${m.timeOnly}</li></ul>`;
                 }
-                c.innerHTML = content + dynamicContent;
+                
+                // 4. Update the DOM
+                c.innerHTML = processedHTML + dynamicDetails;
             }
         }
 
