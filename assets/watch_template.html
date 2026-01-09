@@ -1098,35 +1098,50 @@
     const siteLogo = document.querySelector('link[rel="icon"]')?.href || `https://${DOMAIN}/logo.png`;
     const getFullUrl = (p) => p.startsWith('http') ? p : `https://${DOMAIN}${p.startsWith('/')?'':'/'}${p}`;
 
-    // 3. Logic: Match Lifecycle (Live/Ended)
+    // 3. STRICT TIME & VIEWER LOGIC
     const now = Date.now();
-    const startTime = new Date(m.timestamp).getTime();
-    const durationMins = m.sport_duration || 180; // Default 3h if missing
+    
+    // Fix: Convert API String to Number (Prevents "Invalid time value")
+    const startTime = new Date(m.timestamp).getTime(); 
+    
+    // Duration from API (default 180 mins if missing)
+    const durationMins = m.sport_duration || 180; 
     const durationMs = durationMins * 60 * 1000;
-    const expectedEndTime = startTime + durationMs;
+    
+    // Calculate strict end time based on duration
+    let expectedEndTime = startTime + durationMs; 
+    
     const viewers = m.live_viewers || 0;
 
+    // Default State: Scheduled / Ended
     let eventStatus = "https://schema.org/EventScheduled";
     let isLive = false;
 
-    // Strict Rule: Match ends ONLY if Time Passed AND Viewers are 0
+    // LOGIC: Check if match has started
     if (now >= startTime) {
-        if (now >= expectedEndTime && viewers === 0) {
-            eventStatus = "https://schema.org/EventScheduled"; // Past event
-        } else {
+        // Condition A: Time is within the sport_duration limit
+        // Condition B: Time passed duration, BUT people are still watching (Overtime/Penalties)
+        if (now < expectedEndTime || viewers > 0) {
             isLive = true;
             eventStatus = "https://schema.org/EventLive";
+
+            // CRITICAL FIX: If we are in "Overtime" (Time > Expected End), 
+            // we MUST extend the schema endDate dynamically. 
+            // If we don't, Google sees "Live Event" with "Past End Date" and treats it as an error.
+            if (now >= expectedEndTime) {
+                expectedEndTime = now + (30 * 60 * 1000); // Extend by 30 mins buffer
+            }
         }
+        // Else: Time passed duration AND Viewers == 0 -> Effectively ENDED.
+        // Status remains "EventScheduled" and isLive remains false.
     }
 
     // 4. Logic: Detect Person vs Team Sport
-    // List of sports where entities are usually People, not Teams
     const personSports = ['tennis', 'tabletennis', 'badminton', 'boxing', 'mma', 'ufc', 'fighting', 'snooker', 'darts', 'wrestling', 'golf'];
     const normSport = (m.sport || "").toLowerCase().replace(/\s/g, '');
     const isPersonSport = personSports.includes(normSport);
 
     // 5. Logic: Image Selection
-    // Priority: Both Team/Player Logos > Site Logo
     let eventImages = [siteLogo]; 
     const hLogo = IMAGE_MAP.teams && IMAGE_MAP.teams[m.home];
     const aLogo = IMAGE_MAP.teams && IMAGE_MAP.teams[m.away];
@@ -1183,22 +1198,15 @@
         "organizer": { "@id": `https://${DOMAIN}/#organization` }
     };
 
-    // 8. Handle Competitors (Single vs Person vs Team)
+    // 8. Handle Competitors
     if (m.isSingleEvent) {
-        // Single Event (e.g., F1 Race, Golf Tournament) -> Performer
-        eventSchema.performer = [
-            { "@type": "Organization", "name": m.home } 
-        ];
-    } 
-    else if (isPersonSport) {
-        // Person vs Person (Tennis, MMA, Boxing)
+        eventSchema.performer = [{ "@type": "Organization", "name": m.home }];
+    } else if (isPersonSport) {
         eventSchema.competitor = [
             { "@type": "Person", "name": m.home },
             { "@type": "Person", "name": m.away }
         ];
-    } 
-    else {
-        // Team vs Team (Football, NBA, NFL)
+    } else {
         eventSchema.homeTeam = { "@type": "SportsTeam", "name": m.home };
         eventSchema.awayTeam = { "@type": "SportsTeam", "name": m.away };
     }
