@@ -20,6 +20,7 @@
                 <button class="nav-btn" onclick="switchTab('leagues')">🏆 Leagues & Teams</button>
                 <button class="nav-btn" onclick="switchTab('menus')">🔗 Menus</button>
                 <button class="nav-btn" onclick="switchTab('social')">💬 Social Sharing</button>
+                <button class="nav-btn" onclick="switchTab('watch-settings')">📺 Watch Page Config</button>
             </nav>
             <div class="sidebar-footer">
                 <div id="buildStatusBox" class="build-box idle"><div class="status-dot"></div><span id="buildStatusText">Idle</span></div>
@@ -97,6 +98,119 @@
 </div>
 <hr style="border:0; border-top:1px solid #333; margin: 20px 0;">
 <!-- === NEW CODE END === -->
+                <!-- WATCH THEME CONTROLS (Only visible in Watch Context) -->
+<div id="watchThemeControls" style="display:none;">
+    <div class="grid-3">
+        <!-- 1. LAYOUT & SIDEBARS -->
+        <div class="card">
+            <h3>📐 Layout & Sidebars</h3>
+            <div class="checkbox-group">
+                <label><input type="checkbox" id="themeWatchSidebarSwap"> Swap Sidebars (Chat Left / Ad Right)</label>
+            </div>
+            <hr style="border-top:1px dashed #333; margin:10px 0;">
+            <label style="color:#facc15;">Left Sidebar Visibility</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" id="themeWatchShowAd1"> Top Advertisement</label>
+                <label><input type="checkbox" id="themeWatchShowDiscord"> Discord Widget</label>
+                <label><input type="checkbox" id="themeWatchShowAd2"> Bottom Advertisement</label>
+            </div>
+            
+            <h4 style="margin-top:15px; color:#aaa; font-size:0.8rem;">Discord Widget</h4>
+            <label>Position Order</label>
+            <select id="themeWatchDiscordOrder">
+                <option value="top">Top</option>
+                <option value="middle">Middle (Default)</option>
+                <option value="bottom">Bottom</option>
+            </select>
+            <div class="grid-2" style="margin-top:10px;">
+                <div><label>Title</label><input type="text" id="themeWatchDiscordTitle" placeholder="Join Discord"></div>
+                <div><label>Btn Text</label><input type="text" id="themeWatchDiscordBtnText" placeholder="Join"></div>
+            </div>
+        </div>
+
+        <!-- 2. CHAT WINDOW -->
+        <div class="card">
+            <h3>💬 Chat Window Styling</h3>
+            <label>Header Text</label>
+            <input type="text" id="themeWatchChatHeaderTitle" placeholder="Live Chat">
+            
+            <div class="color-grid mt-2">
+                <div><label>Header BG</label><input type="color" id="themeWatchChatHeaderBg"></div>
+                <div><label>Header Text</label><input type="color" id="themeWatchChatHeaderText"></div>
+                <div><label>Online Dot</label><input type="color" id="themeWatchChatDotColor"></div>
+            </div>
+            
+            <div class="range-wrapper">
+                <label>Dot Size</label>
+                <input type="number" id="themeWatchChatDotSize" placeholder="6 (px)">
+            </div>
+
+            <h4 style="margin-top:15px; color:#aaa; font-size:0.8rem;">Join Screen & Inputs</h4>
+            <div class="color-grid">
+                <div><label>Overlay BG</label><input type="color" id="themeWatchChatOverlayBg"></div>
+                <div><label>Input BG</label><input type="color" id="themeWatchChatInputBg"></div>
+                <div><label>Input Text</label><input type="color" id="themeWatchChatInputText"></div>
+            </div>
+            <div class="range-wrapper">
+                <label>Overlay Opacity: <span id="val_chatOp">0.9</span></label>
+                <input type="range" id="themeWatchChatOverlayOpacity" min="0" max="1" step="0.1" oninput="document.getElementById('val_chatOp').innerText=this.value">
+            </div>
+            <label>Join Button Text</label><input type="text" id="themeWatchChatJoinBtnText" placeholder="Join Room">
+        </div>
+
+        <!-- 3. INFO TABLE & TYPOGRAPHY -->
+        <div class="card">
+            <h3>📊 Info Table & Text</h3>
+            <div class="color-grid">
+                <div><label>Header BG</label><input type="color" id="themeWatchTableHeadBg"></div>
+                <div><label>Body BG</label><input type="color" id="themeWatchTableBodyBg"></div>
+                <div><label>Border Color</label><input type="color" id="themeWatchTableBorder"></div>
+                <div><label>Team Names</label><input type="color" id="themeWatchTeamColor"></div>
+                <div><label>VS Text</label><input type="color" id="themeWatchVsColor"></div>
+            </div>
+            <div class="range-wrapper">
+                <label>Table Radius</label>
+                <input type="number" id="themeWatchTableRadius" placeholder="6">
+            </div>
+            
+            <h4 style="margin-top:15px; color:#aaa; font-size:0.8rem;">Typography Sizes</h4>
+            <div class="grid-2">
+                <div><label>Team Name</label><input type="text" id="themeWatchTeamSize" placeholder="1.4rem"></div>
+                <div><label>VS Text</label><input type="text" id="themeWatchVsSize" placeholder="2rem"></div>
+            </div>
+        </div>
+
+        <!-- 4. BUTTONS & ACTIONS -->
+        <div class="card">
+            <h3>🔘 Buttons & Controls</h3>
+            
+            <h4 style="color:#22c55e; font-size:0.8rem;">Info Mode (Watch Button)</h4>
+            <div class="color-grid">
+                <div><label>Active BG</label><input type="color" id="themeWatchBtnBg"></div>
+                <div><label>Active Text</label><input type="color" id="themeWatchBtnText"></div>
+                <div><label>Disabled BG</label><input type="color" id="themeWatchBtnDisabledBg"></div>
+                <div><label>Disabled Text</label><input type="color" id="themeWatchBtnDisabledText"></div>
+            </div>
+            <label>Watch Button Text</label><input type="text" id="themeWatchBtnLabel" placeholder="Watch Live Stream">
+            <label>Disabled Button Text</label><input type="text" id="themeWatchBtnDisabledLabel" placeholder="Stream Starts Soon">
+
+            <h4 style="margin-top:15px; color:#3b82f6; font-size:0.8rem;">Stream Mode</h4>
+            <div class="color-grid">
+                <div><label>Info Btn BG</label><input type="color" id="themeWatchInfoBtnBg"></div>
+                <div><label>Info Btn Hover</label><input type="color" id="themeWatchInfoBtnHover"></div>
+                <div><label>Info Btn Text</label><input type="color" id="themeWatchInfoBtnText"></div>
+            </div>
+            <label>Info Button Label</label><input type="text" id="themeWatchInfoBtnLabel" placeholder="View Match Info">
+            
+            <label style="margin-top:10px;">Server Buttons</label>
+            <div class="color-grid">
+                <div><label>Active BG</label><input type="color" id="themeWatchServerActiveBg"></div>
+                <div><label>Text Color</label><input type="color" id="themeWatchServerText"></div>
+            </div>
+        </div>
+    </div>
+    <!-- END WATCH CONTROLS -->
+</div>
                 
                 <!-- ROW 1: BASE -->
                 <div class="grid-3">
@@ -829,6 +943,32 @@
                     </div>
                 </div>
             </section>
+            <!-- WATCH PAGE SETTINGS -->
+<section id="tab-watch-settings" class="tab-content">
+    <div class="header-box"><h1>Watch Page Configuration</h1></div>
+    <div class="grid-2">
+        <div class="card">
+            <h3>Supabase Configuration</h3>
+            <p class="desc">Required for Live Chat functionality.</p>
+            <label>Project URL</label>
+            <input type="text" id="supaUrl" placeholder="https://your-project.supabase.co">
+            <label>Public API Key (Anon)</label>
+            <input type="password" id="supaKey" placeholder="eyJh...">
+        </div>
+        <div class="card">
+            <h3>Watch Page SEO</h3>
+            <label>Page Title (Info Mode)</label>
+            <input type="text" id="watchPageTitle" placeholder="Watch Live Sports">
+            <label>Meta Description</label>
+            <textarea id="watchPageDesc" rows="3" placeholder="Watch live streams in HD..."></textarea>
+        </div>
+    </div>
+    <div class="card">
+        <h3>Watch Page Article</h3>
+        <p class="desc">SEO content displayed below the player/info table.</p>
+        <textarea id="watchPageArticle" rows="10" class="team-list-editor" placeholder="<h2>Live Streaming Guide</h2>..."></textarea>
+    </div>
+</section>
 
         </main>
     </div>
