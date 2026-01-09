@@ -1100,7 +1100,7 @@
 
     // 3. Logic: Match Lifecycle (Live/Ended)
     const now = Date.now();
-    const startTime = m.timestamp;
+    const startTime = new Date(m.timestamp).getTime();
     const durationMins = m.sport_duration || 180; // Default 3h if missing
     const durationMs = durationMins * 60 * 1000;
     const expectedEndTime = startTime + durationMs;
