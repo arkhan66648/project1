@@ -642,6 +642,9 @@ def build_site():
             final_template = final_template.replace('{{SUPABASE_URL}}', w_conf.get('supabase_url', ''))
             final_template = final_template.replace('{{SUPABASE_KEY}}', w_conf.get('supabase_key', ''))
             final_template = final_template.replace('{{WATCH_ARTICLE}}', w_conf.get('article', ''))
+            final_template = final_template.replace('{{WATCH_AD_MOBILE}}', w_conf.get('ad_mobile', ''))
+            final_template = final_template.replace('{{WATCH_AD_SIDEBAR_1}}', w_conf.get('ad_sidebar_1', ''))
+            final_template = final_template.replace('{{WATCH_AD_SIDEBAR_2}}', w_conf.get('ad_sidebar_2', ''))
             
             # NEW: Inject SEO Templates into JS Variables
             # We use distinct placeholders so we don't conflict with standard META tags
