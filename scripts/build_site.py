@@ -349,6 +349,8 @@ def render_page(template, config, page_data, theme_override=None):
     theme['league_card_radius'] = ensure_unit(theme.get('league_card_radius'), 'px')
 
     for key, val in theme.items():
+        if isinstance(val, bool):
+            val = str(val).lower()
         html = html.replace(f"{{{{THEME_{key.upper()}}}}}", str(val))
         grid_cols = str(theme.get('footer_columns', '2'))
     html = html.replace('{{THEME_FOOTER_COLS}}', f'repeat({grid_cols}, 1fr)')
