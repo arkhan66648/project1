@@ -1089,8 +1089,8 @@
     "watch_server_text": "#000000"
   },
   "watch_settings": {
-    "supabase_url": "",
-    "supabase_key": "",
+    "supabase_url": "https://dyqrcabbnwpumsgoylao.supabase.co",
+    "supabase_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5cXJjYWJibndwdW1zZ295bGFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2OTYzMDksImV4cCI6MjA4MzI3MjMwOX0.W1zMjTuQ3ZatD6J2XLIb0rKWJGlMLuN-jrXU7mITMvg",
     "meta_title": "",
     "meta_desc": "",
     "article": ""
