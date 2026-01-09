@@ -1200,25 +1200,24 @@ window.switchThemeContext = (mode) => {
     document.getElementById(`ctxBtn-${mode}`).classList.add('active');
     
     // Toggle Control Visibility
+    // Toggle Control Visibility
     const staticControls = document.getElementById('staticPageControls');
-    const watchControls = document.getElementById('watchThemeControls'); // NEW
-    const generalThemeGrid = document.querySelector('#tab-theme > .grid-3'); // The main theme grid
+    const watchControls = document.getElementById('watchThemeControls'); 
 
+    // Static Page Controls logic
     if (staticControls) staticControls.style.display = (mode === 'page') ? 'block' : 'none';
     
-    // Logic: Hide General Theme Grid when in Watch Mode to reduce clutter, show Watch Controls
+    // Watch Controls logic (Show Watch card, BUT KEEP Global cards visible)
     if (mode === 'watch') {
-        if(generalThemeGrid) generalThemeGrid.style.display = 'none';
         if(watchControls) watchControls.style.display = 'block';
-        document.getElementById('ctxDesc').innerHTML = "Editing specific styles for the <strong>Watch Page</strong> (Player, Chat, Info).";
+        document.getElementById('ctxDesc').innerHTML = "Editing specific styles for the <strong>Watch Page</strong> + Global Styles.";
     } else {
-        if(generalThemeGrid) generalThemeGrid.style.display = 'grid';
         if(watchControls) watchControls.style.display = 'none';
         
         let desc = "Editing global styles.";
         if(mode === 'home') desc = "Editing global styles for the <strong>Homepage</strong>.";
-        else if(mode === 'league') desc = "Editing styles for <strong>League Pages</strong>.";
-        else if(mode === 'page') desc = "Editing styles for <strong>Static Pages</strong>.";
+        else if(mode === 'league') desc = "Editing styles for <strong>Inner League Pages</strong> (e.g. /nba-streams/).";
+        else if(mode === 'page') desc = "Editing styles for <strong>Static Pages</strong> (About, Contact, etc).";
         document.getElementById('ctxDesc').innerHTML = desc;
     }
 
