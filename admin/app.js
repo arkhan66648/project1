@@ -282,7 +282,49 @@ const THEME_FIELDS = {
     'back_to_top_size': 'themeBttSize',
     
     // Logic Toggles
-    'display_hero': 'themeDisplayHero'
+    'display_hero': 'themeDisplayHero',
+    // --- WATCH PAGE SPECIFIC ---
+    'watch_sidebar_swap': 'themeWatchSidebarSwap', // Checkbox
+    'watch_show_ad1': 'themeWatchShowAd1',         // Checkbox
+    'watch_show_discord': 'themeWatchShowDiscord', // Checkbox
+    'watch_show_ad2': 'themeWatchShowAd2',         // Checkbox
+    'watch_discord_order': 'themeWatchDiscordOrder',
+    'watch_discord_title': 'themeWatchDiscordTitle',
+    'watch_discord_btn_text': 'themeWatchDiscordBtnText',
+    
+    'chat_header_title': 'themeWatchChatHeaderTitle',
+    'chat_header_bg': 'themeWatchChatHeaderBg',
+    'chat_header_text': 'themeWatchChatHeaderText',
+    'chat_dot_color': 'themeWatchChatDotColor',
+    'chat_dot_size': 'themeWatchChatDotSize',
+    'chat_overlay_bg': 'themeWatchChatOverlayBg',
+    'chat_overlay_opacity': 'themeWatchChatOverlayOpacity',
+    'chat_input_bg': 'themeWatchChatInputBg',
+    'chat_input_text': 'themeWatchChatInputText',
+    'chat_join_btn_text': 'themeWatchChatJoinBtnText',
+
+    'watch_table_head_bg': 'themeWatchTableHeadBg',
+    'watch_table_body_bg': 'themeWatchTableBodyBg',
+    'watch_table_border': 'themeWatchTableBorder',
+    'watch_table_radius': 'themeWatchTableRadius',
+    'watch_team_color': 'themeWatchTeamColor',
+    'watch_vs_color': 'themeWatchVsColor',
+    'watch_team_size': 'themeWatchTeamSize',
+    'watch_vs_size': 'themeWatchVsSize',
+
+    'watch_btn_bg': 'themeWatchBtnBg',
+    'watch_btn_text': 'themeWatchBtnText',
+    'watch_btn_disabled_bg': 'themeWatchBtnDisabledBg',
+    'watch_btn_disabled_text': 'themeWatchBtnDisabledText',
+    'watch_btn_label': 'themeWatchBtnLabel',
+    'watch_btn_disabled_label': 'themeWatchBtnDisabledLabel',
+
+    'watch_info_btn_bg': 'themeWatchInfoBtnBg',
+    'watch_info_btn_hover': 'themeWatchInfoBtnHover',
+    'watch_info_btn_text': 'themeWatchInfoBtnText',
+    'watch_info_btn_label': 'themeWatchInfoBtnLabel',
+    'watch_server_active_bg': 'themeWatchServerActiveBg',
+    'watch_server_text': 'themeWatchServerText'
 };
 
 let configData = {};
@@ -393,6 +435,13 @@ function populateUI() {
     setVal('footerCopyright', s.footer_copyright);
     setVal('footerDisclaimer', s.footer_disclaimer);
     setVal('targetCountry', s.target_country || 'US');
+    // Populate Watch Settings
+    const w = configData.watch_settings || {};
+    setVal('supaUrl', w.supabase_url);
+    setVal('supaKey', w.supabase_key);
+    setVal('watchPageTitle', w.meta_title);
+    setVal('watchPageDesc', w.meta_desc);
+    setVal('watchPageArticle', w.article);
 
     const soc = configData.social_sharing || { counts: {} };
     setVal('socialTelegram', soc.counts?.telegram || 0);
@@ -1059,6 +1108,14 @@ document.getElementById('saveBtn').onclick = async () => {
     // === NEW SAVE LOGIC START ===
 // 1. Capture whatever is currently on screen to the active context variable
 captureThemeState(currentThemeContext);
+    // Save Watch Settings
+    configData.watch_settings = {
+        supabase_url: getVal('supaUrl'),
+        supabase_key: getVal('supaKey'),
+        meta_title: getVal('watchPageTitle'),
+        meta_desc: getVal('watchPageDesc'),
+        article: getVal('watchPageArticle')
+    };
 
 // 2. Capture Articles
 configData.articles = {
@@ -1136,40 +1193,42 @@ function getVal(id) { return document.getElementById(id)?.value || ""; }
 // ==========================================
 // Replace the existing switchThemeContext function with this updated version:
 window.switchThemeContext = (mode) => {
-    // 1. Save current UI values to the OLD context memory
     captureThemeState(currentThemeContext);
-
-    // 2. Switch Context
     currentThemeContext = mode;
 
-    // 3. Update UI Buttons
     document.querySelectorAll('.ctx-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(`ctxBtn-${mode}`).classList.add('active');
     
-    let desc = "";
-    if(mode === 'home') desc = "Editing global styles for the <strong>Homepage</strong>.";
-    else if(mode === 'league') desc = "Editing styles for <strong>Inner League Pages</strong> (e.g. /nba-streams/).";
-    else if(mode === 'page') desc = "Editing styles for <strong>Static Pages</strong> (About, Contact, etc). Hero section is hidden here.";
-    else if(mode === 'watch') desc = "Editing styles for the <strong>Live Watch Page</strong> (Player & Info Gatekeeper).";
-    
-    document.getElementById('ctxDesc').innerHTML = desc;
-
-    // === NEW LOGIC: Toggle Static Page Controls ===
+    // Toggle Control Visibility
     const staticControls = document.getElementById('staticPageControls');
-    if (staticControls) {
-        staticControls.style.display = (mode === 'page') ? 'block' : 'none';
-    }
-    // ==============================================
+    const watchControls = document.getElementById('watchThemeControls'); // NEW
+    const generalThemeGrid = document.querySelector('#tab-theme > .grid-3'); // The main theme grid
 
-    // 4. Load NEW context values into UI
+    if (staticControls) staticControls.style.display = (mode === 'page') ? 'block' : 'none';
+    
+    // Logic: Hide General Theme Grid when in Watch Mode to reduce clutter, show Watch Controls
+    if (mode === 'watch') {
+        if(generalThemeGrid) generalThemeGrid.style.display = 'none';
+        if(watchControls) watchControls.style.display = 'block';
+        document.getElementById('ctxDesc').innerHTML = "Editing specific styles for the <strong>Watch Page</strong> (Player, Chat, Info).";
+    } else {
+        if(generalThemeGrid) generalThemeGrid.style.display = 'grid';
+        if(watchControls) watchControls.style.display = 'none';
+        
+        let desc = "Editing global styles.";
+        if(mode === 'home') desc = "Editing global styles for the <strong>Homepage</strong>.";
+        else if(mode === 'league') desc = "Editing styles for <strong>League Pages</strong>.";
+        else if(mode === 'page') desc = "Editing styles for <strong>Static Pages</strong>.";
+        document.getElementById('ctxDesc').innerHTML = desc;
+    }
+
     let targetData;
     if (mode === 'home') targetData = configData.theme;
     else if (mode === 'league') targetData = configData.theme_league || {};
     else if (mode === 'page') targetData = configData.theme_page || {};
     else if (mode === 'watch') targetData = configData.theme_watch || {};
 
-    if (Object.keys(targetData).length === 0) targetData = configData.theme;
-
+    if (!targetData || Object.keys(targetData).length === 0) targetData = configData.theme;
     applyThemeState(targetData);
 };
 
