@@ -234,6 +234,26 @@ def render_page(template, config, page_data, theme_override=None):
         'hero_main_border_color': 'themeHeroMainBorderColor', 'hero_box_border_width': '1', 'hero_box_border_color': '#334155',
         'hero_border_bottom_box': False,
         'footer_columns': '2',
+        # ... existing defaults ...
+        'watch_sidebar_swap': False,
+        'watch_show_ad1': True, 'watch_show_discord': True, 'watch_show_ad2': True,
+        'watch_discord_order': 'middle',
+        'chat_header_bg': 'rgba(0,0,0,0.4)', 'chat_header_text': '#ffffff',
+        'chat_dot_color': '#22c55e', 'chat_dot_size': '6px',
+        'chat_overlay_bg': 'rgba(15, 23, 42, 0.6)', 'chat_input_bg': '#000000',
+        'chat_input_text': '#ffffff',
+        'watch_table_head_bg': 'rgba(255,255,255,0.03)', 'watch_table_body_bg': '#1e293b',
+        'watch_table_border': '#334155', 'watch_table_radius': '6px',
+        'watch_team_color': '#ffffff', 'watch_vs_color': 'rgba(255,255,255,0.1)',
+        'watch_team_size': '1.4rem', 'watch_vs_size': '2rem',
+        'watch_btn_bg': '#D00000', 'watch_btn_text': '#ffffff',
+        'watch_btn_disabled_bg': '#1e293b', 'watch_btn_disabled_text': '#94a3b8',
+        'watch_info_btn_bg': '#1e293b', 'watch_info_btn_text': '#ffffff',
+        'watch_server_active_bg': '#D00000', 'watch_server_text': '#94a3b8',
+        'watch_discord_title': 'Join Discord', 'watch_discord_btn_text': 'Join',
+        'chat_header_title': 'Live Chat', 'chat_join_btn_text': 'Join Room',
+        'watch_btn_label': 'Watch Live Stream', 'watch_btn_disabled_label': 'Stream Starts Soon',
+        'watch_info_btn_label': 'View Match Info',
         'sec_border_live_width': '1', 'sec_border_live_color': '#334155',
         'sec_border_upcoming_width': '1', 'sec_border_upcoming_color': '#334155',
         'sec_border_wildcard_width': '1', 'sec_border_wildcard_color': '#334155',
@@ -301,6 +321,14 @@ def render_page(template, config, page_data, theme_override=None):
     theme['league_card_hover_border'] = make_border(theme.get('league_card_border_width'), theme.get('league_card_hover_border_color'))
     theme['static_h1_border'] = make_border(theme.get('static_h1_border_width'), theme.get('static_h1_border_color'))
     theme['sys_status_border'] = make_border(theme.get('sys_status_border_width'), theme.get('sys_status_border_color'))
+    # ... existing processing ...
+    theme['chat_dot_size'] = ensure_unit(theme.get('chat_dot_size'), 'px')
+    theme['watch_table_radius'] = ensure_unit(theme.get('watch_table_radius'), 'px')
+    
+    # Opacity for Chat Overlay
+    chat_op = theme.get('chat_overlay_opacity', '0.9')
+    chat_ov_hex = theme.get('chat_overlay_bg', '#0f172a')
+    theme['chat_overlay_bg_final'] = hex_to_rgba(chat_ov_hex, chat_op)
      # === NEW CODE ADDED HERE ===
     s_bg_hex = theme.get('sys_status_bg_color', '#22c55e') 
     s_bg_op = theme.get('sys_status_bg_opacity', '0.1')
@@ -601,9 +629,21 @@ def build_site():
         final_template = master_template_content
         active_theme_override = None
 
+        # ... inside the loop ...
         if layout == 'watch':
             final_template = watch_template_content
-            active_theme_override = theme_watch_conf # APPLY WATCH CONTEXT
+            active_theme_override = theme_watch_conf 
+            
+            # INJECT WATCH CONFIG
+            w_conf = config.get('watch_settings', {})
+            final_template = final_template.replace('{{SUPABASE_URL}}', w_conf.get('supabase_url', ''))
+            final_template = final_template.replace('{{SUPABASE_KEY}}', w_conf.get('supabase_key', ''))
+            final_template = final_template.replace('{{WATCH_ARTICLE}}', w_conf.get('article', ''))
+            
+            # Override SEO for Info Mode base page (handled dynamically via JS mostly, but good for fallback)
+            page_data['meta_title'] = w_conf.get('meta_title', 'Watch Live Sports')
+            page_data['meta_desc'] = w_conf.get('meta_desc', 'Live streaming coverage.')
+        # ... rest of loop
         elif layout == 'page':
             final_template = page_template_content
             active_theme_override = theme_page_conf # Apply Static Context
