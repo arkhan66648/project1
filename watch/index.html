@@ -585,7 +585,7 @@
         <div class="f-head">Quick Links</div>
         <div class="f-links"><a href="/dmca" class="f-link">DMCA</a><a href="/contact" class="f-link">Contact</a><a href="/terms" class="f-link">Terms & Conditions</a></div>
     </div>
-    <div></div>
+    <div class="f-desc">Hello world</div>
     <div class="f-brand">
         <img src="/assets/test-logo.webp" class="logo-img" alt="StreamEast Logo" fetchpriority="high"> <div class="logo-text">Stream<span>East</span></div> 
     </div>
@@ -1104,62 +1104,44 @@
 
     // 2. Resolve URLs & Images
     const pageUrl = window.location.href;
-    const siteLogo = document.querySelector('link[rel="icon"]')?.href || `https://${DOMAIN}/logo.png`;
+    
+    // FIX: Get Logo from the Header Image (class .logo-img) instead of Favicon
+    const headerLogoEl = document.querySelector('.logo-img');
+    const siteLogo = headerLogoEl ? headerLogoEl.src : (document.querySelector('link[rel="icon"]')?.href || `https://${DOMAIN}/logo.png`);
+    
     const getFullUrl = (p) => p.startsWith('http') ? p : `https://${DOMAIN}${p.startsWith('/')?'':'/'}${p}`;
 
-    // 3. STRICT TIME & VIEWER LOGIC
+    // 3. STRICT TIME & VIEWER LOGIC (Preserved from previous correct version)
     const now = Date.now();
-    
-    // Fix: Convert API String to Number (Prevents "Invalid time value")
     const startTime = new Date(m.timestamp).getTime(); 
-    
-    // Duration from API (default 180 mins if missing)
     const durationMins = m.sport_duration || 180; 
     const durationMs = durationMins * 60 * 1000;
-    
-    // Calculate strict end time based on duration
     let expectedEndTime = startTime + durationMs; 
-    
     const viewers = m.live_viewers || 0;
 
-    // Default State: Scheduled / Ended
     let eventStatus = "https://schema.org/EventScheduled";
     let isLive = false;
 
-    // LOGIC: Check if match has started
     if (now >= startTime) {
-        // Condition A: Time is within the sport_duration limit
-        // Condition B: Time passed duration, BUT people are still watching (Overtime/Penalties)
+        // Live if within duration OR (Duration ended but viewers > 0)
         if (now < expectedEndTime || viewers > 0) {
             isLive = true;
             eventStatus = "https://schema.org/EventLive";
-
-            // CRITICAL FIX: If we are in "Overtime" (Time > Expected End), 
-            // we MUST extend the schema endDate dynamically. 
-            // If we don't, Google sees "Live Event" with "Past End Date" and treats it as an error.
+            // Extend schema time if Overtime detected
             if (now >= expectedEndTime) {
-                expectedEndTime = now + (30 * 60 * 1000); // Extend by 30 mins buffer
+                expectedEndTime = now + (30 * 60 * 1000); 
             }
         }
-        // Else: Time passed duration AND Viewers == 0 -> Effectively ENDED.
-        // Status remains "EventScheduled" and isLive remains false.
     }
 
-    // 4. Logic: Detect Person vs Team Sport
+    // 4. Resolve Team/Player Logos
+    const hLogo = (IMAGE_MAP.teams && IMAGE_MAP.teams[m.home]) ? getFullUrl(IMAGE_MAP.teams[m.home]) : null;
+    const aLogo = (IMAGE_MAP.teams && IMAGE_MAP.teams[m.away]) ? getFullUrl(IMAGE_MAP.teams[m.away]) : null;
+
+    // 5. Logic: Detect Person vs Team Sport
     const personSports = ['tennis', 'tabletennis', 'badminton', 'boxing', 'mma', 'ufc', 'fighting', 'snooker', 'darts', 'wrestling', 'golf'];
     const normSport = (m.sport || "").toLowerCase().replace(/\s/g, '');
     const isPersonSport = personSports.includes(normSport);
-
-    // 5. Logic: Image Selection
-    let eventImages = [siteLogo]; 
-    const hLogo = IMAGE_MAP.teams && IMAGE_MAP.teams[m.home];
-    const aLogo = IMAGE_MAP.teams && IMAGE_MAP.teams[m.away];
-    
-    if (hLogo && aLogo && !m.isSingleEvent) {
-        eventImages = [getFullUrl(hLogo), getFullUrl(aLogo)];
-    } else if (hLogo && m.isSingleEvent) {
-        eventImages = [getFullUrl(hLogo)];
-    }
 
     // 6. Build Graph
     const graph = [
@@ -1203,21 +1185,38 @@
         "sport": m.sport,
         "competition": { "@type": "SportsOrganization", "name": m.league },
         "url": pageUrl,
-        "image": eventImages,
+        // FIX: Strictly use Site Logo here (not team logos)
+        "image": [siteLogo], 
         "organizer": { "@id": `https://${DOMAIN}/#organization` }
     };
 
-    // 8. Handle Competitors
+    // 8. Handle Competitors (and inject logos HERE)
     if (m.isSingleEvent) {
-        eventSchema.performer = [{ "@type": "Organization", "name": m.home }];
-    } else if (isPersonSport) {
-        eventSchema.competitor = [
-            { "@type": "Person", "name": m.home },
-            { "@type": "Person", "name": m.away }
-        ];
-    } else {
-        eventSchema.homeTeam = { "@type": "SportsTeam", "name": m.home };
-        eventSchema.awayTeam = { "@type": "SportsTeam", "name": m.away };
+        // Single Event -> Performer
+        const performer = { "@type": "Organization", "name": m.home };
+        if(hLogo) performer.logo = hLogo; // Add logo to performer
+        eventSchema.performer = [ performer ];
+    } 
+    else if (isPersonSport) {
+        // Person vs Person
+        const p1 = { "@type": "Person", "name": m.home };
+        if(hLogo) p1.image = hLogo; // Person uses 'image', not 'logo'
+        
+        const p2 = { "@type": "Person", "name": m.away };
+        if(aLogo) p2.image = aLogo;
+
+        eventSchema.competitor = [ p1, p2 ];
+    } 
+    else {
+        // Team vs Team
+        const t1 = { "@type": "SportsTeam", "name": m.home };
+        if(hLogo) t1.logo = hLogo; // SportsTeam uses 'logo'
+
+        const t2 = { "@type": "SportsTeam", "name": m.away };
+        if(aLogo) t2.logo = aLogo;
+
+        eventSchema.homeTeam = t1;
+        eventSchema.awayTeam = t2;
     }
 
     // 9. Add VideoObject ONLY if Live
@@ -1227,7 +1226,8 @@
             "@id": `${pageUrl}#video`,
             "name": `${eventName} Live Stream`,
             "description": `Watch ${eventName} live stream online coverage on ${SITE_NAME}.`,
-            "thumbnailUrl": eventImages[0], 
+            // FIX: Strictly use Site Logo for thumbnail
+            "thumbnailUrl": siteLogo, 
             "uploadDate": new Date(startTime).toISOString(),
             "isLiveBroadcast": true,
             "contentUrl": pageUrl,
