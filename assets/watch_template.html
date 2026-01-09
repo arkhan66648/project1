@@ -1025,10 +1025,6 @@
             const footLeagues = document.getElementById('footer-leagues-section');
             if(artCont) artCont.style.display = 'none';
             if(footLeagues) footLeagues.style.display = 'block';
-
-            // 3. Hide Ads in Left Sidebar for Stream Mode (Keep Discord)
-            const leftBar = document.querySelector('.sidebar-left');
-            if(leftBar) leftBar.classList.add('hide-ad1', 'hide-ad2');
             
             // Correct H1 for Stream Mode
             const h1 = document.getElementById('stream-h1');
