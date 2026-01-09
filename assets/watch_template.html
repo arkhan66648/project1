@@ -867,16 +867,22 @@
             if(realTable) realTable.classList.remove('hidden-load');
 
             const now = Date.now();
-            const diffMins = (m.timestamp - now) / 60000;
+            // FIX: Convert string timestamp to number so math works
+            const startTimeMs = new Date(m.timestamp).getTime();
+            const diffMins = (startTimeMs - now) / 60000;
+            
             const btn = document.getElementById('startWatchBtn');
             const copyBtn = document.getElementById('copyPageBtn');
             copyBtn.onclick = () => copyText(window.location.href);
 
+            // Logic: Enable if LIVE or starting within 30 mins
             if (m.isLive || diffMins <= 30) {
-                btn.className = "big-watch-btn"; btn.innerHTML = "📺 Watch Live Stream";
+                btn.className = "big-watch-btn"; 
+                btn.innerHTML = "📺 Watch Live Stream";
                 btn.onclick = () => window.location.href = `?${PARAM_LIVE}=${m.originalId}`;
             } else {
-                btn.className = "big-watch-btn disabled"; btn.innerHTML = "🔒 Stream Starts Soon";
+                btn.className = "big-watch-btn disabled"; 
+                btn.innerHTML = "🔒 Stream Starts Soon";
                 btn.onclick = null;
             }
 
