@@ -104,6 +104,36 @@
             --skeleton-gradient-start: {{THEME_SKELETON_GRADIENT_START}};
             --skeleton-gradient-mid: {{THEME_SKELETON_GRADIENT_MID}};
             --skeleton-gradient-end: {{THEME_SKELETON_GRADIENT_END}};
+
+            /* --- NEW WATCH VARIABLES (From Admin Panel) --- */
+            --chat-header-bg: {{THEME_CHAT_HEADER_BG}};
+            --chat-header-text: {{THEME_CHAT_HEADER_TEXT}};
+            --chat-dot-color: {{THEME_CHAT_DOT_COLOR}};
+            --chat-dot-size: {{THEME_CHAT_DOT_SIZE}};
+            --chat-overlay-bg: {{THEME_CHAT_OVERLAY_BG_FINAL}};
+            --chat-input-bg: {{THEME_CHAT_INPUT_BG}};
+            --chat-input-text: {{THEME_CHAT_INPUT_TEXT}};
+            
+            --w-table-head-bg: {{THEME_WATCH_TABLE_HEAD_BG}};
+            --w-table-body-bg: {{THEME_WATCH_TABLE_BODY_BG}};
+            --w-table-border: {{THEME_WATCH_TABLE_BORDER}};
+            --w-table-radius: {{THEME_WATCH_TABLE_RADIUS}};
+            --w-team-color: {{THEME_WATCH_TEAM_COLOR}};
+            --w-vs-color: {{THEME_WATCH_VS_COLOR}};
+            --w-team-size: {{THEME_WATCH_TEAM_SIZE}};
+            --w-vs-size: {{THEME_WATCH_VS_SIZE}};
+            
+            --w-btn-bg: {{THEME_WATCH_BTN_BG}};
+            --w-btn-text: {{THEME_WATCH_BTN_TEXT}};
+            --w-btn-dis-bg: {{THEME_WATCH_BTN_DISABLED_BG}};
+            --w-btn-dis-text: {{THEME_WATCH_BTN_DISABLED_TEXT}};
+            
+            --w-info-btn-bg: {{THEME_WATCH_INFO_BTN_BG}};
+            --w-info-btn-text: {{THEME_WATCH_INFO_BTN_TEXT}};
+            --w-info-btn-hover: {{THEME_WATCH_INFO_BTN_HOVER}};
+            
+            --w-srv-active-bg: {{THEME_WATCH_SERVER_ACTIVE_BG}};
+            --w-srv-text: {{THEME_WATCH_SERVER_TEXT}};
         }
 
         /* --- BASE --- */
@@ -175,6 +205,16 @@
         .article-section-wrapper { display: block; width: 100%; } 
         .article-section-wrapper.active { grid-column: 2; margin-top: 20px; }
 
+        /* SIDEBAR TOGGLE LOGIC */
+        .watch-container.swap-sidebars .sidebar-left { order: 3; }
+        .watch-container.swap-sidebars .layout-main { order: 2; }
+        .watch-container.swap-sidebars .sidebar-right { order: 1; }
+
+        /* VISIBILITY UTILITIES */
+        .hide-ad1 #sk-left-ad1, .hide-ad1 #real-left-ad1 { display: none !important; }
+        .hide-ad2 #sk-left-ad2, .hide-ad2 #real-left-ad2 { display: none !important; }
+        .hide-discord #sk-left-disc, .hide-discord #real-left-disc { display: none !important; }
+
         @media (max-width: 1300px) { 
             .watch-container.active-mode { grid-template-columns: 1fr 340px; } 
             .sidebar-left { display: none !important; } 
@@ -219,14 +259,14 @@
         .hidden-load { display: none !important; }
 
         /* --- INFO HEADER --- */
-        .info-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--border-radius-base); padding: 0; margin-top: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden; }
+        .info-card { background: var(--bg-panel); border: 1px solid var(--w-table-border); border-radius: var(--w-table-radius); padding: 0; margin-top: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden; }
         
         .mh-fixed-container {
             display: grid; 
             /* CHANGE: minmax(0, ...) forces columns to stay within bounds and not expand for long text */
             grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr);
-            height: 150px; border-bottom: 1px solid var(--border);
-            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0) 100%);
+            height: 150px; border-bottom: 1px solid var(--w-table-border);
+            background: var(--w-table-head-bg);
         }
 
         /* SINGLE TEAM MODE HEADER STYLES */
@@ -263,46 +303,45 @@
         .logo-wrapper { width: 28px; height: 28px; margin-top: 8px; position: relative; border-radius: 50%; }
         
         .mh-team-name-sm { 
-            font-size: 1.1rem; /* Slightly reduced base size for better safety */
-            font-weight: 700; color: var(--text-main); 
+            font-size: var(--w-team-size); /* Customizable Size */
+            font-weight: 700; color: var(--w-team-color); 
             text-align: center; line-height: 1.2; 
             width: 100%; /* Force full width of the constrained column */
             overflow: hidden; 
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-            /* CHANGE: These lines force long words to break and wrap */
             word-wrap: break-word;
             word-break: break-word; 
             hyphens: auto;
             padding: 0 4px; /* Prevents text from touching edges */
         }
         
-        .mh-team-name-lg { font-size: 1.1rem; font-weight: 800; color: #fff; text-align: center; text-transform: uppercase; font-family: var(--font-family-headings); }
+        .mh-team-name-lg { font-size: var(--w-team-size); font-weight: 800; color: var(--w-team-color); text-align: center; text-transform: uppercase; font-family: var(--font-family-headings); }
         
         @media (min-width: 768px) { 
-            .mh-team-name-lg { font-size: 1.4rem; } 
+            .mh-team-name-lg { font-size: calc(var(--w-team-size) * 1.2); } 
             .mh-team-logo { width: 50px; height: 50px; } 
-            .mh-team-name-sm { font-size: 1.3rem; min-height: 1.2em;}
-            .mh-vs { font-size: 2.2rem; margin: 0; line-height: 1; font-family: var(--font-family-headings); padding: 5px 25px; display: inline-block; font-weight: 900; color: rgba(255,255,255,0.1); }
+            .mh-team-name-sm { font-size: calc(var(--w-team-size) * 1.2); min-height: 1.2em;}
+            .mh-vs { font-size: var(--w-vs-size); margin: 0; line-height: 1; font-family: var(--font-family-headings); padding: 5px 25px; display: inline-block; font-weight: 900; color: var(--w-vs-color); }
             .logo-wrapper { width: 45px; height: 45px; }
         }
-        .mh-vs { font-size: 2rem; min-height: 40px; display: block; font-weight: 900; color: #fff; margin: 0; line-height: 1.2; font-family: var(--font-family-headings); }
+        .mh-vs { font-size: calc(var(--w-vs-size) * 0.8); min-height: 40px; display: block; font-weight: 900; color: var(--w-vs-color); margin: 0; line-height: 1.2; font-family: var(--font-family-headings); }
 
         .mh-league { font-size: 0.7rem; font-weight: 700; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1px; margin: 0; }
         
         .mh-timer { font-size: 0.9rem; font-weight: 700; color: var(--text-muted); margin: 0; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); }
         .mh-timer.live { color: #ef4444; border-color: #ef4444; animation: pulse 2s infinite; }
         
-        .info-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .info-table td { padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        .info-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: var(--w-table-body-bg); }
+        .info-table td { padding: 12px 20px; border-bottom: 1px solid var(--w-table-border); font-size: 0.9rem; }
         .info-table td:first-child { color: var(--text-muted); font-weight: 600; width: 40%; }
         .info-table td:last-child { color: var(--text-main); font-weight: 500; text-align: right; }
         .info-table tr:last-child td { border-bottom: none; }
 
         .action-pad { padding: 20px; }
         .action-row { display: flex; gap: 10px; }
-        .big-watch-btn { flex: 1; text-align: center; background: var(--brand-primary); color: #fff; padding: 15px; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; border-radius: var(--button-border-radius); transition: 0.2s; box-shadow: 0 4px 15px rgba(208,0,0,0.4); border: none; }
-        .big-watch-btn:hover { background: var(--brand-dark); transform: translateY(-2px); }
-        .big-watch-btn.disabled { background: var(--bg-panel); border: 1px solid var(--border); color: var(--text-muted); cursor: not-allowed; box-shadow: none; }
+        .big-watch-btn { flex: 1; text-align: center; background: var(--w-btn-bg); color: var(--w-btn-text); padding: 15px; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; border-radius: var(--button-border-radius); transition: 0.2s; box-shadow: 0 4px 15px rgba(208,0,0,0.4); border: none; }
+        .big-watch-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        .big-watch-btn.disabled { background: var(--w-btn-dis-bg); border: 1px solid var(--border); color: var(--w-btn-dis-text); cursor: not-allowed; box-shadow: none; }
         .copy-link-btn { width: 50px; display: flex; align-items: center; justify-content: center; background: var(--bg-panel); border: 1px solid var(--border); color: var(--text-main); border-radius: var(--button-border-radius); cursor: pointer; transition: 0.2s; }
         .copy-link-btn:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
 
@@ -314,15 +353,15 @@
         .server-area { flex: 1; min-width: 250px; }
         .server-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 8px; display: block; }
         .server-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-        .srv-btn { background: var(--bg-panel); border: 1px solid var(--border); color: var(--text-muted); padding: 8px 12px; border-radius: var(--button-border-radius); font-weight: 600; font-size: 0.85rem; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+        .srv-btn { background: var(--bg-panel); border: 1px solid var(--border); color: var(--w-srv-text); padding: 8px 12px; border-radius: var(--button-border-radius); font-weight: 600; font-size: 0.85rem; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
         .srv-btn:hover { border-color: var(--brand-primary); color: #fff; background: rgba(255,255,255,0.05); }
-        .srv-btn.active { background: var(--brand-primary); border-color: var(--brand-primary); color: #fff; }
+        .srv-btn.active { background: var(--w-srv-active-bg); border-color: var(--w-srv-active-bg); color: #fff; }
         .srv-toggle { background: transparent; border: 1px dashed var(--border); color: var(--text-muted); font-size: 0.8rem; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-top: 5px; display: none; width: 100%; }
         .srv-toggle:hover { color: #fff; border-color: var(--text-muted); }
         
         .info-btn-area { width: 100%; max-width: 200px; display: flex; justify-content: flex-end; }
-        .info-goto-btn { background: var(--bg-panel); color: #fff; border: 1px solid var(--border); padding: 10px 15px; border-radius: var(--button-border-radius); font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.2s; width: 100%; text-align: center; }
-        .info-goto-btn:hover { border-color: var(--brand-primary); background: rgba(255,255,255,0.05); }
+        .info-goto-btn { background: var(--w-info-btn-bg); color: var(--w-info-btn-text); border: 1px solid var(--w-table-border); padding: 10px 15px; border-radius: var(--button-border-radius); font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.2s; width: 100%; text-align: center; }
+        .info-goto-btn:hover { background: var(--w-info-btn-hover); }
         @media (max-width: 600px) { .stream-controls { flex-direction: column; } .info-btn-area { max-width: 100%; } }
 
         /* DISCORD WIDGET */
@@ -335,7 +374,7 @@
         .dc-btn { background: #fff; color: #5865F2; font-size: 0.8rem; font-weight: 700; padding: 6px 12px; border-radius: 20px; white-space: nowrap; }
 
         /* --- CHAT --- */
-        .chat-header { padding: 10px; background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--border); font-weight: 700; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
+        .chat-header { padding: 10px; background: var(--chat-header-bg); color: var(--chat-header-text); border-bottom: 1px solid var(--border); font-weight: 700; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
         .chat-wrapper { display: flex; flex-direction: column; height: 100%; position: relative; background: var(--bg-panel); }
         .chat-messages { flex: 1; overflow-y: hidden; padding: 10px; display: flex; flex-direction: column; gap: 8px; transition: 0.3s; }
         .chat-messages.dummy-mode { filter: blur(2px) grayscale(0.5); opacity: 0.4; overflow-y: hidden; }
@@ -346,13 +385,13 @@
         .chat-msg span { color: var(--text-main); }
         .chat-msg.system { color: var(--text-muted); font-style: italic; font-size: 0.75rem; text-align: center; }
         .chat-controls { padding: 10px; border-top: 1px solid var(--border); display: flex; gap: 5px; background: rgba(0,0,0,0.2); }
-        #chatInput { flex: 1; background: #000; border: 1px solid var(--border); color: #fff; padding: 8px; border-radius: 4px; font-size: 0.85rem; outline: none; }
+        #chatInput { flex: 1; background: var(--chat-input-bg); border: 1px solid var(--border); color: var(--chat-input-text); padding: 8px; border-radius: 4px; font-size: 0.85rem; outline: none; }
         #chatInput:focus { border-color: var(--brand-primary); }
         #chatSendBtn { background: var(--brand-primary); color: #fff; width: 36px; border-radius: 4px; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
-        .chat-overlay { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; padding: 20px; text-align: center; backdrop-filter: blur(0px); }
+        .chat-overlay { position: absolute; inset: 0; background: var(--chat-overlay-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; padding: 20px; text-align: center; backdrop-filter: blur(0px); }
         .chat-overlay h3 { margin: 0 0 10px 0; color: #fff; font-size: 1.1rem; }
         .chat-overlay p { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px; }
-        #usernameInput { width: 100%; padding: 10px; margin-bottom: 10px; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 4px; text-align: center; }
+        #usernameInput { width: 100%; padding: 10px; margin-bottom: 10px; background: var(--chat-input-bg); border: 1px solid var(--border); color: var(--chat-input-text); border-radius: 4px; text-align: center; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .dummy-msg { animation: slideIn 0.3s ease forwards; }
 
@@ -387,6 +426,11 @@
         
         .error-box { text-align: center; padding: 40px; border: 1px solid var(--border); background: rgba(239,68,68,0.1); color: #fca5a5; border-radius: var(--border-radius-base); margin-top: 20px; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        
+        #footer-leagues-section { display: block; }
+        .stream-mode #footer-leagues-section { display: none; }
+        
+        #stream-h1 { font-family: var(--font-family-headings); }
     </style>
 </head>
 <body>
@@ -552,7 +596,7 @@
             <div id="real-chat" class="hidden-load" style="height:100%; display:flex; flex-direction:column;">
                 <div class="chat-header">
                     <span>Live Chat</span>
-                    <span id="liveCount" style="font-size:0.75rem; color:var(--brand-primary); display:flex; align-items:center; gap:4px;"><span style="display:block; width:6px; height:6px; background:var(--brand-primary); border-radius:50%; box-shadow:0 0 5px var(--brand-primary);"></span> Online</span>
+                    <span id="liveCount" style="font-size:0.75rem; color:var(--brand-primary); display:flex; align-items:center; gap:4px;"><span style="display:block; width:var(--chat-dot-size); height:var(--chat-dot-size); background:var(--chat-dot-color); border-radius:50%; box-shadow:0 0 5px var(--chat-dot-color);"></span> Online</span>
                 </div>
                 <div class="chat-wrapper">
                     <div id="chatMessages" class="chat-messages"><div class="chat-msg system">Welcome to the live chat!</div></div>
@@ -576,7 +620,9 @@
             <!-- SK: Article -->
             <div id="sk-article" class="sk-box sk-anim sk-article"></div>
             <!-- REAL: Article -->
-            <div id="seo-article-container" class="seo-article hidden-load"></div>
+            <div id="seo-article-container" class="seo-article hidden-load">
+                {{WATCH_ARTICLE}}
+            </div>
             
             <div id="footer-leagues-section" class="section-box" style="margin-top:50px;">
                 <div class="sec-head" style="border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:15px;">
@@ -607,7 +653,7 @@
         const SITE_NAME = "{{SITE_NAME}}";
         const DOMAIN = "{{DOMAIN}}";
         
-        const SUPA_URL = "https://dyqrcabbnwpumsgoylao.supabase.co";
+        const SUPA_URL = "{{SUPABASE_URL}}";
         const SUPA_KEY = "{{SUPABASE_KEY}}"; 
         
         const LEAGUE_MAP = {{JS_LEAGUE_MAP}}; 
@@ -618,6 +664,21 @@
             "americanfootball": "American Football", "australianfootball": "AFL", "basketball": "Basketball", 
             "football": "Football", "soccer": "Soccer", "baseball": "Baseball", "fighting": "Fighting", 
             "mma": "MMA", "boxing": "Boxing", "motorsport": "Motorsport", "golf": "Golf"
+        };
+
+        const W_CONFIG = {
+            sidebar_swap: {{THEME_WATCH_SIDEBAR_SWAP}}, 
+            ad1: {{THEME_WATCH_SHOW_AD1}},             
+            ad2: {{THEME_WATCH_SHOW_AD2}},             
+            discord: {{THEME_WATCH_SHOW_DISCORD}},     
+            discord_order: "{{THEME_WATCH_DISCORD_ORDER}}", 
+            text_join: "{{THEME_CHAT_JOIN_BTN_TEXT}}",
+            text_chat_title: "{{THEME_CHAT_HEADER_TITLE}}",
+            text_discord_title: "{{THEME_WATCH_DISCORD_TITLE}}",
+            text_discord_btn: "{{THEME_WATCH_DISCORD_BTN_TEXT}}",
+            text_watch_btn: "{{THEME_WATCH_BTN_LABEL}}",
+            text_watch_dis: "{{THEME_WATCH_BTN_DISABLED_LABEL}}",
+            text_info_btn: "{{THEME_WATCH_INFO_BTN_LABEL}}"
         };
 
         let chatClient = null;
@@ -647,6 +708,7 @@
                 // Default state: Skeletons Visible
                 startDummyChat(); 
                 updateSocialLinks(null);
+                applyWatchConfig();
 
                 if(currentUser && document.getElementById('usernameInput')) {
                     document.getElementById('usernameInput').value = currentUser;
@@ -718,6 +780,43 @@
             }
         }
 
+        function applyWatchConfig() {
+            const cont = document.querySelector('.watch-container');
+            const leftBar = document.querySelector('.sidebar-left');
+            
+            // 1. Sidebar Swap
+            if (W_CONFIG.sidebar_swap) cont.classList.add('swap-sidebars');
+            
+            // 2. Visibility
+            if (!W_CONFIG.ad1) leftBar.classList.add('hide-ad1');
+            if (!W_CONFIG.ad2) leftBar.classList.add('hide-ad2');
+            if (!W_CONFIG.discord) leftBar.classList.add('hide-discord');
+            
+            // 3. Discord Order (Flex order)
+            const discEl = document.getElementById('real-left-disc');
+            const skDisc = document.getElementById('sk-left-disc');
+            let order = 2;
+            if(W_CONFIG.discord_order === 'top') order = 0;
+            if(W_CONFIG.discord_order === 'bottom') order = 4;
+            if(discEl) discEl.style.order = order;
+            if(skDisc) skDisc.style.order = order;
+
+            // 4. Texts
+            const joinBtn = document.getElementById('joinChatBtn');
+            if (W_CONFIG.text_join && joinBtn) joinBtn.innerText = W_CONFIG.text_join;
+            
+            const chatHeader = document.querySelector('.chat-header span:first-child');
+            if(W_CONFIG.text_chat_title && chatHeader) chatHeader.innerText = W_CONFIG.text_chat_title;
+            
+            const dcTitle = document.querySelector('.dc-text h4');
+            const dcBtn = document.querySelector('.dc-btn');
+            if(dcTitle && W_CONFIG.text_discord_title) dcTitle.innerText = W_CONFIG.text_discord_title;
+            if(dcBtn && W_CONFIG.text_discord_btn) dcBtn.innerText = W_CONFIG.text_discord_btn;
+            
+            const infoBtn = document.getElementById('gotoInfoBtn');
+            if(infoBtn && W_CONFIG.text_info_btn) infoBtn.innerText = W_CONFIG.text_info_btn;
+        }
+
         // --- UPDATED LEAGUE DETECTION LOGIC ---
         function resolveLeagueData(match) {
             const hRaw = match.home_team || "";
@@ -764,6 +863,7 @@
 
         function renderInfoMode(m) {
             showView('info');
+            document.querySelector('.watch-container').classList.remove('stream-mode');
 
             const hCol = document.getElementById('mhHomeCol');
             const aCol = document.getElementById('mhAwayCol');
@@ -876,7 +976,6 @@
             if(realTable) realTable.classList.remove('hidden-load');
 
             const now = Date.now();
-            // FIX: Convert string timestamp to number so math works
             const startTimeMs = new Date(m.timestamp).getTime();
             const diffMins = (startTimeMs - now) / 60000;
             
@@ -887,11 +986,11 @@
             // Logic: Enable if LIVE or starting within 30 mins
             if (m.isLive || diffMins <= 30) {
                 btn.className = "big-watch-btn"; 
-                btn.innerHTML = "📺 Watch Live Stream";
+                btn.innerHTML = `📺 ${W_CONFIG.text_watch_btn || "Watch Live Stream"}`;
                 btn.onclick = () => window.location.href = `?${PARAM_LIVE}=${m.originalId}`;
             } else {
                 btn.className = "big-watch-btn disabled"; 
-                btn.innerHTML = "🔒 Stream Starts Soon";
+                btn.innerHTML = `🔒 ${W_CONFIG.text_watch_dis || "Stream Starts Soon"}`;
                 btn.onclick = null;
             }
 
@@ -906,6 +1005,10 @@
 
         function renderStreamMode(m, currentUrlId) {
             showView('stream');
+            document.querySelector('.watch-container').classList.add('stream-mode');
+            
+            // Hide Ads for Stream Mode, but keep Discord
+            document.querySelector('.sidebar-left').classList.add('hide-ad1', 'hide-ad2');
             
             // Correct H1 for Stream Mode based on Single/VS
             const h1 = document.getElementById('stream-h1');
@@ -975,13 +1078,17 @@
             if(c) {
                 c.style.display = 'block';
                 if(sk) sk.style.display = 'none';
-                let content = '';
+                
+                // Append dynamic content to static Watch Article
+                let content = c.innerHTML; // Start with Configured Article
+                
+                let dynamicContent = "";
                 if(m.isSingleEvent) {
-                    content = `<h2>Watch ${m.home} Live Stream</h2><p>Watch <strong>${m.home}</strong> live in <strong>${m.league}</strong>. Event starts at <strong>${m.dateTimeStr}</strong>.</p><h3>Event Details</h3><ul><li><strong>Event:</strong> ${m.home}</li><li><strong>League:</strong> ${m.league}</li><li><strong>Time:</strong> ${m.timeOnly}</li></ul><p>Watch full coverage on <strong>${SITE_NAME}</strong>. We provide high quality streams for ${m.sport} events.</p>`;
+                    dynamicContent = `<h3>Event Details</h3><ul><li><strong>Event:</strong> ${m.home}</li><li><strong>League:</strong> ${m.league}</li><li><strong>Time:</strong> ${m.timeOnly}</li></ul>`;
                 } else {
-                    content = `<h2>Watch ${m.home} vs ${m.away} Live Stream</h2><p>Watch <strong>${m.home}</strong> vs <strong>${m.away}</strong> in <strong>${m.league}</strong>. Starts at <strong>${m.dateTimeStr}</strong>.</p><h3>Match Details</h3><ul><li><strong>Teams:</strong> ${m.home} vs ${m.away}</li><li><strong>League:</strong> ${m.league}</li><li><strong>Time:</strong> ${m.timeOnly}</li></ul><p>Watch full coverage on <strong>${SITE_NAME}</strong>. We provide high quality streams for ${m.sport} events.</p>`;
+                    dynamicContent = `<h3>Match Details</h3><ul><li><strong>Teams:</strong> ${m.home} vs ${m.away}</li><li><strong>League:</strong> ${m.league}</li><li><strong>Time:</strong> ${m.timeOnly}</li></ul>`;
                 }
-                c.innerHTML = content;
+                c.innerHTML = content + dynamicContent;
             }
         }
 
@@ -1267,7 +1374,7 @@
                 if(p==='twitter') return `https://twitter.com/intent/tweet?url=${u}`;
                 return null;
             };
-            const icons = { telegram: '<svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.47-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.28L19.84 4c.75-.28 1.4.52 1.16 1.76l-2.8 13.2c-.2.9-1.09.9-1.8.6l-5.45-4.06-2.6 2.5c-.3.3-.55.55-1.1.55l.45-3.6z"/></svg>', whatsapp: '<svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.33 4.97L2 22l5.25-1.38a9.86 9.86 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.51 2 12.04 2zm4.43-6.03c-.24-.12-1.41-.7-1.63-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.48-.4-.42-.54-.42h-.46c-.16 0-.42.06-.64.3C4.33 8.6 3.5 9.2 3.5 10.38c0 1.18.86 2.32.98 2.48.12.16 1.7 2.6 4.12 3.65.58.25 1.03.4 1.38.51.58.18 1.1.15 1.52.09.46-.07 1.41-.58 1.61-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg>', reddit: '<svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.22 14.11c-.13.26-.35.45-.6.54-.25.09-.52.1-.78.01-.8-.28-1.76-.43-2.77-.43s-1.97.15-2.77.43c-.26.09-.53.08-.78-.01-.25-.09-.47-.28-.6-.54-.15-.3-.19-.64-.11-.96.08-.32.28-.59.56-.75.9-.53 2.05-.83 3.28-.88l.66-3.11 2.16.46c.04-.2.15-.38.31-.51s.36-.2.55-.17c.2.03.38.15.51.31.13.16.2.36.17.55l-2.16-.46-.66 3.11c1.23.05 2.38.35 3.28.88.28.16.48.43.56.75.08.32.04.66-.11.96zM12 11.25c-.97 0-1.75.78-1.75 1.75s.78 1.75 1.75 1.75 1.75-.78 1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75zm-3.25-2.5c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25 1.25-1.25-.56-1.25-1.25z"/></svg>', twitter: '<svg viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>', copy: '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>' };
+            const icons = { telegram: '<svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.47-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.28L19.84 4c.75-.28 1.4.52 1.16 1.76l-2.8 13.2c-.2.9-1.09.9-1.8.6l-5.45-4.06-2.6 2.5c-.3.3-.55.55-1.1.55l.45-3.6z"/></svg>', whatsapp: '<svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.33 4.97L2 22l5.25-1.38a9.86 9.86 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.51 2 12.04 2zm4.43-6.03c-.24-.12-1.41-.7-1.63-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.44-1.34-1.68-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.48-.4-.42-.54-.42h-.46c-.16 0-.42.06-.64.3C4.33 8.6 3.5 9.2 3.5 10.38c0 1.18.86 2.32.98 2.48.12.16 1.7 2.6 4.12 3.65.58.25 1.03.4 1.38.51.58.18 1.1.15 1.52.09.46-.07 1.41-.58 1.61-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28z"/></svg>', reddit: '<svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.22 14.11c-.13.26-.35.45-.6.54-.25.09-.52.1-.78.01-.8-.28-1.76-.43-2.77-.43s-1.97.15-2.77.43c-.26.09-.53.08-.78-.01-.25-.09-.47-.28-.6-.54-.15-.3-.19-.64-.11-.96.08-.32.28-.59.56-.75.9-.53 2.05-.83 3.28-.88l.66-3.11 2.16.46c.04-.2.15-.38.31-.51s.36-.2.55-.17c.2.03.38.15.51.31.13.16.2.36.17.55l-2.16-.46-.66 3.11c1.23.05 2.38.35 3.28.88.28.16.48.43.56.75.08.32.04.66-.11.96zM12 11.25c-.97 0-1.75.78-1.75 1.75s.78 1.75 1.75 1.75 1.75-.78 1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75-.78-1.75-1.75-1.75zm-3.25-2.5c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25 1.25-1.25-.56-1.25-1.25zm6.5 0c0-.69.56-1.25 1.25-1.25s1.25.56 1.25 1.25-.56 1.25-1.25 1.25-1.25-.56-1.25-1.25z"/></svg>', twitter: '<svg viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>', copy: '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>' };
             let html = '';
             ['telegram', 'whatsapp', 'reddit', 'twitter', 'copy'].forEach(p => {
                 const count = SHARE_CONFIG.counts[p] ? ((n)=>(n>=1000?(n/1000).toFixed(1)+'k':n))(SHARE_CONFIG.counts[p]) : '';
