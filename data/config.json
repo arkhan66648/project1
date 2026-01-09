@@ -1051,7 +1051,7 @@
     "back_to_top_size": "",
     "display_hero": "block",
     "watch_sidebar_swap": false,
-    "watch_show_ad1": true,
+    "watch_show_ad1": false,
     "watch_show_discord": true,
     "watch_show_ad2": false,
     "watch_discord_order": "bottom",
