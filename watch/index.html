@@ -585,7 +585,7 @@
         <div class="f-head">Quick Links</div>
         <div class="f-links"><a href="/dmca" class="f-link">DMCA</a><a href="/contact" class="f-link">Contact</a><a href="/terms" class="f-link">Terms & Conditions</a></div>
     </div>
-    <div></div>
+    <div class="f-desc">Hello world</div>
     <div class="f-brand">
         <img src="/assets/test-logo.webp" class="logo-img" alt="StreamEast Logo" fetchpriority="high"> <div class="logo-text">Stream<span>East</span></div> 
     </div>
@@ -1109,7 +1109,7 @@
 
     // 3. Logic: Match Lifecycle (Live/Ended)
     const now = Date.now();
-    const startTime = m.timestamp;
+    const startTime = new Date(m.timestamp).getTime();
     const durationMins = m.sport_duration || 180; // Default 3h if missing
     const durationMs = durationMins * 60 * 1000;
     const expectedEndTime = startTime + durationMs;
