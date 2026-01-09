@@ -642,10 +642,14 @@ def build_site():
             final_template = final_template.replace('{{SUPABASE_KEY}}', w_conf.get('supabase_key', ''))
             final_template = final_template.replace('{{WATCH_ARTICLE}}', w_conf.get('article', ''))
             
-            # Override SEO for Info Mode base page
-            # FIX: Use 'page' variable instead of 'page_data'
-            page['meta_title'] = w_conf.get('meta_title', 'Watch Live Sports')
-            page['meta_desc'] = w_conf.get('meta_desc', 'Live streaming coverage.')
+            # NEW: Inject SEO Templates into JS Variables
+            # We use distinct placeholders so we don't conflict with standard META tags
+            final_template = final_template.replace('{{JS_WATCH_TITLE_TPL}}', w_conf.get('meta_title', 'Watch {{HOME}} vs {{AWAY}} Live'))
+            final_template = final_template.replace('{{JS_WATCH_DESC_TPL}}', w_conf.get('meta_desc', 'Watch {{HOME}} vs {{AWAY}} live stream online.'))
+
+            # Fallback for the static page load (before JS runs)
+            page['meta_title'] = "Watch Live Sports"
+            page['meta_desc'] = "Live sports streaming coverage."
         # ... rest of loop
         elif layout == 'page':
             final_template = page_template_content
