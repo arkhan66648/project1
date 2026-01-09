@@ -1053,7 +1053,7 @@
     "watch_sidebar_swap": true,
     "watch_show_ad1": false,
     "watch_show_discord": true,
-    "watch_show_ad2": false,
+    "watch_show_ad2": true,
     "watch_discord_order": "bottom",
     "watch_discord_title": "",
     "watch_discord_btn_text": "",
