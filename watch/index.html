@@ -222,7 +222,9 @@
         .info-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--border-radius-base); padding: 0; margin-top: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden; }
         
         .mh-fixed-container {
-            display: grid; grid-template-columns: 1fr 1.5fr 1fr; 
+            display: grid; 
+            /* CHANGE: minmax(0, ...) forces columns to stay within bounds and not expand for long text */
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr);
             height: 150px; border-bottom: 1px solid var(--border);
             background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0) 100%);
         }
@@ -261,10 +263,17 @@
         .logo-wrapper { width: 28px; height: 28px; margin-top: 8px; position: relative; border-radius: 50%; }
         
         .mh-team-name-sm { 
-            font-size: 1.2rem; font-weight: 700; color: var(--text-main); 
+            font-size: 1.1rem; /* Slightly reduced base size for better safety */
+            font-weight: 700; color: var(--text-main); 
             text-align: center; line-height: 1.2; 
-            max-width: 100%; overflow: hidden; 
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;  
+            width: 100%; /* Force full width of the constrained column */
+            overflow: hidden; 
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            /* CHANGE: These lines force long words to break and wrap */
+            word-wrap: break-word;
+            word-break: break-word; 
+            hyphens: auto;
+            padding: 0 4px; /* Prevents text from touching edges */
         }
         
         .mh-team-name-lg { font-size: 1.1rem; font-weight: 800; color: #fff; text-align: center; text-transform: uppercase; font-family: var(--font-family-headings); }
@@ -585,7 +594,7 @@
         <div class="f-head">Quick Links</div>
         <div class="f-links"><a href="/dmca" class="f-link">DMCA</a><a href="/contact" class="f-link">Contact</a><a href="/terms" class="f-link">Terms & Conditions</a></div>
     </div>
-    <div></div>
+    <div class="f-desc">Hello world</div>
     <div class="f-brand">
         <img src="/assets/test-logo.webp" class="logo-img" alt="StreamEast Logo" fetchpriority="high"> <div class="logo-text">Stream<span>East</span></div> 
     </div>
