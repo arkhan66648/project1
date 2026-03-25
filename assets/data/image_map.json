@@ -6583,17 +6583,10 @@
     "Madrid C W": "/assets/logos/streamed/madrid-c-w.webp",
     "Florida State Seminoles": "/assets/logos/streamed/florida-state-seminoles.webp",
     "Rotherham": "/assets/logos/streamed/rotherham.webp",
-    "Miami \ud83c\udfbe": "/assets/logos/streamed/miami.webp",
-    "ATP/WTA 1000: Miami \ud83c\udfbe": "/assets/logos/streamed/miami.webp",
-    "KK Crvena zvezda": "/assets/logos/streamed/kk-crvena-zvezda.webp",
     "Philadelphia 76ers": "/assets/logos/streamed/philadelphia-76ers.webp",
-    "T\u00fcrkiye": "/assets/logos/streamed/turkiye.webp",
-    "Bosnia-Herzegovina": "/assets/logos/streamed/bosnia-herzegovina.webp",
-    "N.Ireland": "/assets/logos/streamed/nireland.webp",
     "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
-    "TBA": "/assets/logos/streamed/tba.webp",
-    "NJ/NY Gotham W": "/assets/logos/streamed/njny-gotham-w.webp",
-    "Am\u00e9rica de Cali": "/assets/logos/streamed/am\u00e9rica-de-cali.webp"
+    "Crvena zvezda": "/assets/logos/streamed/crvena-zvezda.webp",
+    "TBA": "/assets/logos/streamed/tba.webp"
   },
   "leagues": {
     "Europe Cup   Grm": "/assets/logos/leagues/europe-cup---grm.webp",
@@ -7385,10 +7378,8 @@
     "Rotterdam Netherlands": "/assets/logos/leagues/rotterdam-netherlands.webp",
     "Liga Otp Banka": "/assets/logos/leagues/liga-otp-banka.webp",
     "English Premiership Rugby": "/assets/logos/leagues/english-premiership-rugby.webp",
-    "football": "/assets/logos/leagues/football.webp",
     "NBA": "/assets/logos/leagues/nba.webp",
     "NHL": "/assets/logos/leagues/nhl.webp",
-    "hockey": "/assets/logos/leagues/hockey.webp",
     "basketball": "/assets/logos/leagues/basketball.webp"
   }
 }
