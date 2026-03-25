@@ -6583,6 +6583,8 @@
     "Madrid C W": "/assets/logos/streamed/madrid-c-w.webp",
     "Florida State Seminoles": "/assets/logos/streamed/florida-state-seminoles.webp",
     "Rotherham": "/assets/logos/streamed/rotherham.webp",
+    "Miami \ud83c\udfbe": "/assets/logos/streamed/miami.webp",
+    "ATP/WTA 1000: Miami \ud83c\udfbe": "/assets/logos/streamed/miami.webp",
     "KK Crvena zvezda": "/assets/logos/streamed/kk-crvena-zvezda.webp",
     "Philadelphia 76ers": "/assets/logos/streamed/philadelphia-76ers.webp",
     "T\u00fcrkiye": "/assets/logos/streamed/turkiye.webp",
@@ -7383,10 +7385,10 @@
     "Rotterdam Netherlands": "/assets/logos/leagues/rotterdam-netherlands.webp",
     "Liga Otp Banka": "/assets/logos/leagues/liga-otp-banka.webp",
     "English Premiership Rugby": "/assets/logos/leagues/english-premiership-rugby.webp",
+    "football": "/assets/logos/leagues/football.webp",
     "NBA": "/assets/logos/leagues/nba.webp",
     "NHL": "/assets/logos/leagues/nhl.webp",
     "hockey": "/assets/logos/leagues/hockey.webp",
-    "basketball": "/assets/logos/leagues/basketball.webp",
-    "football": "/assets/logos/leagues/football.webp"
+    "basketball": "/assets/logos/leagues/basketball.webp"
   }
 }
