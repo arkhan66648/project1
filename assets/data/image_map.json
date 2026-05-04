@@ -6890,28 +6890,17 @@
     "Leyton Orient": "/assets/logos/streamed/leyton-orient.webp",
     "Busto Arsizio W": "/assets/logos/streamed/busto-arsizio-w.webp",
     "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
-    "DC United": "/assets/logos/tsdb/dc-united.webp",
-    "Al-Qadisiyah": "/assets/logos/streamed/al-qadisiyah.webp",
-    "Al-Nassr": "/assets/logos/streamed/al-nassr.webp",
-    "AEK Athens": "/assets/logos/streamed/aek-athens.webp",
-    "Al-Ahli Jeddah": "/assets/logos/streamed/al-ahli-jeddah.webp",
-    "St. Louis City": "/assets/logos/streamed/st-louis-city.webp",
     "Philadelphia 76ers": "/assets/logos/streamed/philadelphia-76ers.webp",
-    "Supra du Quebec": "/assets/logos/streamed/supra-du-quebec.webp",
-    "Gimnasia L.P.": "/assets/logos/streamed/gimnasia-lp.webp",
-    "Argentinos JRS": "/assets/logos/streamed/argentinos-jrs.webp",
-    "Vasco da Gama": "/assets/logos/streamed/vasco-da-gama.webp",
-    "Internacional de Bogot\u00e1": "/assets/logos/streamed/internacional-de-bogot\u00e1.webp",
-    "NJ/NY Gotham W": "/assets/logos/streamed/njny-gotham-w.webp",
-    "America de Cali": "/assets/logos/streamed/america-de-cali.webp",
-    "U.N.A.M.": "/assets/logos/streamed/unam.webp",
+    "Hapoel Tel Aviv BC": "/assets/logos/streamed/hapoel-tel-aviv-bc.webp",
+    "Paris Saint-Germain": "/assets/logos/streamed/paris-saint-germain.webp",
     "Al-Fayha": "/assets/logos/streamed/al-fayha.webp",
     "Heart of Midlothian": "/assets/logos/streamed/heart-of-midlothian.webp",
-    "Al-Ettifaq": "/assets/logos/streamed/al-ettifaq.webp",
     "Al-Ittihad": "/assets/logos/streamed/al-ittihad.webp",
+    "Al-Ettifaq": "/assets/logos/streamed/al-ettifaq.webp",
     "Sporting CP": "/assets/logos/streamed/sporting-cp.webp",
     "Gimnasia M.": "/assets/logos/streamed/gimnasia-m.webp",
-    "Estudiantes de Rio Cuarto": "/assets/logos/streamed/estudiantes-de-rio-cuarto.webp"
+    "Estudiantes de Rio Cuarto": "/assets/logos/streamed/estudiantes-de-rio-cuarto.webp",
+    "St. Louis Battlehawks": "/assets/logos/streamed/st-louis-battlehawks.webp"
   },
   "leagues": {
     "Serie Rio De La Plata": "/assets/logos/leagues/serie-rio-de-la-plata.webp",
@@ -7703,9 +7692,9 @@
     "Ehf   European League   Griii": "/assets/logos/leagues/ehf---european-league---griii.webp",
     "Superliga": "/assets/logos/leagues/superliga.webp",
     "Six Nations": "/assets/logos/leagues/six-nations.webp",
-    "football": "/assets/logos/leagues/football.webp",
     "basketball": "/assets/logos/leagues/basketball.webp",
-    "tennis": "/assets/logos/leagues/tennis.webp",
-    "hockey": "/assets/logos/leagues/hockey.webp"
+    "hockey": "/assets/logos/leagues/hockey.webp",
+    "football": "/assets/logos/leagues/football.webp",
+    "tennis": "/assets/logos/leagues/tennis.webp"
   }
 }
