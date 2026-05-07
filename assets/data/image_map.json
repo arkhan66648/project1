@@ -4427,6 +4427,7 @@
     "Brisbane Md 3B": "/assets/logos/streamed/brisbane-md-3b.webp",
     "Jonas Luz": "/assets/logos/streamed/jonas-luz.webp",
     "Minnesota Frost": "/assets/logos/streamed/minnesota-frost.webp",
+    "Woodbridge Strikers": "/assets/logos/streamed/woodbridge-strikers.webp",
     "V\u00e9lez Sarsfield": "/assets/logos/streamed/v\u00e9lez-sarsfield.webp",
     "Scm Timisoara Rapid": "/assets/logos/streamed/scm-timisoara-rapid.webp",
     "Clermont": "/assets/logos/streamed/clermont.webp",
@@ -6899,6 +6900,9 @@
     "Leyton Orient": "/assets/logos/streamed/leyton-orient.webp",
     "Busto Arsizio W": "/assets/logos/streamed/busto-arsizio-w.webp",
     "Premier League Darts: Leeds": "/assets/logos/streamed/leeds.webp",
+    "Hapoel Tel Aviv BC": "/assets/logos/streamed/hapoel-tel-aviv-bc.webp",
+    "Al-Shabab": "/assets/logos/streamed/al-shabab.webp",
+    "Al-Nassr": "/assets/logos/streamed/al-nassr.webp",
     "GWS GIANTS": "/assets/logos/streamed/gws-giants.webp",
     "Gold Coast SUNS": "/assets/logos/streamed/gold-coast-suns.webp",
     "St.Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
@@ -6921,14 +6925,14 @@
     "AS Roma": "/assets/logos/streamed/as-roma.webp",
     "1. Union Berlin": "/assets/logos/streamed/1-union-berlin.webp",
     "AC Milan": "/assets/logos/tsdb/ac-milan.webp",
-    "Paris Saint-Germain": "/assets/logos/streamed/paris-saint-germain.webp",
-    "Le Havre AC": "/assets/logos/streamed/le-havre-ac.webp",
     "AS Monaco": "/assets/logos/streamed/as-monaco.webp",
+    "Paris Saint-Germain": "/assets/logos/streamed/paris-saint-germain.webp",
     "AJ Auxerre": "/assets/logos/streamed/aj-auxerre.webp",
-    "Al-Nassr": "/assets/logos/streamed/al-nassr.webp",
-    "O'Higgins": "/assets/logos/streamed/ohiggins.webp",
+    "Le Havre AC": "/assets/logos/streamed/le-havre-ac.webp",
     "LDU de Quito": "/assets/logos/streamed/ldu-de-quito.webp",
+    "O'Higgins": "/assets/logos/streamed/ohiggins.webp",
     "SGS Essen Women": "/assets/logos/streamed/sgs-essen-women.webp",
+    "Supra du Quebec": "/assets/logos/streamed/supra-du-quebec.webp",
     "Carano": "/assets/logos/streamed/casarano.webp"
   },
   "leagues": {
@@ -7721,8 +7725,8 @@
     "Ehf   European League   Griii": "/assets/logos/leagues/ehf---european-league---griii.webp",
     "Superliga": "/assets/logos/leagues/superliga.webp",
     "Six Nations": "/assets/logos/leagues/six-nations.webp",
-    "basketball": "/assets/logos/leagues/basketball.webp",
     "football": "/assets/logos/leagues/football.webp",
+    "basketball": "/assets/logos/leagues/basketball.webp",
     "hockey": "/assets/logos/leagues/hockey.webp"
   }
 }
