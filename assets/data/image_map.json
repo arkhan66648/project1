@@ -6907,18 +6907,6 @@
     "George Washington Colonials": "/assets/logos/streamed/george-washington-colonials.webp",
     "Leyton Orient": "/assets/logos/streamed/leyton-orient.webp",
     "Busto Arsizio W": "/assets/logos/streamed/busto-arsizio-w.webp",
-    "AC Milan": "/assets/logos/tsdb/ac-milan.webp",
-    "Paris SG": "/assets/logos/streamed/paris-sg.webp",
-    "Atletico-MG": "/assets/logos/streamed/atletico-mg.webp",
-    "AVS": "/assets/logos/tsdb/avs.webp",
-    "Al-Ittihad": "/assets/logos/streamed/al-ittihad.webp",
-    "Hoffenheim II": "/assets/logos/streamed/hoffenheim-ii.webp",
-    "Philadelphia 76ers": "/assets/logos/streamed/philadelphia-76ers.webp",
-    "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
-    "Saint-Laurent": "/assets/logos/streamed/saint-laurent.webp",
-    "Boston Fleet": "/assets/logos/streamed/boston-fleet-w.webp",
-    "Estudiantes de La Plata": "/assets/logos/streamed/estudiantes-de-la-plata.webp",
-    "Vasco da Gama": "/assets/logos/streamed/vasco-da-gama.webp",
     "Gimnasia L.P.": "/assets/logos/streamed/gimnasia-lp.webp",
     "RB Leipzig Women": "/assets/logos/streamed/rb-leipzig-women.webp",
     "Al-Shabab": "/assets/logos/streamed/al-shabab.webp",
@@ -6927,6 +6915,13 @@
     "Real Sociedad II": "/assets/logos/streamed/real-sociedad-ii.webp",
     "Nacional de Madeira": "/assets/logos/streamed/nacional-de-madeira.webp",
     "Sporting CP": "/assets/logos/streamed/sporting-cp.webp",
+    "Al-Kholood": "/assets/logos/streamed/al-kholood.webp",
+    "Al-Okhdood": "/assets/logos/streamed/al-okhdood.webp",
+    "Al-Nassr": "/assets/logos/streamed/al-nassr.webp",
+    "Al-Hilal": "/assets/logos/streamed/al-hilal.webp",
+    "Rodez AF": "/assets/logos/streamed/rodez-af.webp",
+    "Lausanne-Sport": "/assets/logos/streamed/lausanne-sport.webp",
+    "Internacional de Bogota": "/assets/logos/streamed/internacional-de-bogota.webp",
     "Carano": "/assets/logos/streamed/casarano.webp"
   },
   "leagues": {
@@ -7719,9 +7714,9 @@
     "Ehf   European League   Griii": "/assets/logos/leagues/ehf---european-league---griii.webp",
     "Superliga": "/assets/logos/leagues/superliga.webp",
     "Six Nations": "/assets/logos/leagues/six-nations.webp",
-    "football": "/assets/logos/leagues/football.webp",
     "basketball": "/assets/logos/leagues/basketball.webp",
-    "tennis": "/assets/logos/leagues/tennis.webp",
-    "hockey": "/assets/logos/leagues/hockey.webp"
+    "hockey": "/assets/logos/leagues/hockey.webp",
+    "football": "/assets/logos/leagues/football.webp",
+    "tennis": "/assets/logos/leagues/tennis.webp"
   }
 }
