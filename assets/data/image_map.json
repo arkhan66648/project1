@@ -3976,6 +3976,7 @@
     "Bulgaria W": "/assets/logos/streamed/bulgaria-w.webp",
     "Kilia Kiel": "/assets/logos/streamed/kilia-kiel.webp",
     "Yannick Hanfmann": "/assets/logos/streamed/yannick-hanfmann.webp",
+    "Manchester Thunder": "/assets/logos/streamed/manchester-thunder.webp",
     "Quentin Halys": "/assets/logos/streamed/quentin-halys.webp",
     "Kyrgyzstan": "/assets/logos/streamed/kyrgyzstan.webp",
     "Detroit": "/assets/logos/streamed/detroit.webp",
@@ -6924,12 +6925,12 @@
     "St. Louis City": "/assets/logos/streamed/st-louis-city.webp",
     "LA Galaxy": "/assets/logos/streamed/la-galaxy.webp",
     "Brighton & Hove Albion": "/assets/logos/streamed/brighton-hove-albion.webp",
-    "AS Roma": "/assets/logos/streamed/as-roma.webp",
     "AC Milan": "/assets/logos/tsdb/ac-milan.webp",
-    "AJ Auxerre": "/assets/logos/streamed/aj-auxerre.webp",
-    "Paris Saint-Germain": "/assets/logos/streamed/paris-saint-germain.webp",
-    "Le Havre AC": "/assets/logos/streamed/le-havre-ac.webp",
+    "AS Roma": "/assets/logos/streamed/as-roma.webp",
     "AS Monaco": "/assets/logos/streamed/as-monaco.webp",
+    "Paris Saint-Germain": "/assets/logos/streamed/paris-saint-germain.webp",
+    "AJ Auxerre": "/assets/logos/streamed/aj-auxerre.webp",
+    "Le Havre AC": "/assets/logos/streamed/le-havre-ac.webp",
     "Al-Fayha": "/assets/logos/streamed/al-fayha.webp",
     "Rodez AF": "/assets/logos/streamed/rodez-af.webp",
     "NJ/NY Gotham W": "/assets/logos/streamed/njny-gotham-w.webp",
@@ -7747,9 +7748,9 @@
     "League Cup Final Round": "/assets/logos/leagues/league-cup-final-round.webp",
     "Pwhl": "/assets/logos/leagues/pwhl.webp",
     "Champions League Play In": "/assets/logos/leagues/champions-league-play-in.webp",
-    "hockey": "/assets/logos/leagues/hockey.webp",
-    "basketball": "/assets/logos/leagues/basketball.webp",
     "tennis": "/assets/logos/leagues/tennis.webp",
-    "football": "/assets/logos/leagues/football.webp"
+    "hockey": "/assets/logos/leagues/hockey.webp",
+    "football": "/assets/logos/leagues/football.webp",
+    "basketball": "/assets/logos/leagues/basketball.webp"
   }
 }
