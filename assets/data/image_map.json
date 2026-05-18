@@ -225,6 +225,7 @@
     "Tlaxcala": "/assets/logos/streamed/tlaxcala.webp",
     "Teodora Kostovic": "/assets/logos/streamed/teodora-kostovic.webp",
     "Eurofarm Rabotnik": "/assets/logos/streamed/eurofarm-rabotnik.webp",
+    "Rouen": "/assets/logos/streamed/rouen.webp",
     "Skn St Polten": "/assets/logos/streamed/skn-st-polten.webp",
     "Atl\u00e9tico Nacional": "/assets/logos/streamed/atl\u00e9tico-nacional.webp",
     "Hapoel Acre": "/assets/logos/streamed/hapoel-acre.webp",
@@ -5683,6 +5684,7 @@
     "Moldova Women": "/assets/logos/streamed/moldova-women.webp",
     "Cagliari U20": "/assets/logos/streamed/cagliari-u20.webp",
     "Bod\u00f8glimt": "/assets/logos/streamed/bod\u00f8glimt.webp",
+    "Turkmenistan U20": "/assets/logos/streamed/turkmenistan-u20.webp",
     "Potenza Calcio": "/assets/logos/streamed/potenza-calcio.webp",
     "Sambenedettese": "/assets/logos/streamed/sambenedettese.webp",
     "Hady Habib": "/assets/logos/streamed/hady-habib.webp",
@@ -6917,18 +6919,12 @@
     "Romania": "/assets/logos/streamed/romania.webp",
     "Gimnasia Y Esgrima De La Plata": "/assets/logos/streamed/gimnasia-y-esgrima-de-la-plata.webp",
     "Winthrop": "/assets/logos/streamed/winthrop.webp",
-    "Paris SG": "/assets/logos/streamed/paris-sg.webp",
+    "USA Ice Hockey": "/assets/logos/streamed/usa-ice-hockey.webp",
     "Norway Ice hockey": "/assets/logos/streamed/norway-ice-hockey.webp",
     "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
-    "HFX Wanderers": "/assets/logos/streamed/hfx-wanderers.webp",
-    "Al-Shabab": "/assets/logos/streamed/al-shabab.webp",
-    "Al-Ittihad": "/assets/logos/streamed/al-ittihad.webp",
-    "USA Ice Hockey": "/assets/logos/streamed/usa-ice-hockey.webp",
-    "Pa\u00e7os de Ferreira": "/assets/logos/streamed/pa\u00e7os-de-ferreira.webp",
-    "Argentinos JRS": "/assets/logos/streamed/argentinos-jrs.webp",
-    "RB Bragantino": "/assets/logos/streamed/rb-bragantino.webp",
     "Bruk-Bet Termalica Nieciecza": "/assets/logos/streamed/bruk-bet-termalica-nieciecza.webp",
-    "Canada GP": "/assets/logos/streamed/canada.webp"
+    "Canada GP": "/assets/logos/streamed/canada.webp",
+    "D.C. Defenders": "/assets/logos/streamed/dc-defenders.webp"
   },
   "leagues": {
     "Afc   Cup Asiei U23   Grc": "/assets/logos/leagues/afc---cup-asiei-u23---grc.webp",
@@ -7720,9 +7716,9 @@
     "League Cup Final Round": "/assets/logos/leagues/league-cup-final-round.webp",
     "Pwhl": "/assets/logos/leagues/pwhl.webp",
     "Champions League Play In": "/assets/logos/leagues/champions-league-play-in.webp",
-    "football": "/assets/logos/leagues/football.webp",
-    "hockey": "/assets/logos/leagues/hockey.webp",
     "basketball": "/assets/logos/leagues/basketball.webp",
-    "tennis": "/assets/logos/leagues/tennis.webp"
+    "tennis": "/assets/logos/leagues/tennis.webp",
+    "football": "/assets/logos/leagues/football.webp",
+    "hockey": "/assets/logos/leagues/hockey.webp"
   }
 }
