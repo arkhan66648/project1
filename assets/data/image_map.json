@@ -6939,9 +6939,9 @@
     "Vasco da Gama": "/assets/logos/streamed/vasco-da-gama.webp",
     "LDU Quito": "/assets/logos/streamed/ldu-quito.webp",
     "Estudiantes de La Plata": "/assets/logos/streamed/estudiantes-de-la-plata.webp",
+    "Al-Hazm": "/assets/logos/streamed/al-hazm.webp",
     "Al-Ittihad": "/assets/logos/streamed/al-ittihad.webp",
     "Al-Qadisiyah": "/assets/logos/streamed/al-qadisiyah.webp",
-    "Al-Hazm": "/assets/logos/streamed/al-hazm.webp",
     "Al-Fayha": "/assets/logos/streamed/al-fayha.webp",
     "Al-Hilal": "/assets/logos/streamed/al-hilal.webp",
     "Al-Riyadh": "/assets/logos/streamed/al-riyadh.webp",
@@ -7743,8 +7743,8 @@
     "League Cup Final Round": "/assets/logos/leagues/league-cup-final-round.webp",
     "Pwhl": "/assets/logos/leagues/pwhl.webp",
     "Champions League Play In": "/assets/logos/leagues/champions-league-play-in.webp",
-    "tennis": "/assets/logos/leagues/tennis.webp",
     "hockey": "/assets/logos/leagues/hockey.webp",
+    "tennis": "/assets/logos/leagues/tennis.webp",
     "football": "/assets/logos/leagues/football.webp",
     "basketball": "/assets/logos/leagues/basketball.webp"
   }
