@@ -6920,11 +6920,8 @@
     "Romania": "/assets/logos/streamed/romania.webp",
     "Gimnasia Y Esgrima De La Plata": "/assets/logos/streamed/gimnasia-y-esgrima-de-la-plata.webp",
     "Winthrop": "/assets/logos/streamed/winthrop.webp",
-    "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
-    "St. Louis City": "/assets/logos/streamed/st-louis-city.webp",
-    "Am\u00e9rica de Cali": "/assets/logos/streamed/am\u00e9rica-de-cali.webp",
-    "Independiente del Valle": "/assets/logos/streamed/independiente-del-valle.webp",
     "USA Ice Hockey": "/assets/logos/streamed/usa-ice-hockey.webp",
+    "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
     "Norway Ice hockey": "/assets/logos/streamed/norway-ice-hockey.webp",
     "DC Defenders": "/assets/logos/streamed/dc-defenders.webp",
     "St. Louis CITY": "/assets/logos/streamed/st-louis-city.webp",
@@ -6942,9 +6939,9 @@
     "Vasco da Gama": "/assets/logos/streamed/vasco-da-gama.webp",
     "LDU Quito": "/assets/logos/streamed/ldu-quito.webp",
     "Estudiantes de La Plata": "/assets/logos/streamed/estudiantes-de-la-plata.webp",
-    "Al-Hazm": "/assets/logos/streamed/al-hazm.webp",
     "Al-Ittihad": "/assets/logos/streamed/al-ittihad.webp",
     "Al-Qadisiyah": "/assets/logos/streamed/al-qadisiyah.webp",
+    "Al-Hazm": "/assets/logos/streamed/al-hazm.webp",
     "Al-Fayha": "/assets/logos/streamed/al-fayha.webp",
     "Al-Hilal": "/assets/logos/streamed/al-hilal.webp",
     "Al-Riyadh": "/assets/logos/streamed/al-riyadh.webp",
@@ -7746,9 +7743,9 @@
     "League Cup Final Round": "/assets/logos/leagues/league-cup-final-round.webp",
     "Pwhl": "/assets/logos/leagues/pwhl.webp",
     "Champions League Play In": "/assets/logos/leagues/champions-league-play-in.webp",
-    "basketball": "/assets/logos/leagues/basketball.webp",
     "tennis": "/assets/logos/leagues/tennis.webp",
+    "hockey": "/assets/logos/leagues/hockey.webp",
     "football": "/assets/logos/leagues/football.webp",
-    "hockey": "/assets/logos/leagues/hockey.webp"
+    "basketball": "/assets/logos/leagues/basketball.webp"
   }
 }
