@@ -4805,6 +4805,7 @@
     "Atletico San Luis W": "/assets/logos/streamed/atletico-san-luis-w.webp",
     "Coquimbo Unido": "/assets/logos/streamed/coquimbo-unido.webp",
     "Rip City Remix": "/assets/logos/streamed/rip-city-remix.webp",
+    "Bay W": "/assets/logos/streamed/bay-w.webp",
     "Central C\u00f3rdoba De Santiago Del Estero": "/assets/logos/streamed/central-c\u00f3rdoba-de-santiago-del-estero.webp",
     "Adelaide W": "/assets/logos/streamed/adelaide-w.webp",
     "Changwon Lg Sakers": "/assets/logos/streamed/changwon-lg-sakers.webp",
@@ -6920,9 +6921,11 @@
     "Romania": "/assets/logos/streamed/romania.webp",
     "Gimnasia Y Esgrima De La Plata": "/assets/logos/streamed/gimnasia-y-esgrima-de-la-plata.webp",
     "Winthrop": "/assets/logos/streamed/winthrop.webp",
-    "USA Ice Hockey": "/assets/logos/streamed/usa-ice-hockey.webp",
     "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
+    "Estudiantes de La Plata": "/assets/logos/streamed/estudiantes-de-la-plata.webp",
+    "LDU Quito": "/assets/logos/streamed/ldu-quito.webp",
     "Norway Ice hockey": "/assets/logos/streamed/norway-ice-hockey.webp",
+    "ACT Brumbies": "/assets/logos/streamed/act-brumbies.webp",
     "DC Defenders": "/assets/logos/streamed/dc-defenders.webp",
     "St. Louis CITY": "/assets/logos/streamed/st-louis-city.webp",
     "D.C. United": "/assets/logos/tsdb/dc-united.webp",
@@ -6931,10 +6934,6 @@
     "AC Milan": "/assets/logos/tsdb/ac-milan.webp",
     "AS Roma": "/assets/logos/streamed/as-roma.webp",
     "St. Louis Battlehawks": "/assets/logos/streamed/st-louis-battlehawks.webp",
-    "O'Higgins": "/assets/logos/streamed/ohiggins.webp",
-    "Vasco da Gama": "/assets/logos/streamed/vasco-da-gama.webp",
-    "LDU Quito": "/assets/logos/streamed/ldu-quito.webp",
-    "Estudiantes de La Plata": "/assets/logos/streamed/estudiantes-de-la-plata.webp",
     "Al-Ittihad": "/assets/logos/streamed/al-ittihad.webp",
     "Al-Qadisiyah": "/assets/logos/streamed/al-qadisiyah.webp",
     "Al-Hazm": "/assets/logos/streamed/al-hazm.webp",
@@ -6947,7 +6946,9 @@
     "Al-Kholood": "/assets/logos/streamed/al-kholood.webp",
     "Al-Fateh": "/assets/logos/streamed/al-fateh.webp",
     "Atletico-MG": "/assets/logos/streamed/atletico-mg.webp",
-    "Canada GP": "/assets/logos/streamed/canada.webp"
+    "U. Catolica": "/assets/logos/streamed/u-catolica.webp",
+    "Canada GP": "/assets/logos/streamed/canada.webp",
+    "Rot-Weiss Essen": "/assets/logos/streamed/rot-weiss-essen.webp"
   },
   "leagues": {
     "Afc   Cup Asiei U23   Grc": "/assets/logos/leagues/afc---cup-asiei-u23---grc.webp",
@@ -7739,9 +7740,9 @@
     "League Cup Final Round": "/assets/logos/leagues/league-cup-final-round.webp",
     "Pwhl": "/assets/logos/leagues/pwhl.webp",
     "Champions League Play In": "/assets/logos/leagues/champions-league-play-in.webp",
-    "football": "/assets/logos/leagues/football.webp",
+    "basketball": "/assets/logos/leagues/basketball.webp",
     "hockey": "/assets/logos/leagues/hockey.webp",
     "tennis": "/assets/logos/leagues/tennis.webp",
-    "basketball": "/assets/logos/leagues/basketball.webp"
+    "football": "/assets/logos/leagues/football.webp"
   }
 }
