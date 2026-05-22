@@ -6928,10 +6928,11 @@
     "Romania": "/assets/logos/streamed/romania.webp",
     "Gimnasia Y Esgrima De La Plata": "/assets/logos/streamed/gimnasia-y-esgrima-de-la-plata.webp",
     "Winthrop": "/assets/logos/streamed/winthrop.webp",
-    "Canada GP": "/assets/logos/streamed/canada.webp",
+    "Hull F.C.": "/assets/logos/streamed/hull-fc.webp",
     "Somerset t20": "/assets/logos/streamed/somerset-t20.webp",
     "Hampshire t20": "/assets/logos/streamed/hampshire-t20.webp",
-    "Hull F.C.": "/assets/logos/streamed/hull-fc.webp",
+    "Rot-Weiss Essen": "/assets/logos/streamed/rot-weiss-essen.webp",
+    "Canada GP": "/assets/logos/streamed/canada.webp",
     "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
     "DC Defenders": "/assets/logos/streamed/dc-defenders.webp",
     "St. George Illawara Dragons": "/assets/logos/streamed/st-george-illawara-dragons.webp",
@@ -6944,7 +6945,6 @@
     "AS Roma": "/assets/logos/streamed/as-roma.webp",
     "AC Milan": "/assets/logos/tsdb/ac-milan.webp",
     "St. Louis Battlehawks": "/assets/logos/streamed/st-louis-battlehawks.webp",
-    "Rot-Weiss Essen": "/assets/logos/streamed/rot-weiss-essen.webp",
     "GKS Katowice": "/assets/logos/streamed/gks-katowice.webp",
     "HFX Wanderers": "/assets/logos/streamed/hfx-wanderers.webp",
     "Supra du Qu\u00e9bec": "/assets/logos/streamed/supra-du-qu\u00e9bec.webp"
@@ -7740,8 +7740,8 @@
     "Pwhl": "/assets/logos/leagues/pwhl.webp",
     "Champions League Play In": "/assets/logos/leagues/champions-league-play-in.webp",
     "hockey": "/assets/logos/leagues/hockey.webp",
-    "tennis": "/assets/logos/leagues/tennis.webp",
     "basketball": "/assets/logos/leagues/basketball.webp",
+    "tennis": "/assets/logos/leagues/tennis.webp",
     "football": "/assets/logos/leagues/football.webp"
   }
 }
