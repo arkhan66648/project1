@@ -6934,17 +6934,15 @@
     "Romania": "/assets/logos/streamed/romania.webp",
     "Gimnasia Y Esgrima De La Plata": "/assets/logos/streamed/gimnasia-y-esgrima-de-la-plata.webp",
     "Winthrop": "/assets/logos/streamed/winthrop.webp",
-    "AC Milan": "/assets/logos/tsdb/ac-milan.webp",
-    "Olympiacos BC": "/assets/logos/streamed/olympiacos-bc.webp",
-    "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
-    "Sporting CP": "/assets/logos/streamed/sporting-cp.webp",
-    "Canada GP": "/assets/logos/streamed/canada.webp",
     "St Louis BattleHawks": "/assets/logos/streamed/st-louis-battlehawks.webp",
     "USA Ice Hockey": "/assets/logos/streamed/usa-ice-hockey.webp",
     "Norway Ice hockey": "/assets/logos/streamed/norway-ice-hockey.webp",
+    "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
     "Paris Saint-Germain": "/assets/logos/streamed/paris-saint-germain.webp",
-    "Atletico-MG": "/assets/logos/streamed/atletico-mg.webp",
-    "Vasco da Gama": "/assets/logos/streamed/vasco-da-gama.webp"
+    "Rot-Weiss Essen": "/assets/logos/streamed/rot-weiss-essen.webp",
+    "LDU Quito": "/assets/logos/streamed/ldu-quito.webp",
+    "O'Higgins": "/assets/logos/streamed/ohiggins.webp",
+    "St. Louis Battlehawks": "/assets/logos/streamed/st-louis-battlehawks.webp"
   },
   "leagues": {
     "Afc   Cup Asiei U23   Grc": "/assets/logos/leagues/afc---cup-asiei-u23---grc.webp",
@@ -7736,9 +7734,9 @@
     "League Cup Final Round": "/assets/logos/leagues/league-cup-final-round.webp",
     "Pwhl": "/assets/logos/leagues/pwhl.webp",
     "Champions League Play In": "/assets/logos/leagues/champions-league-play-in.webp",
+    "basketball": "/assets/logos/leagues/basketball.webp",
     "hockey": "/assets/logos/leagues/hockey.webp",
     "football": "/assets/logos/leagues/football.webp",
-    "basketball": "/assets/logos/leagues/basketball.webp",
     "tennis": "/assets/logos/leagues/tennis.webp"
   }
 }
