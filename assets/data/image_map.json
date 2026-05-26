@@ -427,6 +427,7 @@
     "Spi\u0161sk\u00ed Rytieri": "/assets/logos/streamed/spi\u0161sk\u00ed-rytieri.webp",
     "Rhode Island": "/assets/logos/streamed/rhode-island.webp",
     "Botev Plovdiv": "/assets/logos/streamed/botev-plovdiv.webp",
+    "Queensland Maroons": "/assets/logos/streamed/queensland-maroons.webp",
     "Yulia Starodubtseva": "/assets/logos/streamed/yulia-starodubtseva.webp",
     "Gnk Dinamo": "/assets/logos/streamed/gnk-dinamo.webp",
     "Dynamo Kyiv U19": "/assets/logos/streamed/dynamo-kyiv-u19.webp",
@@ -3200,6 +3201,7 @@
     "Nk Olimpija Ljubljana": "/assets/logos/streamed/nk-olimpija-ljubljana.webp",
     "Rajshahi": "/assets/logos/streamed/rajshahi.webp",
     "Metaloglobus Bucureasti": "/assets/logos/streamed/metaloglobus-bucureasti.webp",
+    "New South Wales Blues": "/assets/logos/streamed/new-south-wales-blues.webp",
     "Toronto Blue Jays": "/assets/logos/streamed/toronto-blue-jays.webp",
     "Cordoba": "/assets/logos/streamed/cordoba.webp",
     "Vicenza": "/assets/logos/streamed/vicenza.webp",
@@ -6936,14 +6938,20 @@
     "Romania": "/assets/logos/streamed/romania.webp",
     "Gimnasia Y Esgrima De La Plata": "/assets/logos/streamed/gimnasia-y-esgrima-de-la-plata.webp",
     "Winthrop": "/assets/logos/streamed/winthrop.webp",
-    "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
     "Norway Ice hockey": "/assets/logos/streamed/norway-ice-hockey.webp",
     "USA Ice Hockey": "/assets/logos/streamed/usa-ice-hockey.webp",
+    "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
+    "ALBA Berlin": "/assets/logos/streamed/alba-berlin.webp",
     "Paris Saint-Germain": "/assets/logos/streamed/paris-saint-germain.webp",
     "Raiders": "/assets/logos/streamed/randers.webp",
     "Rot-Weiss Essen": "/assets/logos/streamed/rot-weiss-essen.webp",
     "LDU Quito": "/assets/logos/streamed/ldu-quito.webp",
     "O'Higgins": "/assets/logos/streamed/ohiggins.webp",
+    "Estudiantes L.P.": "/assets/logos/streamed/estudiantes-lp.webp",
+    "UCV": "/assets/logos/streamed/ucv.webp",
+    "Atletico-MG": "/assets/logos/streamed/atletico-mg.webp",
+    "Independiente del Valle": "/assets/logos/streamed/independiente-del-valle.webp",
+    "Vasco da Gama": "/assets/logos/streamed/vasco-da-gama.webp",
     "St. Louis Battlehawks": "/assets/logos/streamed/st-louis-battlehawks.webp"
   },
   "leagues": {
@@ -7736,9 +7744,9 @@
     "League Cup Final Round": "/assets/logos/leagues/league-cup-final-round.webp",
     "Pwhl": "/assets/logos/leagues/pwhl.webp",
     "Champions League Play In": "/assets/logos/leagues/champions-league-play-in.webp",
+    "basketball": "/assets/logos/leagues/basketball.webp",
     "hockey": "/assets/logos/leagues/hockey.webp",
     "tennis": "/assets/logos/leagues/tennis.webp",
-    "football": "/assets/logos/leagues/football.webp",
-    "basketball": "/assets/logos/leagues/basketball.webp"
+    "football": "/assets/logos/leagues/football.webp"
   }
 }
