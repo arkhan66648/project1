@@ -6943,7 +6943,6 @@
     "Enfield Town": "/assets/logos/streamed/enfield-town.webp",
     "Polokwane": "/assets/logos/streamed/polokwane.webp",
     "Central Florida Knights": "/assets/logos/streamed/central-florida-knights.webp",
-    "USA Ice Hockey": "/assets/logos/streamed/usa-ice-hockey.webp",
     "Norway Ice hockey": "/assets/logos/streamed/norway-ice-hockey.webp",
     "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
     "St. Louis Battlehawks": "/assets/logos/streamed/st-louis-battlehawks.webp",
@@ -7747,7 +7746,7 @@
     "2 Liga": "/assets/logos/leagues/2-liga.webp",
     "hockey": "/assets/logos/leagues/hockey.webp",
     "tennis": "/assets/logos/leagues/tennis.webp",
-    "basketball": "/assets/logos/leagues/basketball.webp",
-    "football": "/assets/logos/leagues/football.webp"
+    "football": "/assets/logos/leagues/football.webp",
+    "basketball": "/assets/logos/leagues/basketball.webp"
   }
 }
