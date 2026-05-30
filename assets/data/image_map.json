@@ -6957,28 +6957,7 @@
     "Saitama Seibu Lions": "/assets/logos/streamed/saitama-seibu-lions.webp",
     "Enfield Town": "/assets/logos/streamed/enfield-town.webp",
     "Polokwane": "/assets/logos/streamed/polokwane.webp",
-    "Central Florida Knights": "/assets/logos/streamed/central-florida-knights.webp",
-    "Norway Ice hockey": "/assets/logos/streamed/norway-ice-hockey.webp",
-    "ALBA Berlin": "/assets/logos/streamed/alba-berlin.webp",
-    "Paris SG": "/assets/logos/streamed/paris-sg.webp",
-    "Middlesex t20": "/assets/logos/streamed/middlesex-t20.webp",
-    "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
-    "St. George Illawara Dragons": "/assets/logos/streamed/st-george-illawara-dragons.webp",
-    "DC Defenders": "/assets/logos/streamed/dc-defenders.webp",
-    "Hamilton Tiger-Cats": "/assets/logos/streamed/hamilton-tiger-cats.webp",
-    "Real Sociedad II": "/assets/logos/streamed/real-sociedad-ii.webp",
-    "HFX Wanderers": "/assets/logos/streamed/hfx-wanderers.webp",
-    "Sporting de Gij\u00f3n": "/assets/logos/streamed/sporting-de-gij\u00f3n.webp",
-    "Trinidad and Tobago": "/assets/logos/streamed/trinidad-and-tobago.webp",
-    "Deportivo de La Coru\u00f1a": "/assets/logos/streamed/deportivo-de-la-coru\u00f1a.webp",
-    "Racing de Santander": "/assets/logos/streamed/racing-de-santander.webp",
-    "Estudiantes de La Plata": "/assets/logos/streamed/estudiantes-de-la-plata.webp",
-    "NJ/NY Gotham W": "/assets/logos/streamed/njny-gotham-w.webp",
-    "Vasco DA Gama": "/assets/logos/streamed/vasco-da-gama.webp",
-    "Atletico-MG": "/assets/logos/streamed/atletico-mg.webp",
-    "USA": "/assets/logos/streamed/usa.webp",
-    "Defensa y Justicia": "/assets/logos/streamed/defensa-y-justicia.webp",
-    "Monaco GP": "/assets/logos/streamed/monaco.webp"
+    "Central Florida Knights": "/assets/logos/streamed/central-florida-knights.webp"
   },
   "leagues": {
     "Superliga": "/assets/logos/leagues/superliga.webp",
@@ -7769,10 +7748,6 @@
     "Brazil   Brasileiro   Serie A": "/assets/logos/leagues/brazil---brasileiro---serie-a.webp",
     "Pro D2": "/assets/logos/leagues/pro-d2.webp",
     "Euroleague": "/assets/logos/leagues/euroleague.webp",
-    "2 Liga": "/assets/logos/leagues/2-liga.webp",
-    "hockey": "/assets/logos/leagues/hockey.webp",
-    "tennis": "/assets/logos/leagues/tennis.webp",
-    "basketball": "/assets/logos/leagues/basketball.webp",
-    "football": "/assets/logos/leagues/football.webp"
+    "2 Liga": "/assets/logos/leagues/2-liga.webp"
   }
 }
