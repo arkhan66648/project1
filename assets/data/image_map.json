@@ -3355,6 +3355,7 @@
     "Bnei Yehuda Tel Aviv": "/assets/logos/streamed/bnei-yehuda-tel-aviv.webp",
     "Hc Sochi": "/assets/logos/streamed/hc-sochi.webp",
     "Tipperary Gaa Football": "/assets/logos/streamed/tipperary-gaa-football.webp",
+    "Brighton Wfc": "/assets/logos/streamed/brighton-wfc.webp",
     "Illinois State Redbirds": "/assets/logos/streamed/illinois-state-redbirds.webp",
     "North Carolina Central": "/assets/logos/streamed/north-carolina-central.webp",
     "Lusitania": "/assets/logos/streamed/lusitania.webp",
@@ -6957,7 +6958,24 @@
     "Saitama Seibu Lions": "/assets/logos/streamed/saitama-seibu-lions.webp",
     "Enfield Town": "/assets/logos/streamed/enfield-town.webp",
     "Polokwane": "/assets/logos/streamed/polokwane.webp",
-    "Central Florida Knights": "/assets/logos/streamed/central-florida-knights.webp"
+    "Central Florida Knights": "/assets/logos/streamed/central-florida-knights.webp",
+    "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
+    "Trinidad and Tobago": "/assets/logos/streamed/trinidad-and-tobago.webp",
+    "St. George Illawara Dragons": "/assets/logos/streamed/st-george-illawara-dragons.webp",
+    "Brighton WFC": "/assets/logos/streamed/brighton-wfc.webp",
+    "Manchester City WFC": "/assets/logos/streamed/manchester-city-wfc.webp",
+    "DC Defenders": "/assets/logos/streamed/dc-defenders.webp",
+    "USA": "/assets/logos/streamed/usa.webp",
+    "Hamilton Tiger-Cats": "/assets/logos/streamed/hamilton-tiger-cats.webp",
+    "Deportivo de La Coru\u00f1a": "/assets/logos/streamed/deportivo-de-la-coru\u00f1a.webp",
+    "Racing de Santander": "/assets/logos/streamed/racing-de-santander.webp",
+    "Estudiantes de La Plata": "/assets/logos/streamed/estudiantes-de-la-plata.webp",
+    "NJ/NY Gotham W": "/assets/logos/streamed/njny-gotham-w.webp",
+    "Vasco DA Gama": "/assets/logos/streamed/vasco-da-gama.webp",
+    "Atletico-MG": "/assets/logos/streamed/atletico-mg.webp",
+    "Defensa y Justicia": "/assets/logos/streamed/defensa-y-justicia.webp",
+    "FYR Macedonia": "/assets/logos/streamed/fyr-macedonia.webp",
+    "Monaco GP": "/assets/logos/streamed/monaco.webp"
   },
   "leagues": {
     "Superliga": "/assets/logos/leagues/superliga.webp",
@@ -7748,6 +7766,9 @@
     "Brazil   Brasileiro   Serie A": "/assets/logos/leagues/brazil---brasileiro---serie-a.webp",
     "Pro D2": "/assets/logos/leagues/pro-d2.webp",
     "Euroleague": "/assets/logos/leagues/euroleague.webp",
-    "2 Liga": "/assets/logos/leagues/2-liga.webp"
+    "2 Liga": "/assets/logos/leagues/2-liga.webp",
+    "basketball": "/assets/logos/leagues/basketball.webp",
+    "tennis": "/assets/logos/leagues/tennis.webp",
+    "football": "/assets/logos/leagues/football.webp"
   }
 }
