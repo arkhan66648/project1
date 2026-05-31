@@ -6962,18 +6962,16 @@
     "Enfield Town": "/assets/logos/streamed/enfield-town.webp",
     "Polokwane": "/assets/logos/streamed/polokwane.webp",
     "Central Florida Knights": "/assets/logos/streamed/central-florida-knights.webp",
-    "Brighton & Hove Albion": "/assets/logos/streamed/brighton-hove-albion.webp",
     "DC Defenders": "/assets/logos/streamed/dc-defenders.webp",
-    "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
-    "St.Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
-    "Hamilton Tiger-Cats": "/assets/logos/streamed/hamilton-tiger-cats.webp",
-    "RB Bragantino": "/assets/logos/streamed/rb-bragantino.webp",
     "England XI": "/assets/logos/streamed/england.webp",
     "Estudiantes L.P.": "/assets/logos/streamed/estudiantes-lp.webp",
+    "Chapecoense-": "/assets/logos/streamed/chapecoense.webp",
     "NJ/NY Gotham W": "/assets/logos/streamed/njny-gotham-w.webp",
     "Vasco DA Gama": "/assets/logos/streamed/vasco-da-gama.webp",
     "Atletico-MG": "/assets/logos/streamed/atletico-mg.webp",
-    "Chapecoense-": "/assets/logos/streamed/chapecoense.webp",
+    "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
+    "St.Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
+    "Hamilton Tiger-Cats": "/assets/logos/streamed/hamilton-tiger-cats.webp",
     "FYR Macedonia": "/assets/logos/streamed/fyr-macedonia.webp",
     "Monaco GP": "/assets/logos/streamed/monaco.webp"
   },
@@ -7768,8 +7766,8 @@
     "Euroleague": "/assets/logos/leagues/euroleague.webp",
     "2 Liga": "/assets/logos/leagues/2-liga.webp",
     "hockey": "/assets/logos/leagues/hockey.webp",
-    "tennis": "/assets/logos/leagues/tennis.webp",
     "football": "/assets/logos/leagues/football.webp",
+    "tennis": "/assets/logos/leagues/tennis.webp",
     "basketball": "/assets/logos/leagues/basketball.webp"
   }
 }
