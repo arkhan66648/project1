@@ -6965,6 +6965,10 @@
     "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
     "St.Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
     "Hamilton Tiger-Cats": "/assets/logos/streamed/hamilton-tiger-cats.webp",
+    "Raiders": "/assets/logos/streamed/randers.webp",
+    "Ottawa RedBlacks": "/assets/logos/streamed/ottawa-redblacks.webp",
+    "DC Defenders": "/assets/logos/streamed/dc-defenders.webp",
+    "St. Louis Battlehawks": "/assets/logos/streamed/st-louis-battlehawks.webp",
     "Monaco GP": "/assets/logos/streamed/monaco.webp"
   },
   "leagues": {
@@ -7758,8 +7762,8 @@
     "Euroleague": "/assets/logos/leagues/euroleague.webp",
     "2 Liga": "/assets/logos/leagues/2-liga.webp",
     "tennis": "/assets/logos/leagues/tennis.webp",
-    "hockey": "/assets/logos/leagues/hockey.webp",
     "football": "/assets/logos/leagues/football.webp",
-    "basketball": "/assets/logos/leagues/basketball.webp"
+    "basketball": "/assets/logos/leagues/basketball.webp",
+    "hockey": "/assets/logos/leagues/hockey.webp"
   }
 }
