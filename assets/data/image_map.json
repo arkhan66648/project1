@@ -3159,6 +3159,7 @@
     "Debrecen": "/assets/logos/streamed/debrecen.webp",
     "Hapoel Ramat Gan": "/assets/logos/streamed/hapoel-ramat-gan.webp",
     "Vimmerby": "/assets/logos/streamed/vimmerby.webp",
+    "Portugal U21": "/assets/logos/streamed/portugal-u21.webp",
     "Rangpur Riders": "/assets/logos/streamed/rangpur-riders.webp",
     "New Mexico Lobos": "/assets/logos/streamed/new-mexico-lobos.webp",
     "Eastern Illinois": "/assets/logos/streamed/eastern-illinois.webp",
@@ -4849,6 +4850,7 @@
     "Wheeling Nailers": "/assets/logos/streamed/wheeling-nailers.webp",
     "Guimaraes": "/assets/logos/streamed/guimaraes.webp",
     "Thun": "/assets/logos/streamed/thun.webp",
+    "British Virgin Islands": "/assets/logos/streamed/british-virgin-islands.webp",
     "Portugal Women": "/assets/logos/streamed/portugal-women.webp",
     "Dziki Warszawa": "/assets/logos/streamed/dziki-warszawa.webp",
     "Qatar U23": "/assets/logos/streamed/qatar-u23.webp",
@@ -6321,8 +6323,10 @@
     "Leverkusen": "/assets/logos/streamed/leverkusen.webp",
     "Panama Baseball": "/assets/logos/streamed/panama-baseball.webp",
     "Fundaci\u00f3n Cb Granada": "/assets/logos/streamed/fundaci\u00f3n-cb-granada.webp",
+    "Latvia U17": "/assets/logos/streamed/latvia-u17.webp",
     "Premiership Motherwell": "/assets/logos/streamed/premiership-motherwell.webp",
     "Poprad": "/assets/logos/streamed/poprad.webp",
+    "Northern Ireland U21": "/assets/logos/streamed/northern-ireland-u21.webp",
     "Az Picerno": "/assets/logos/streamed/az-picerno.webp",
     "Long Beach State W": "/assets/logos/streamed/long-beach-state-w.webp",
     "George Mason Patriots": "/assets/logos/streamed/george-mason-patriots.webp",
@@ -6539,6 +6543,7 @@
     "Cinkarna Celje W": "/assets/logos/streamed/cinkarna-celje-w.webp",
     "Sepahan Sc": "/assets/logos/streamed/sepahan-sc.webp",
     "De Graafschap": "/assets/logos/streamed/de-graafschap.webp",
+    "Albania U17": "/assets/logos/streamed/albania-u17.webp",
     "Tereza Valentova": "/assets/logos/streamed/tereza-valentova.webp",
     "Valencia": "/assets/logos/streamed/valencia.webp",
     "Stade Toulousain": "/assets/logos/streamed/stade-toulousain.webp",
@@ -6969,6 +6974,7 @@
     "Ottawa RedBlacks": "/assets/logos/streamed/ottawa-redblacks.webp",
     "DC Defenders": "/assets/logos/streamed/dc-defenders.webp",
     "St. Louis Battlehawks": "/assets/logos/streamed/st-louis-battlehawks.webp",
+    "Congo DR": "/assets/logos/streamed/congo-dr.webp",
     "Monaco GP": "/assets/logos/streamed/monaco.webp"
   },
   "leagues": {
@@ -7761,9 +7767,9 @@
     "Pro D2": "/assets/logos/leagues/pro-d2.webp",
     "Euroleague": "/assets/logos/leagues/euroleague.webp",
     "2 Liga": "/assets/logos/leagues/2-liga.webp",
-    "tennis": "/assets/logos/leagues/tennis.webp",
     "football": "/assets/logos/leagues/football.webp",
     "basketball": "/assets/logos/leagues/basketball.webp",
+    "tennis": "/assets/logos/leagues/tennis.webp",
     "hockey": "/assets/logos/leagues/hockey.webp"
   }
 }
