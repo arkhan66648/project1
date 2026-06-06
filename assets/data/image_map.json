@@ -3059,6 +3059,7 @@
     "Ask Karditsas Bc": "/assets/logos/streamed/ask-karditsas-bc.webp",
     "Chloraka": "/assets/logos/streamed/chloraka.webp",
     "St Kilda Saints": "/assets/logos/streamed/st-kilda-saints.webp",
+    "Bangladesh U23": "/assets/logos/streamed/bangladesh-u23.webp",
     "Bc Nizhny Novgorod": "/assets/logos/streamed/bc-nizhny-novgorod.webp",
     "Franca": "/assets/logos/streamed/franca.webp",
     "Brinje Grosuplje": "/assets/logos/streamed/brinje-grosuplje.webp",
@@ -5980,6 +5981,7 @@
     "Delaware 87Ers": "/assets/logos/streamed/delaware-87ers.webp",
     "Luton Town": "/assets/logos/streamed/luton-town.webp",
     "Ternana W": "/assets/logos/streamed/ternana-w.webp",
+    "Maldives": "/assets/logos/streamed/maldives.webp",
     "Oklahoma State Cowboys": "/assets/logos/streamed/oklahoma-state-cowboys.webp",
     "Ziraat Bankasi": "/assets/logos/streamed/ziraat-bankasi.webp",
     "Marquette": "/assets/logos/streamed/marquette.webp",
@@ -7001,16 +7003,16 @@
     "Enfield Town": "/assets/logos/streamed/enfield-town.webp",
     "Polokwane": "/assets/logos/streamed/polokwane.webp",
     "Central Florida Knights": "/assets/logos/streamed/central-florida-knights.webp",
-    "Hull F.C.": "/assets/logos/streamed/hull-fc.webp",
     "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
-    "DC Defenders": "/assets/logos/streamed/dc-defenders.webp",
-    "St. Louis Battlehawks": "/assets/logos/streamed/st-louis-battlehawks.webp",
+    "Bosnia and Herzegovina": "/assets/logos/streamed/bosnia-herzegovina.webp",
     "China PR U23": "/assets/logos/streamed/china-pr-u23.webp",
     "Republic of Ireland U21": "/assets/logos/streamed/republic-of-ireland-u21.webp",
     "USA": "/assets/logos/streamed/usa.webp",
     "Bosnia-Herzegovina": "/assets/logos/streamed/bosnia-herzegovina.webp",
     "HFX Wanderers": "/assets/logos/streamed/hfx-wanderers.webp",
     "Supra du Qu\u00e9bec": "/assets/logos/streamed/supra-du-qu\u00e9bec.webp",
+    "DC Defenders": "/assets/logos/streamed/dc-defenders.webp",
+    "St Louis BattleHawks": "/assets/logos/streamed/st-louis-battlehawks.webp",
     "2026 PFL Africa 2: Nigeria": "/assets/logos/streamed/nigeria.webp"
   },
   "leagues": {
@@ -7803,9 +7805,9 @@
     "Pro D2": "/assets/logos/leagues/pro-d2.webp",
     "Euroleague": "/assets/logos/leagues/euroleague.webp",
     "2 Liga": "/assets/logos/leagues/2-liga.webp",
+    "basketball": "/assets/logos/leagues/basketball.webp",
     "football": "/assets/logos/leagues/football.webp",
     "tennis": "/assets/logos/leagues/tennis.webp",
-    "basketball": "/assets/logos/leagues/basketball.webp",
     "hockey": "/assets/logos/leagues/hockey.webp"
   }
 }
