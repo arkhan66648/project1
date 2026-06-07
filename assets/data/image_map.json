@@ -7011,7 +7011,7 @@
     "Enfield Town": "/assets/logos/streamed/enfield-town.webp",
     "Polokwane": "/assets/logos/streamed/polokwane.webp",
     "Central Florida Knights": "/assets/logos/streamed/central-florida-knights.webp",
-    "St. George Illawara Dragons": "/assets/logos/streamed/st-george-illawara-dragons.webp",
+    "Monaco GP": "/assets/logos/streamed/monaco.webp",
     "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
     "DC Defenders": "/assets/logos/streamed/dc-defenders.webp",
     "St Louis BattleHawks": "/assets/logos/streamed/st-louis-battlehawks.webp",
@@ -7808,9 +7808,9 @@
     "Pro D2": "/assets/logos/leagues/pro-d2.webp",
     "Euroleague": "/assets/logos/leagues/euroleague.webp",
     "2 Liga": "/assets/logos/leagues/2-liga.webp",
-    "hockey": "/assets/logos/leagues/hockey.webp",
+    "tennis": "/assets/logos/leagues/tennis.webp",
     "basketball": "/assets/logos/leagues/basketball.webp",
     "football": "/assets/logos/leagues/football.webp",
-    "tennis": "/assets/logos/leagues/tennis.webp"
+    "hockey": "/assets/logos/leagues/hockey.webp"
   }
 }
