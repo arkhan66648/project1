@@ -3529,6 +3529,7 @@
     "Kevin Borjas": "/assets/logos/streamed/kevin-borjas.webp",
     "Kk Tft": "/assets/logos/streamed/kk-tft.webp",
     "Tsg Hoffenheim": "/assets/logos/streamed/tsg-hoffenheim.webp",
+    "Georgia U19": "/assets/logos/streamed/georgia-u19.webp",
     "Cd Guadalajara": "/assets/logos/streamed/cd-guadalajara.webp",
     "Al Sailiya": "/assets/logos/streamed/al-sailiya.webp",
     "Nec Nijmegen": "/assets/logos/streamed/nec-nijmegen.webp",
@@ -7012,9 +7013,14 @@
     "Polokwane": "/assets/logos/streamed/polokwane.webp",
     "Central Florida Knights": "/assets/logos/streamed/central-florida-knights.webp",
     "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
-    "DC Defenders": "/assets/logos/streamed/dc-defenders.webp",
-    "St Louis BattleHawks": "/assets/logos/streamed/st-louis-battlehawks.webp",
+    "Bosnia-Herzegovina": "/assets/logos/streamed/bosnia-herzegovina.webp",
+    "Curacao": "/assets/logos/streamed/cura\u00e7ao.webp",
     "N.Ireland": "/assets/logos/streamed/nireland.webp",
+    "UAE U23": "/assets/logos/streamed/uae-u23.webp",
+    "China PR U23": "/assets/logos/streamed/china-pr-u23.webp",
+    "Republic of Ireland U21": "/assets/logos/streamed/republic-of-ireland-u21.webp",
+    "Trinidad and Tobago": "/assets/logos/streamed/trinidad-and-tobago.webp",
+    "Supra du Qu\u00e9bec": "/assets/logos/streamed/supra-du-qu\u00e9bec.webp",
     "2026 PFL Africa 2: Nigeria": "/assets/logos/streamed/nigeria.webp"
   },
   "leagues": {
@@ -7807,9 +7813,9 @@
     "Pro D2": "/assets/logos/leagues/pro-d2.webp",
     "Euroleague": "/assets/logos/leagues/euroleague.webp",
     "2 Liga": "/assets/logos/leagues/2-liga.webp",
-    "football": "/assets/logos/leagues/football.webp",
     "tennis": "/assets/logos/leagues/tennis.webp",
     "basketball": "/assets/logos/leagues/basketball.webp",
+    "football": "/assets/logos/leagues/football.webp",
     "hockey": "/assets/logos/leagues/hockey.webp"
   }
 }
