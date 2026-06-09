@@ -7024,9 +7024,6 @@
     "DC Defenders": "/assets/logos/streamed/dc-defenders.webp",
     "BC Lions": "/assets/logos/streamed/bc-lions.webp",
     "Curacao": "/assets/logos/streamed/cura\u00e7ao.webp",
-    "Republic of Ireland U21": "/assets/logos/streamed/republic-of-ireland-u21.webp",
-    "DR Congo": "/assets/logos/streamed/dr-congo.webp",
-    "Trinidad and Tobago": "/assets/logos/streamed/trinidad-and-tobago.webp",
     "Supra du Qu\u00e9bec": "/assets/logos/streamed/supra-du-qu\u00e9bec.webp",
     "HFX Wanderers": "/assets/logos/streamed/hfx-wanderers.webp",
     "2026 PFL Africa 2: Nigeria": "/assets/logos/streamed/nigeria.webp"
@@ -7821,8 +7818,8 @@
     "Pro D2": "/assets/logos/leagues/pro-d2.webp",
     "Euroleague": "/assets/logos/leagues/euroleague.webp",
     "2 Liga": "/assets/logos/leagues/2-liga.webp",
-    "tennis": "/assets/logos/leagues/tennis.webp",
     "football": "/assets/logos/leagues/football.webp",
+    "tennis": "/assets/logos/leagues/tennis.webp",
     "basketball": "/assets/logos/leagues/basketball.webp",
     "hockey": "/assets/logos/leagues/hockey.webp"
   }
