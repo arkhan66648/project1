@@ -97,6 +97,7 @@
     "Cagliari": "/assets/logos/tsdb/cagliari.webp",
     "Arizona Cardinals": "/assets/logos/tsdb/arizona-cardinals.webp",
     "Wellington Phoenix Women": "/assets/logos/tsdb/wellington-phoenix-women.webp",
+    "Gil Vicente": "/assets/logos/tsdb/gil-vicente.webp",
     "Newcastle Jets Women": "/assets/logos/tsdb/newcastle-jets-women.webp",
     "Ufc Flyweight": "/assets/logos/tsdb/ufc-flyweight.webp",
     "Borussia Dortmund": "/assets/logos/tsdb/borussia-dortmund.webp",
@@ -3095,7 +3096,6 @@
     "Sakaryaspor": "/assets/logos/streamed/sakaryaspor.webp",
     "Vimpeli Veto W": "/assets/logos/streamed/vimpeli-veto-w.webp",
     "Queensland Reds": "/assets/logos/streamed/queensland-reds.webp",
-    "Gil Vicente": "/assets/logos/streamed/gil-vicente.webp",
     "Erc Ingolstadt": "/assets/logos/streamed/erc-ingolstadt.webp",
     "Asa Tg Mures": "/assets/logos/streamed/asa-tg-mures.webp",
     "Emerson Jones": "/assets/logos/streamed/emerson-jones.webp",
@@ -7020,12 +7020,13 @@
     "Pogon Szczecin": "/assets/logos/streamed/pogon-szczecin.webp",
     "Zaglebie W": "/assets/logos/streamed/zaglebie-w.webp",
     "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
+    "FIFA World Cup Opening Ceremony: Mexico": "/assets/logos/streamed/mexico.webp",
     "Hamilton Tiger-Cats": "/assets/logos/streamed/hamilton-tiger-cats.webp",
     "Bosnia-Herzegovina": "/assets/logos/streamed/bosnia-herzegovina.webp",
+    "FIFA World Cup Opening Ceremony: Canada": "/assets/logos/streamed/canada.webp",
     "Raiders": "/assets/logos/streamed/randers.webp",
     "DC Defenders": "/assets/logos/streamed/dc-defenders.webp",
     "BC Lions": "/assets/logos/streamed/bc-lions.webp",
-    "Curacao": "/assets/logos/streamed/cura\u00e7ao.webp",
     "2026 PFL Africa 2: Nigeria": "/assets/logos/streamed/nigeria.webp"
   },
   "leagues": {
@@ -7818,9 +7819,9 @@
     "Caf Champions League Group A": "/assets/logos/leagues/caf-champions-league-group-a.webp",
     "Liga 3 Relegation Round Group 1": "/assets/logos/leagues/liga-3-relegation-round-group-1.webp",
     "Ehf Euro Group E": "/assets/logos/leagues/ehf-euro-group-e.webp",
-    "basketball": "/assets/logos/leagues/basketball.webp",
     "tennis": "/assets/logos/leagues/tennis.webp",
     "football": "/assets/logos/leagues/football.webp",
+    "basketball": "/assets/logos/leagues/basketball.webp",
     "hockey": "/assets/logos/leagues/hockey.webp"
   }
 }
