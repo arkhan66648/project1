@@ -274,6 +274,7 @@
     "Az Alkmaar U19": "/assets/logos/streamed/az-alkmaar-u19.webp",
     "Vaduz": "/assets/logos/streamed/vaduz.webp",
     "Women Newcastle Jets W": "/assets/logos/streamed/women-newcastle-jets-w.webp",
+    "Topuria": "/assets/logos/streamed/topuria.webp",
     "Napoli": "/assets/logos/streamed/napoli.webp",
     "Drexel": "/assets/logos/streamed/drexel.webp",
     "Judd Trump": "/assets/logos/streamed/judd-trump.webp",
@@ -7020,11 +7021,13 @@
     "Lucia Bronzetti": "/assets/logos/streamed/lucia-bronzetti.webp",
     "Pogon Szczecin": "/assets/logos/streamed/pogon-szczecin.webp",
     "Zaglebie W": "/assets/logos/streamed/zaglebie-w.webp",
-    "Bosnia-Herzegovina": "/assets/logos/streamed/bosnia-herzegovina.webp",
     "USA": "/assets/logos/streamed/usa.webp",
+    "USA \ud83c\udfc6": "/assets/logos/streamed/usa.webp",
+    "FIFA World Cup Opening Ceremony : USA \ud83c\udfc6": "/assets/logos/streamed/usa.webp",
     "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
     "DC Defenders": "/assets/logos/streamed/dc-defenders.webp",
-    "BC Lions": "/assets/logos/streamed/bc-lions.webp"
+    "BC Lions": "/assets/logos/streamed/bc-lions.webp",
+    "UFC Freedom 250: Topuria": "/assets/logos/streamed/topuria.webp"
   },
   "leagues": {
     "Brazil   Nbb": "/assets/logos/leagues/brazil---nbb.webp",
@@ -7817,8 +7820,8 @@
     "Liga 3 Relegation Round Group 1": "/assets/logos/leagues/liga-3-relegation-round-group-1.webp",
     "Ehf Euro Group E": "/assets/logos/leagues/ehf-euro-group-e.webp",
     "football": "/assets/logos/leagues/football.webp",
-    "tennis": "/assets/logos/leagues/tennis.webp",
     "basketball": "/assets/logos/leagues/basketball.webp",
+    "tennis": "/assets/logos/leagues/tennis.webp",
     "hockey": "/assets/logos/leagues/hockey.webp"
   }
 }
