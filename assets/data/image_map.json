@@ -7021,11 +7021,7 @@
     "Lucia Bronzetti": "/assets/logos/streamed/lucia-bronzetti.webp",
     "Pogon Szczecin": "/assets/logos/streamed/pogon-szczecin.webp",
     "Zaglebie W": "/assets/logos/streamed/zaglebie-w.webp",
-    "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
-    "DC Defenders": "/assets/logos/streamed/dc-defenders.webp",
-    "BC Lions": "/assets/logos/streamed/bc-lions.webp",
-    "RAF 10: Chimaev": "/assets/logos/streamed/chimaev.webp",
-    "UFC Freedom 250: Topuria": "/assets/logos/streamed/topuria.webp"
+    "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp"
   },
   "leagues": {
     "Brazil   Nbb": "/assets/logos/leagues/brazil---nbb.webp",
@@ -7817,9 +7813,9 @@
     "Caf Champions League Group A": "/assets/logos/leagues/caf-champions-league-group-a.webp",
     "Liga 3 Relegation Round Group 1": "/assets/logos/leagues/liga-3-relegation-round-group-1.webp",
     "Ehf Euro Group E": "/assets/logos/leagues/ehf-euro-group-e.webp",
+    "basketball": "/assets/logos/leagues/basketball.webp",
     "football": "/assets/logos/leagues/football.webp",
     "tennis": "/assets/logos/leagues/tennis.webp",
-    "basketball": "/assets/logos/leagues/basketball.webp",
     "hockey": "/assets/logos/leagues/hockey.webp"
   }
 }
