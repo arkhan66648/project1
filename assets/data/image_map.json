@@ -7022,7 +7022,12 @@
     "Pogon Szczecin": "/assets/logos/streamed/pogon-szczecin.webp",
     "Zaglebie W": "/assets/logos/streamed/zaglebie-w.webp",
     "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
-    "Congo DR": "/assets/logos/streamed/congo-dr.webp"
+    "Congo DR": "/assets/logos/streamed/congo-dr.webp",
+    "Bosnia-Herzegovina": "/assets/logos/streamed/bosnia-herzegovina.webp",
+    "BC Lions": "/assets/logos/streamed/bc-lions.webp",
+    "Hamilton Tiger-Cats": "/assets/logos/streamed/hamilton-tiger-cats.webp",
+    "Ottawa RedBlacks": "/assets/logos/streamed/ottawa-redblacks.webp",
+    "Raiders": "/assets/logos/streamed/randers.webp"
   },
   "leagues": {
     "Brazil   Nbb": "/assets/logos/leagues/brazil---nbb.webp",
@@ -7814,9 +7819,9 @@
     "Caf Champions League Group A": "/assets/logos/leagues/caf-champions-league-group-a.webp",
     "Liga 3 Relegation Round Group 1": "/assets/logos/leagues/liga-3-relegation-round-group-1.webp",
     "Ehf Euro Group E": "/assets/logos/leagues/ehf-euro-group-e.webp",
-    "football": "/assets/logos/leagues/football.webp",
-    "hockey": "/assets/logos/leagues/hockey.webp",
     "tennis": "/assets/logos/leagues/tennis.webp",
-    "basketball": "/assets/logos/leagues/basketball.webp"
+    "football": "/assets/logos/leagues/football.webp",
+    "basketball": "/assets/logos/leagues/basketball.webp",
+    "hockey": "/assets/logos/leagues/hockey.webp"
   }
 }
