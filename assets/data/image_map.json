@@ -4460,6 +4460,7 @@
     "Zachary Reese": "/assets/logos/streamed/zachary-reese.webp",
     "Esztergomi W": "/assets/logos/streamed/esztergomi-w.webp",
     "Jannik Sinner": "/assets/logos/streamed/jannik-sinner.webp",
+    "Toronto Tempo W": "/assets/logos/streamed/toronto-tempo-w.webp",
     "Estonia W": "/assets/logos/streamed/estonia-w.webp",
     "Gimcheon Sangmu": "/assets/logos/streamed/gimcheon-sangmu.webp",
     "Louisiana Tech": "/assets/logos/streamed/louisiana-tech.webp",
@@ -7035,10 +7036,12 @@
     "Lucia Bronzetti": "/assets/logos/streamed/lucia-bronzetti.webp",
     "Pogon Szczecin": "/assets/logos/streamed/pogon-szczecin.webp",
     "Zaglebie W": "/assets/logos/streamed/zaglebie-w.webp",
-    "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
     "Bosnia-Herzegovina": "/assets/logos/streamed/bosnia-herzegovina.webp",
-    "BC Lions": "/assets/logos/streamed/bc-lions.webp",
+    "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
+    "St. George Illawara Dragons": "/assets/logos/streamed/st-george-illawara-dragons.webp",
+    "USA": "/assets/logos/streamed/usa.webp",
     "Hamilton Tiger-Cats": "/assets/logos/streamed/hamilton-tiger-cats.webp",
+    "BC Lions": "/assets/logos/streamed/bc-lions.webp",
     "Ottawa RedBlacks": "/assets/logos/streamed/ottawa-redblacks.webp",
     "Raiders": "/assets/logos/streamed/randers.webp"
   },
@@ -7833,8 +7836,7 @@
     "Liga 3 Relegation Round Group 1": "/assets/logos/leagues/liga-3-relegation-round-group-1.webp",
     "Ehf Euro Group E": "/assets/logos/leagues/ehf-euro-group-e.webp",
     "football": "/assets/logos/leagues/football.webp",
-    "tennis": "/assets/logos/leagues/tennis.webp",
     "basketball": "/assets/logos/leagues/basketball.webp",
-    "hockey": "/assets/logos/leagues/hockey.webp"
+    "tennis": "/assets/logos/leagues/tennis.webp"
   }
 }
