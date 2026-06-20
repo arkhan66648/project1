@@ -195,6 +195,7 @@
     "Casa Pia": "/assets/logos/tsdb/casa-pia.webp",
     "Bulls": "/assets/logos/tsdb/bulls.webp",
     "Atlanta Falcons": "/assets/logos/tsdb/atlanta-falcons.webp",
+    "Deportivo De La Coru\u00f1a": "/assets/logos/tsdb/deportivo-de-la-coru\u00f1a.webp",
     "Melbourne City": "/assets/logos/tsdb/melbourne-city.webp",
     "Birmingham City": "/assets/logos/tsdb/birmingham-city.webp",
     "Oud Heverlee Leuven": "/assets/logos/tsdb/oud-heverlee-leuven.webp",
@@ -6193,7 +6194,6 @@
     "Jong Az": "/assets/logos/streamed/jong-az.webp",
     "Czechia Womens Group A": "/assets/logos/streamed/czechia-womens-group-a.webp",
     "Daniel Evans": "/assets/logos/streamed/daniel-evans.webp",
-    "Deportivo De La Coru\u00f1a": "/assets/logos/streamed/deportivo-de-la-coru\u00f1a.webp",
     "Tuto Hockey": "/assets/logos/streamed/tuto-hockey.webp",
     "Lsu": "/assets/logos/streamed/lsu.webp",
     "Antonia Ru\u017ei\u0107": "/assets/logos/streamed/antonia-ru\u017ei\u0107.webp",
@@ -7041,10 +7041,9 @@
     "Lucia Bronzetti": "/assets/logos/streamed/lucia-bronzetti.webp",
     "Pogon Szczecin": "/assets/logos/streamed/pogon-szczecin.webp",
     "Zaglebie W": "/assets/logos/streamed/zaglebie-w.webp",
-    "Hamilton Tiger-Cats": "/assets/logos/streamed/hamilton-tiger-cats.webp",
-    "BC Lions": "/assets/logos/streamed/bc-lions.webp",
-    "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
     "UFC Fight Night: Kape": "/assets/logos/streamed/kape.webp",
+    "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
+    "Congo DR": "/assets/logos/streamed/congo-dr.webp",
     "Austria GP": "/assets/logos/streamed/austria.webp"
   },
   "leagues": {
@@ -7837,8 +7836,8 @@
     "Caf Champions League Group A": "/assets/logos/leagues/caf-champions-league-group-a.webp",
     "Liga 3 Relegation Round Group 1": "/assets/logos/leagues/liga-3-relegation-round-group-1.webp",
     "Ehf Euro Group E": "/assets/logos/leagues/ehf-euro-group-e.webp",
-    "football": "/assets/logos/leagues/football.webp",
+    "tennis": "/assets/logos/leagues/tennis.webp",
     "basketball": "/assets/logos/leagues/basketball.webp",
-    "tennis": "/assets/logos/leagues/tennis.webp"
+    "football": "/assets/logos/leagues/football.webp"
   }
 }
