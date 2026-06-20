@@ -7044,6 +7044,7 @@
     "UFC Fight Night: Kape": "/assets/logos/streamed/kape.webp",
     "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
     "Congo DR": "/assets/logos/streamed/congo-dr.webp",
+    "C\u00f4te d'Ivoire": "/assets/logos/streamed/c\u00f4te-divoire.webp",
     "Austria GP": "/assets/logos/streamed/austria.webp"
   },
   "leagues": {
@@ -7836,7 +7837,6 @@
     "Caf Champions League Group A": "/assets/logos/leagues/caf-champions-league-group-a.webp",
     "Liga 3 Relegation Round Group 1": "/assets/logos/leagues/liga-3-relegation-round-group-1.webp",
     "Ehf Euro Group E": "/assets/logos/leagues/ehf-euro-group-e.webp",
-    "tennis": "/assets/logos/leagues/tennis.webp",
     "basketball": "/assets/logos/leagues/basketball.webp",
     "football": "/assets/logos/leagues/football.webp"
   }
