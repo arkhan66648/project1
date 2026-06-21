@@ -7041,9 +7041,9 @@
     "Lucia Bronzetti": "/assets/logos/streamed/lucia-bronzetti.webp",
     "Pogon Szczecin": "/assets/logos/streamed/pogon-szczecin.webp",
     "Zaglebie W": "/assets/logos/streamed/zaglebie-w.webp",
-    "UFC Fight Night: Kape": "/assets/logos/streamed/kape.webp",
     "St. Louis Cardinals": "/assets/logos/streamed/stlouis-cardinals.webp",
     "Congo DR": "/assets/logos/streamed/congo-dr.webp",
+    "Bosnia-Herzegovina": "/assets/logos/streamed/bosnia-herzegovina.webp",
     "Austria GP": "/assets/logos/streamed/austria.webp"
   },
   "leagues": {
@@ -7837,7 +7837,7 @@
     "Liga 3 Relegation Round Group 1": "/assets/logos/leagues/liga-3-relegation-round-group-1.webp",
     "Ehf Euro Group E": "/assets/logos/leagues/ehf-euro-group-e.webp",
     "tennis": "/assets/logos/leagues/tennis.webp",
-    "basketball": "/assets/logos/leagues/basketball.webp",
-    "football": "/assets/logos/leagues/football.webp"
+    "football": "/assets/logos/leagues/football.webp",
+    "basketball": "/assets/logos/leagues/basketball.webp"
   }
 }
